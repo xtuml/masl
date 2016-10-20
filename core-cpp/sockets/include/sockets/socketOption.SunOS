@@ -1,0 +1,72 @@
+//============================================================================
+// UK Crown Copyright (c) 2005. All rights reserved.
+//
+// File:    socketOption.SunOS
+//
+// Description:    
+//   Define the socket options that can be used on Solaris.
+//   This is not an exhaustive list.
+//============================================================================//
+#if !defined(SOCKET_socketSunOSOption__) && defined(sun)
+#define SOCKET_socketSunOSOption__
+
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+#include <netinet/in.h>
+
+namespace SKT {
+
+// **********************************************************
+// **********************************************************
+// **********************************************************
+typedef SocketOption<int,   SOL_SOCKET, SO_BROADCAST>   SoBroadcast;
+typedef SocketOption<int,   SOL_SOCKET, SO_DEBUG>       SoDebug;
+typedef SocketOption<int,   SOL_SOCKET, SO_DONTROUTE>   SoDontRoute;
+typedef SocketOption<int,   SOL_SOCKET, SO_KEEPALIVE>   SoKeepAlive;
+typedef SocketOption<linger,SOL_SOCKET, SO_LINGER>      SoLinger;
+typedef SocketOption<int,   SOL_SOCKET, SO_OOBINLINE>   SoOobInline;
+typedef SocketOption<int,   SOL_SOCKET, SO_RCVBUF>      SoRcvBuf; 
+typedef SocketOption<int,   SOL_SOCKET, SO_SNDBUF>      SoSndBuf; 
+typedef SocketOption<int,   SOL_SOCKET, SO_RCVLOWAT>    SoRcvlowat; 
+typedef SocketOption<int,   SOL_SOCKET, SO_SNDLOWAT>    SoSndlowat; 
+typedef SocketOption<int,   SOL_SOCKET, SO_RCVTIMEO>    SoRcvtimeo; 
+typedef SocketOption<int,   SOL_SOCKET, SO_SNDTIMEO>    SoSndtimeo; 
+typedef SocketOption<int,   SOL_SOCKET, SO_REUSEADDR>   SoReuseAddr; 
+//typedef SocketOption<int, SOL_SOCKET, SO_REUSEPORT>   SoReusePort; 
+//typedef SocketOption<int, SOL_SOCKET, SO_USELOOPBACK> SoUseLoopBack; 
+
+typedef SocketOption<int, SOL_SOCKET, SO_ERROR,CAN_DO_GET> SoError;
+typedef SocketOption<int, SOL_SOCKET, SO_TYPE, CAN_DO_GET> SoType;
+
+// **********************************************************
+// **********************************************************
+// **********************************************************
+typedef SocketOption<int,   IPPROTO_IP, IP_HDRINCL>     IpHdrincl;
+typedef SocketOption<int,   IPPROTO_IP, IP_OPTIONS>     IpOptions;
+//typedef SocketOption<int, IPPROTO_IP, IP_RECVDSTADDR> IpRecvdstaddr;
+//typedef SocketOption<int, IPPROTO_IP, IP_RECVIF>      IpRecvif;
+typedef SocketOption<int,   IPPROTO_IP, IP_TOS>         IpTos;
+typedef SocketOption<int,   IPPROTO_IP, IP_TTL>         IpTtl;
+
+//typedef SocketOption<group_req,        IPPROTO_IP, IP_MCAST_JOIN_GROUP,     CAN_DO_SET>  IpMcastJoinGroup;
+//typedef SocketOption<group_source_req, IPPROTO_IP, IP_MCAST_LEAVE_GROUP,    CAN_DO_SET>  IpMcastLeaveGroup;
+//typedef SocketOption<group_source_req, IPPROTO_IP, IP_MCAST_BLOCK_SOURCE,   CAN_DO_SET>  IpMcastBlockSource;
+//typedef SocketOption<group_source_req, IPPROTO_IP, IP_MCAST_UNBLOCK_SOURCE, CAN_DO_SET>  IpMcastUnblockSource;
+
+// **********************************************************
+// **********************************************************
+// **********************************************************
+typedef SocketOption<int, IPPROTO_TCP, TCP_MAXSEG>  TcpMaxseg;
+typedef SocketOption<int, IPPROTO_TCP, TCP_NODELAY> TcpNoDelay;
+
+// **********************************************************
+// **********************************************************
+// **********************************************************
+//typedef FcntlDescriptorFlagOption<F_SETFL,F_GETFL,O_ASYNC>    FdOAsync;
+typedef FcntlDescriptorFlagOption<F_SETFL,F_GETFL,O_NONBLOCK> FdONonBlock;
+typedef FcntlDescriptorFlagOption<F_SETFD,F_GETFD,FD_CLOEXEC> FdCloexec;
+
+} // end namespace SKT
+
+#endif
+

@@ -1,0 +1,38 @@
+# 
+# UK Crown Copyright (c) 2005. All Rights Reserved
+#
+
+# Default values for the inspector
+host=localhost
+port=${OOA_PORT:-0}
+mainClass=org.xtuml.masl.inspector.CommandLineInspector
+connectionClass=org.xtuml.masl.inspector.socketConnection.ProcessConnection
+allowWrites=true
+classpath=${BASH_SOURCE[0]%/*}/../lib/masl-inspector.jar
+
+sourceDir=""
+
+function usage ()
+{
+   echo "usage: $0 [-h <host>] [-p <port>] [-s <dir>:...] [-r]"
+   echo "           <host>   host machine of process    (default $host)";
+   echo "           <port>   port number of process     (default $port)";   
+}
+
+# Loop around and process the command line options.
+while getopts "p:s:h:" opt; do
+    case $opt in
+     p  )   port="$OPTARG";;
+     h  )   host="$OPTARG";;
+     \: )   usage;
+            exit 1;;
+     \? )   usage;
+            exit 1
+    esac
+done
+shift $(($OPTIND -1))
+
+maxmem=2g
+
+# Execute the required command and options.
+java -Xmx${maxmem} -Dhost=$host -Dport=$port -DconnectionClass=$connectionClass -cp $classpath $mainClass

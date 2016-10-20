@@ -1,0 +1,76 @@
+#
+# UK Crown Copyright (c) 2016. All Rights Reserved
+#
+#!/bin/bash
+
+function getxslt
+{
+  cat << 'EOF'
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+      <xsl:output method="xml" indent="yes"/>
+      <xsl:template match="/process">
+        <xsl:element name="{@name}">
+          <xsl:call-template name="printStats"/>
+          <xsl:apply-templates select="domain"/>
+        </xsl:element>
+      </xsl:template>
+
+      <xsl:template match="domain[.//statement]">
+        <xsl:element name="{@name}">
+          <xsl:call-template name="printStats"/>
+          <xsl:if test="count(.//statement/count)>0">
+            <xsl:apply-templates select="service"/>
+            <xsl:apply-templates select="terminator"/>
+            <xsl:apply-templates select="object"/>
+          </xsl:if>
+        </xsl:element>
+      </xsl:template>
+
+      <xsl:template match="terminator[.//statement]">
+        <xsl:element name="{@name}">
+          <xsl:call-template name="printStats"/>
+          <xsl:if test="count(.//statement/count)>0">
+            <xsl:apply-templates select="service"/>
+          </xsl:if>
+        </xsl:element>
+      </xsl:template>
+
+      <xsl:template match="object[.//statement]">
+        <xsl:element name="{@name}">
+          <xsl:call-template name="printStats"/>
+          <xsl:if test="count(.//statement/count)>0">
+            <xsl:apply-templates select="service"/>
+            <xsl:apply-templates select="state"/>
+          </xsl:if>
+        </xsl:element>
+      </xsl:template>
+
+      <xsl:template match="service[./statement]">
+        <xsl:element name="{@name}">
+          <xsl:call-template name="printStats"/>
+        </xsl:element>
+      </xsl:template>
+
+      <xsl:template match="state[./statement]">
+        <xsl:element name="{@name}">
+          <xsl:call-template name="printStats"/>
+        </xsl:element>
+      </xsl:template>
+
+      <xsl:template match="*"/>
+
+      <xsl:template name="printStats">
+          <xsl:attribute name="coverage"><xsl:value-of select="format-number(count(.//statement/count) div count(.//statement),'##0.0%')"/></xsl:attribute>
+      </xsl:template>
+    </xsl:stylesheet>
+EOF
+
+}
+
+xsltfile=/var/tmp/merge.$$.xslt  
+getxslt > $xsltfile
+merge_coverage $* | xsltproc  $xsltfile -
+rm -f $xsltfile
+
+
+

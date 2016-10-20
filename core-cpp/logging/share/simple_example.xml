@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  UK Crown Copyright (c) 2016. All Rights Reserved
+-->
+
+<!-- 
+    This configuration will send all messages to syslog, and anything with a 
+    priority of information or higher to stderr. syslog messages are 
+    formatted with detailed information, and stderr ones with a simpler form. 
+    Note that in general syslog should not have its messages filtered, as it 
+    has its own mechanisms for this. 
+--> 
+
+<log>
+  <pattern id="short"><priority/> : <message/></pattern>    
+  <pattern id="long"><timestamp decimal="micros"/> <cmd/> <priority/> : <message/></pattern>    
+
+  <logger>
+    <name>log</name>
+    <format>
+      <pattern ref="long"/>
+      <syslog/>
+    </format>
+    <filter>
+      <minlevel>information</minlevel>
+      <format>
+        <pattern ref="short"/>
+        <stderr/>
+      </format>
+    </filter>
+  </logger>
+</log>

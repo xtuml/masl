@@ -1,0 +1,64 @@
+#
+# UK Crown Copyright (c) 2016. All Rights Reserved
+#
+simple_add_shared_library (
+  NAME      sql
+  SOURCES    
+            CacheStrategy.cc
+            ResourceMonitor.cc
+            Criteria.cc
+            Schema.cc
+            AssignerStateMapper.cc
+            WriteOnChangeEnabler.cc
+            DatabaseUnitOfWork.cc
+            DatabaseFactory.cc
+            AssignerStateFactory.cc
+            CriteriaFactory.cc
+            TimerMapper.cc
+            TimerMapperSqlFactory.cc
+            TimerMapperUnitOfWork.cc
+            ObjectSqlRepository.cc
+            RelationshipSqlRepository.cc
+  LINKS
+            swa-headers
+  EXPORT    MaslCore
+  INCLUDES   
+            sql/AssignerStateImpl.hh
+            sql/AssignerStateMapper.hh
+            sql/CacheStrategy.hh
+            sql/Criteria.hh
+            sql/Database.hh
+            sql/DatabaseFactory.hh
+            sql/DatabaseUnitOfWork.hh
+            sql/Exception.hh
+            sql/Iterator.hh
+            sql/ObjectMapper.hh
+            sql/ObjectMapperItr.hh
+            sql/ObjectMapperUnitOfWork.hh
+            sql/ObjectSql.hh
+            sql/ObjectSqlGenerator.hh
+            sql/ObjectSqlRepository.hh
+            sql/Population.hh
+            sql/RelationshipAtomicity.hh
+            sql/RelationshipAssociativeContainers.hh
+            sql/RelationshipBinaryDefinitions.hh
+            sql/RelationshipBinaryMapper.hh
+            sql/RelationshipBinarySqlGenerator.hh
+            sql/RelationshipContainers.hh
+            sql/RelationshipMapperUnitOfWork.hh
+            sql/RelationshipSql.hh
+            sql/RelationshipSqlGenerator.hh
+            sql/RelationshipSqlRepository.hh
+            sql/RelationshipTenaryDefinitions.hh
+            sql/RelationshipTenaryMapper.hh
+            sql/RelationshipTenaryMapperUnitOfWork.hh
+            sql/RelationshipTenarySqlGenerator.hh
+            sql/ResourceMonitor.hh
+            sql/ResourceMonitorObserver.hh
+            sql/Schema.hh
+            sql/StatementFormatter.hh
+            sql/UnitOfWorkObserver.hh
+            sql/Util.hh
+            sql/WriteOnChangeEnabler.hh
+  )
+

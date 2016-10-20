@@ -1,0 +1,41 @@
+<!-- 
+  UK Crown Copyright (c) 2016. All Rights Reserved
+-->
+<presencemappings:presenceMappings
+   xmlns:presencemappings="urn:xsd:presencemappings"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="urn:xsd:presencemappings schemas/PresenceMappings.xsd">
+	
+	<!--pop3-->
+	<mapping>
+		<!-- Identifer Type of incoming Presence Event -->
+		<incomingIdentifierType>POP3_USERNAME</incomingIdentifierType>
+		<!-- Pilbeam Event Type -->
+		<pilbeamEventType>POP3AUTH</pilbeamEventType>
+		<!-- Metadata field to map to Pilbeam Password field -->
+		<passwordMetadataType>POP3_PASSWORD</passwordMetadataType>
+	</mapping>
+
+	<!--yahoo webmail-->
+	<mapping>
+		<!-- Identifer Type of incoming Presence Event -->
+		<incomingIdentifierType>YahooWebmailLoginUsername</incomingIdentifierType>
+		<!-- Pilbeam Service Provider (Empty for POP3) -->
+		<pilbeamServiceProvider>YAHOO</pilbeamServiceProvider>
+		<!-- Pilbeam Event Type -->
+		<pilbeamEventType>WEBAUTH</pilbeamEventType>
+		<!-- Metadata field to map to Pilbeam Password field -->
+		<passwordMetadataType>YahooWebmailAccountPassword</passwordMetadataType>
+	</mapping>
+
+	<!--windows live webmail-->	
+	<mapping>
+		<!-- Identifer Type of incoming Presence Event -->
+		<incomingIdentifierType>WL_HOTMAIL_SIGNIN_USERNAME</incomingIdentifierType>
+		<!-- Pilbeam Service Provider (Empty for POP3) -->
+		<pilbeamServiceProvider>WINDOWS LIVE</pilbeamServiceProvider>
+		<!-- Pilbeam Event Type -->
+		<pilbeamEventType>WEBAUTH</pilbeamEventType>
+	</mapping>
+
+</presencemappings:presenceMappings>

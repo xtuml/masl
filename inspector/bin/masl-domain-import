@@ -1,0 +1,35 @@
+#
+# UK Crown Copyright (c) 2005. All Rights Reserved
+#
+
+host=localhost
+port=${OOA_PORT:-0}
+mainClass=org.xtuml.masl.inspector.DomainImport
+connectionClass=org.xtuml.masl.inspector.socketConnection.ProcessConnection
+classpath=${BASH_SOURCE[0]%/*}/../lib/masl-inspector.jar
+
+function usage ()
+{
+   echo "usage: $0 [-h <host>] [-p <port>] <file> ..."
+   echo "          <host>            host machine of process    (default $host)";
+   echo "          <port>            port number of process     (default $port)";   
+   echo "          <file>            xml file to import";   
+}
+
+# Loop around and process the command line options.
+while getopts "p:h:la" opt; do
+    case $opt in
+     p  )   port="$OPTARG";;
+     h  )   host="$OPTARG";;
+     \: )   usage;
+            exit 1;;
+     \? )   usage;
+            exit 1
+    esac
+done
+shift $(($OPTIND -1))
+
+maxmem=2g
+
+# Execute the required command and options.
+java -Xmx${maxmem} -Dhost=$host -Dport=$port -DconnectionClass=$connectionClass -DallowWrites=true -cp $classpath $mainClass $*

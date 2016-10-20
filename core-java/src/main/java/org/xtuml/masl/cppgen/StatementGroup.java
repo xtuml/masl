@@ -1,0 +1,129 @@
+//
+// File: StatementGroup.java
+//
+// UK Crown Copyright (c) 2006. All Rights Reserved.
+//
+package org.xtuml.masl.cppgen;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Set;
+
+
+/**
+ * A group of C++ statements. This is a grouping purely for convenience, and the
+ * generated code will be no different to a similar sequence of individual
+ * statements. The advantage of using a group is that there is a single
+ * reference to the whole group, and extra statements can be added easily to the
+ * beginning or end of the group.
+ */
+public class StatementGroup extends Statement
+{
+
+  /**
+   * Creates a group of statements.
+   */
+  public StatementGroup ()
+  {
+    this(null);
+  }
+
+  /**
+   * Creates a group of statements, putting the supplied comment at the top.
+   * 
+
+   *          a comment to appear at the top of the group
+   */
+  public StatementGroup ( final Comment comment )
+  {
+    if ( comment != null )
+    {
+      comment.setParent(this);
+    }
+    this.comment = comment;
+  }
+
+  /**
+   * Adds the supplied statement to the end of the group.
+   * 
+
+   *          the statement to add
+   */
+  public void appendStatement ( final Statement statement )
+  {
+    statement.setParent(this);
+    statements.addLast(statement);
+  }
+
+  /**
+   * Adds the supplied statement to the beginning of the group.
+   * 
+
+   *          the statement to add
+   */
+  public void prependStatement ( final Statement statement )
+  {
+    statement.setParent(this);
+    statements.addFirst(statement);
+  }
+
+  /**
+   * Gets the number of statements in the group, not including the header
+   * comment.
+   * 
+   * @return the number of statements in the group
+   */
+  public int size ()
+  {
+    return statements.size();
+  }
+
+  @Override
+  Set<Declaration> getForwardDeclarations ()
+  {
+    final Set<Declaration> result = new LinkedHashSet<Declaration>();
+    for ( final Statement statement : statements )
+    {
+      result.addAll(statement.getForwardDeclarations());
+    }
+    return result;
+  }
+
+  @Override
+  Set<CodeFile> getIncludes ()
+  {
+    final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+    for ( final Statement statement : statements )
+    {
+      result.addAll(statement.getIncludes());
+    }
+    return result;
+  }
+
+  @Override
+  void write ( final Writer writer, final String indent, final Namespace currentNamespace ) throws IOException
+  {
+    if ( comment != null )
+    {
+      writer.write("\n");
+      comment.write(writer, indent, currentNamespace);
+      writer.write("\n");
+    }
+    for ( final Statement statement : statements )
+    {
+      statement.write(writer, indent, currentNamespace);
+      if ( !(statement instanceof StatementGroup) )
+      {
+        writer.write("\n");
+      }
+    }
+
+  }
+
+  private final Comment               comment;
+  private final LinkedList<Statement> statements = new LinkedList<Statement>();
+
+
+}
