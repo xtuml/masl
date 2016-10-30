@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  UK Crown Copyright (c) 2016. All Rights Reserved
+-->
+
+<log>
+
+  <!-- The default logger to use. Can be omitted, in which case the first logger to be defined will be the default -->
+  <default name="example"/>
+
+  <!-- The syslog configuration. If all options are omitted, 'console' and facility = user will be assumed. see 'man 3 syslog' for more details on options -->
+  <syslog>
+    <ident>identifier</ident> <!-- The identifier to prepend to every message. Blank if omitted. Can include substitution elements - see pattern element for further details of these. --> 
+    <facility>user</facility> <!-- The type of program logging the message. 'user' if omitted. Allowed values are priv, cron, daemon, ftp, kern, local0, local1, local2, local3, local4, local5, local6, local7, lpr, mail, news, syslog, user, uucp -->     
+    <console/>                <!-- Write directly to system console if there is an error while sending to system logger. -->
+    <ndelay/>                 <!-- Open the connection immediately (normally, the connection is opened when the first message is logged). -->
+    <perror/>                 <!-- Print to stderr as well. -->
+    <pid/>                    <!-- Include PID with each message -->
+  </syslog>
+
+  <!-- Any number of named patterns that can be referenced by formatters -->
+  <pattern id="example_pattern">
+      The text inside a pattern defines the format of the message logged. All whitespace is significant.
+
+      The following subsititution placeholders may be used...
+      
+      Valid inside any substitution text:
+
+        <name/>                            The name of the process. It is up to the process to supply this to the logging system.
+        <cmd/>                             The command used to run the process. It is up to the process to supply this to the logging system.
+        <pid/>                             The process id of the process.
+        <host/>                            The hostname of the machine the process is running on.   
+        <env name="NAME" default="X"/>     The value of an environment variable, with an optional default if not available. 
+        <param name="name" default="X"/>   The value of a parameter supplied to the logging system by the proceess, with an optional default if not available. 
+
+      Valid inside a formatting pattern:
+
+        <message/>                         The message to be logged.                       
+        <logger/>                          The name of the logger used to log the message. 
+
+        <priority/>                        The priority of the message. eg 'Warning'
+        <priority format="full"/>          The priority of the message. eg 'Warning'
+        <priority format="abbreviated"/>   The priority of the message. eg 'W'
+
+        <timestamp/>                       A timestamp in ISO 8601 format eg '2010-09-08T19:18.17.123456Z'
+        <timestamp decimal="micros"/>      A timestamp in ISO 8601 format eg '2010-09-08T19:18.17.123456Z'
+        <timestamp decimal="millis"/>      A timestamp in ISO 8601 format eg '2010-09-08T19:18.17.123Z'
+        <timestamp decimal="tenths"/>      A timestamp in ISO 8601 format eg '2010-09-08T19:18.17.1Z'
+        <timestamp decimal="none"/>        A timestamp in ISO 8601 format eg '2010-09-08T19:18.17Z'
+    
+        <year/>                            The current year,  eg '2010'
+
+        <month/>                           The current month, eg '09'
+        <month pad="zero"/>                The current month, eg '09'
+        <month pad="space"/>               The current month, eg ' 9'
+        <month pad="none"/>                The current month, eg '9'
+
+        <monthname/>                       The current month, eg 'September'
+        <monthname format="full"/>         The current month, eg 'September'
+        <monthname format="abbreviated"/>  The current month, eg 'Sep'
+ 
+        <day/>                             The current day of the month, eg '08'
+        <day pad="zero"/>                  The current day of the month, eg '08'
+        <day pad="space"/>                 The current day of the month, eg ' 8'
+        <day pad="none"/>                  The current day of the month, eg '8'
+
+        <dayname/>                         The current month, eg 'Wednesday'
+        <dayname format="full"/>           The current month, eg 'Wednesday'
+        <dayname format="abbreviated"/>    The current month, eg 'Wed'
+ 
+        <hour/>                            The current hour in 24-hour clock, eg '19'
+        <hour clock="24"/>                 The current hour in 24-hour clock, eg '19'
+        <hour clock="24"/>                 The current hour in 12-hour clock, eg '07'
+
+        <am-pm/>                           AM or PM
+        <am-pm case="upper"/>              AM or PM
+        <am-pm case="lower"/>              am or pm
+
+        <minute/>                          The current minute eg '18'
+
+        <second/>                          The current second eg '17.123456'
+        <second decimal="micros"/>         The current second eg '17.123456'
+        <second decimal="millis"/>         The current second eg '17.123'
+        <second decimal="tenths"/>         The current second eg '17.1'
+        <second decimal="none"/>           The current second eg '17'
+
+        <timezone/>                        The timezone of the time, always 'Z' 
+        <timezone format="iso8601"/>       The timezone of the time, always 'Z' 
+        <timezone format="rfc"/>           The timezone of the time, always 'GMT' 
+
+  </pattern>
+
+  <pattern id="sensible pattern"><timestamp/> <priority/>: <name/>: <message/></pattern>
+
+
+  <!-- Any number of logger definitions. Each logger is made up of a 
+       hierarchy of channels, each processing the message in some way before 
+       passing it through to its children until a terminal channel is reached 
+    --> 
+  <logger>
+    <name>example</name>                      <!-- the name of this logger for use in referencing it elsewhere, and for the logger substitution pattern. -->
+    <logger ref="default"/>                   <!-- a logger channel passes messages to another logger defined elsewhere -->
+    <filter>                                  <!-- a filter channel passes only messages at the given level and above to it's children -->
+      <minlevel>information</minlevel>        <!-- the lowest priority message that will be passed on. 'trace' assumed if not present -->
+      <maxlevel>critical</maxlevel>           <!-- the highest priority message that will be passed on, 'fatal' assumed if not present-->
+      <async>                                 <!-- an async channel passes messages to it's children in a separate thread. 
+                                                   May improve process perfomance, but no guarantee that messages will make 
+                                                   it to the log if the process terminates before they can be written. --> 
+        <format>                              <!-- a format channel formats the message according to the specified pattern and passes it to it's children -->
+          <pattern ref="sensible pattern"/>   <!-- references a pattern defined elsewhere -->
+          <syslog/>                           <!-- a syslog channel passes messages to syslog -->
+          <stdout/>                           <!-- a stdout channel writes messages to standard output -->
+          <stderr/>                           <!-- a stderr channel writes messages to standard error -->
+        </format>
+        <format>                             
+          <pattern><timestamp/> <priority/>: <name/>: <message/></pattern>   <!-- defines a pattern inline -->
+          <file>                             <!-- a file channel writes messages to a file -->
+            <path><pid/>.log</path>          <!-- the name of the file to write to, with appropriate substitutions -->
+            <archive>                        <!-- archives old files as specified inside -->
+              <rotate>                       <!-- causes archive files to be rotated as specified inside -->
+                <periodic units="hours">12</periodic> <!-- a new archive is created at the interval specified.
+                                                           Valid units are minutes, hours, days, weeks or months (30 days) --> 
+              </rotate>
+              <extension>number</extension>  <!-- the archive files are numbered (eg blah.log.1). This is the default if 
+                                                  no extension is supplied. Can also specify 'timestamp' -->
+              <compress>true</compress>      <!-- if present with value true, the archive files will be gzipped -->
+              <purge units="weeks">6</purge> <!-- if present, specifies how many archives to keep. units can be seconds, 
+                                                  minutes, hours, days, weeks, months (30 days) or count. If units is a 
+                                                  time period, archives older than the period will be deleted. If units is 
+                                                  'count' then only the specified number of archive files will be kept. --> 
+            </archive>
+          </file>
+          <file>
+            <path><pid/>.log2</path>
+            <archive>
+              <rotate>
+                <size units="MiB">1</size>  <!-- archives are rotated based on file size. Valid units are B = bytes, KiB = 
+                                                 kibibytes, MiB = mebibytes. Default units is bytes. --> 
+              </rotate>
+            </archive>
+           </file>
+          <file>
+            <path><pid/>.log2</path>
+            <archive>
+              <rotate>
+                <timed>Mon,13:00</timed>    <!-- archives are rotated based on day and time. If day is omitted they are 
+                                                 rotated every day at the specified time. If hour is ommitted, they are 
+                                                 rotated at the specified minute every hour. --> 
+              </rotate>
+            </archive>
+           </file>
+        </format>
+      </async>
+    </filter>
+  </logger>
+
+  <logger>
+    <name>default</name>
+    <syslog>
+  </logger>
+
+</log>

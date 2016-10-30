@@ -1,0 +1,40 @@
+# 
+# UK Crown Copyright (c) 2005. All Rights Reserved
+#
+
+host=localhost
+port=${OOA_PORT:-0}
+mainClass=org.xtuml.masl.inspector.DomainExport
+connectionClass=org.xtuml.masl.inspector.socketConnection.ProcessConnection
+classpath=${BASH_SOURCE[0]%/*}/../lib/masl-inspector.jar
+
+function usage ()
+{
+   echo "usage: $0 [-h <host>] [-p <port>] [-l | -a | <domain> ...]"
+   echo "          <host>            host machine of process    (default $host)";
+   echo "          <port>            port number of process     (default $port)";   
+   echo "          -l                list domains";
+   echo "          -a                dump all domains";
+   echo "          <domain>          domain to export";   
+}
+
+# Loop around and process the command line options.
+passthrough=""
+while getopts "p:h:la" opt; do
+    case $opt in
+     p  )   port="$OPTARG";;
+     h  )   host="$OPTARG";;
+     a  )   passthrough="$passthrough -a";;
+     l  )   passthrough="$passthrough -l";;
+     \: )   usage;
+            exit 1;;
+     \? )   usage;
+            exit 1
+    esac
+done
+shift $(($OPTIND -1))
+
+maxmem=2g
+
+# Execute the required command and options.
+java -Xmx${maxmem} -Dhost=$host -Dport=$port -DconnectionClass=$connectionClass -DallowWrites=false -cp $classpath $mainClass $passthrough $*

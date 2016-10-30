@@ -1,0 +1,29 @@
+//
+// UK Crown Copyright (c) 2016. All Rights Reserved.
+//
+apply plugin: 'antlr'
+apply plugin: 'application'
+
+description = 'Core MASL Parser'
+
+mainClassName = 'org.xtuml.masl.Main'
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    antlr       'org.antlr:antlr:3.5.2'
+    runtime     'org.antlr:antlr-runtime:3.5.2'
+    compile     'com.google.guava:guava:18.0'
+    testCompile 'junit:junit:4.11'
+}
+
+jar {
+ manifest {
+    attributes 'Main-Class' : mainClassName,
+               'Class-Path' : configurations.compile.collect { it.getName() }.join(' ')
+  }
+}
+

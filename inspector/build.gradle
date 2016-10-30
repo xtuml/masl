@@ -1,0 +1,16 @@
+//
+// UK Crown Copyright (c) 2016. All Rights Reserved.
+//
+apply plugin: 'java'
+apply plugin: 'application'
+
+description = 'MASL Process Inspector'
+
+mainClassName = 'org.xtuml.masl.inspector.gui.MainFrame'
+
+jar {
+  manifest {
+    attributes 'Main-Class' : mainClassName,
+               'Class-Path' : configurations.compile.collect { it.getName() }.join(' ')
+  }
+}

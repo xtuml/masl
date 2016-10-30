@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  UK Crown Copyright (c) 2016. All Rights Reserved
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="collector">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="thread"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thread">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="event"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="process" use="required" type="xs:string"/>
+      <xs:attribute name="time" use="required" type="xs:dateTime"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="event">
+    <xs:complexType>
+      <xs:choice minOccurs="0">
+        <xs:element ref="service"/>
+        <xs:element ref="signal"/>
+        <xs:element ref="timer"/>
+      </xs:choice>
+      <xs:attribute name="action" use="required" type="xs:string"/>
+      <xs:attribute name="stackframe" type="xs:integer"/>
+      <xs:attribute name="time" use="required" type="xs:dateTime"/>
+      <xs:attribute name="type" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="service">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="parameter"/>
+      </xs:sequence>
+      <xs:attribute name="domain" use="required" type="xs:string"/>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="object" type="xs:string"/>
+      <xs:attribute name="type" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="signal">
+    <xs:complexType>
+      <xs:sequence minOccurs="0">
+        <xs:element ref="source"/>
+        <xs:element ref="destination"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="parameter"/>
+      </xs:sequence>
+      <xs:attribute name="domain" use="required" type="xs:string"/>
+      <xs:attribute name="name"   use="required" type="xs:string"/>
+      <xs:attribute name="type"     use="required" type="xs:string"/>    
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="source">
+    <xs:complexType>
+      <xs:attribute name="instance" use="required" type="xs:string"/>
+      <xs:attribute name="object" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="destination">
+    <xs:complexType>
+      <xs:attribute name="instance"  type="xs:string"/>
+      <xs:attribute name="object" use="required"   type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="timer">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="parameter"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="parameter">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="xs:string"/>
+      <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

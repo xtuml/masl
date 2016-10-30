@@ -1,0 +1,264 @@
+#
+# UK Crown Copyright (c) 2016. All Rights Reserved
+#
+#!/bin/bash
+
+function getxslt
+{
+  cat << 'EOF'
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exslt="http://exslt.org/math" version="1.0">
+
+  <xsl:param name="mergewith"/>
+
+  <xsl:output method="xml" indent="yes"/>
+  <xsl:strip-space elements="*"/>
+
+  <xsl:template match="process">
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="@*">
+        <xsl:with-param name="process" select="@name"/>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="*">
+        <xsl:with-param name="process" select="@name"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
+
+
+  <xsl:template match="domain">
+    <xsl:param name="process"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="*|@*">
+        <xsl:with-param name="process" select="$process"/>
+        <xsl:with-param name="domain" select="@name"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="terminator">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="*|@*">
+        <xsl:with-param name="process" select="$process"/>
+        <xsl:with-param name="domain" select="$domain"/>
+        <xsl:with-param name="terminator" select="@name"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="object">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="*|@*">
+        <xsl:with-param name="process" select="$process"/>
+        <xsl:with-param name="domain" select="$domain"/>
+        <xsl:with-param name="object" select="@name"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="service">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:param name="object"/>
+    <xsl:param name="terminator"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="*|@*">
+        <xsl:with-param name="process" select="$process"/>
+        <xsl:with-param name="domain" select="$domain"/>
+        <xsl:with-param name="object" select="$object"/>
+        <xsl:with-param name="terminator" select="$terminator"/>
+        <xsl:with-param name="service" select="@name"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="state">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:param name="object"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="*|@*">
+        <xsl:with-param name="process" select="$process"/>
+        <xsl:with-param name="domain" select="$domain"/>
+        <xsl:with-param name="object" select="$object"/>
+        <xsl:with-param name="state" select="@name"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
+
+
+  <xsl:template match="@*">
+    <xsl:attribute name="{name()}">
+      <xsl:apply-templates/>
+    </xsl:attribute>
+  </xsl:template>
+
+  <xsl:template match="statement">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:param name="object"/>
+    <xsl:param name="terminator"/>
+    <xsl:param name="service"/>
+    <xsl:param name="state"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="*|@*">
+        <xsl:with-param name="process" select="$process"/>
+        <xsl:with-param name="domain" select="$domain"/>
+        <xsl:with-param name="object" select="$object"/>
+        <xsl:with-param name="terminator" select="$terminator"/>
+        <xsl:with-param name="state" select="$state"/>
+        <xsl:with-param name="service" select="$service"/>
+        <xsl:with-param name="line" select="@line"/>
+      </xsl:apply-templates>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="count">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:param name="object"/>
+    <xsl:param name="terminator"/>
+    <xsl:param name="service"/>
+    <xsl:param name="state"/>
+    <xsl:param name="line"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="@*"/>
+      <xsl:choose>
+        <xsl:when test="$object != '' and $state != ''">
+          <xsl:value-of select="document($mergewith)/process[@name=$process]/domain[@name=$domain]/object[@name=$object]/state[@name=$state]/statement[@line=$line]/count + ."/>
+        </xsl:when>
+        <xsl:when test="$object != '' and $service != ''">
+          <xsl:value-of select="document($mergewith)/process[@name=$process]/domain[@name=$domain]/object[@name=$object]/service[@name=$service]/statement[@line=$line]/count + ."/>
+        </xsl:when>
+        <xsl:when test="$terminator != '' and $service != ''">
+          <xsl:value-of select="document($mergewith)/process[@name=$process]/domain[@name=$domain]/terminator[@name=$terminator]/service[@name=$service]/statement[@line=$line]/count + ."/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="document($mergewith)/process[@name=$process]/domain[@name=$domain]/service[@name=$service]/statement[@line=$line]/count + ."/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="real">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:param name="object"/>
+    <xsl:param name="terminator"/>
+    <xsl:param name="service"/>
+    <xsl:param name="state"/>
+    <xsl:param name="line"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="@*"/>
+      <xsl:choose>
+        <xsl:when test="$object != '' and $state != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/object[@name=$object]/state[@name=$state]/statement[@line=$line]/real+ .,0)"/>
+        </xsl:when>
+        <xsl:when test="$object != '' and $service != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/object[@name=$object]/service[@name=$service]/statement[@line=$line]/real+ .,0)"/>
+        </xsl:when>
+        <xsl:when test="$terminator != '' and $service != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/terminator[@name=$terminator]/service[@name=$service]/statement[@line=$line]/real+ .,0)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/service[@name=$service]/statement[@line=$line]/real+ .,0)"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="user">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:param name="object"/>
+    <xsl:param name="terminator"/>
+    <xsl:param name="service"/>
+    <xsl:param name="state"/>
+    <xsl:param name="line"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="@*"/>
+      <xsl:choose>
+        <xsl:when test="$object != '' and $state != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/object[@name=$object]/state[@name=$state]/statement[@line=$line]/user+ .,0)"/>
+        </xsl:when>
+        <xsl:when test="$object != '' and $service != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/object[@name=$object]/service[@name=$service]/statement[@line=$line]/user+ .,0)"/>
+        </xsl:when>
+        <xsl:when test="$terminator != '' and $service != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/terminator[@name=$terminator]/service[@name=$service]/statement[@line=$line]/user+ .,0)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/service[@name=$service]/statement[@line=$line]/user+ .,0)"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="system">
+    <xsl:param name="process"/>
+    <xsl:param name="domain"/>
+    <xsl:param name="object"/>
+    <xsl:param name="terminator"/>
+    <xsl:param name="service"/>
+    <xsl:param name="state"/>
+    <xsl:param name="line"/>
+    <xsl:element name="{name()}">
+      <xsl:apply-templates select="@*"/>
+      <xsl:choose>
+        <xsl:when test="$object != '' and $state != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/object[@name=$object]/state[@name=$state]/statement[@line=$line]/system + .,0)"/>
+        </xsl:when>
+        <xsl:when test="$object != '' and $service != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/object[@name=$object]/service[@name=$service]/statement[@line=$line]/system + .,0)"/>
+        </xsl:when>
+        <xsl:when test="$terminator != '' and $service != ''">
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/terminator[@name=$terminator]/service[@name=$service]/statement[@line=$line]/system + .,0)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/domain[@name=$domain]/service[@name=$service]/statement[@line=$line]/system + .,0)"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="time">
+    <xsl:param name="process"/>
+    <xsl:for-each select=".|document($mergewith)/process[@name=$process]/time">
+      <xsl:sort order="descending"/>
+      <xsl:if test="position()=1">
+        <xsl:copy-of select="."/>
+      </xsl:if>
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template match="duration">
+    <xsl:param name="process"/>
+    <xsl:element name="{name()}">
+       <xsl:value-of select="format-number(document($mergewith)/process[@name=$process]/duration + .,0)"/>
+    </xsl:element>
+  </xsl:template>
+
+
+  <xsl:template match="*"/>
+
+
+</xsl:stylesheet>
+EOF
+
+}
+
+
+if [ "$#" = "1" ]
+then
+  cat $1
+else
+  mergefile=$(readlink -f $1)
+  shift
+  xsltfile=/var/tmp/merge.$$.xslt  
+  getxslt > $xsltfile
+  $0 $* | xsltproc  --stringparam mergewith $mergefile $xsltfile -
+  rm -f $xsltfile
+fi

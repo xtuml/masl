@@ -1,0 +1,99 @@
+//
+// File: Inspector.java
+//
+// UK Crown Copyright (c) 2008. All Rights Reserved.
+//
+package org.xtuml.masl.translate.inspector;
+
+import org.xtuml.masl.cppgen.Class;
+import org.xtuml.masl.cppgen.CodeFile;
+import org.xtuml.masl.cppgen.Expression;
+import org.xtuml.masl.cppgen.Function;
+import org.xtuml.masl.cppgen.InterfaceLibrary;
+import org.xtuml.masl.cppgen.Library;
+import org.xtuml.masl.cppgen.Namespace;
+import org.xtuml.masl.cppgen.TypeUsage;
+import org.xtuml.masl.cppgen.Visibility;
+import org.xtuml.masl.translate.main.Architecture;
+
+
+public class Inspector
+{
+
+  static Namespace inspectorNamespace        = new Namespace("Inspector");
+  static Library library                     = new InterfaceLibrary("Inspector").inBuildSet(Architecture.buildSet);
+
+  static CodeFile  processHandlerInc         = library.createInterfaceHeader("inspector/ProcessHandler.hh");
+  static CodeFile  domainHandlerInc          = library.createInterfaceHeader("inspector/DomainHandler.hh");
+  static CodeFile  genericObjectHandlerInc   = library.createInterfaceHeader("inspector/GenericObjectHandler.hh");
+  static CodeFile  typesInc                  = library.createInterfaceHeader("inspector/types.hh");
+  static CodeFile  bufferedIOInc             = library.createInterfaceHeader("inspector/BufferedIO.hh");
+  static CodeFile  commChannelInc            = library.createInterfaceHeader("inspector/CommunicationChannel.hh");
+  static CodeFile  objectHandlerInc          = library.createInterfaceHeader("inspector/ObjectHandler.hh");
+  static CodeFile  actionHandlerInc          = library.createInterfaceHeader("inspector/ActionHandler.hh");
+  static CodeFile  eventHandlerInc           = library.createInterfaceHeader("inspector/EventHandler.hh");
+  static CodeFile  terminatorHandlerInc      = library.createInterfaceHeader("inspector/TerminatorHandler.hh");
+
+  static Class     bufferedInputStream       = new Class("BufferedInputStream", inspectorNamespace, bufferedIOInc);
+  static Class     bufferedOutputStream      = new Class("BufferedOutputStream", inspectorNamespace, bufferedIOInc);
+  static Class     commChannel               = new Class("CommunicationChannel", inspectorNamespace, commChannelInc);
+  static Class     processHandlerClass       = new Class("ProcessHandler", inspectorNamespace, processHandlerInc);
+  static Class     domainHandlerClass        = new Class("DomainHandler", inspectorNamespace, domainHandlerInc);
+  static Class     genericObjectHandlerClass = new Class("GenericObjectHandler", inspectorNamespace, genericObjectHandlerInc);
+  static Class     objectHandlerClass        = new Class("ObjectHandler", inspectorNamespace, objectHandlerInc);
+  static Class     terminatorHandlerClass    = new Class("TerminatorHandler", inspectorNamespace, terminatorHandlerInc);
+  static Class     callable                  = new Class("Callable", inspectorNamespace, typesInc);
+
+  static Function  getProcessHandlerFn       = processHandlerClass.createStaticFunction(processHandlerClass
+                                                                                                           .createDeclarationGroup(),
+                                                                                        "getInstance",
+                                                                                        Visibility.PUBLIC);
+  static Function  getDomainHandlerFn        = processHandlerClass.createMemberFunction(processHandlerClass
+                                                                                                           .createDeclarationGroup(),
+                                                                                        "getDomainHandler",
+                                                                                        Visibility.PUBLIC);
+  static Function  getTerminatorHandlerFn    = domainHandlerClass.createMemberFunction(domainHandlerClass.createDeclarationGroup(),
+                                                                                       "getTerminatorHandler",
+                                                                                       Visibility.PUBLIC);
+
+  static
+  {
+    getProcessHandlerFn.setReturnType(new TypeUsage(processHandlerClass, TypeUsage.Reference));
+    getDomainHandlerFn.setReturnType(new TypeUsage(domainHandlerClass, TypeUsage.Reference));
+    getTerminatorHandlerFn.setReturnType(new TypeUsage(terminatorHandlerClass, TypeUsage.Reference));
+  }
+
+  static Class getObjectHandlerClass ( final Class mainClass )
+  {
+    final Class handlerClass = new Class("ObjectHandler", inspectorNamespace, objectHandlerInc);
+    handlerClass.addTemplateSpecialisation(new TypeUsage(mainClass));
+    return handlerClass;
+  }
+
+  static Class actionHandlerClass = new Class("ActionHandler", inspectorNamespace, actionHandlerInc);
+  static Class eventHandlerClass  = new Class("EventHandler", inspectorNamespace, eventHandlerInc);
+
+  static Expression getProcessHandler ()
+  {
+    return getProcessHandlerFn.asFunctionCall();
+  }
+
+
+  static Expression getDomainHandler ( final Expression domainId )
+  {
+    return getDomainHandlerFn.asFunctionCall(getProcessHandler(), false, domainId);
+  }
+
+  static Expression getObjectHandler ( final Expression domainId, final Expression objectId, final Class objClass )
+  {
+    final Function getter = new Function("getObjectHandler");
+    getter.setReturnType(new TypeUsage(getObjectHandlerClass(objClass), TypeUsage.Reference));
+    getter.addTemplateSpecialisation(new TypeUsage(objClass));
+    return getter.asFunctionCall(getDomainHandler(domainId), false, objectId);
+  }
+
+  static Expression getTerminatorHandler ( final Expression domainId, final Expression terminatorId )
+  {
+    return getTerminatorHandlerFn.asFunctionCall(getDomainHandler(domainId), false, terminatorId);
+  }
+}
