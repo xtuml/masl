@@ -16,10 +16,7 @@ sudo apt-get install libssl-dev uuid-dev
 
 
 # Build MASL
-tar xzf masl-1.0.tar.gz
-mkdir masl-build
-cd masl-build
-cmake ../masl -G Ninja -DCMAKE_INSTALL_PREFIX=${PWD}/install
+cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=${PWD}/install
 ninja install
 
 
