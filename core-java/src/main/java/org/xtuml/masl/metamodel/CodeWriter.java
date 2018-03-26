@@ -647,7 +647,7 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void>
         write(wrapComment(node.getComment()));
       }
       write(getVisibility(node.getVisibility()) + " "
-            + (node.isFunction() ? "function" : "service")
+            + "service"
             + " "
             + PRAGMA_ALIGNER
             + node.getName()

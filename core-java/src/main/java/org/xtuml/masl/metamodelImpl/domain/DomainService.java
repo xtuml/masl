@@ -74,10 +74,6 @@ public class DomainService extends Service
     {
       fileExtension = ".scn";
     }
-    else if ( isFunction() )
-    {
-      fileExtension = ".fn";
-    }
     else
     {
       fileExtension = ".svc";
