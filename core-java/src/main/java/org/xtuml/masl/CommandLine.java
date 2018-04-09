@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.xtuml.masl.utils.CopyrightUtil;
 
 public enum CommandLine
 {
@@ -75,6 +76,16 @@ public enum CommandLine
     return outputDirectory;
   }
 
+  public String getCopyrightNotice ()
+  {
+    return copyrightNotice;
+  }
+
+  public String getRawCopyrightNotice ()
+  {
+    return rawCopyrightNotice;
+  }
+
 
    public boolean getDisableCustomTranslator ()
   {
@@ -94,6 +105,8 @@ public enum CommandLine
   private final List<String> addtranslators          = new ArrayList<String>();
   private boolean      overrideTranslators     = false;
   private final List<String> domainPaths             = new ArrayList<String>();
+  private String copyrightNotice = null;
+  private String rawCopyrightNotice = null;
 
   /**
    * Display a usage message.
@@ -116,6 +129,7 @@ public enum CommandLine
     System.err.println("  -skiptranslator            skip the specified translator(s) (include dependents) from the run list");
     System.err.println("  -addtranslator             add  the specified translator(s) (include dependents) to   the run list");
     System.err.println("  -test                      generate code for test methods");
+    System.err.println("  -copyright <file>          the file containing a copyright notice");
 
   }
 
@@ -172,6 +186,11 @@ public enum CommandLine
       else if ( args[i].equals("-builder") )
       {
         buildTranslator = args[++i];
+      }
+      else if ( args[i].equals("-copyright") )
+      {
+        copyrightNotice = CopyrightUtil.getCopyrightNotice(args[++i]);
+        rawCopyrightNotice = CopyrightUtil.getRawCopyrightNotice(args[i]);
       }
       else if ( args[i].equals("-domainpath") )
       {

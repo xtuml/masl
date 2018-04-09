@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.xtuml.masl.CommandLine;
 import org.xtuml.masl.translate.build.FileGroup;
 import org.xtuml.masl.translate.build.ReferencedFile;
 import org.xtuml.masl.translate.build.WriteableFile;
@@ -52,11 +53,6 @@ public final class CodeFile extends ReferencedFile
    * A string filter used to convert the filename into a header guard.
    */
   private final static Filter               headerGuardConverter = Filter.nullFilter;
-
-  /**
-   * Date formatter to format the date printed in the copyright header.
-   */
-  static private java.text.SimpleDateFormat yearFormatter        = new java.text.SimpleDateFormat("yyyy");
 
   CodeFile ( final FileGroup parent, final File file, final Type type )
   {
@@ -273,14 +269,12 @@ public final class CodeFile extends ReferencedFile
   public void writeCode ( final Writer writer ) throws IOException
   {
     // Output the copyright notice.
+    String copyrightNotice = CommandLine.INSTANCE.getCopyrightNotice();
     writer.write("//\n"
                  + "// File: "
                  + getFile().getName()
                  + "\n"
-                 + "//\n"
-                 + "// UK Crown Copyright (c) "
-                 + yearFormatter.format(new Date())
-                 + ". All Rights Reserved\n"
+                 + ( null == copyrightNotice ? "" : "//\n// " + copyrightNotice.replaceAll("\n", "\n// ") + "\n" )
                  + "//\n");
 
     final String guardName = headerGuardConverter.convert(getFile().getPath());
