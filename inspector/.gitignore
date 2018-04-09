@@ -1,1 +1,7 @@
 .gradle
+/classes/
+/install/
+/libs/
+/resources/
+/scripts/
+/tmp/

@@ -1,0 +1,16 @@
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+cmake-masl
+build.ninja
+rules.ninja
+*Config.cmake
+*ConfigVersion.cmake
+*Targets.cmake
+.ninja_deps
+.ninja_log
+*.so
+*.so.1
+*.so.1.0
+/install
+install_manifest.txt
