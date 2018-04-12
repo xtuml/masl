@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.xtuml.masl.CommandLine;
 import org.xtuml.masl.cppgen.ArchiveLibrary;
 import org.xtuml.masl.cppgen.CodeFile;
 import org.xtuml.masl.cppgen.Executable;
@@ -103,6 +104,12 @@ public class Translator
     final File customInclude = new File(sourceDirectory,"custom/custom.cmake");
 
     cmakelists.add(new Command("include",Lists.newArrayList(Utils.getPathArg(customInclude.getAbsoluteFile()),new SingleArgument("OPTIONAL"))));
+
+    String customBuildFile = CommandLine.INSTANCE.getCustomBuildFile();
+    if ( null != customBuildFile ) {
+      final File customIncludeGenFolder = new File( customBuildFile );
+      cmakelists.add(new Command("include",Lists.newArrayList(Utils.getPathArg(customIncludeGenFolder.getAbsoluteFile()),new SingleArgument("OPTIONAL"))));
+    }
 
   }
 

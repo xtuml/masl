@@ -108,7 +108,7 @@ public class ObjectService extends Service
       return parentObject.getKeyLetters() + "_"
              + getName()
              + (getOverloadNo() > 0 ? "." + getOverloadNo() : "")
-             + (isFunction() ? ".fn" : ".svc");
+             + ".svc";
     }
   }
 

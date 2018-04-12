@@ -304,11 +304,9 @@ public class BuildSet
   private final Set<FileGroup>              publishedBin      = new LinkedHashSet<FileGroup>();
   private final Set<FileGroup>              publishedLib      = new LinkedHashSet<FileGroup>();
 
-  private static final String               copyrightNotice   = "UK Crown Copyright (c)";
+  private static final String               copyrightNotice   = CommandLine.INSTANCE.getRawCopyrightNotice();
 
-  private static final Pattern              copyrightPattern  = Pattern.compile("(?<="
-                                                                                + Pattern.quote(copyrightNotice)
-                                                                                + " )[\\d]{4}");
+  private static Pattern                    copyrightPattern  = null;
   static private java.text.SimpleDateFormat yearFormatter     = new java.text.SimpleDateFormat("yyyy");
 
   private final Set<File> fileDependents = new LinkedHashSet<>();
@@ -331,10 +329,14 @@ public class BuildSet
       // Don't replace the file if it's just the copyright date that has
       // changed. Set the year in the old file to the current year before
       // comparing the two.
-      final Matcher copyrightMatcher = copyrightPattern.matcher(oldCode);
-      if ( copyrightMatcher.find() )
-      {
-        oldCode = new StringBuilder(copyrightMatcher.replaceFirst(yearFormatter.format(new Date())));
+      String[] noticeChunks = ( copyrightNotice == null ? new String[0] : copyrightNotice.split( "yyyy" ) );
+      if ( 2 == noticeChunks.length ) { // only account for one instance of the date in the copyright notice
+        copyrightPattern = Pattern.compile( "(?<=" + Pattern.quote(noticeChunks[0]) + ")[\\d]{4}(?=" + Pattern.quote(noticeChunks[1]) + ")" );
+        final Matcher copyrightMatcher = copyrightPattern.matcher(oldCode);
+        if ( copyrightMatcher.find() )
+        {
+          oldCode = new StringBuilder(copyrightMatcher.replaceFirst(yearFormatter.format(new Date())));
+        }
       }
 
       final boolean fileChanged = !newCode.toString().equals(oldCode.toString());

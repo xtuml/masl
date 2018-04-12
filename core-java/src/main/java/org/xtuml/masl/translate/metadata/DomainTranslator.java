@@ -64,6 +64,7 @@ import org.xtuml.masl.cppgen.EnumerationType;
 import org.xtuml.masl.cppgen.Expression;
 import org.xtuml.masl.cppgen.Function;
 import org.xtuml.masl.cppgen.FundamentalType;
+import org.xtuml.masl.cppgen.InterfaceLibrary;
 import org.xtuml.masl.cppgen.Library;
 import org.xtuml.masl.cppgen.Literal;
 import org.xtuml.masl.cppgen.Namespace;
@@ -119,6 +120,8 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
 
 {
 
+  private Library commonHeaders;
+
   public static DomainTranslator getInstance ( final Domain domain )
   {
     return getInstance(DomainTranslator.class, domain);
@@ -134,13 +137,15 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
     library = new SharedLibrary(mainDomainTranslator.getLibrary().getName() + "_metadata").withCCDefaultExtensions().withDefaultHeaderPath(domain.getName() + "_OOA").inBuildSet(mainDomainTranslator.getBuildSet());
     codeFile = library.createBodyFile("MetaData" + Mangler.mangleFile(domain));
 
+    commonHeaders = new InterfaceLibrary(mainDomainTranslator.getLibrary().getName() + "_common_metadata").withCCDefaultExtensions().withDefaultHeaderPath(domain.getName() + "_OOA").inBuildSet(mainDomainTranslator.getBuildSet());
+
     interfaceLibrary = new SharedLibrary(mainDomainTranslator.getLibrary().getName() + "_if_metadata").withCCDefaultExtensions().withDefaultHeaderPath(domain.getName() + "_OOA").inBuildSet(mainDomainTranslator.getBuildSet());
     interfaceCodeFile = interfaceLibrary.createBodyFile("MetaData__if" + Mangler.mangleFile(domain));
 
     library.addDependency(Architecture.metaDataLib);
     interfaceLibrary.addDependency(Architecture.metaDataLib);
 
-    headerFile = library.createPrivateHeader("MetaData" + Mangler.mangleFile(domain));
+    headerFile = commonHeaders.createInterfaceHeader("MetaData" + Mangler.mangleFile(domain));
 
     typeIds = new EnumerationType("TypeIds", DomainNamespace.get(domain));
     headerFile.addEnumerateDeclaration(typeIds);

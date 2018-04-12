@@ -11,6 +11,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Date;
 
+import org.xtuml.masl.CommandLine;
 import org.xtuml.masl.translate.build.FileGroup;
 import org.xtuml.masl.translate.build.ReferencedFile;
 import org.xtuml.masl.translate.build.WriteableFile;
@@ -70,12 +71,10 @@ public class TextFile extends ReferencedFile
   {
     if ( copyRightEnabled )
     {
+      String copyrightNotice = CommandLine.INSTANCE.getCopyrightNotice();
       writer.write(
             commentCharacters + " File: " + getFile().getPath() + "\n"
-                + commentCharacters + "\n"
-                + commentCharacters + " UK Crown Copyright (c) "
-                + new java.text.SimpleDateFormat("yyyy").format(new Date())
-                + ". All Rights Reserved\n"
+                + ( null == copyrightNotice ? "" : commentCharacters + "\n" + commentCharacters + " " + copyrightNotice.replaceAll("\n", "\n" + commentCharacters + " ") + "\n" )
                 + commentCharacters + "\n");
     }
     writer.write(bufferedText.toString());
