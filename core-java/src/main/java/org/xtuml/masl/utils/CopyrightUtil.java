@@ -36,7 +36,7 @@ public class CopyrightUtil {
         String line = "";
         while ( (line = fileReader.readLine()) != null ) {
           if ( null == copyrightNotice ) copyrightNotice = "";
-          copyrightNotice += line;
+          copyrightNotice += line + "\n";
         }
         if ( null != copyrightNotice ) {
           copyrightNotice = copyrightNotice.trim();
