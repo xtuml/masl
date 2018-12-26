@@ -38,7 +38,8 @@ deeply.  This is how it works.
 
 #### Prerequisites (from clean ubuntu 16.04 install, should work fine with Oracle JDK8 too)
 ```
-sudo apt-get install gcc cmake ninja-build libsqlite3-dev libboost-all-dev gradle openjdk-8-jdk
+sudo apt-get update
+sudo apt-get install gcc g++ pkg-config cmake ninja-build libsqlite3-dev libboost-all-dev gradle openjdk-8-jdk
 ```
 
 #### unfortunately apt-get install libpoco-dev doesn't install cmake bindings, so build from source
