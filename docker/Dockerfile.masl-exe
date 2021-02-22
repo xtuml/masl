@@ -1,0 +1,6 @@
+# base image
+FROM masl-base
+
+# execute script
+COPY docker/execute-masl.sh /root/execute-masl.sh
+ENTRYPOINT ["/root/execute-masl.sh"]
