@@ -14,6 +14,7 @@ RUN /bin/bash -c "cd poco-1.7.3-all && ninja install"
 COPY . /root/masl
 
 # build MASL
+ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 RUN /bin/bash -c "cd /root/masl && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/root/masl/install"
 RUN /bin/bash -c "cd /root/masl && ninja install"
 
