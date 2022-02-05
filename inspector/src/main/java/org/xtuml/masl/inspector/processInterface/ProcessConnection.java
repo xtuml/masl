@@ -28,7 +28,7 @@ public abstract class ProcessConnection
 
   static
   {
-    final String connectionClass = System.getProperty("connectionClass", "org.xtuml.masl.inspector.NullConnection");
+    final String connectionClass = System.getProperty("connectionClass", "org.xtuml.masl.inspector.socketConnection.ProcessConnection");
     try
     {
       connection = (ProcessConnection)Class.forName(connectionClass).newInstance();
@@ -106,7 +106,7 @@ public abstract class ProcessConnection
     checkCapability(Capability.GET_EVENT_QUEUE, "getEventQueue", new Class[] {});
     checkCapability(Capability.GET_STACK, "getStack", new Class[] {});
 
-    if ( System.getProperty("allowWrites", "false").equals("true") )
+    if ( System.getProperty("allowWrites", "true").equals("true") )
     {
       checkCapability(Capability.RUN_SCENARIO, "runScenario", new Class[]
                                                                         { DomainServiceMetaData.class });
