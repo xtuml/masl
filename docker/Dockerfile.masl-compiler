@@ -1,5 +1,5 @@
 # base image
-FROM masl-base
+FROM levistarrett/masl-base
 
 # invoke the masl compiler
 ENTRYPOINT ["/root/masl/core-java/install/masl-core/bin/masl-core"]

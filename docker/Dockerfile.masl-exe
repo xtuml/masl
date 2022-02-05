@@ -1,5 +1,5 @@
 # base image
-FROM masl-base
+FROM levistarrett/masl-base
 
 # execute script
 COPY docker/execute-masl.sh /root/execute-masl.sh
