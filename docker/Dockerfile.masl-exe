@@ -1,6 +1,11 @@
 # base image
 FROM levistarrett/masl-base
 
+# expose default ports for inspector
+EXPOSE 20000/tcp
+EXPOSE 30000/tcp
+EXPOSE 40000/tcp
+
 # execute script
 COPY docker/execute-masl.sh /root/execute-masl.sh
 ENTRYPOINT ["/root/execute-masl.sh"]
