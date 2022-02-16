@@ -107,4 +107,4 @@ domain Math is
   function yn ( v1 : in anonymous integer, v2 : in anonymous real ) return anonymous real;
 
 
-end domain;
+end domain; pragma build_set("UtilityDomains");
