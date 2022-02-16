@@ -24,6 +24,7 @@ implements org.xtuml.masl.metamodel.common.PragmaList
   static public final String              KEY_LETTER   = "key_letter";
   static public final String              FILENAME     = "filename";
   static public final String              TEST_ONLY    = "test_only";
+  static public final String              BUILD_SET    = "build_set";
 
   public PragmaList ( final List<PragmaDefinition> pragmas )
   {

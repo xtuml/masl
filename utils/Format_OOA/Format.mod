@@ -356,4 +356,4 @@ domain Format is
                                              truncate       : in anonymous boolean )
                                              return              anonymous string;
 
-end domain;
+end domain; pragma build_set("UtilityDomains");

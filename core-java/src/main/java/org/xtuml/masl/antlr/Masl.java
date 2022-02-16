@@ -24,6 +24,7 @@ import org.xtuml.masl.error.ErrorLog;
 import org.xtuml.masl.error.ErrorType;
 import org.xtuml.masl.error.MaslError;
 import org.xtuml.masl.metamodelImpl.common.Position;
+import org.xtuml.masl.metamodelImpl.common.PragmaList;
 import org.xtuml.masl.metamodelImpl.domain.Domain;
 import org.xtuml.masl.metamodelImpl.domain.DomainService;
 import org.xtuml.masl.metamodelImpl.domain.DomainTerminator;
@@ -282,6 +283,9 @@ public class Masl
     {
       final Domain domain = parseModel(ifaceFile);
       domain.setInterface(true);
+      if (domain.getPragmas().hasPragma(PragmaList.BUILD_SET)) {
+        BuildSet.addBuildSet(domain, new BuildSet(domain.getPragmas().getValue(PragmaList.BUILD_SET)));
+      }
       return domain;
     }
   }

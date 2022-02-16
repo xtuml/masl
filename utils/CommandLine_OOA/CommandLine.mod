@@ -43,4 +43,4 @@ domain CommandLine is
   //! Returns the command that was used to invoke the current process
   function get_command () return anonymous string;
 
-end domain;
+end domain; pragma build_set("UtilityDomains");

@@ -49,4 +49,4 @@ domain Host is
   //! Get default group id of the supplied user id
   function get_user_gid ( uid : in uid ) return gid;
 
-end domain;
+end domain; pragma build_set("UtilityDomains");
