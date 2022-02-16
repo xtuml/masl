@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
 
+import org.xtuml.masl.cppgen.InterfaceLibrary;
 import org.xtuml.masl.cppgen.Library;
-import org.xtuml.masl.translate.build.FileGroup;
 import org.xtuml.masl.translate.build.ReferencedFile;
 import org.xtuml.masl.translate.cmake.functions.SimpleAddInterfaceLibrary;
 import org.xtuml.masl.translate.cmake.language.arguments.SimpleArgument;
@@ -21,14 +21,14 @@ public class BuildInterfaceLibrary
     implements CMakeListsItem
 {
 
-  public BuildInterfaceLibrary ( final FileGroup library, final File sourcePath )
+  public BuildInterfaceLibrary ( final InterfaceLibrary library, final File sourcePath )
   {
     addLib = new SimpleAddInterfaceLibrary(Utils.getNameArg(library),
                                            Utils.getPathArgs(Collections.<ReferencedFile>emptyList()),
                                            Utils.getNameArgs(library.getDependencies()),
                                            library instanceof Library && ((Library)library).isExport()?exportTarget:null,
                                            false,
-                                           Utils.getPathArgs(Collections.<ReferencedFile>emptyList()));
+                                           Utils.getPathArgs(library.getPublicHeaders()));
   }
 
   @Override
