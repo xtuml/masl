@@ -167,16 +167,29 @@ class CollectionTable extends JTable {
             @Override
             public void mousePressed(final MouseEvent e) {
                 if (e.isPopupTrigger()) {
-                    final int row = rowAtPoint(new Point(e.getX(), e.getY()));
-                    if (!isRowSelected(row)) {
-                        setRowSelectionInterval(row, row);
-                    }
-
-                    if (getSelectedRow() >= 0) {
-                        rowPopup.show(e.getComponent(), e.getX(), e.getY());
-                    }
+                    handlePopup(e);
                 }
                 super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseReleased(final MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    handlePopup(e);
+                }
+                super.mouseReleased(e);
+            }
+
+            private void handlePopup(final MouseEvent e) {
+                final int row = rowAtPoint(new Point(e.getX(), e.getY()));
+                if (!isRowSelected(row)) {
+                    setRowSelectionInterval(row, row);
+                }
+
+                if (getSelectedRow() >= 0) {
+                    rowPopup.show(e.getComponent(), e.getX(), e.getY());
+                }
+
             }
         }
         addMouseListener(new TableMouseHandler());
@@ -230,9 +243,22 @@ class CollectionTable extends JTable {
                 @Override
                 public void mousePressed(final MouseEvent e) {
                     if (e.isPopupTrigger()) {
-                        tablePopup.show(e.getComponent(), e.getX(), e.getY());
+                        handlePopup(e);
                     }
                     super.mousePressed(e);
+                }
+
+                @Override
+                public void mouseReleased(final MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        handlePopup(e);
+                    }
+                    super.mouseReleased(e);
+                }
+
+                private void handlePopup(final MouseEvent e) {
+                    tablePopup.show(e.getComponent(), e.getX(), e.getY());
+
                 }
             }
             headerMouseAdapter = new HeaderMouseHandler();
