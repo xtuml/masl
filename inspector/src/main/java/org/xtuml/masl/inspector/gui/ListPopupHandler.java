@@ -25,32 +25,49 @@ public class ListPopupHandler extends MouseAdapter {
     @Override
     public void mousePressed(final MouseEvent e) {
         if (e.isPopupTrigger()) {
-            final JList list = (JList) e.getComponent();
-
-            final int index = list.locationToIndex(new Point(e.getX(), e.getY()));
-            if (index >= 0) {
-                if (!list.isSelectedIndex(index)) {
-                    list.setSelectedIndex(index);
-                }
-
-                if (popup != null) {
-                    popup.show(list, e.getX(), e.getY());
-                }
-            }
+            handlePopup(e);
         } else if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0 && e.getClickCount() > 1) {
+            handleDoubleClick(e);
+        }
+        super.mousePressed(e);
+    }
+
+    @Override
+    public void mouseReleased(final MouseEvent e) {
+        if (e.isPopupTrigger()) {
+            handlePopup(e);
+        }
+        super.mouseReleased(e);
+    }
+
+    private void handlePopup(final MouseEvent e) {
+        final JList list = (JList) e.getComponent();
+
+        final int index = list.locationToIndex(new Point(e.getX(), e.getY()));
+        if (index >= 0) {
+            if (!list.isSelectedIndex(index)) {
+                list.setSelectedIndex(index);
+            }
+
             if (popup != null) {
-                for (int i = 0; i < popup.getComponentCount(); i++) {
-                    try {
-                        final JMenuItem item = (JMenuItem) popup.getComponent(i);
-                        if (item.isEnabled() && item.isVisible()) {
-                            item.doClick();
-                            break;
-                        }
-                    } catch (final ClassCastException ex) {/* ignore */
+                popup.show(list, e.getX(), e.getY());
+            }
+        }
+    }
+
+    private void handleDoubleClick(final MouseEvent e) {
+        if (popup != null) {
+            for (int i = 0; i < popup.getComponentCount(); i++) {
+                try {
+                    final JMenuItem item = (JMenuItem) popup.getComponent(i);
+                    if (item.isEnabled() && item.isVisible()) {
+                        item.doClick();
+                        break;
                     }
+                } catch (final ClassCastException ex) {/* ignore */
                 }
             }
         }
-        super.mousePressed(e);
+
     }
 }

@@ -117,13 +117,26 @@ public class LocalVarTree extends JTree {
         @Override
         public void mousePressed(final MouseEvent e) {
             if (e.isPopupTrigger()) {
-                final int row = getRowForLocation(e.getX(), e.getY());
-                if (row != -1) {
-                    if (!isRowSelected(row)) {
-                        setSelectionRows(new int[] { row });
-                    }
-                    popup.show(e.getComponent(), e.getX(), e.getY());
+                handlePopup(e);
+            }
+            super.mousePressed(e);
+        }
+
+        @Override
+        public void mouseReleased(final MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                handlePopup(e);
+            }
+            super.mouseReleased(e);
+        }
+
+        private void handlePopup(final MouseEvent e) {
+            final int row = getRowForLocation(e.getX(), e.getY());
+            if (row != -1) {
+                if (!isRowSelected(row)) {
+                    setSelectionRows(new int[] { row });
                 }
+                popup.show(e.getComponent(), e.getX(), e.getY());
             }
         }
     }

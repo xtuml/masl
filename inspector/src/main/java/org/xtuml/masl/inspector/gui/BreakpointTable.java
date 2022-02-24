@@ -141,16 +141,28 @@ class BreakpointTable extends ToolTipTable {
         @Override
         public void mousePressed(final MouseEvent e) {
             if (e.isPopupTrigger()) {
-                final int row = rowAtPoint(new Point(e.getX(), e.getY()));
-                if (!isRowSelected(row)) {
-                    setRowSelectionInterval(row, row);
-                }
-
-                if (getSelectedRow() >= 0) {
-                    popup.show(e.getComponent(), e.getX(), e.getY());
-                }
+                handlePopup(e);
             }
             super.mousePressed(e);
+        }
+
+        @Override
+        public void mouseReleased(final MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                handlePopup(e);
+            }
+            super.mouseReleased(e);
+        }
+
+        private void handlePopup(final MouseEvent e) {
+            final int row = rowAtPoint(new Point(e.getX(), e.getY()));
+            if (!isRowSelected(row)) {
+                setRowSelectionInterval(row, row);
+            }
+
+            if (getSelectedRow() >= 0) {
+                popup.show(e.getComponent(), e.getX(), e.getY());
+            }
         }
     }
 
