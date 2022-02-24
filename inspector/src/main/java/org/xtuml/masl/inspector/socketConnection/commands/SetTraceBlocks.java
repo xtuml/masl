@@ -5,11 +5,9 @@
 //
 package org.xtuml.masl.inspector.socketConnection.commands;
 
-public class SetTraceBlocks extends ToggleCommand
-{
+public class SetTraceBlocks extends ToggleCommand {
 
-  public SetTraceBlocks ( final boolean enabled )
-  {
-    super(ServerCommandId.TRACE_BLOCKS, enabled);
-  }
+    public SetTraceBlocks(final boolean enabled) {
+        super(ServerCommandId.TRACE_BLOCKS, enabled);
+    }
 }

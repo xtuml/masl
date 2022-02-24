@@ -11,32 +11,25 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 
+public abstract class ToggleAction extends AbstractAction {
 
-public abstract class ToggleAction extends AbstractAction
-{
-
-  public ToggleAction ( final String name )
-  {
-    super(name);
-  }
-
-  public ToggleAction ( final String name, final Icon icon )
-  {
-    super(name, icon);
-  }
-
-  public void actionPerformed ( final ActionEvent event )
-  {
-    try
-    {
-      togglePerformed(((AbstractButton)event.getSource()).isSelected());
+    public ToggleAction(final String name) {
+        super(name);
     }
-    catch ( final Exception e )
-    {
-      ((AbstractButton)event.getSource()).setSelected(!((AbstractButton)event.getSource()).isSelected());
-      e.printStackTrace();
-    }
-  }
 
-  public abstract void togglePerformed ( boolean selected ) throws Exception;
+    public ToggleAction(final String name, final Icon icon) {
+        super(name, icon);
+    }
+
+    @Override
+    public void actionPerformed(final ActionEvent event) {
+        try {
+            togglePerformed(((AbstractButton) event.getSource()).isSelected());
+        } catch (final Exception e) {
+            ((AbstractButton) event.getSource()).setSelected(!((AbstractButton) event.getSource()).isSelected());
+            e.printStackTrace();
+        }
+    }
+
+    public abstract void togglePerformed(boolean selected) throws Exception;
 }

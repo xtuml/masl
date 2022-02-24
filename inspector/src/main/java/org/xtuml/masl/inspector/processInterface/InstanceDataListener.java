@@ -5,12 +5,11 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public interface InstanceDataListener
-{
+public interface InstanceDataListener {
 
-  public void setInstanceCount ( int count );
+    public void setInstanceCount(int count);
 
-  public boolean addInstanceData ( InstanceData instance );
+    public boolean addInstanceData(InstanceData instance);
 
-  public void finished ();
+    public void finished();
 }

@@ -5,9 +5,7 @@
 //
 package org.xtuml.masl.inspector.socketConnection.ipc;
 
+public interface ReadableObject {
 
-public interface ReadableObject
-{
-
-  public void read ( CommunicationChannel channel ) throws java.io.IOException;
+    public void read(CommunicationChannel channel) throws java.io.IOException;
 }

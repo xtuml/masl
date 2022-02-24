@@ -5,27 +5,22 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
+public abstract class StringData extends SimpleDataValue<String> {
 
-public abstract class StringData extends SimpleDataValue<String>
-{
+    private static String EMPTY = new String();
 
-  private static String EMPTY = new String();
+    @Override
+    public Class<String> getValueClass() {
+        return String.class;
+    }
 
-  @Override
-  public Class<String> getValueClass ()
-  {
-    return String.class;
-  }
+    @Override
+    public void fromString(final String string) {
+        setValue(string);
+    }
 
-  @Override
-  public void fromString ( final String string )
-  {
-    setValue(string);
-  }
-
-  @Override
-  protected void setToDefaultValue ()
-  {
-    setValue(EMPTY);
-  }
+    @Override
+    protected void setToDefaultValue() {
+        setValue(EMPTY);
+    }
 }

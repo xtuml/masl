@@ -5,9 +5,7 @@
 //
 package org.xtuml.masl.inspector;
 
-public interface BreakpointListener
-    extends java.util.EventListener
-{
+public interface BreakpointListener extends java.util.EventListener {
 
-  public void breakpointChanged ( BreakpointEvent e );
+    public void breakpointChanged(BreakpointEvent e);
 }

@@ -12,57 +12,44 @@ import java.awt.event.ItemListener;
 import org.xtuml.masl.inspector.processInterface.SourcePosition;
 import org.xtuml.masl.inspector.processInterface.StackFrame;
 
+public class StackSource extends SourceCodeTable {
 
-public class StackSource extends SourceCodeTable
-{
+    private final ItemSelectable selector;
 
-  private final ItemSelectable selector;
+    public StackSource(final ItemSelectable selector, final SourceCodeTableModel model) {
+        super(model);
+        this.selector = selector;
 
-  public StackSource ( final ItemSelectable selector, final SourceCodeTableModel model )
-  {
-    super(model);
-    this.selector = selector;
+        selector.addItemListener(new ItemListener() {
 
-    selector.addItemListener(new ItemListener()
-      {
+            @Override
+            public void itemStateChanged(final ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    updateSource();
+                } else if (event.getStateChange() == ItemEvent.DESELECTED) {
+                    clearSource();
+                }
+            }
+        });
 
-        public void itemStateChanged ( final ItemEvent event )
-        {
-          if ( event.getStateChange() == ItemEvent.SELECTED )
-          {
-            updateSource();
-          }
-          else if ( event.getStateChange() == ItemEvent.DESELECTED )
-          {
-            clearSource();
-          }
-        }
-      });
-
-  }
-
-
-  private void updateSource ()
-  {
-    final Object[] selectedObjects = selector.getSelectedObjects();
-    if ( selectedObjects != null && selectedObjects.length > 0 && selectedObjects[0] != null )
-    {
-      final StackFrame selected = (StackFrame)selectedObjects[0];
-
-      if ( selected != null )
-      {
-        model.setSource(selected.getPosition().getSource());
-        model.setCurrentLine(selected.getPosition().getLineNo());
-        scrollToCurrentLine();
-      }
     }
-  }
 
+    private void updateSource() {
+        final Object[] selectedObjects = selector.getSelectedObjects();
+        if (selectedObjects != null && selectedObjects.length > 0 && selectedObjects[0] != null) {
+            final StackFrame selected = (StackFrame) selectedObjects[0];
 
-  private void clearSource ()
-  {
-    model.setSource(null);
-    model.setCurrentLine(SourcePosition.NO_LINE);
-  }
+            if (selected != null) {
+                model.setSource(selected.getPosition().getSource());
+                model.setCurrentLine(selected.getPosition().getLineNo());
+                scrollToCurrentLine();
+            }
+        }
+    }
+
+    private void clearSource() {
+        model.setSource(null);
+        model.setCurrentLine(SourcePosition.NO_LINE);
+    }
 
 }

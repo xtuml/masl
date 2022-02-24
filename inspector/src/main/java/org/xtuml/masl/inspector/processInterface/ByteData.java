@@ -5,27 +5,22 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
+public abstract class ByteData extends SimpleDataValue<Byte> {
 
-public abstract class ByteData extends SimpleDataValue<Byte>
-{
+    private static Byte ZERO = 0;
 
-  private static Byte ZERO = 0;
+    @Override
+    public Class<Byte> getValueClass() {
+        return Byte.class;
+    }
 
-  @Override
-  public Class<Byte> getValueClass ()
-  {
-    return Byte.class;
-  }
+    @Override
+    public void fromString(final String string) {
+        setValue(Byte.decode(string));
+    }
 
-  @Override
-  public void fromString ( final String string )
-  {
-    setValue(Byte.decode(string));
-  }
-
-  @Override
-  protected void setToDefaultValue ()
-  {
-    setValue(ZERO);
-  }
+    @Override
+    protected void setToDefaultValue() {
+        setValue(ZERO);
+    }
 }

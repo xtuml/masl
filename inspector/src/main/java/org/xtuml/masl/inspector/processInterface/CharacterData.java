@@ -5,30 +5,25 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public abstract class CharacterData extends SimpleDataValue<Character>
-{
+public abstract class CharacterData extends SimpleDataValue<Character> {
 
-  private static Character NULL = '\0';
+    private static Character NULL = '\0';
 
-  @Override
-  public Class<Character> getValueClass ()
-  {
-    return Character.class;
-  }
-
-  @Override
-  public void fromString ( final String string )
-  {
-    if ( string.length() != 1 )
-    {
-      throw new IllegalArgumentException("Single character string required");
+    @Override
+    public Class<Character> getValueClass() {
+        return Character.class;
     }
-    setValue(string.charAt(0));
-  }
 
-  @Override
-  protected void setToDefaultValue ()
-  {
-    setValue(NULL);
-  }
+    @Override
+    public void fromString(final String string) {
+        if (string.length() != 1) {
+            throw new IllegalArgumentException("Single character string required");
+        }
+        setValue(string.charAt(0));
+    }
+
+    @Override
+    protected void setToDefaultValue() {
+        setValue(NULL);
+    }
 }

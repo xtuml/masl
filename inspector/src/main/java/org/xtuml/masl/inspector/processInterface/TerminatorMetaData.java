@@ -5,48 +5,40 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public abstract class TerminatorMetaData
-    implements Comparable<TerminatorMetaData>
-{
+public abstract class TerminatorMetaData implements Comparable<TerminatorMetaData> {
 
-  public int compareTo ( final TerminatorMetaData rhs )
-  {
-    final int res = getDomain().compareTo(rhs.getDomain());
-    if ( res != 0 )
-    {
-      return res;
+    @Override
+    public int compareTo(final TerminatorMetaData rhs) {
+        final int res = getDomain().compareTo(rhs.getDomain());
+        if (res != 0) {
+            return res;
+        }
+
+        return name.compareTo(rhs.name);
     }
 
-    return name.compareTo(rhs.name);
-  }
+    public abstract DomainMetaData getDomain();
 
-  public abstract DomainMetaData getDomain ();
+    public String getKeyLetters() {
+        return keyLetters;
+    }
 
+    public String getName() {
+        return name;
+    }
 
-  public String getKeyLetters ()
-  {
-    return keyLetters;
-  }
+    public abstract TerminatorServiceMetaData[] getServices();
 
-  public String getName ()
-  {
-    return name;
-  }
+    @Override
+    public String toString() {
+        return name;
+    }
 
-  public abstract TerminatorServiceMetaData[] getServices ();
+    protected String name;
+    protected String keyLetters;
 
-  @Override
-  public String toString ()
-  {
-    return name;
-  }
-
-  protected String name;
-  protected String keyLetters;
-
-  public String getFullyQualifiedName ()
-  {
-    return getDomain().getName() + "::" + getName();
-  }
+    public String getFullyQualifiedName() {
+        return getDomain().getName() + "::" + getName();
+    }
 
 }

@@ -8,39 +8,33 @@ package org.xtuml.masl.inspector.processInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+public abstract class AnyEventData extends DataValue<AnyEventData> implements Comparable<AnyEventData> {
 
-public abstract class AnyEventData extends DataValue<AnyEventData>
-    implements Comparable<AnyEventData>
-{
+    @Override
+    public AnyEventData getValue() {
+        return this;
+    }
 
-  @Override
-  public AnyEventData getValue ()
-  {
-    return this;
-  }
+    @Override
+    public void setValue(final AnyEventData value) {
+    }
 
-  @Override
-  public void setValue ( final AnyEventData value )
-  {
-  }
+    @Override
+    public Node toXML(final Document document) {
+        return document.createDocumentFragment();
+    }
 
-  public Node toXML ( final Document document )
-  {
-    return document.createDocumentFragment();
-  }
+    @Override
+    public void fromXML(final Node parent) {
+    }
 
-  public void fromXML ( final Node parent )
-  {
-  }
+    @Override
+    public String toString() {
+        return "event";
+    }
 
-  @Override
-  public String toString ()
-  {
-    return "event";
-  }
-
-  public int compareTo ( final AnyEventData o )
-  {
-    return 0;
-  }
+    @Override
+    public int compareTo(final AnyEventData o) {
+        return 0;
+    }
 }

@@ -17,58 +17,49 @@ import org.xtuml.masl.inspector.gui.form.FormValueEditor;
 import org.xtuml.masl.inspector.processInterface.EnumerateData;
 import org.xtuml.masl.inspector.processInterface.EnumerateMetaData;
 
+public class EnumerateEditor implements FormValueEditor {
 
-public class EnumerateEditor
-    implements FormValueEditor
-{
+    private Component component;
+    private final int field;
 
-  private Component       component;
-  private final int       field;
+    private final FormModel model;
 
-  private final FormModel model;
-
-  protected FormModel getModel ()
-  {
-    return model;
-  }
-
-  public EnumerateEditor ( final FormModel model, final int fieldNo )
-  {
-    this.model = model;
-    this.field = fieldNo;
-
-    if ( getModel().isValueEditable(field) )
-    {
-
-      final EnumerateMetaData metaData = ((EnumerateData)getModel().getValueAt(field)).getMetaData();
-
-      final JComboBox comboBox = new JComboBox(metaData.getEnums().toArray());
-      comboBox.setSelectedItem(getModel().getValueAt(field));
-      comboBox.setEditable(getModel().isValueEditable(field));
-      comboBox.setEnabled(getModel().isValueEditable(field));
-      comboBox.addActionListener((new ActionListener()
-      {
-
-        public void actionPerformed ( final ActionEvent e )
-      {
-        getModel().setValueAt(comboBox.getSelectedItem(), field);
-      }
-      }));
-
-      component = comboBox;
+    protected FormModel getModel() {
+        return model;
     }
-    else
-    {
-      final JTextField textField = new JTextField();
-      textField.setText(getModel().getValueAt(field).toString());
-      textField.setEditable(false);
-      component = textField;
-    }
-  }
 
-  public Component getFormValueEditorComponent ()
-  {
-    return component;
-  }
+    public EnumerateEditor(final FormModel model, final int fieldNo) {
+        this.model = model;
+        this.field = fieldNo;
+
+        if (getModel().isValueEditable(field)) {
+
+            final EnumerateMetaData metaData = ((EnumerateData) getModel().getValueAt(field)).getMetaData();
+
+            final JComboBox comboBox = new JComboBox(metaData.getEnums().toArray());
+            comboBox.setSelectedItem(getModel().getValueAt(field));
+            comboBox.setEditable(getModel().isValueEditable(field));
+            comboBox.setEnabled(getModel().isValueEditable(field));
+            comboBox.addActionListener((new ActionListener() {
+
+                @Override
+                public void actionPerformed(final ActionEvent e) {
+                    getModel().setValueAt(comboBox.getSelectedItem(), field);
+                }
+            }));
+
+            component = comboBox;
+        } else {
+            final JTextField textField = new JTextField();
+            textField.setText(getModel().getValueAt(field).toString());
+            textField.setEditable(false);
+            component = textField;
+        }
+    }
+
+    @Override
+    public Component getFormValueEditorComponent() {
+        return component;
+    }
 
 }

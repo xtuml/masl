@@ -9,19 +9,15 @@ import java.io.IOException;
 
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class PauseExecution extends CommandStub<VoidType> {
 
-public class PauseExecution extends CommandStub<VoidType>
-{
+    public PauseExecution() {
+        super(ServerCommandId.PAUSE_EXECUTION);
+    }
 
-  public PauseExecution ()
-  {
-    super(ServerCommandId.PAUSE_EXECUTION);
-  }
-
-  @Override
-  public VoidType execute ( final CommunicationChannel channel ) throws IOException
-  {
-    return null;
-  }
+    @Override
+    public VoidType execute(final CommunicationChannel channel) throws IOException {
+        return null;
+    }
 
 }

@@ -5,11 +5,9 @@
 //
 package org.xtuml.masl.inspector.socketConnection.commands;
 
-public class SetStepExceptions extends ToggleCommand
-{
+public class SetStepExceptions extends ToggleCommand {
 
-  public SetStepExceptions ( final boolean enabled )
-  {
-    super(ServerCommandId.STEP_EXCEPTIONS, enabled);
-  }
+    public SetStepExceptions(final boolean enabled) {
+        super(ServerCommandId.STEP_EXCEPTIONS, enabled);
+    }
 }

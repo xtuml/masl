@@ -15,43 +15,35 @@ import org.xtuml.masl.inspector.processInterface.Capability;
 import org.xtuml.masl.inspector.processInterface.TerminatorMetaData;
 import org.xtuml.masl.inspector.processInterface.TerminatorServiceMetaData;
 
+public class TerminatorServiceList extends ExecutableSourceList<TerminatorServiceMetaData, TerminatorMetaData> {
 
-public class TerminatorServiceList extends ExecutableSourceList<TerminatorServiceMetaData, TerminatorMetaData>
-{
+    public TerminatorServiceList(final TerminatorList terminatorList) {
+        super(new DependentObjectListModel<TerminatorServiceMetaData, TerminatorMetaData>(terminatorList) {
 
-  public TerminatorServiceList ( final TerminatorList terminatorList )
-  {
-    super(new DependentObjectListModel<TerminatorServiceMetaData, TerminatorMetaData>(terminatorList)
-    {
-
-      @Override
-      protected TerminatorServiceMetaData[] getDependentValues ( final TerminatorMetaData terminator )
-      {
-        final TerminatorServiceMetaData[] services = terminator.getServices();
-        Arrays.sort(services);
-        return services;
-      }
-    });
-  }
-
-  @Override
-  protected void initPopup ()
-  {
-    if ( Capability.RUN_TERMINATOR_SERVICE.isAvailable() )
-    {
-      final JMenuItem runServiceItem = new JMenuItem("Run service...");
-      runServiceItem.addActionListener(new ActionListener()
-        {
-
-          public void actionPerformed ( final ActionEvent action )
-          {
-            new InvokeTerminatorServiceDialog((TerminatorServiceMetaData)getSelectedValue());
-          }
+            @Override
+            protected TerminatorServiceMetaData[] getDependentValues(final TerminatorMetaData terminator) {
+                final TerminatorServiceMetaData[] services = terminator.getServices();
+                Arrays.sort(services);
+                return services;
+            }
         });
-      popup.add(runServiceItem);
     }
 
-    super.initPopup();
-  }
+    @Override
+    protected void initPopup() {
+        if (Capability.RUN_TERMINATOR_SERVICE.isAvailable()) {
+            final JMenuItem runServiceItem = new JMenuItem("Run service...");
+            runServiceItem.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(final ActionEvent action) {
+                    new InvokeTerminatorServiceDialog((TerminatorServiceMetaData) getSelectedValue());
+                }
+            });
+            popup.add(runServiceItem);
+        }
+
+        super.initPopup();
+    }
 
 }

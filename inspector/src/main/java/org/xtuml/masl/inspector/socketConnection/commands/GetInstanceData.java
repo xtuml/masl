@@ -11,29 +11,25 @@ import org.xtuml.masl.inspector.processInterface.InstanceDataListener;
 import org.xtuml.masl.inspector.socketConnection.ObjectMetaData;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class GetInstanceData extends CommandStub<VoidType> {
 
-public class GetInstanceData extends CommandStub<VoidType>
-{
+    private final ObjectMetaData meta;
+    private final InstanceReader reader;
 
-  private final ObjectMetaData meta;
-  private final InstanceReader reader;
+    public GetInstanceData(final ObjectMetaData meta, final InstanceDataListener listener) {
+        super(ServerCommandId.GET_INSTANCE_DATA);
+        reader = new InstanceReader(meta, listener);
+        this.meta = meta;
+    }
 
-  public GetInstanceData ( final ObjectMetaData meta, final InstanceDataListener listener )
-  {
-    super(ServerCommandId.GET_INSTANCE_DATA);
-    reader = new InstanceReader(meta, listener);
-    this.meta = meta;
-  }
+    @Override
+    public VoidType execute(final CommunicationChannel channel) throws IOException {
+        channel.writeData(meta.getDomain().getId());
+        channel.writeData(meta.getArchId());
+        channel.flush();
 
-  @Override
-  public VoidType execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(meta.getDomain().getId());
-    channel.writeData(meta.getArchId());
-    channel.flush();
+        reader.readInstances(channel);
 
-    reader.readInstances(channel);
-
-    return null;
-  }
+        return null;
+    }
 }

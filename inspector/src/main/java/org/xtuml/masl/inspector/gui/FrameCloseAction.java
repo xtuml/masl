@@ -5,19 +5,17 @@
 //
 package org.xtuml.masl.inspector.gui;
 
-public class FrameCloseAction extends javax.swing.AbstractAction
-{
+public class FrameCloseAction extends javax.swing.AbstractAction {
 
-  private final javax.swing.JFrame frame;
+    private final javax.swing.JFrame frame;
 
-  public FrameCloseAction ( final javax.swing.JFrame frame )
-  {
-    super("Close");
-    this.frame = frame;
-  }
+    public FrameCloseAction(final javax.swing.JFrame frame) {
+        super("Close");
+        this.frame = frame;
+    }
 
-  public void actionPerformed ( final java.awt.event.ActionEvent e )
-  {
-    frame.dispose();
-  }
+    @Override
+    public void actionPerformed(final java.awt.event.ActionEvent e) {
+        frame.dispose();
+    }
 }

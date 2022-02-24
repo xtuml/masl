@@ -5,11 +5,7 @@
 //
 package org.xtuml.masl.inspector.socketConnection.commands;
 
-public enum ClientCommandId
-{
-  CURRENT_POSITION_INFO,
-  RUNNING_INFO,
-  IDLE_INFO,
-  BACKLOG_INFO;
+public enum ClientCommandId {
+    CURRENT_POSITION_INFO, RUNNING_INFO, IDLE_INFO, BACKLOG_INFO;
 
 }

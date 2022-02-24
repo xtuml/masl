@@ -5,11 +5,9 @@
 //
 package org.xtuml.masl.inspector.socketConnection.commands;
 
-public class SetCatchConsole extends ToggleCommand
-{
+public class SetCatchConsole extends ToggleCommand {
 
-  public SetCatchConsole ( final boolean enabled )
-  {
-    super(ServerCommandId.CATCH_CONSOLE, enabled);
-  }
+    public SetCatchConsole(final boolean enabled) {
+        super(ServerCommandId.CATCH_CONSOLE, enabled);
+    }
 }

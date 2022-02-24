@@ -7,10 +7,8 @@ package org.xtuml.masl.inspector.gui.form;
 
 import java.awt.Component;
 
+public interface FormValueEditor {
 
-public interface FormValueEditor
-{
-
-  public Component getFormValueEditorComponent ();
+    public Component getFormValueEditorComponent();
 
 }

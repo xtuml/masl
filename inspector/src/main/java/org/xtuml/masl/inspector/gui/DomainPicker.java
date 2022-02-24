@@ -10,34 +10,26 @@ import javax.swing.JComboBox;
 import org.xtuml.masl.inspector.processInterface.DomainMetaData;
 import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
+public class DomainPicker extends JComboBox {
 
-public class DomainPicker extends JComboBox
-{
+    public DomainPicker() {
+        super();
+        try {
+            final java.util.Set<String> ignoredDomains = org.xtuml.masl.inspector.Preferences.getIgnoredDomains();
 
-  public DomainPicker ()
-  {
-    super();
-    try
-    {
-      final java.util.Set<String> ignoredDomains = org.xtuml.masl.inspector.Preferences.getIgnoredDomains();
+            final DomainMetaData[] domains = ProcessConnection.getConnection().getMetaData().getDomains();
+            java.util.Arrays.sort(domains);
 
-      final DomainMetaData[] domains = ProcessConnection.getConnection().getMetaData().getDomains();
-      java.util.Arrays.sort(domains);
-
-      for ( int i = 0; i < domains.length; i++ )
-      {
-        if ( !domains[i].isInterface() && !ignoredDomains.contains(domains[i].getName()) )
-        {
-          addItem(domains[i]);
+            for (int i = 0; i < domains.length; i++) {
+                if (!domains[i].isInterface() && !ignoredDomains.contains(domains[i].getName())) {
+                    addItem(domains[i]);
+                }
+            }
+        } catch (final java.rmi.RemoteException e) {
+            e.printStackTrace();
         }
-      }
-    }
-    catch ( final java.rmi.RemoteException e )
-    {
-      e.printStackTrace();
-    }
 
-    setRequestFocusEnabled(false);
-  }
+        setRequestFocusEnabled(false);
+    }
 
 }

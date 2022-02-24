@@ -10,24 +10,20 @@ import java.io.IOException;
 import org.xtuml.masl.inspector.socketConnection.ObjectMetaData;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class GetAssignerState extends CommandStub<Integer> {
 
-public class GetAssignerState extends CommandStub<Integer>
-{
+    private final ObjectMetaData meta;
 
-  private final ObjectMetaData meta;
+    public GetAssignerState(final ObjectMetaData meta) {
+        super(ServerCommandId.GET_ASSIGNER_STATE);
+        this.meta = meta;
+    }
 
-  public GetAssignerState ( final ObjectMetaData meta )
-  {
-    super(ServerCommandId.GET_ASSIGNER_STATE);
-    this.meta = meta;
-  }
-
-  @Override
-  public Integer execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(meta.getDomain().getId());
-    channel.writeData(meta.getArchId());
-    channel.flush();
-    return channel.readInt();
-  }
+    @Override
+    public Integer execute(final CommunicationChannel channel) throws IOException {
+        channel.writeData(meta.getDomain().getId());
+        channel.writeData(meta.getArchId());
+        channel.flush();
+        return channel.readInt();
+    }
 }

@@ -7,11 +7,8 @@ package org.xtuml.masl.inspector.gui.form;
 
 import java.util.EventListener;
 
+public interface FormModelListener extends EventListener {
 
-public interface FormModelListener
-    extends EventListener
-{
-
-  void formChanged ( FormModelEvent e );
+    void formChanged(FormModelEvent e);
 
 }

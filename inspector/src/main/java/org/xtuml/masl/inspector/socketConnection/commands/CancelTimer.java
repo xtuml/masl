@@ -10,24 +10,20 @@ import java.io.IOException;
 import org.xtuml.masl.inspector.socketConnection.TimerData;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class CancelTimer extends CommandStub<VoidType> {
 
-public class CancelTimer extends CommandStub<VoidType>
-{
+    private final TimerData timer;
 
-  private final TimerData timer;
+    public CancelTimer(final TimerData timer) {
+        super(ServerCommandId.CANCEL_TIMER);
+        this.timer = timer;
+    }
 
-  public CancelTimer ( final TimerData timer )
-  {
-    super(ServerCommandId.CANCEL_TIMER);
-    this.timer = timer;
-  }
+    @Override
+    public VoidType execute(final CommunicationChannel channel) throws IOException {
+        channel.writeData(timer.getId());
+        channel.flush();
 
-  @Override
-  public VoidType execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(timer.getId());
-    channel.flush();
-
-    return null;
-  }
+        return null;
+    }
 }

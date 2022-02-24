@@ -5,11 +5,9 @@
 //
 package org.xtuml.masl.inspector.gui;
 
-interface UpdateListener
-    extends java.util.EventListener
-{
+interface UpdateListener extends java.util.EventListener {
 
-  void updateStarted ();
+    void updateStarted();
 
-  void updateComplete ();
+    void updateComplete();
 }

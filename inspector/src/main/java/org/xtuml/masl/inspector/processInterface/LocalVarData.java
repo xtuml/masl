@@ -5,10 +5,9 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public abstract class LocalVarData
-{
+public abstract class LocalVarData {
 
-  public abstract String getName ();
+    public abstract String getName();
 
-  public abstract DataValue<?> getValue ();
+    public abstract DataValue<?> getValue();
 }

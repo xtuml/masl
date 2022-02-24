@@ -9,19 +9,15 @@ import java.io.IOException;
 
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class StepExecution extends CommandStub<VoidType> {
 
-public class StepExecution extends CommandStub<VoidType>
-{
+    public StepExecution() {
+        super(ServerCommandId.STEP_EXECUTION);
+    }
 
-  public StepExecution ()
-  {
-    super(ServerCommandId.STEP_EXECUTION);
-  }
-
-  @Override
-  public VoidType execute ( final CommunicationChannel channel ) throws IOException
-  {
-    return null;
-  }
+    @Override
+    public VoidType execute(final CommunicationChannel channel) throws IOException {
+        return null;
+    }
 
 }

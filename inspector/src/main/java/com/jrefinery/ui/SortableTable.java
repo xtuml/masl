@@ -37,50 +37,44 @@ package com.jrefinery.ui;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
-
 /**
  * A simple extension of JTable that supports the use of a SortableTableModel.
  */
-public class SortableTable extends org.xtuml.masl.inspector.gui.ToolTipTable
-{
+public class SortableTable extends org.xtuml.masl.inspector.gui.ToolTipTable {
 
-  /** A listener for sorting; */
-  SortableTableHeaderListener headerListener;
+    /** A listener for sorting; */
+    SortableTableHeaderListener headerListener;
 
-  /**
-   * Standard constructor - builds a table for the specified model.
-   */
-  public SortableTable ( final SortableTableModel model )
-  {
-    super(model);
+    /**
+     * Standard constructor - builds a table for the specified model.
+     */
+    public SortableTable(final SortableTableModel model) {
+        super(model);
 
-    final SortButtonRenderer renderer = new SortButtonRenderer();
-    final TableColumnModel columnModel = this.getColumnModel();
-    for ( int i = 0; i < columnModel.getColumnCount(); i++ )
-    {
-      columnModel.getColumn(i).setHeaderRenderer(renderer);
+        final SortButtonRenderer renderer = new SortButtonRenderer();
+        final TableColumnModel columnModel = this.getColumnModel();
+        for (int i = 0; i < columnModel.getColumnCount(); i++) {
+            columnModel.getColumn(i).setHeaderRenderer(renderer);
+        }
+
+        final JTableHeader header = this.getTableHeader();
+        headerListener = new SortableTableHeaderListener(model, renderer);
+        header.addMouseListener(headerListener);
+        header.addMouseMotionListener(headerListener);
     }
 
-    final JTableHeader header = this.getTableHeader();
-    headerListener = new SortableTableHeaderListener(model, renderer);
-    header.addMouseListener(headerListener);
-    header.addMouseMotionListener(headerListener);
-  }
-
-  /**
-   * Changes the model for the table. Takes care of updating the header listener
-   * at the same time.
-   */
-  public void setSortableModel ( final SortableTableModel model )
-  {
-    super.setModel(model);
-    headerListener.setTableModel(model);
-    final SortButtonRenderer renderer = new SortButtonRenderer();
-    final TableColumnModel columnModel = this.getColumnModel();
-    for ( int i = 0; i < columnModel.getColumnCount(); i++ )
-    {
-      columnModel.getColumn(i).setHeaderRenderer(renderer);
+    /**
+     * Changes the model for the table. Takes care of updating the header listener
+     * at the same time.
+     */
+    public void setSortableModel(final SortableTableModel model) {
+        super.setModel(model);
+        headerListener.setTableModel(model);
+        final SortButtonRenderer renderer = new SortButtonRenderer();
+        final TableColumnModel columnModel = this.getColumnModel();
+        for (int i = 0; i < columnModel.getColumnCount(); i++) {
+            columnModel.getColumn(i).setHeaderRenderer(renderer);
+        }
     }
-  }
 
 }

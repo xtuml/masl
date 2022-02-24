@@ -12,24 +12,22 @@ import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 import org.xtuml.masl.inspector.socketConnection.ipc.ReadableObject;
 import org.xtuml.masl.inspector.socketConnection.ipc.WriteableObject;
 
-
 public class LongNaturalData extends org.xtuml.masl.inspector.processInterface.LongNaturalData
-    implements ReadableObject, WriteableObject
-{
+        implements ReadableObject, WriteableObject {
 
-  // 0xFFFFFFFFFFFFFFFF
-  private final static BigInteger mask = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
+    // 0xFFFFFFFFFFFFFFFF
+    private final static BigInteger mask = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
 
-  public void read ( final CommunicationChannel channel ) throws IOException
-  {
-    final BigInteger signedValue = BigInteger.valueOf(channel.readLong());
+    @Override
+    public void read(final CommunicationChannel channel) throws IOException {
+        final BigInteger signedValue = BigInteger.valueOf(channel.readLong());
 
-    setValue(signedValue.and(mask));
-  }
+        setValue(signedValue.and(mask));
+    }
 
-  public void write ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(getValue());
-  }
+    @Override
+    public void write(final CommunicationChannel channel) throws IOException {
+        channel.writeData(getValue());
+    }
 
 }

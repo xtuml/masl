@@ -5,11 +5,9 @@
 //
 package org.xtuml.masl.inspector.socketConnection.commands;
 
-public class SetStepEvents extends ToggleCommand
-{
+public class SetStepEvents extends ToggleCommand {
 
-  public SetStepEvents ( final boolean enabled )
-  {
-    super(ServerCommandId.STEP_EVENTS, enabled);
-  }
+    public SetStepEvents(final boolean enabled) {
+        super(ServerCommandId.STEP_EVENTS, enabled);
+    }
 }

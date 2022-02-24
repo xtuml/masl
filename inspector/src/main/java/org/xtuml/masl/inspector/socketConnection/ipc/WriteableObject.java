@@ -5,9 +5,7 @@
 //
 package org.xtuml.masl.inspector.socketConnection.ipc;
 
+public interface WriteableObject {
 
-public interface WriteableObject
-{
-
-  public void write ( CommunicationChannel channel ) throws java.io.IOException;
+    public void write(CommunicationChannel channel) throws java.io.IOException;
 }

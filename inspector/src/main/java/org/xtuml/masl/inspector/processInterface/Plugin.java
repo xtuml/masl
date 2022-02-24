@@ -5,34 +5,31 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public interface Plugin
-{
+public interface Plugin {
 
-  interface Flag
-  {
+    interface Flag {
 
-    String getName ();
+        String getName();
 
-    boolean isReadable ();
+        boolean isReadable();
 
-    boolean isWriteable ();
-  }
+        boolean isWriteable();
+    }
 
-  interface Property
-  {
+    interface Property {
 
-    String getName ();
+        String getName();
 
-    boolean isReadable ();
+        boolean isReadable();
 
-    boolean isWriteable ();
-  }
+        boolean isWriteable();
+    }
 
-  String getName ();
+    String getName();
 
-  Flag[] getFlags ();
+    Flag[] getFlags();
 
-  Property[] getProperties ();
+    Property[] getProperties();
 
-  String[] getActions ();
+    String[] getActions();
 }

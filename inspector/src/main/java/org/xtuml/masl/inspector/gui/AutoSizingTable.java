@@ -9,54 +9,45 @@ import java.awt.Dimension;
 
 import javax.swing.table.TableColumn;
 
+class AutoSizingTable extends ToolTipTable {
 
-class AutoSizingTable extends ToolTipTable
-{
+    protected final AutoSizingTableModel model;
+    private int minHeight = 100;
 
-  protected final AutoSizingTableModel model;
-  private int                          minHeight = 100;
-
-  public AutoSizingTable ( final AutoSizingTableModel model )
-  {
-    super(model);
-    this.model = model;
-    init();
-  }
-
-  private void init ()
-  {
-    minHeight = 100;
-    setColumnWidths();
-  }
-
-  public void setColumnWidths ()
-  {
-    int totalWidth = 0;
-    for ( int i = 0; i < getModel().getColumnCount(); i++ )
-    {
-      final int width = model.getPreferredColumnWidth(i, this);
-      totalWidth += width;
-      final TableColumn col = getColumnModel().getColumn(i);
-      col.setPreferredWidth(width);
-      col.setWidth(width);
+    public AutoSizingTable(final AutoSizingTableModel model) {
+        super(model);
+        this.model = model;
+        init();
     }
-    final Dimension d = getPreferredScrollableViewportSize();
-    d.width = totalWidth;
-    setPreferredScrollableViewportSize(d);
-  }
 
+    private void init() {
+        minHeight = 100;
+        setColumnWidths();
+    }
 
-  @Override
-  public Dimension getPreferredScrollableViewportSize ()
-  {
-    final Dimension vs = super.getPreferredScrollableViewportSize();
-    final Dimension ps = getPreferredSize();
-    return new Dimension(Math.max(ps.width, vs.width), Math.max(Math.min(ps.height, vs.height), minHeight));
-  }
+    public void setColumnWidths() {
+        int totalWidth = 0;
+        for (int i = 0; i < getModel().getColumnCount(); i++) {
+            final int width = model.getPreferredColumnWidth(i, this);
+            totalWidth += width;
+            final TableColumn col = getColumnModel().getColumn(i);
+            col.setPreferredWidth(width);
+            col.setWidth(width);
+        }
+        final Dimension d = getPreferredScrollableViewportSize();
+        d.width = totalWidth;
+        setPreferredScrollableViewportSize(d);
+    }
 
-  public void setMinHeight ( final int height )
-  {
-    minHeight = height;
-  }
+    @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        final Dimension vs = super.getPreferredScrollableViewportSize();
+        final Dimension ps = getPreferredSize();
+        return new Dimension(Math.max(ps.width, vs.width), Math.max(Math.min(ps.height, vs.height), minHeight));
+    }
+
+    public void setMinHeight(final int height) {
+        minHeight = height;
+    }
 
 }
