@@ -1,4 +1,4 @@
-// 
+//
 // Filename : TestScheduleChooser.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -14,6 +14,10 @@ import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
 public class TestScheduleChooser extends JFileChooser {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final static FileFilter scheduleFilter = new ExtensionFileFilter(new String[] { "scn", "schedule" },
             "Schedule Files");
 

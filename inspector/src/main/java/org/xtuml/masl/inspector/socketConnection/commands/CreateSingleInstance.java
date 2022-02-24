@@ -1,4 +1,4 @@
-// 
+//
 // Filename : CreateSingleInstance.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -28,7 +28,7 @@ public class CreateSingleInstance extends CommandStub<VoidType> {
         channel.writeData(meta.getArchId());
         channel.writeData(data);
         channel.flush();
-        data.setPrimaryKey(new Integer(channel.readInt()));
+        data.setPrimaryKey(Integer.valueOf(channel.readInt()));
         return null;
     }
 }

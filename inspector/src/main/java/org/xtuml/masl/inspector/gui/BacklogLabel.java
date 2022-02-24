@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ProcessStatusLabel.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -12,6 +12,11 @@ import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 import org.xtuml.masl.inspector.processInterface.WeakBacklogListener;
 
 class BacklogLabel extends JLabel implements BacklogListener {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public BacklogLabel() {
         ProcessConnection.getConnection().addBacklogListener(new WeakBacklogListener(this));

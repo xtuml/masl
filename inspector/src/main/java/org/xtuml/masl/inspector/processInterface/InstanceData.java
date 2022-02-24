@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InstanceData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,8 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xtuml.masl.inspector.processInterface.ObjectMetaData.FormalisedRelationship;
+import org.xtuml.masl.inspector.processInterface.ObjectMetaData.FormalisedSuperSubtype;
 
 public abstract class InstanceData implements org.xtuml.masl.inspector.processInterface.XMLSerializable {
 
@@ -116,28 +118,28 @@ public abstract class InstanceData implements org.xtuml.masl.inspector.processIn
         final ObjectMetaData.FormalisedRelationship[] rels = meta.getFormalisedRelationships();
 
         final List<RelationshipData> result = new ArrayList<RelationshipData>();
-        for (int i = 0; i < rels.length; ++i) {
+        for (FormalisedRelationship rel : rels) {
             Object leftId;
             Object rightId;
             Object assocId;
 
-            if (rels[i].leftRelIdx == -1) {
+            if (rel.leftRelIdx == -1) {
                 leftId = primaryKey;
-                rightId = relatedIds[rels[i].rightRelIdx];
+                rightId = relatedIds[rel.rightRelIdx];
                 assocId = null;
-            } else if (rels[i].rightRelIdx == -1) {
-                leftId = relatedIds[rels[i].leftRelIdx];
+            } else if (rel.rightRelIdx == -1) {
+                leftId = relatedIds[rel.leftRelIdx];
                 rightId = primaryKey;
                 assocId = null;
             } else {
-                leftId = relatedIds[rels[i].leftRelIdx];
-                rightId = relatedIds[rels[i].rightRelIdx];
+                leftId = relatedIds[rel.leftRelIdx];
+                rightId = relatedIds[rel.rightRelIdx];
                 assocId = primaryKey;
             }
 
             // Check for null ids for conditional relationships.
             if (leftId != null && rightId != null) {
-                final RelationshipData relData = rels[i].meta.getRelationshipData();
+                final RelationshipData relData = rel.meta.getRelationshipData();
                 relData.setLeftId(leftId);
                 relData.setRightId(rightId);
                 relData.setAssocId(assocId);
@@ -151,12 +153,12 @@ public abstract class InstanceData implements org.xtuml.masl.inspector.processIn
         final ObjectMetaData.FormalisedSuperSubtype[] rels = meta.getFormalisedSuperSubtypes();
 
         final List<SuperSubtypeData> result = new ArrayList<SuperSubtypeData>();
-        for (int i = 0; i < rels.length; ++i) {
-            if (relatedIds[rels[i].relIdx] != null) {
-                final SuperSubtypeData relData = rels[i].meta.getSuperSubtypeData();
+        for (FormalisedSuperSubtype rel : rels) {
+            if (relatedIds[rel.relIdx] != null) {
+                final SuperSubtypeData relData = rel.meta.getSuperSubtypeData();
                 relData.setSupertypeId(primaryKey);
-                relData.setSubtypeId(relatedIds[rels[i].relIdx]);
-                relData.setSubtypeIndex(rels[i].subIndex);
+                relData.setSubtypeId(relatedIds[rel.relIdx]);
+                relData.setSubtypeIndex(rel.subIndex);
 
                 result.add(relData);
             }

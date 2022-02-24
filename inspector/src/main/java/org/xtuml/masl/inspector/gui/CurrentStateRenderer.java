@@ -1,4 +1,4 @@
-// 
+//
 // Filename : CurrentStateRenderer.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -12,12 +12,16 @@ import org.xtuml.masl.inspector.processInterface.StateMetaData;
 
 class CurrentStateRenderer extends javax.swing.table.DefaultTableCellRenderer {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final Map<Integer, String> lookup = new HashMap<Integer, String>();
 
     public CurrentStateRenderer(final StateMetaData[] states) {
         super();
         for (final StateMetaData state : states) {
-            lookup.put(new Integer(state.getId()), state.getName());
+            lookup.put(Integer.valueOf(state.getId()), state.getName());
         }
     }
 

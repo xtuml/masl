@@ -1,4 +1,4 @@
-// 
+//
 // Filename : MainFrame.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -35,6 +35,10 @@ import org.xtuml.masl.inspector.processInterface.ProcessMetaData;
 
 public class MainFrame extends InspectorFrame {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private static String defaultDir = System.getProperty("user.dir");
     private static ProcessMetaData procMeta;
 
@@ -67,6 +71,11 @@ public class MainFrame extends InspectorFrame {
 
         final JMenuItem setProcessDirectoryItem = new JMenuItem(new AbstractAction("Set Process Directory...") {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void actionPerformed(final ActionEvent e) {
                 new ProcessDirectoryChooser();
@@ -74,6 +83,11 @@ public class MainFrame extends InspectorFrame {
         });
 
         final JMenuItem exitItem = new JMenuItem(new AbstractAction("Exit") {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -89,6 +103,11 @@ public class MainFrame extends InspectorFrame {
         final JMenuItem setDomainDirectoryItem = new JMenuItem(
                 new AbstractAction("Set " + curDomain + " Directory...") {
 
+                    /**
+                     *
+                     */
+                    private static final long serialVersionUID = 1L;
+
                     @Override
                     public void actionPerformed(final ActionEvent e) {
                         new DomainDirectoryChooser((DomainMetaData) domainPicker.getSelectedItem());
@@ -96,6 +115,11 @@ public class MainFrame extends InspectorFrame {
                 });
 
         final JMenuItem importDomainItem = new JMenuItem(new AbstractAction("Import " + curDomain + " Data") {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -119,6 +143,11 @@ public class MainFrame extends InspectorFrame {
 
         final JMenuItem exportDomainItem = new JMenuItem(new AbstractAction("Export " + curDomain + " Data") {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void actionPerformed(final ActionEvent e) {
                 final String fileName = procMeta.getName() + "_"
@@ -128,6 +157,11 @@ public class MainFrame extends InspectorFrame {
         });
 
         final JMenuItem createDomainSchemaItem = new JMenuItem(new AbstractAction("Create " + curDomain + " Schema") {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent e) {

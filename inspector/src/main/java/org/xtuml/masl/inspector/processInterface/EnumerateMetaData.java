@@ -1,4 +1,4 @@
-// 
+//
 // Filename : EnumerateMetaData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -22,7 +22,7 @@ public abstract class EnumerateMetaData implements Comparable<EnumerateMetaData>
     }
 
     public String decodeNameFromValue(final int value) {
-        return nameFromValueLookup.get(new Integer(value));
+        return nameFromValueLookup.get(Integer.valueOf(value));
     }
 
     public int decodeValueFromName(final String name) {
@@ -30,7 +30,7 @@ public abstract class EnumerateMetaData implements Comparable<EnumerateMetaData>
     }
 
     public String decodeNameFromIndex(final int value) {
-        return nameFromIndexLookup.get(new Integer(value));
+        return nameFromIndexLookup.get(Integer.valueOf(value));
     }
 
     public int decodeIndexFromName(final String name) {

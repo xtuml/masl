@@ -18,7 +18,17 @@ import javax.swing.table.TableModel;
 
 public class ToolTipTable extends JTable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private static class ToolTipHeader extends JTableHeader {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         public ToolTipHeader(final TableColumnModel model) {
             super(model);

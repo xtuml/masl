@@ -1,4 +1,4 @@
-// 
+//
 // Filename : AutoSizingTable.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -11,6 +11,10 @@ import javax.swing.table.TableColumn;
 
 class AutoSizingTable extends ToolTipTable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     protected final AutoSizingTableModel model;
     private int minHeight = 100;
 

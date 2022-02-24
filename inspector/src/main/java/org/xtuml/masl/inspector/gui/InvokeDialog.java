@@ -26,6 +26,10 @@ import org.xtuml.masl.inspector.processInterface.ParameterMetaData;
 
 public abstract class InvokeDialog extends InspectorSubFrame {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private Form keyForm;
     private final ParameterForm paramForm;
 

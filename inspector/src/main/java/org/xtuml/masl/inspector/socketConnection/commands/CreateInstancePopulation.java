@@ -1,4 +1,4 @@
-// 
+//
 // Filename : CreateInstancePopulation.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -32,12 +32,12 @@ public class CreateInstancePopulation extends CommandStub<VoidType> {
         for (final InstanceData element : data) {
             channel.writeData(element);
             while (inIdx < data.length && channel.available() > 0) {
-                data[inIdx++].setPrimaryKey(new Integer(channel.readInt()));
+                data[inIdx++].setPrimaryKey(Integer.valueOf(channel.readInt()));
             }
         }
         channel.flush();
         while (inIdx < data.length) {
-            data[inIdx++].setPrimaryKey(new Integer(channel.readInt()));
+            data[inIdx++].setPrimaryKey(Integer.valueOf(channel.readInt()));
         }
 
         return null;

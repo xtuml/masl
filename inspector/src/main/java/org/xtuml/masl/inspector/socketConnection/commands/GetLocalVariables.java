@@ -1,4 +1,4 @@
-// 
+//
 // Filename : GetLocalVariables.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved

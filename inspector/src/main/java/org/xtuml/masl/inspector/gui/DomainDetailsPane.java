@@ -1,4 +1,4 @@
-// 
+//
 // Filename : DomainDetailsPane.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,11 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 class DomainDetailsPane extends JTabbedPane {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     class TabHider implements ListDataListener {
 

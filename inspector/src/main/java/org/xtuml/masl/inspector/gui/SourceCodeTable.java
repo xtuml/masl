@@ -1,4 +1,4 @@
-// 
+//
 // Filename : SourceCodeTable.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -32,6 +32,11 @@ import org.xtuml.masl.inspector.processInterface.SourcePosition;
 
 class SourceCodeTable extends ToolTipTable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private final JPopupMenu popup = new JPopupMenu();
 
     protected final SourceCodeTableModel model;
@@ -53,6 +58,11 @@ class SourceCodeTable extends ToolTipTable {
 
         getColumnModel().getColumn(SourceCodeTableModel.INDICATOR_COL).setCellRenderer(new NoSelectTableCellRenderer() {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             {
                 setForeground(java.awt.Color.red);
                 setBackground(java.awt.Color.lightGray);
@@ -60,6 +70,11 @@ class SourceCodeTable extends ToolTipTable {
         });
 
         getColumnModel().getColumn(SourceCodeTableModel.LINE_NO_COL).setCellRenderer(new NoSelectTableCellRenderer() {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             {
                 setHorizontalAlignment(SwingConstants.RIGHT);
@@ -70,6 +85,11 @@ class SourceCodeTable extends ToolTipTable {
 
         getColumnModel().getColumn(SourceCodeTableModel.CODE_COL).setCellRenderer(new DefaultTableCellRenderer() {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void setFont(final Font font) {
                 super.setFont(new Font(Preferences.getCodeFontName(), font.getStyle(), font.getSize()));
@@ -78,6 +98,11 @@ class SourceCodeTable extends ToolTipTable {
 
         if (Capability.SET_BREAKPOINT.isAvailable()) {
             popup.add(new AbstractAction("Set Breakpoint") {
+
+                /**
+                 *
+                 */
+                private static final long serialVersionUID = 1L;
 
                 @Override
                 public void actionPerformed(final ActionEvent action) {
@@ -94,6 +119,11 @@ class SourceCodeTable extends ToolTipTable {
 
             popup.add(new AbstractAction("Clear Breakpoint") {
 
+                /**
+                 *
+                 */
+                private static final long serialVersionUID = 1L;
+
                 @Override
                 public void actionPerformed(final ActionEvent action) {
                     final int[] rows = getSelectedRows();
@@ -108,6 +138,11 @@ class SourceCodeTable extends ToolTipTable {
             });
 
             popup.add(new AbstractAction("Remove Breakpoint") {
+
+                /**
+                 *
+                 */
+                private static final long serialVersionUID = 1L;
 
                 @Override
                 public void actionPerformed(final ActionEvent action) {
@@ -137,6 +172,11 @@ class SourceCodeTable extends ToolTipTable {
         });
 
         final Action toggleAction = new AbstractAction() {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent action) {

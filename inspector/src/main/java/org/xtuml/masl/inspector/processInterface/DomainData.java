@@ -1,4 +1,4 @@
-// 
+//
 // Filename : DomainData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -77,7 +77,8 @@ public abstract class DomainData implements org.xtuml.masl.inspector.processInte
                 if (curNode.getAttributes().getLength() > 0) {
                     // Instance Node
 
-                    final Integer instanceId = new Integer(curNode.getAttributes().getNamedItem("id").getNodeValue());
+                    final Integer instanceId = Integer
+                            .valueOf(curNode.getAttributes().getNamedItem("id").getNodeValue());
                     final ObjectMetaData objectMeta = meta.getObject(curNode.getNodeName());
                     if (objectMeta == null) {
                         throw new IndexOutOfBoundsException("Object " + curNode.getNodeName() + " not found.");
@@ -144,25 +145,25 @@ public abstract class DomainData implements org.xtuml.masl.inspector.processInte
 
                     final RelationshipData[] rels = instance.getFormalisedRelationships();
 
-                    for (int i = 0; i < rels.length; ++i) {
-                        final RelationshipMetaData relMeta = rels[i].getMetaData();
+                    for (RelationshipData rel : rels) {
+                        final RelationshipMetaData relMeta = rel.getMetaData();
                         List<RelationshipData> linkData = relData.get(relMeta);
                         if (linkData == null) {
                             linkData = new ArrayList<RelationshipData>();
                             relData.put(relMeta, linkData);
                         }
-                        linkData.add(rels[i]);
+                        linkData.add(rel);
                     }
 
                     final SuperSubtypeData[] sss = instance.getFormalisedSuperSubtypes();
-                    for (int i = 0; i < sss.length; ++i) {
-                        final SuperSubtypeMetaData ssMeta = sss[i].getMetaData();
+                    for (SuperSubtypeData element : sss) {
+                        final SuperSubtypeMetaData ssMeta = element.getMetaData();
                         List<SuperSubtypeData> linkData = ssData.get(ssMeta);
                         if (linkData == null) {
                             linkData = new ArrayList<SuperSubtypeData>();
                             ssData.put(ssMeta, linkData);
                         }
-                        linkData.add(sss[i]);
+                        linkData.add(element);
                     }
 
                     return false;

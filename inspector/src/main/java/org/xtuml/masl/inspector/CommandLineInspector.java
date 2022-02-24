@@ -2,7 +2,7 @@
 //
 // UK Crown Copyright (c) 2006. All Rights Reserved
 //
-// 
+//
 package org.xtuml.masl.inspector;
 
 import java.io.BufferedReader;

@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -22,8 +22,18 @@ import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
 public class ObjectList extends DependentObjectList<ObjectMetaData, DomainMetaData> {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public ObjectList(final DomainPicker domainPicker) {
         super(new DependentObjectListModel<ObjectMetaData, DomainMetaData>(domainPicker) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             protected ObjectMetaData[] getDependentValues(final DomainMetaData domain) {

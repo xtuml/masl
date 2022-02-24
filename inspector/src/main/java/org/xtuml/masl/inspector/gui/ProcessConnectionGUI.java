@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ProcessConnectionGUI.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -37,6 +37,11 @@ public class ProcessConnectionGUI {
 
     static private final Action traceLinesAction = new ToggleAction("Trace Lines") {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
             process.setTraceLines(selected);
@@ -44,6 +49,11 @@ public class ProcessConnectionGUI {
     };
 
     static private final Action traceBlocksAction = new ToggleAction("Trace Blocks") {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
@@ -53,6 +63,11 @@ public class ProcessConnectionGUI {
 
     static private final Action traceExceptionsAction = new ToggleAction("Trace Exceptions") {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
             process.setTraceExceptions(selected);
@@ -61,6 +76,11 @@ public class ProcessConnectionGUI {
 
     static private final Action traceEventsAction = new ToggleAction("Trace Events") {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
             process.setTraceEvents(selected);
@@ -68,12 +88,22 @@ public class ProcessConnectionGUI {
     };
     static private final Action stepLinesAction = new ToggleAction("Step Lines") {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
             process.setStepLines(selected);
         }
     };
     static private final Action stepBlocksAction = new ToggleAction("Step Blocks") {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
@@ -83,6 +113,11 @@ public class ProcessConnectionGUI {
 
     static private final Action stepExceptionsAction = new ToggleAction("Step Exceptions") {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
             process.setStepExceptions(selected);
@@ -90,6 +125,11 @@ public class ProcessConnectionGUI {
     };
 
     static private final Action stepEventsAction = new ToggleAction("Step Events") {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
@@ -99,6 +139,11 @@ public class ProcessConnectionGUI {
 
     static private final Action catchConsoleAction = new ToggleAction("Catch Console") {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
             process.setCatchConsole(selected);
@@ -106,6 +151,11 @@ public class ProcessConnectionGUI {
     };
 
     static private final Action enableTimersAction = new ToggleAction("Enable Timers") {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
@@ -216,6 +266,11 @@ public class ProcessConnectionGUI {
 
     static private final Action runScheduleAction = new AbstractAction("Run Test Schedule...") {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void actionPerformed(final ActionEvent e) {
             final java.io.File file = TestScheduleChooser.getFile();
@@ -236,6 +291,11 @@ public class ProcessConnectionGUI {
 
     static private final Action showBreakpointsAction = new AbstractAction("Show Breakpoints") {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void actionPerformed(final ActionEvent e) {
             BreakpointBrowser.display();
@@ -244,6 +304,11 @@ public class ProcessConnectionGUI {
     };
 
     static private final Action showStackAction = new AbstractAction("Show Stack") {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(final ActionEvent e) {
@@ -263,6 +328,11 @@ public class ProcessConnectionGUI {
     static private final Action getPluginFlagAction(final String pluginName, final Plugin.Flag flag,
             final JMenuItem item) {
         return new ToggleAction(flag.getName()) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void togglePerformed(final boolean selected) throws java.rmi.RemoteException {
@@ -298,6 +368,11 @@ public class ProcessConnectionGUI {
     static private final Action getPluginPropertyAction(final String pluginName, final Plugin.Property property,
             final JTextComponent text) {
         return new AbstractAction(property.getName()) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent event) {
@@ -337,6 +412,11 @@ public class ProcessConnectionGUI {
     static private final Action getPluginInvokeAction(final String pluginName, final String actionName) {
         return new AbstractAction(actionName) {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void actionPerformed(final ActionEvent event) {
                 try {
@@ -354,6 +434,11 @@ public class ProcessConnectionGUI {
     static private final Action continueAction = new AbstractAction(null,
             new ImageIcon(ClassLoader.getSystemResource("icons/play.gif"))) {
 
+        /**
+                 *
+                 */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void actionPerformed(final java.awt.event.ActionEvent e) {
             try {
@@ -366,6 +451,11 @@ public class ProcessConnectionGUI {
 
     static private final Action pauseAction = new AbstractAction(null,
             new ImageIcon(ClassLoader.getSystemResource("icons/pause.gif"))) {
+
+        /**
+                 *
+                 */
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(final java.awt.event.ActionEvent e) {
@@ -380,6 +470,11 @@ public class ProcessConnectionGUI {
     static private final Action stepAction = new AbstractAction(null,
             new ImageIcon(ClassLoader.getSystemResource("icons/step.gif"))) {
 
+        /**
+                 *
+                 */
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void actionPerformed(final java.awt.event.ActionEvent e) {
             try {
@@ -392,6 +487,11 @@ public class ProcessConnectionGUI {
 
     static private final Action slomoAction = new AbstractAction(null,
             new ImageIcon(ClassLoader.getSystemResource("icons/slomo.gif"))) {
+
+        /**
+                 *
+                 */
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(final java.awt.event.ActionEvent e) {

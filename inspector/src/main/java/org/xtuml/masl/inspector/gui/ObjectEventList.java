@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectEventList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -15,8 +15,18 @@ import org.xtuml.masl.inspector.processInterface.ObjectMetaData;
 
 public class ObjectEventList extends DependentObjectList<EventMetaData, ObjectMetaData> {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public ObjectEventList(final ObjectList objectList) {
         super(new DependentObjectListModel<EventMetaData, ObjectMetaData>(objectList) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             protected EventMetaData[] getDependentValues(final ObjectMetaData object) {

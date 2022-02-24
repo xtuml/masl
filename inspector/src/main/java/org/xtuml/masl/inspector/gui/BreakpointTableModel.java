@@ -1,4 +1,4 @@
-// 
+//
 // Filename : BreakpointTableModel.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -20,6 +20,10 @@ import org.xtuml.masl.inspector.processInterface.SourcePosition;
 
 class BreakpointTableModel extends AutoSizingTableModel implements BreakpointListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     public static final int ACTIVE_COL = 0;
     public static final int NAME_COL = 1;
     public static final int LINE_COL = 2;
@@ -132,8 +136,9 @@ class BreakpointTableModel extends AutoSizingTableModel implements BreakpointLis
             return margin + cellRenderer.getTableCellRendererComponent(parent, Boolean.TRUE, false, false, 0, 0)
                     .getPreferredSize().width;
         case LINE_COL:
-            return margin + cellRenderer.getTableCellRendererComponent(parent, new Integer(99999), false, false, 0, 0)
-                    .getPreferredSize().width;
+            return margin
+                    + cellRenderer.getTableCellRendererComponent(parent, Integer.valueOf(99999), false, false, 0, 0)
+                            .getPreferredSize().width;
         case NAME_COL:
             return margin + cellRenderer.getTableCellRendererComponent(parent,
                     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", false, false, 0, 0).getPreferredSize().width;

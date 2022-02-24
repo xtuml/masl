@@ -1,4 +1,4 @@
-// 
+//
 // Filename : Preferences.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -101,6 +101,10 @@ public class Preferences {
 
     public static class ModellingMode implements java.io.Serializable {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
         public static final ModellingMode UML = new ModellingMode("UML");
         public static final ModellingMode SM = new ModellingMode("SM");
 
@@ -153,7 +157,7 @@ public class Preferences {
     }
 
     public static boolean getUseStackBrowser() {
-        return new Boolean(prefs.getProperty(useStackBrowserLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(useStackBrowserLabel)).booleanValue();
     }
 
     public static Set<String> getIgnoredDomains() {
@@ -167,51 +171,51 @@ public class Preferences {
     }
 
     public static boolean getTraceLines() {
-        return new Boolean(prefs.getProperty(traceLinesLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(traceLinesLabel)).booleanValue();
     }
 
     public static boolean getTraceBlocks() {
-        return new Boolean(prefs.getProperty(traceBlocksLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(traceBlocksLabel)).booleanValue();
     }
 
     public static boolean getTraceEvents() {
-        return new Boolean(prefs.getProperty(traceEventsLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(traceEventsLabel)).booleanValue();
     }
 
     public static boolean getTraceExceptions() {
-        return new Boolean(prefs.getProperty(traceExceptionsLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(traceExceptionsLabel)).booleanValue();
     }
 
     public static boolean getStepLines() {
-        return new Boolean(prefs.getProperty(stepLinesLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(stepLinesLabel)).booleanValue();
     }
 
     public static boolean getStepBlocks() {
-        return new Boolean(prefs.getProperty(stepBlocksLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(stepBlocksLabel)).booleanValue();
     }
 
     public static boolean getStepExceptions() {
-        return new Boolean(prefs.getProperty(stepExceptionsLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(stepExceptionsLabel)).booleanValue();
     }
 
     public static boolean getStepEvents() {
-        return new Boolean(prefs.getProperty(stepEventsLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(stepEventsLabel)).booleanValue();
     }
 
     public static boolean getEnableTimers() {
-        return new Boolean(prefs.getProperty(enableTimersLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(enableTimersLabel)).booleanValue();
     }
 
     public static boolean getCatchConsole() {
-        return new Boolean(prefs.getProperty(catchConsoleLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(catchConsoleLabel)).booleanValue();
     }
 
     public static boolean getSortLocalVars() {
-        return new Boolean(prefs.getProperty(sortLocalVarsLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(sortLocalVarsLabel)).booleanValue();
     }
 
     public static boolean getShowInternalId() {
-        return new Boolean(prefs.getProperty(showInternalIdLabel)).booleanValue();
+        return Boolean.valueOf(prefs.getProperty(showInternalIdLabel)).booleanValue();
     }
 
 }

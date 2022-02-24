@@ -5,17 +5,11 @@
 //
 package org.xtuml.masl.inspector.gui;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -33,6 +27,10 @@ import org.xtuml.masl.inspector.processInterface.SourcePosition;
 
 class SourceCodeTableModel extends AbstractTableModel implements BreakpointListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     public final static int INDICATOR_COL = 0;
     public final static int LINE_NO_COL = 1;
     public final static int CODE_COL = 2;
@@ -40,11 +38,11 @@ class SourceCodeTableModel extends AbstractTableModel implements BreakpointListe
 
     private final static Class<?>[] colClasses = new Class[] { Character.class, Integer.class, String.class };
 
-    private static final Character CURRENT_LINE_SYMBOL = new Character('\u25ba'); // Filled
+    private static final Character CURRENT_LINE_SYMBOL = Character.valueOf('\u25ba'); // Filled
     // arrow
-    private static final Character STALE_CURRENT_LINE_SYMBOL = new Character('>'); // >
-    private static final Character BREAKPOINT_SYMBOL = new Character('\u25cf'); // Circle
-    private static final Character BREAKPOINT_CURRENT_LINE_SYMBOL = new Character('\u27b2'); // Circled
+    private static final Character STALE_CURRENT_LINE_SYMBOL = Character.valueOf('>'); // >
+    private static final Character BREAKPOINT_SYMBOL = Character.valueOf('\u25cf'); // Circle
+    private static final Character BREAKPOINT_CURRENT_LINE_SYMBOL = Character.valueOf('\u27b2'); // Circled
     // arrow
 
     private ExecutableSource source;
@@ -66,23 +64,6 @@ class SourceCodeTableModel extends AbstractTableModel implements BreakpointListe
         }
 
         BreakpointController.getInstance().addBreakpointListener(new WeakBreakpointListener(this));
-    }
-
-    private static String getMd5Sum(final File file) throws IOException {
-        try {
-            final MessageDigest md = MessageDigest.getInstance("MD5");
-            final InputStream input = new BufferedInputStream(new FileInputStream(file));
-            final byte[] bytes = new byte[1024];
-            int read = input.read(bytes);
-            while (read != -1) {
-                md.update(bytes, 0, read);
-                read = input.read(bytes);
-            }
-            return new BigInteger(1, md.digest()).toString(16);
-        } catch (final NoSuchAlgorithmException e) {
-            assert false : "MD5 algorithm not found";
-            return null;
-        }
     }
 
     public void setSource(final ExecutableSource source) {
@@ -175,7 +156,7 @@ class SourceCodeTableModel extends AbstractTableModel implements BreakpointListe
                 return null;
             }
         case LINE_NO_COL:
-            return new Integer(row + 1);
+            return Integer.valueOf(row + 1);
         case CODE_COL:
             return lines.get(row);
         default:
@@ -210,15 +191,15 @@ class SourceCodeTableModel extends AbstractTableModel implements BreakpointListe
             while ((x /= 10) > 0) {
                 max *= 10;
             }
-            return margin + cellRenderer.getTableCellRendererComponent(parent, new Integer(max - 1), false, false, 0, 0)
-                    .getPreferredSize().width;
+            return margin
+                    + cellRenderer.getTableCellRendererComponent(parent, Integer.valueOf(max - 1), false, false, 0, 0)
+                            .getPreferredSize().width;
         }
         case CODE_COL: {
             int width = 0;
-            for (int i = 0; i < lines.size(); i++) {
-                width = Math.max(width,
-                        cellRenderer.getTableCellRendererComponent(parent, lines.get(i), false, false, 0, 0)
-                                .getPreferredSize().width);
+            for (String line : lines) {
+                width = Math.max(width, cellRenderer.getTableCellRendererComponent(parent, line, false, false, 0, 0)
+                        .getPreferredSize().width);
             }
             return margin + width;
         }

@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectGraph.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -21,6 +21,11 @@ import org.xtuml.masl.inspector.processInterface.RelationshipMetaData;
 import org.xtuml.masl.inspector.processInterface.SuperSubtypeMetaData;
 
 public class ObjectGraph extends JPanel {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public ObjectGraph(final ObjectMetaData metaObj, final JList selector) {
         super();

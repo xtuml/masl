@@ -1,4 +1,4 @@
-// 
+//
 // Filename : BooleanData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -16,7 +16,7 @@ public class BooleanData extends org.xtuml.masl.inspector.processInterface.Boole
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        setValue(new Boolean(channel.readBoolean()));
+        setValue(Boolean.valueOf((channel.readBoolean())));
     }
 
     @Override

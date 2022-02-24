@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ProcessStatusLabel.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,11 @@ import org.xtuml.masl.inspector.processInterface.SourcePosition;
 import org.xtuml.masl.inspector.processInterface.WeakProcessStatusListener;
 
 class ProcessStatusLabel extends JLabel implements ProcessStatusListener {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public ProcessStatusLabel() {
         setStatus(ProcessConnection.getConnection().getCurrentStatus(),

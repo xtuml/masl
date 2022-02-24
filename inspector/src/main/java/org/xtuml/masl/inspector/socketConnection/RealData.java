@@ -1,4 +1,4 @@
-// 
+//
 // Filename : DoubleData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -16,7 +16,7 @@ public class RealData extends org.xtuml.masl.inspector.processInterface.RealData
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        setValue(new Double(channel.readDouble()));
+        setValue(Double.valueOf(channel.readDouble()));
     }
 
     @Override

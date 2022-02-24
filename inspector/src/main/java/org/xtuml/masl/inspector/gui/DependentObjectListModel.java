@@ -1,4 +1,4 @@
-// 
+//
 // Filename : DependentObjectList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,10 @@ import javax.swing.AbstractListModel;
 
 public abstract class DependentObjectListModel<Dependent, Discriminant> extends AbstractListModel {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final ItemSelectable selector;
 
     public DependentObjectListModel(final ItemSelectable selector) {

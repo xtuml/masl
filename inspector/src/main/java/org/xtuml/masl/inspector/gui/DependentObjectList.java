@@ -1,4 +1,4 @@
-// 
+//
 // Filename : DependentObjectList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -15,6 +15,10 @@ import javax.swing.event.ListSelectionListener;
 
 public abstract class DependentObjectList<Dependent, Discriminant> extends ComboList {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final Map<Object, Object> previousSelections = new HashMap<Object, Object>();
     private final DependentObjectListModel<Dependent, Discriminant> model;
 

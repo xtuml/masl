@@ -36,7 +36,17 @@ import org.xtuml.masl.inspector.processInterface.EnumerateMetaData;
 
 class DictionaryTable extends JTable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     static class IndexRenderer extends DefaultTableCellRenderer {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         public IndexRenderer() {
             setBackground(Color.LIGHT_GRAY);
@@ -116,6 +126,10 @@ class DictionaryTable extends JTable {
 
     private class EnumerateEditor extends DefaultCellEditor {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
         private final JComboBox comboBox;
 
         public EnumerateEditor() {

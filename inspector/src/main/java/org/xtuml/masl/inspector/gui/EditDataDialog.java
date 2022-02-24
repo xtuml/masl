@@ -29,6 +29,10 @@ import org.xtuml.masl.inspector.processInterface.TimerData;
 
 public class EditDataDialog extends JDialog {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private JScrollPane editor;
 
     public EditDataDialog(final Object data, final boolean editable) {

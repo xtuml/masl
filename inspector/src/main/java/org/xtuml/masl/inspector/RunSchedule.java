@@ -1,4 +1,4 @@
-// 
+//
 // Filename : RunSchedule.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -42,8 +42,8 @@ public class RunSchedule implements ProcessStatusListener {
         System.setProperty("java.awt.headless", "true");
         final RunSchedule runner = new RunSchedule();
 
-        for (int i = 0; i < args.length; ++i) {
-            runner.run(new java.io.File(args[i]));
+        for (String arg : args) {
+            runner.run(new java.io.File(arg));
         }
     }
 }

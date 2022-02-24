@@ -108,12 +108,12 @@ public abstract class ExecutableSource {
         if (sourceFile == null) {
             final File[] files = getDirectory().listFiles(getSourceFileFilter());
 
-            for (int i = 0; i < files.length; i++) {
+            for (File file : files) {
                 // Find the first non-directory in the list.
                 // If more than one, we can't choose, so return null;
-                if (!files[i].isDirectory()) {
+                if (!file.isDirectory()) {
                     if (sourceFile == null) {
-                        sourceFile = files[i];
+                        sourceFile = file;
                     } else {
                         return null;
                     }

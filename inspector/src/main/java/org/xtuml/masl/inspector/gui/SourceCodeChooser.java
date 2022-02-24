@@ -1,4 +1,4 @@
-// 
+//
 // Filename : SourceCodeChooser.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -12,6 +12,10 @@ import org.xtuml.masl.inspector.processInterface.ExecutableSource;
 
 public class SourceCodeChooser extends JFileChooser {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final static FileFilter serviceFilter = new ExtensionFileFilter("svc", "Object Service");
     private final static FileFilter stateActionFilter = new ExtensionFileFilter("al", "State Action");
     private final static FileFilter bridgeFilter = new ExtensionFileFilter(new String[] { "fn", "tr", "svc" },

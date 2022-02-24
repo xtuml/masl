@@ -1,4 +1,4 @@
-// 
+//
 // Filename : StackList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -19,7 +19,17 @@ import org.xtuml.masl.inspector.processInterface.WeakProcessStatusListener;
 
 public class StackList extends ComboList {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private static class StackListModel extends AbstractListModel implements ProcessStatusListener {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         StackListModel() {
             ProcessConnection.getConnection().addProcessStatusListener(new WeakProcessStatusListener(this));
@@ -76,6 +86,11 @@ public class StackList extends ComboList {
         model = (StackListModel) getModel();
 
         setCellRenderer(new DefaultListCellRenderer() {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public java.awt.Component getListCellRendererComponent(final JList list, final Object value,

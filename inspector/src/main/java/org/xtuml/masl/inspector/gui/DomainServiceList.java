@@ -1,4 +1,4 @@
-// 
+//
 // Filename : DomainServiceList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -17,8 +17,18 @@ import org.xtuml.masl.inspector.processInterface.DomainServiceMetaData;
 
 public class DomainServiceList extends ExecutableSourceList<DomainServiceMetaData, DomainMetaData> {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public DomainServiceList(final DomainPicker domainPicker) {
         super(new DependentObjectListModel<DomainServiceMetaData, DomainMetaData>(domainPicker) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             protected DomainServiceMetaData[] getDependentValues(final DomainMetaData domain) {

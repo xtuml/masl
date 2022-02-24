@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InvokeDomainServiceDialog.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,10 @@ import org.xtuml.masl.inspector.processInterface.TerminatorServiceMetaData;
 
 class InvokeTerminatorServiceDialog extends InvokeDialog {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final TerminatorServiceMetaData service;
 
     public InvokeTerminatorServiceDialog(final TerminatorServiceMetaData service) {

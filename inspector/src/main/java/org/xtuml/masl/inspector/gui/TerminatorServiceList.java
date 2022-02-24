@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectServiceList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -17,8 +17,18 @@ import org.xtuml.masl.inspector.processInterface.TerminatorServiceMetaData;
 
 public class TerminatorServiceList extends ExecutableSourceList<TerminatorServiceMetaData, TerminatorMetaData> {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public TerminatorServiceList(final TerminatorList terminatorList) {
         super(new DependentObjectListModel<TerminatorServiceMetaData, TerminatorMetaData>(terminatorList) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             protected TerminatorServiceMetaData[] getDependentValues(final TerminatorMetaData terminator) {

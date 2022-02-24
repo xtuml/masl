@@ -38,6 +38,11 @@ import javax.swing.border.LineBorder;
 
 public class Form extends JPanel implements FormModelListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public static class BooleanEditor implements FormValueEditor {
 
         public BooleanEditor(final FormModel model, final int fieldNo) {

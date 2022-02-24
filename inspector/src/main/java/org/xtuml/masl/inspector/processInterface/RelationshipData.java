@@ -1,4 +1,4 @@
-// 
+//
 // Filename : RelationshipData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -89,7 +89,7 @@ public abstract class RelationshipData implements org.xtuml.masl.inspector.proce
             final Node curNode = parent.getChildNodes().item(i);
             if (curNode.getNodeType() == Node.ELEMENT_NODE) {
                 final String objName = curNode.getNodeName();
-                final Integer instanceId = new Integer(curNode.getAttributes().getNamedItem("id").getNodeValue());
+                final Integer instanceId = Integer.valueOf(curNode.getAttributes().getNamedItem("id").getNodeValue());
 
                 if (objName.equals(leftName)) {
                     leftId = instanceId;

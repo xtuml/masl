@@ -1,4 +1,4 @@
-// 
+//
 // Filename : CommunicationChannel.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -219,21 +219,21 @@ public class CommunicationChannel {
             }
             return data;
         } else if (type == Boolean.class || type == boolean.class) {
-            return new Boolean(readBoolean());
+            return Boolean.valueOf(readBoolean());
         } else if (type == Byte.class || type == byte.class) {
-            return new Byte(readByte());
+            return Byte.valueOf(readByte());
         } else if (type == Short.class || type == short.class) {
             return new Short(readShort());
         } else if (type == Integer.class || type == int.class) {
-            return new Integer(readInt());
+            return Integer.valueOf(readInt());
         } else if (type == Long.class || type == long.class) {
             return new Long(readLong());
         } else if (type == Float.class || type == float.class) {
             return new Float(readFloat());
         } else if (type == Double.class || type == double.class) {
-            return new Double(readDouble());
+            return Double.valueOf(readDouble());
         } else if (type == Character.class || type == char.class) {
-            return new Character(readChar());
+            return Character.valueOf(readChar());
         } else if (type == String.class) {
             return readString();
         } else if (ReadableObject.class.isAssignableFrom(type)) {
