@@ -37,88 +37,73 @@ package com.jrefinery.ui;
 
 import javax.swing.table.AbstractTableModel;
 
-
 /**
  * The base class for a sortable table model.
  */
-public abstract class SortableTableModel extends AbstractTableModel
-{
+public abstract class SortableTableModel extends AbstractTableModel {
 
-  /** The column on which the data is sorted (-1 for no sorting). */
-  protected int     sortingColumn;
+    /** The column on which the data is sorted (-1 for no sorting). */
+    protected int sortingColumn;
 
-  /** Indicates ascending (true) or descending (false) order. */
-  protected boolean ascending;
+    /** Indicates ascending (true) or descending (false) order. */
+    protected boolean ascending;
 
-  /**
-   * Constructs a sortable table model.
-   */
-  public SortableTableModel ()
-  {
-    this.sortingColumn = -1;
-    this.ascending = true;
-  }
-
-  /**
-   * Returns the index of the sorting column, or -1 if the data is not sorted on
-   * any column.
-   * 
-   * @param The
-   *          column used for sorting.
-   */
-  public int getSortingColumn ()
-  {
-    return sortingColumn;
-  }
-
-  /**
-   * Returns true if the data is sorted in ascending order, and false otherwise.
-   * *
-   * 
-   * @return True if the data is sorted in ascending order, and false otherwise.
-   */
-  public boolean getAscending ()
-  {
-    return this.ascending;
-  }
-
-  /**
-   * Sets the flag that determines whether the sort order is ascending or
-   * descending.
-   * 
-   * @param flag
-   *          The flag.
-   */
-  public void setAscending ( final boolean flag )
-  {
-    this.ascending = flag;
-  }
-
-  /**
-   * Sorts the table.
-   * 
-   * @param column
-   *          The column to sort on (zero-based index).
-   * @param ascending
-   *          A flag to indicate ascending order or descending order.
-   */
-  public void sortByColumn ( final int column, final boolean ascending )
-  {
-    if ( isSortable(column) )
-    {
-      this.sortingColumn = column;
+    /**
+     * Constructs a sortable table model.
+     */
+    public SortableTableModel() {
+        this.sortingColumn = -1;
+        this.ascending = true;
     }
-  }
 
-  /**
-   * Returns a flag indicating whether or not a column is sortable.
-   * 
-   * @param column
-   *          The column (zero-based index).
-   */
-  public boolean isSortable ( final int column )
-  {
-    return false;
-  }
+    /**
+     * Returns the index of the sorting column, or -1 if the data is not sorted on
+     * any column.
+     * 
+     * @param The column used for sorting.
+     */
+    public int getSortingColumn() {
+        return sortingColumn;
+    }
+
+    /**
+     * Returns true if the data is sorted in ascending order, and false otherwise. *
+     * 
+     * @return True if the data is sorted in ascending order, and false otherwise.
+     */
+    public boolean getAscending() {
+        return this.ascending;
+    }
+
+    /**
+     * Sets the flag that determines whether the sort order is ascending or
+     * descending.
+     * 
+     * @param flag The flag.
+     */
+    public void setAscending(final boolean flag) {
+        this.ascending = flag;
+    }
+
+    /**
+     * Sorts the table.
+     * 
+     * @param column    The column to sort on (zero-based index).
+     * @param ascending A flag to indicate ascending order or descending order.
+     */
+    public void sortByColumn(final int column, final boolean ascending) {
+        if (isSortable(column)) {
+            this.sortingColumn = column;
+        }
+    }
+
+    /**
+     * Returns a flag indicating whether or not a column is sortable.
+     * 
+     * @param column The column (zero-based index).
+     */
+    public boolean isSortable(final int column) {
+        return false;
+    }
 
 }

@@ -8,17 +8,13 @@ package org.xtuml.masl.inspector.socketConnection.commands;
 import org.xtuml.masl.inspector.socketConnection.ProcessConnection;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class IdleCommand extends CommandImpl {
 
-public class IdleCommand extends CommandImpl
-{
+    public IdleCommand() {
+    }
 
-  public IdleCommand ()
-  {
-  }
-
-  @Override
-  protected void execute ( final CommunicationChannel channel ) throws java.io.IOException
-  {
-    ProcessConnection.getConnection().setIdle();
-  }
+    @Override
+    protected void execute(final CommunicationChannel channel) throws java.io.IOException {
+        ProcessConnection.getConnection().setIdle();
+    }
 }

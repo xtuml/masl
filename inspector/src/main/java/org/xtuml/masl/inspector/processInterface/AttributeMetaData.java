@@ -11,49 +11,43 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+public abstract class AttributeMetaData {
 
-public abstract class AttributeMetaData
-{
+    public abstract String getName();
 
-  public abstract String getName ();
+    public abstract ObjectMetaData getObject();
 
-  public abstract ObjectMetaData getObject ();
+    public abstract String getRelationshipText();
 
-  public abstract String getRelationshipText ();
+    public abstract StructureMetaData getStructure();
 
-  public abstract StructureMetaData getStructure ();
+    public abstract TypeMetaData getType();
 
-  public abstract TypeMetaData getType ();
+    public abstract String getTypeName();
 
-  public abstract String getTypeName ();
+    public Node getXMLSchema(final Document document) {
+        // Check that the attribute value is of the correct type
+        //
+        // <xs:element name="[Attribute]" type="[Type]"/>
+        final Element attribute = document.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, "xs:element");
+        attribute.setAttribute("name", getName());
 
-  public Node getXMLSchema ( final Document document )
-  {
-    // Check that the attribute value is of the correct type
-    //
-    // <xs:element name="[Attribute]" type="[Type]"/>
-    final Element attribute = document.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, "xs:element");
-    attribute.setAttribute("name", getName());
+        final String schemaType = getType().getXMLSchemaName();
+        if (schemaType == null) {
+            attribute.appendChild(getType().getXMLSchema(document));
+        } else {
+            attribute.setAttribute("type", getType().getXMLSchemaName());
+        }
 
-    final String schemaType = getType().getXMLSchemaName();
-    if ( schemaType == null )
-    {
-      attribute.appendChild(getType().getXMLSchema(document));
-    }
-    else
-    {
-      attribute.setAttribute("type", getType().getXMLSchemaName());
+        return attribute;
     }
 
-    return attribute;
-  }
+    public abstract boolean isIdentifier();
 
-  public abstract boolean isIdentifier ();
+    public abstract boolean isReadOnly();
 
-  public abstract boolean isReadOnly ();
+    public abstract boolean isReferential();
 
-  public abstract boolean isReferential ();
-
-  public abstract DataValue<?> getDefaultValue ();
+    public abstract DataValue<?> getDefaultValue();
 
 }

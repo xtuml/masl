@@ -5,11 +5,9 @@
 //
 package org.xtuml.masl.inspector.socketConnection.commands;
 
-public class SetEnableTimers extends ToggleCommand
-{
+public class SetEnableTimers extends ToggleCommand {
 
-  public SetEnableTimers ( final boolean enabled )
-  {
-    super(ServerCommandId.ENABLE_TIMERS, enabled);
-  }
+    public SetEnableTimers(final boolean enabled) {
+        super(ServerCommandId.ENABLE_TIMERS, enabled);
+    }
 }

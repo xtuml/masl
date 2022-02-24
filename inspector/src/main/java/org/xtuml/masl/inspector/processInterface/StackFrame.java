@@ -5,10 +5,9 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public abstract class StackFrame
-{
+public abstract class StackFrame {
 
-  public abstract SourcePosition getPosition ();
+    public abstract SourcePosition getPosition();
 
-  public abstract LocalVarData[] getLocalVars ();
+    public abstract LocalVarData[] getLocalVars();
 }

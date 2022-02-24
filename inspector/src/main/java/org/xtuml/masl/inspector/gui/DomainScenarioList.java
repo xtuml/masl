@@ -16,52 +16,40 @@ import org.xtuml.masl.inspector.processInterface.DomainMetaData;
 import org.xtuml.masl.inspector.processInterface.DomainServiceMetaData;
 import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
+public class DomainScenarioList extends ExecutableSourceList<DomainServiceMetaData, DomainMetaData> {
 
-public class DomainScenarioList extends ExecutableSourceList<DomainServiceMetaData, DomainMetaData>
-{
+    public DomainScenarioList(final DomainPicker domainPicker) {
+        super(new DependentObjectListModel<DomainServiceMetaData, DomainMetaData>(domainPicker) {
 
-  public DomainScenarioList ( final DomainPicker domainPicker )
-  {
-    super(new DependentObjectListModel<DomainServiceMetaData, DomainMetaData>(domainPicker)
-    {
-
-      @Override
-      protected DomainServiceMetaData[] getDependentValues ( final DomainMetaData domain )
-      {
-        final DomainServiceMetaData[] scenarios = domain.getScenarios();
-        Arrays.sort(scenarios);
-        return scenarios;
-      }
-    });
-  }
-
-
-  @Override
-  protected void initPopup ()
-  {
-    if ( Capability.RUN_SCENARIO.isAvailable() )
-    {
-      final JMenuItem runScenarioItem = new JMenuItem("Run Scenario...");
-      runScenarioItem.addActionListener(new ActionListener()
-        {
-
-          public void actionPerformed ( final ActionEvent action )
-          {
-            try
-            {
-              ProcessConnection.getConnection().runScenario((DomainServiceMetaData)getSelectedValue());
+            @Override
+            protected DomainServiceMetaData[] getDependentValues(final DomainMetaData domain) {
+                final DomainServiceMetaData[] scenarios = domain.getScenarios();
+                Arrays.sort(scenarios);
+                return scenarios;
             }
-            catch ( final java.rmi.RemoteException e )
-            {
-              e.printStackTrace();
-            }
-          }
         });
-
-      popup.add(runScenarioItem);
     }
 
-    super.initPopup();
-  }
+    @Override
+    protected void initPopup() {
+        if (Capability.RUN_SCENARIO.isAvailable()) {
+            final JMenuItem runScenarioItem = new JMenuItem("Run Scenario...");
+            runScenarioItem.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(final ActionEvent action) {
+                    try {
+                        ProcessConnection.getConnection().runScenario((DomainServiceMetaData) getSelectedValue());
+                    } catch (final java.rmi.RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            popup.add(runScenarioItem);
+        }
+
+        super.initPopup();
+    }
 
 }

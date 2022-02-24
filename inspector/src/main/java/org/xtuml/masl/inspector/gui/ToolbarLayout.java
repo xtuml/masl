@@ -5,13 +5,11 @@
 //
 package org.xtuml.masl.inspector.gui;
 
-public class ToolbarLayout extends java.awt.FlowLayout
-{
+public class ToolbarLayout extends java.awt.FlowLayout {
 
-  public ToolbarLayout ()
-  {
-    super(LEFT);
-    setHgap(0);
-    setVgap(0);
-  }
+    public ToolbarLayout() {
+        super(LEFT);
+        setHgap(0);
+        setVgap(0);
+    }
 }

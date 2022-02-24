@@ -13,69 +13,57 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+public abstract class DependentObjectList<Dependent, Discriminant> extends ComboList {
 
-public abstract class DependentObjectList<Dependent, Discriminant> extends ComboList
-{
+    private final Map<Object, Object> previousSelections = new HashMap<Object, Object>();
+    private final DependentObjectListModel<Dependent, Discriminant> model;
 
-  private final Map<Object, Object>                               previousSelections = new HashMap<Object, Object>();
-  private final DependentObjectListModel<Dependent, Discriminant> model;
+    public DependentObjectList(final DependentObjectListModel<Dependent, Discriminant> model) {
+        super(model);
 
-  public DependentObjectList ( final DependentObjectListModel<Dependent, Discriminant> model )
-  {
-    super(model);
+        this.model = model;
 
-    this.model = model;
+        addListSelectionListener(new ListSelectionListener() {
 
-    addListSelectionListener(new ListSelectionListener()
-    {
+            @Override
+            public void valueChanged(final ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting() && getSelectedValue() != null) {
+                    if (model.getDiscriminant() != null) {
+                        previousSelections.put(model.getDiscriminant(), getSelectedValue());
+                    }
+                }
+            }
+        });
 
-      public void valueChanged ( final ListSelectionEvent e )
-      {
-        if ( !e.getValueIsAdjusting() && getSelectedValue() != null )
-        {
-          if ( model.getDiscriminant() != null )
-          {
-            previousSelections.put(model.getDiscriminant(), getSelectedValue());
-          }
-        }
-      }
-    });
+        model.addListDataListener(new ListDataListener() {
 
-    model.addListDataListener(new ListDataListener()
-    {
+            @Override
+            public void contentsChanged(final ListDataEvent e) {
+                makeInitialSelection();
+            }
 
-      public void contentsChanged ( final ListDataEvent e )
-      {
-        makeInitialSelection();
-      }
+            @Override
+            public void intervalAdded(final ListDataEvent e) {
+                makeInitialSelection();
+            }
 
-      public void intervalAdded ( final ListDataEvent e )
-      {
-        makeInitialSelection();
-      }
+            @Override
+            public void intervalRemoved(final ListDataEvent e) {
+                makeInitialSelection();
+            }
 
-      public void intervalRemoved ( final ListDataEvent e )
-      {
-        makeInitialSelection();
-      }
-
-    });
-  }
-
-  public void makeInitialSelection ()
-  {
-    if ( model.getSize() > 0 )
-    {
-      if ( model.getDiscriminant() != null )
-      {
-        setSelectedValue(previousSelections.get(model.getDiscriminant()), true);
-      }
-      else
-      {
-        setSelectedIndex(0);
-        ensureIndexIsVisible(0);
-      }
+        });
     }
-  }
+
+    public void makeInitialSelection() {
+        if (model.getSize() > 0) {
+            if (model.getDiscriminant() != null) {
+                setSelectedValue(previousSelections.get(model.getDiscriminant()), true);
+            } else {
+                setSelectedIndex(0);
+                ensureIndexIsVisible(0);
+            }
+        }
+    }
 
 }

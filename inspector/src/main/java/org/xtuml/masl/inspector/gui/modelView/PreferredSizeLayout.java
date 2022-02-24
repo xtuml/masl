@@ -12,41 +12,36 @@ import java.awt.LayoutManager;
 
 import javax.swing.JComponent;
 
+public class PreferredSizeLayout implements LayoutManager, java.io.Serializable {
 
-public class PreferredSizeLayout
-    implements LayoutManager, java.io.Serializable
-{
-
-  public void addLayoutComponent ( final String name, final Component comp )
-  {
-  }
-
-  public void removeLayoutComponent ( final Component comp )
-  {
-  }
-
-  public Dimension minimumLayoutSize ( final Container target )
-  {
-    return ((JComponent)target).getMinimumSize();
-  }
-
-  public Dimension preferredLayoutSize ( final Container target )
-  {
-    return ((JComponent)target).getPreferredSize();
-  }
-
-  public void layoutContainer ( final Container parent )
-  {
-    for ( int i = 0; i < parent.getComponentCount(); i++ )
-    {
-      final Component m = parent.getComponent(i);
-      if ( m.isVisible() )
-      {
-        final Dimension d = m.getPreferredSize();
-        m.setSize(d.width, d.height);
-      }
+    @Override
+    public void addLayoutComponent(final String name, final Component comp) {
     }
 
-  }
+    @Override
+    public void removeLayoutComponent(final Component comp) {
+    }
+
+    @Override
+    public Dimension minimumLayoutSize(final Container target) {
+        return ((JComponent) target).getMinimumSize();
+    }
+
+    @Override
+    public Dimension preferredLayoutSize(final Container target) {
+        return ((JComponent) target).getPreferredSize();
+    }
+
+    @Override
+    public void layoutContainer(final Container parent) {
+        for (int i = 0; i < parent.getComponentCount(); i++) {
+            final Component m = parent.getComponent(i);
+            if (m.isVisible()) {
+                final Dimension d = m.getPreferredSize();
+                m.setSize(d.width, d.height);
+            }
+        }
+
+    }
 
 }

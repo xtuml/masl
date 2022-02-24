@@ -7,43 +7,36 @@ package org.xtuml.masl.inspector.processInterface;
 
 import java.io.File;
 
+public abstract class ProcessMetaData {
 
-public abstract class ProcessMetaData
-{
+    protected String name;
 
-  protected String name;
+    public String getName() {
+        return name;
+    }
 
-  public String getName ()
-  {
-    return name;
-  }
+    public abstract DomainMetaData getDomain(String domainName);
 
-  public abstract DomainMetaData getDomain ( String domainName );
+    public abstract DomainMetaData[] getDomains();
 
-  public abstract DomainMetaData[] getDomains ();
+    public abstract Plugin getPlugin(String pluginName);
 
-  public abstract Plugin getPlugin ( String pluginName );
+    public abstract Plugin[] getPlugins();
 
-  public abstract Plugin[] getPlugins ();
+    private File directory = null;
 
-  private File directory = null;
+    public void setDirectory(final File directory) {
+        this.directory = directory;
+    }
 
-  public void setDirectory ( final File directory )
-  {
-    this.directory = directory;
-  }
+    public File getDirectory() {
+        return directory == null ? getDefaultDirectory() : directory;
+    }
 
-  public File getDirectory ()
-  {
-    return directory == null ? getDefaultDirectory() : directory;
-  }
+    protected File defaultDirectory;
 
-  protected File defaultDirectory;
-
-  protected File getDefaultDirectory ()
-  {
-    return defaultDirectory;
-  }
-
+    protected File getDefaultDirectory() {
+        return defaultDirectory;
+    }
 
 }

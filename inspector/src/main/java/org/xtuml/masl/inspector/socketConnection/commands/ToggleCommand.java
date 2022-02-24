@@ -9,23 +9,19 @@ import java.io.IOException;
 
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class ToggleCommand extends CommandStub<VoidType> {
 
-public class ToggleCommand extends CommandStub<VoidType>
-{
+    private final boolean toggle;
 
-  private final boolean toggle;
+    public ToggleCommand(final ServerCommandId commandId, final boolean toggle) {
+        super(commandId);
+        this.toggle = toggle;
+    }
 
-  public ToggleCommand ( final ServerCommandId commandId, final boolean toggle )
-  {
-    super(commandId);
-    this.toggle = toggle;
-  }
-
-  @Override
-  public VoidType execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(toggle);
-    return null;
-  }
+    @Override
+    public VoidType execute(final CommunicationChannel channel) throws IOException {
+        channel.writeData(toggle);
+        return null;
+    }
 
 }

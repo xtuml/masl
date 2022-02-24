@@ -10,24 +10,20 @@ import java.io.IOException;
 import org.xtuml.masl.inspector.socketConnection.ObjectMetaData;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class GetInstanceCount extends CommandStub<Integer> {
 
-public class GetInstanceCount extends CommandStub<Integer>
-{
+    private final ObjectMetaData meta;
 
-  private final ObjectMetaData meta;
+    public GetInstanceCount(final ObjectMetaData meta) {
+        super(ServerCommandId.GET_INSTANCE_COUNT);
+        this.meta = meta;
+    }
 
-  public GetInstanceCount ( final ObjectMetaData meta )
-  {
-    super(ServerCommandId.GET_INSTANCE_COUNT);
-    this.meta = meta;
-  }
-
-  @Override
-  public Integer execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(meta.getDomain().getId());
-    channel.writeData(meta.getArchId());
-    channel.flush();
-    return channel.readInt();
-  }
+    @Override
+    public Integer execute(final CommunicationChannel channel) throws IOException {
+        channel.writeData(meta.getDomain().getId());
+        channel.writeData(meta.getArchId());
+        channel.flush();
+        return channel.readInt();
+    }
 }

@@ -13,42 +13,36 @@ import javax.swing.JPopupMenu;
 import org.xtuml.masl.inspector.processInterface.EventMetaData;
 import org.xtuml.masl.inspector.processInterface.ObjectMetaData;
 
+public class AssignerEventList extends DependentObjectList<EventMetaData, ObjectMetaData> {
 
-public class AssignerEventList extends DependentObjectList<EventMetaData, ObjectMetaData>
-{
+    public AssignerEventList(final ObjectList objectList) {
+        super(new DependentObjectListModel<EventMetaData, ObjectMetaData>(objectList) {
 
-  public AssignerEventList ( final ObjectList objectList )
-  {
-    super(new DependentObjectListModel<EventMetaData, ObjectMetaData>(objectList)
-        {
-
-          @Override
-          protected EventMetaData[] getDependentValues ( final ObjectMetaData dependee )
-          {
-            final EventMetaData[] events = dependee.getAssignerEvents();
-            Arrays.sort(events);
-            return events;
-          }
+            @Override
+            protected EventMetaData[] getDependentValues(final ObjectMetaData dependee) {
+                final EventMetaData[] events = dependee.getAssignerEvents();
+                Arrays.sort(events);
+                return events;
+            }
 
         });
-    addMouseListener(new ListPopupHandler(getPopup()));
+        addMouseListener(new ListPopupHandler(getPopup()));
 
-  }
+    }
 
-  @Override
-  public Dimension getPreferredScrollableViewportSize ()
-  {
-    final Dimension d = super.getPreferredScrollableViewportSize();
+    @Override
+    public Dimension getPreferredScrollableViewportSize() {
+        final Dimension d = super.getPreferredScrollableViewportSize();
 
-    d.width = getCellRenderer().getListCellRendererComponent(this, "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", 0, true, true)
-                               .getPreferredSize().width;
+        d.width = getCellRenderer()
+                .getListCellRendererComponent(this, "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", 0, true, true)
+                .getPreferredSize().width;
 
-    return d;
-  }
+        return d;
+    }
 
-  private JPopupMenu getPopup ()
-  {
-    return null;
-  }
+    private JPopupMenu getPopup() {
+        return null;
+    }
 
 }

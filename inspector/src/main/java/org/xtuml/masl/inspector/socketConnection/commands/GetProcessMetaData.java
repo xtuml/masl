@@ -10,20 +10,16 @@ import java.io.IOException;
 import org.xtuml.masl.inspector.socketConnection.ProcessMetaData;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class GetProcessMetaData extends CommandStub<ProcessMetaData> {
 
-public class GetProcessMetaData extends CommandStub<ProcessMetaData>
-{
+    public GetProcessMetaData() {
+        super(ServerCommandId.GET_PROCESS_DATA);
+    }
 
-  public GetProcessMetaData ()
-  {
-    super(ServerCommandId.GET_PROCESS_DATA);
-  }
-
-  @Override
-  public ProcessMetaData execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.flush();
-    return channel.readObject(ProcessMetaData.class);
-  }
+    @Override
+    public ProcessMetaData execute(final CommunicationChannel channel) throws IOException {
+        channel.flush();
+        return channel.readObject(ProcessMetaData.class);
+    }
 
 }

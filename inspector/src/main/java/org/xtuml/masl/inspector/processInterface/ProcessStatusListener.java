@@ -5,9 +5,7 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public interface ProcessStatusListener
-    extends java.util.EventListener
-{
+public interface ProcessStatusListener extends java.util.EventListener {
 
-  public void processStatusChanged ( ProcessStatusEvent e );
+    public void processStatusChanged(ProcessStatusEvent e);
 }

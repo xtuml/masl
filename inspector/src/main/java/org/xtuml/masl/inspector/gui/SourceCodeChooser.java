@@ -10,46 +10,39 @@ import javax.swing.filechooser.FileFilter;
 
 import org.xtuml.masl.inspector.processInterface.ExecutableSource;
 
+public class SourceCodeChooser extends JFileChooser {
 
-public class SourceCodeChooser extends JFileChooser
-{
+    private final static FileFilter serviceFilter = new ExtensionFileFilter("svc", "Object Service");
+    private final static FileFilter stateActionFilter = new ExtensionFileFilter("al", "State Action");
+    private final static FileFilter bridgeFilter = new ExtensionFileFilter(new String[] { "fn", "tr", "svc" },
+            "Domain Service/Bridge");
+    private final static FileFilter externalFilter = new ExtensionFileFilter("ext", "External");
+    private final static FileFilter scenarioFilter = new ExtensionFileFilter("scn", "Scenario");
 
-  private final static FileFilter serviceFilter     = new ExtensionFileFilter("svc", "Object Service");
-  private final static FileFilter stateActionFilter = new ExtensionFileFilter("al", "State Action");
-  private final static FileFilter bridgeFilter      = new ExtensionFileFilter(new String[]
-                                                      { "fn", "tr", "svc" }, "Domain Service/Bridge");
-  private final static FileFilter externalFilter    = new ExtensionFileFilter("ext", "External");
-  private final static FileFilter scenarioFilter    = new ExtensionFileFilter("scn", "Scenario");
+    public SourceCodeChooser(final ExecutableSource source) {
+        addChoosableFileFilter(source.getSourceFileFilter());
+        addChoosableFileFilter(serviceFilter);
+        addChoosableFileFilter(stateActionFilter);
+        addChoosableFileFilter(bridgeFilter);
+        addChoosableFileFilter(stateActionFilter);
+        addChoosableFileFilter(externalFilter);
+        addChoosableFileFilter(scenarioFilter);
+        setAcceptAllFileFilterUsed(true);
 
-  public SourceCodeChooser ( final ExecutableSource source )
-  {
-    addChoosableFileFilter(source.getSourceFileFilter());
-    addChoosableFileFilter(serviceFilter);
-    addChoosableFileFilter(stateActionFilter);
-    addChoosableFileFilter(bridgeFilter);
-    addChoosableFileFilter(stateActionFilter);
-    addChoosableFileFilter(externalFilter);
-    addChoosableFileFilter(scenarioFilter);
-    setAcceptAllFileFilterUsed(true);
+        setFileFilter(source.getSourceFileFilter());
 
-    setFileFilter(source.getSourceFileFilter());
+        setDialogTitle("Open " + source.getFullyQualifiedName() + " Source");
+        if (source.getSourceFile() == null) {
+            setCurrentDirectory(source.getDirectory());
+        } else {
+            setCurrentDirectory(source.getSourceFile().getParentFile());
+        }
+        setApproveButtonText("Open");
 
-    setDialogTitle("Open " + source.getFullyQualifiedName() + " Source");
-    if ( source.getSourceFile() == null )
-    {
-      setCurrentDirectory(source.getDirectory());
     }
-    else
-    {
-      setCurrentDirectory(source.getSourceFile().getParentFile());
+
+    public int showDialog() {
+        return showDialog(null, null);
     }
-    setApproveButtonText("Open");
-
-  }
-
-  public int showDialog ()
-  {
-    return showDialog(null, null);
-  }
 
 }

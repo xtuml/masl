@@ -7,22 +7,18 @@ package org.xtuml.masl.inspector.processInterface;
 
 import java.io.File;
 
+public abstract class DomainServiceMetaData extends ServiceMetaData {
 
-public abstract class DomainServiceMetaData extends ServiceMetaData
-{
+    public abstract DomainMetaData getDomain();
 
-  public abstract DomainMetaData getDomain ();
+    @Override
+    public String getFullyQualifiedName() {
+        return getDomain().getName() + "::" + getName();
+    }
 
-  @Override
-  public String getFullyQualifiedName ()
-  {
-    return getDomain().getName() + "::" + getName();
-  }
-
-  @Override
-  public File getDirectory ()
-  {
-    return getDomain().getDirectory();
-  }
+    @Override
+    public File getDirectory() {
+        return getDomain().getDirectory();
+    }
 
 }

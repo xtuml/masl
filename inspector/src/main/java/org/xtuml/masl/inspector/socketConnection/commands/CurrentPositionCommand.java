@@ -9,24 +9,19 @@ import org.xtuml.masl.inspector.socketConnection.ProcessConnection;
 import org.xtuml.masl.inspector.socketConnection.SourcePosition;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class CurrentPositionCommand extends CommandImpl {
 
-public class CurrentPositionCommand extends CommandImpl
-{
-
-  public CurrentPositionCommand ()
-  {
-  }
-
-  @Override
-  protected void execute ( final CommunicationChannel channel ) throws java.io.IOException
-  {
-    SourcePosition position = channel.readData(SourcePosition.class);
-
-    if ( position.getSource() == null )
-    {
-      position = null;
+    public CurrentPositionCommand() {
     }
 
-    ProcessConnection.getConnection().setCurrentPosition(position);
-  }
+    @Override
+    protected void execute(final CommunicationChannel channel) throws java.io.IOException {
+        SourcePosition position = channel.readData(SourcePosition.class);
+
+        if (position.getSource() == null) {
+            position = null;
+        }
+
+        ProcessConnection.getConnection().setCurrentPosition(position);
+    }
 }

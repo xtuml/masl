@@ -11,28 +11,24 @@ import org.xtuml.masl.inspector.socketConnection.InstanceData;
 import org.xtuml.masl.inspector.socketConnection.ObjectMetaData;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class CreateSingleInstance extends CommandStub<VoidType> {
 
-public class CreateSingleInstance extends CommandStub<VoidType>
-{
+    private final ObjectMetaData meta;
+    private final InstanceData data;
 
-  private final ObjectMetaData meta;
-  private final InstanceData   data;
+    public CreateSingleInstance(final ObjectMetaData meta, final InstanceData data) {
+        super(ServerCommandId.CREATE_SINGLE_INSTANCE);
+        this.meta = meta;
+        this.data = data;
+    }
 
-  public CreateSingleInstance ( final ObjectMetaData meta, final InstanceData data )
-  {
-    super(ServerCommandId.CREATE_SINGLE_INSTANCE);
-    this.meta = meta;
-    this.data = data;
-  }
-
-  @Override
-  public VoidType execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(meta.getDomain().getId());
-    channel.writeData(meta.getArchId());
-    channel.writeData(data);
-    channel.flush();
-    data.setPrimaryKey(new Integer(channel.readInt()));
-    return null;
-  }
+    @Override
+    public VoidType execute(final CommunicationChannel channel) throws IOException {
+        channel.writeData(meta.getDomain().getId());
+        channel.writeData(meta.getArchId());
+        channel.writeData(data);
+        channel.flush();
+        data.setPrimaryKey(new Integer(channel.readInt()));
+        return null;
+    }
 }

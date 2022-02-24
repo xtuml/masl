@@ -11,16 +11,14 @@ import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 import org.xtuml.masl.inspector.socketConnection.ipc.ReadableObject;
 import org.xtuml.masl.inspector.socketConnection.ipc.WriteableObject;
 
-
 public class DeviceData extends org.xtuml.masl.inspector.processInterface.DeviceData
-    implements ReadableObject, WriteableObject
-{
+        implements ReadableObject, WriteableObject {
 
-  public void read ( final CommunicationChannel channel ) throws IOException
-  {
-  }
+    @Override
+    public void read(final CommunicationChannel channel) throws IOException {
+    }
 
-  public void write ( final CommunicationChannel channel ) throws IOException
-  {
-  }
+    @Override
+    public void write(final CommunicationChannel channel) throws IOException {
+    }
 }

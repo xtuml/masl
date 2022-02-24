@@ -5,24 +5,19 @@
 //
 package org.xtuml.masl.inspector.gui;
 
-public class InspectorSubFrame extends javax.swing.JFrame
-{
+public class InspectorSubFrame extends javax.swing.JFrame {
 
-  public InspectorSubFrame ( final String title )
-  {
-    super(title);
-    setIconImage(getToolkit().getImage(ClassLoader.getSystemResource("icons/inspector.gif")));
+    public InspectorSubFrame(final String title) {
+        super(title);
+        setIconImage(getToolkit().getImage(ClassLoader.getSystemResource("icons/inspector.gif")));
 
-  }
+    }
 
-  public void addToWindowMenu ()
-  {
-    WindowMenu.getInstance().addWindow(this);
-  }
+    public void addToWindowMenu() {
+        WindowMenu.getInstance().addWindow(this);
+    }
 
-
-  public InspectorSubFrame ()
-  {
-    this("");
-  }
+    public InspectorSubFrame() {
+        this("");
+    }
 }

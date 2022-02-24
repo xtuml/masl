@@ -10,19 +10,15 @@ import java.io.IOException;
 import org.xtuml.masl.inspector.socketConnection.EventData;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class GetEventQueue extends CommandStub<EventData[]> {
 
-public class GetEventQueue extends CommandStub<EventData[]>
-{
+    public GetEventQueue() {
+        super(ServerCommandId.GET_EVENT_QUEUE);
+    }
 
-  public GetEventQueue ()
-  {
-    super(ServerCommandId.GET_EVENT_QUEUE);
-  }
-
-  @Override
-  public EventData[] execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.flush();
-    return channel.readObjectArray(EventData[].class, EventData.class);
-  }
+    @Override
+    public EventData[] execute(final CommunicationChannel channel) throws IOException {
+        channel.flush();
+        return channel.readObjectArray(EventData[].class, EventData.class);
+    }
 }

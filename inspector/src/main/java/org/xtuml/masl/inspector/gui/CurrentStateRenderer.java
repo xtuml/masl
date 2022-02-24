@@ -10,24 +10,19 @@ import java.util.Map;
 
 import org.xtuml.masl.inspector.processInterface.StateMetaData;
 
+class CurrentStateRenderer extends javax.swing.table.DefaultTableCellRenderer {
 
-class CurrentStateRenderer extends javax.swing.table.DefaultTableCellRenderer
-{
+    private final Map<Integer, String> lookup = new HashMap<Integer, String>();
 
-  private final Map<Integer, String> lookup = new HashMap<Integer, String>();
-
-  public CurrentStateRenderer ( final StateMetaData[] states )
-  {
-    super();
-    for ( final StateMetaData state : states )
-    {
-      lookup.put(new Integer(state.getId()), state.getName());
+    public CurrentStateRenderer(final StateMetaData[] states) {
+        super();
+        for (final StateMetaData state : states) {
+            lookup.put(new Integer(state.getId()), state.getName());
+        }
     }
-  }
 
-  @Override
-  public void setValue ( final Object value )
-  {
-    setText(lookup.get(value));
-  }
+    @Override
+    public void setValue(final Object value) {
+        setText(lookup.get(value));
+    }
 }

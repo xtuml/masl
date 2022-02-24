@@ -8,41 +8,35 @@ package org.xtuml.masl.inspector.processInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+public abstract class AnyInstanceData extends DataValue<AnyInstanceData> implements Comparable<AnyInstanceData> {
 
-public abstract class AnyInstanceData extends DataValue<AnyInstanceData>
-    implements Comparable<AnyInstanceData>
-{
+    @Override
+    public AnyInstanceData getValue() {
+        return this;
+    }
 
-  @Override
-  public AnyInstanceData getValue ()
-  {
-    return this;
-  }
+    @Override
+    public void setValue(final AnyInstanceData value) {
+    }
 
-  @Override
-  public void setValue ( final AnyInstanceData value )
-  {
-  }
+    @Override
+    public Node toXML(final Document document) {
+        return document.createDocumentFragment();
+    }
 
-  public Node toXML ( final Document document )
-  {
-    return document.createDocumentFragment();
-  }
+    @Override
+    public void fromXML(final Node parent) {
+    }
 
-  public void fromXML ( final Node parent )
-  {
-  }
+    @Override
+    public String toString() {
+        return isValid() ? "instance" : "null";
+    }
 
-  @Override
-  public String toString ()
-  {
-    return isValid() ? "instance" : "null";
-  }
+    @Override
+    public int compareTo(final AnyInstanceData o) {
+        return 0;
+    }
 
-  public int compareTo ( final AnyInstanceData o )
-  {
-    return 0;
-  }
-
-  public abstract boolean isValid ();
+    public abstract boolean isValid();
 }

@@ -5,9 +5,7 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public interface BacklogListener
-    extends java.util.EventListener
-{
+public interface BacklogListener extends java.util.EventListener {
 
-  public void backlogChanged ( BacklogEvent e );
+    public void backlogChanged(BacklogEvent e);
 }

@@ -11,25 +11,22 @@ import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 import org.xtuml.masl.inspector.socketConnection.ipc.ReadableObject;
 import org.xtuml.masl.inspector.socketConnection.ipc.WriteableObject;
 
-
 public class AnyInstanceData extends org.xtuml.masl.inspector.processInterface.AnyInstanceData
-    implements ReadableObject, WriteableObject
-{
+        implements ReadableObject, WriteableObject {
 
-  public void read ( final CommunicationChannel channel ) throws IOException
-  {
-    valid = channel.readBoolean();
-  }
+    @Override
+    public void read(final CommunicationChannel channel) throws IOException {
+        valid = channel.readBoolean();
+    }
 
-  public void write ( final CommunicationChannel channel ) throws IOException
-  {
-  }
+    @Override
+    public void write(final CommunicationChannel channel) throws IOException {
+    }
 
-  @Override
-  public boolean isValid ()
-  {
-    return valid;
-  }
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
 
-  private boolean valid;
+    private boolean valid;
 }

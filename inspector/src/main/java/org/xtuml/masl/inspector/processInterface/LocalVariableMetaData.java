@@ -5,19 +5,17 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
-public abstract class LocalVariableMetaData
-{
+public abstract class LocalVariableMetaData {
 
-  public abstract String getName ();
+    public abstract String getName();
 
-  public abstract String getTypeName ();
+    public abstract String getTypeName();
 
-  public abstract TypeMetaData getType ();
+    public abstract TypeMetaData getType();
 
-  @Override
-  public String toString ()
-  {
-    return getName() + " : " + getTypeName();
-  }
+    @Override
+    public String toString() {
+        return getName() + " : " + getTypeName();
+    }
 
 }

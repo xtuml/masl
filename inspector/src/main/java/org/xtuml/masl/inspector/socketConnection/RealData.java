@@ -11,19 +11,17 @@ import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 import org.xtuml.masl.inspector.socketConnection.ipc.ReadableObject;
 import org.xtuml.masl.inspector.socketConnection.ipc.WriteableObject;
 
-
 public class RealData extends org.xtuml.masl.inspector.processInterface.RealData
-    implements ReadableObject, WriteableObject
-{
+        implements ReadableObject, WriteableObject {
 
-  public void read ( final CommunicationChannel channel ) throws IOException
-  {
-    setValue(new Double(channel.readDouble()));
-  }
+    @Override
+    public void read(final CommunicationChannel channel) throws IOException {
+        setValue(new Double(channel.readDouble()));
+    }
 
-  public void write ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(getValue());
-  }
+    @Override
+    public void write(final CommunicationChannel channel) throws IOException {
+        channel.writeData(getValue());
+    }
 
 }

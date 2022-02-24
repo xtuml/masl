@@ -5,28 +5,23 @@
 //
 package org.xtuml.masl.inspector.processInterface;
 
+public abstract class LongData extends SimpleDataValue<Long> {
 
-public abstract class LongData extends SimpleDataValue<Long>
-{
+    private static Long ZERO = 0l;
 
-  private static Long ZERO = 0l;
+    @Override
+    public Class<Long> getValueClass() {
+        return Long.class;
+    }
 
-  @Override
-  public Class<Long> getValueClass ()
-  {
-    return Long.class;
-  }
+    @Override
+    public void fromString(final String string) {
+        setValue(Long.decode(string));
+    }
 
-  @Override
-  public void fromString ( final String string )
-  {
-    setValue(Long.decode(string));
-  }
-
-  @Override
-  protected void setToDefaultValue ()
-  {
-    setValue(ZERO);
-  }
+    @Override
+    protected void setToDefaultValue() {
+        setValue(ZERO);
+    }
 
 }

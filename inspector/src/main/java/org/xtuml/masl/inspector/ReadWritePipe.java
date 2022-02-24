@@ -10,56 +10,41 @@ import java.io.InterruptedIOException;
 import java.io.Reader;
 import java.io.Writer;
 
+public class ReadWritePipe extends Thread {
 
-public class ReadWritePipe extends Thread
-{
+    private final Reader reader;
+    private final Writer writer;
 
-  private final Reader     reader;
-  private final Writer     writer;
+    private static final int bufferSize = 8192;
 
-  private static final int bufferSize = 8192;
+    public ReadWritePipe(final Reader in, final Writer out) {
+        reader = in;
+        writer = out;
+        setDaemon(true);
+        start();
+    }
 
-  public ReadWritePipe ( final Reader in, final Writer out )
-  {
-    reader = in;
-    writer = out;
-    setDaemon(true);
-    start();
-  }
-
-  @Override
-  public void run ()
-  {
-    try
-    {
-      final char[] data = new char[bufferSize];
-      int charsRead;
-      while ( !isInterrupted() )
-      {
-        charsRead = reader.read(data);
-        if ( charsRead > 0 )
-        {
-          writer.write(data, 0, charsRead);
-          // If read would block, then flush the output first
-          if ( !reader.ready() )
-          {
-            writer.flush();
-          }
+    @Override
+    public void run() {
+        try {
+            final char[] data = new char[bufferSize];
+            int charsRead;
+            while (!isInterrupted()) {
+                charsRead = reader.read(data);
+                if (charsRead > 0) {
+                    writer.write(data, 0, charsRead);
+                    // If read would block, then flush the output first
+                    if (!reader.ready()) {
+                        writer.flush();
+                    }
+                } else {
+                    writer.flush();
+                }
+            }
+        } catch (final InterruptedIOException e) {
+        } catch (final IOException e) {
+            e.printStackTrace();
         }
-        else
-        {
-          writer.flush();
-        }
-      }
     }
-    catch ( final InterruptedIOException e )
-    {
-    }
-    catch ( final IOException e )
-    {
-      e.printStackTrace();
-    }
-  }
-
 
 }

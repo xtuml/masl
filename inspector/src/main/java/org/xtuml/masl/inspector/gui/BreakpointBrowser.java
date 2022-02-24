@@ -18,98 +18,83 @@ import javax.swing.WindowConstants;
 
 import org.xtuml.masl.inspector.BreakpointController;
 
+public class BreakpointBrowser extends InspectorSubFrame {
 
-public class BreakpointBrowser extends InspectorSubFrame
-{
+    static BreakpointBrowser instance = null;
 
-  static BreakpointBrowser instance = null;
-
-  public static void display ()
-  {
-    if ( instance == null )
-    {
-      instance = new BreakpointBrowser();
+    public static void display() {
+        if (instance == null) {
+            instance = new BreakpointBrowser();
+        }
+        instance.setState(java.awt.Frame.NORMAL);
+        instance.toFront();
     }
-    instance.setState(java.awt.Frame.NORMAL);
-    instance.toFront();
-  }
 
-  static void closeBrowser ()
-  {
-    instance = null;
-  }
+    static void closeBrowser() {
+        instance = null;
+    }
 
-  BreakpointTable table;
+    BreakpointTable table;
 
-  BreakpointBrowser ()
-  {
-    super("Breakpoints");
+    BreakpointBrowser() {
+        super("Breakpoints");
 
-    table = new BreakpointTable();
+        table = new BreakpointTable();
 
-    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-    getContentPane().add(new JScrollPane(table));
-    addMenus();
-    pack();
-    setSize(getPreferredSize());
+        getContentPane().add(new JScrollPane(table));
+        addMenus();
+        pack();
+        setSize(getPreferredSize());
 
-    addWindowListener(new WindowAdapter()
-    {
+        addWindowListener(new WindowAdapter() {
 
-      @Override
-      public void windowClosed ( final WindowEvent e )
-      {
-        closeBrowser();
-      }
-    });
-    setVisible(true);
-    addToWindowMenu();
-  }
-
-  private void addMenus ()
-  {
-    final JMenuBar mainMenu = new JMenuBar();
-    setJMenuBar(mainMenu);
-
-    final JMenu fileMenu = new JMenu("File");
-    mainMenu.add(fileMenu);
-
-    final JMenuItem exitItem = new JMenuItem(new FrameCloseAction(this));
-    fileMenu.add(exitItem);
-
-    final JMenu breakpointMenu = new JMenu("Breakpoints");
-    mainMenu.add(breakpointMenu);
-
-    breakpointMenu.add(
-                  new AbstractAction("Set All")
-          {
-
-            public void actionPerformed ( final ActionEvent action )
-            {
-              BreakpointController.getInstance().setAllBreakpoints();
+            @Override
+            public void windowClosed(final WindowEvent e) {
+                closeBrowser();
             }
-          });
+        });
+        setVisible(true);
+        addToWindowMenu();
+    }
 
-    breakpointMenu.add(
-                  new AbstractAction("Clear All")
-          {
+    private void addMenus() {
+        final JMenuBar mainMenu = new JMenuBar();
+        setJMenuBar(mainMenu);
 
-            public void actionPerformed ( final ActionEvent action )
-            {
-              BreakpointController.getInstance().clearAllBreakpoints();
+        final JMenu fileMenu = new JMenu("File");
+        mainMenu.add(fileMenu);
+
+        final JMenuItem exitItem = new JMenuItem(new FrameCloseAction(this));
+        fileMenu.add(exitItem);
+
+        final JMenu breakpointMenu = new JMenu("Breakpoints");
+        mainMenu.add(breakpointMenu);
+
+        breakpointMenu.add(new AbstractAction("Set All") {
+
+            @Override
+            public void actionPerformed(final ActionEvent action) {
+                BreakpointController.getInstance().setAllBreakpoints();
             }
-          });
+        });
 
-    breakpointMenu.add(
-                  new AbstractAction("Remove All")
-          {
+        breakpointMenu.add(new AbstractAction("Clear All") {
 
-            public void actionPerformed ( final ActionEvent action )
-            {
-              BreakpointController.getInstance().removeAllBreakpoints();
+            @Override
+            public void actionPerformed(final ActionEvent action) {
+                BreakpointController.getInstance().clearAllBreakpoints();
             }
-          });
-  }
+        });
+
+        breakpointMenu.add(new AbstractAction("Remove All") {
+
+            @Override
+            public void actionPerformed(final ActionEvent action) {
+                BreakpointController.getInstance().removeAllBreakpoints();
+            }
+        });
+    }
 
 }

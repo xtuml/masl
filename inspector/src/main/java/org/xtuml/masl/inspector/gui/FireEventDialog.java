@@ -12,39 +12,31 @@ import org.xtuml.masl.inspector.processInterface.EventMetaData;
 import org.xtuml.masl.inspector.processInterface.ObjectMetaData;
 import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
+class FireEventDialog extends InvokeDialog {
 
-class FireEventDialog extends InvokeDialog
-{
+    private final EventMetaData event;
+    private final ObjectMetaData object;
+    private final Integer pk;
 
-  private final EventMetaData  event;
-  private final ObjectMetaData object;
-  private final Integer        pk;
-
-  public FireEventDialog ( final EventMetaData event )
-  {
-    this(event, null, null);
-  }
-
-  public FireEventDialog ( final EventMetaData event, final ObjectMetaData object, final Integer pk )
-  {
-    super(event.getFullyQualifiedName(), "Run", object, pk, event.getParameters());
-    this.event = event;
-    this.object = object;
-    this.pk = pk;
-    display();
-  }
-
-  @Override
-  protected void invoke ( final DataValue<?>[] parameters )
-  {
-    try
-    {
-      ProcessConnection.getConnection().fireEvent(event, object, pk, parameters);
+    public FireEventDialog(final EventMetaData event) {
+        this(event, null, null);
     }
-    catch ( final RemoteException e )
-    {
-      e.printStackTrace();
+
+    public FireEventDialog(final EventMetaData event, final ObjectMetaData object, final Integer pk) {
+        super(event.getFullyQualifiedName(), "Run", object, pk, event.getParameters());
+        this.event = event;
+        this.object = object;
+        this.pk = pk;
+        display();
     }
-  }
+
+    @Override
+    protected void invoke(final DataValue<?>[] parameters) {
+        try {
+            ProcessConnection.getConnection().fireEvent(event, object, pk, parameters);
+        } catch (final RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -8,17 +8,13 @@ package org.xtuml.masl.inspector.socketConnection.commands;
 import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class RunningCommand extends CommandImpl {
 
-public class RunningCommand extends CommandImpl
-{
+    public RunningCommand() {
+    }
 
-  public RunningCommand ()
-  {
-  }
-
-  @Override
-  protected void execute ( final CommunicationChannel channel ) throws java.io.IOException
-  {
-    ProcessConnection.getConnection().setRunning();
-  }
+    @Override
+    protected void execute(final CommunicationChannel channel) throws java.io.IOException {
+        ProcessConnection.getConnection().setRunning();
+    }
 }

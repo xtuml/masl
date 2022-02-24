@@ -10,49 +10,40 @@ import org.xtuml.masl.inspector.processInterface.ProcessStatusEvent;
 import org.xtuml.masl.inspector.processInterface.ProcessStatusListener;
 import org.xtuml.masl.inspector.processInterface.WeakProcessStatusListener;
 
+public class RunSchedule implements ProcessStatusListener {
 
-public class RunSchedule
-    implements ProcessStatusListener
-{
-
-  public RunSchedule () throws Exception
-  {
-    ProcessConnection.getConnection().setCatchConsole(false);
-    ProcessConnection.getConnection().addProcessStatusListener(new WeakProcessStatusListener(this));
-  }
-
-  private volatile boolean finished = false;
-
-  public void run ( final java.io.File schedule ) throws Exception
-  {
-    finished = false;
-    System.out.print("Running Schedule " + schedule.getCanonicalPath() + "...");
-    ProcessConnection.getConnection().runTestSchedule(schedule);
-    Thread.yield();
-    while ( !finished )
-    {
-      System.out.print(".");
-      Thread.sleep(250);
+    public RunSchedule() throws Exception {
+        ProcessConnection.getConnection().setCatchConsole(false);
+        ProcessConnection.getConnection().addProcessStatusListener(new WeakProcessStatusListener(this));
     }
-    System.out.println("done");
-  }
 
-  public void processStatusChanged ( final ProcessStatusEvent e )
-  {
-    if ( e.getStatus() == ProcessConnection.IDLE )
-    {
-      finished = true;
+    private volatile boolean finished = false;
+
+    public void run(final java.io.File schedule) throws Exception {
+        finished = false;
+        System.out.print("Running Schedule " + schedule.getCanonicalPath() + "...");
+        ProcessConnection.getConnection().runTestSchedule(schedule);
+        Thread.yield();
+        while (!finished) {
+            System.out.print(".");
+            Thread.sleep(250);
+        }
+        System.out.println("done");
     }
-  }
 
-  public static void main ( final String[] args ) throws Exception
-  {
-    System.setProperty("java.awt.headless", "true");
-    final RunSchedule runner = new RunSchedule();
-
-    for ( int i = 0; i < args.length; ++i )
-    {
-      runner.run(new java.io.File(args[i]));
+    @Override
+    public void processStatusChanged(final ProcessStatusEvent e) {
+        if (e.getStatus() == ProcessConnection.IDLE) {
+            finished = true;
+        }
     }
-  }
+
+    public static void main(final String[] args) throws Exception {
+        System.setProperty("java.awt.headless", "true");
+        final RunSchedule runner = new RunSchedule();
+
+        for (int i = 0; i < args.length; ++i) {
+            runner.run(new java.io.File(args[i]));
+        }
+    }
 }

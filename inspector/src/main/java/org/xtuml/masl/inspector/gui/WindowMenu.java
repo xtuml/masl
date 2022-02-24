@@ -20,143 +20,116 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+public class WindowMenu extends JMenu {
 
-public class WindowMenu extends JMenu
-{
+    public static WindowMenu instance = new WindowMenu();
 
-  public static WindowMenu instance = new WindowMenu();
+    public static WindowMenu getInstance() {
+        return instance;
+    }
 
-  public static WindowMenu getInstance ()
-  {
-    return instance;
-  }
+    private final int xOffset = 25;
+    private final int yOffset = 25;
 
+    private JFrame parentFrame;
+    private java.awt.Point nextLocation = null;
 
-  private final int      xOffset      = 25;
-  private final int      yOffset      = 25;
+    public WindowMenu() {
+        super("Window");
 
-  private JFrame         parentFrame;
-  private java.awt.Point nextLocation = null;
+        super.add(new JMenuItem(new AbstractAction("Arrange") {
 
-  public WindowMenu ()
-  {
-    super("Window");
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                arrangeWindows();
+            }
+        }));
 
-    super.add(new JMenuItem(new AbstractAction("Arrange")
-      {
+        super.addSeparator();
+    }
 
-        public void actionPerformed ( final ActionEvent e )
-        {
-          arrangeWindows();
+    private void resetLocation() {
+        nextLocation = null;
+    }
+
+    private Point getNextLocation(final Dimension size) {
+        if (parentFrame == null) {
+            Component comp = this;
+            while (parentFrame == null) {
+                comp = comp.getParent();
+                if (comp instanceof JFrame) {
+                    parentFrame = (JFrame) comp;
+                }
+            }
         }
-      }));
-
-    super.addSeparator();
-  }
-
-  private void resetLocation ()
-  {
-    nextLocation = null;
-  }
-
-  private Point getNextLocation ( final Dimension size )
-  {
-    if ( parentFrame == null )
-    {
-      Component comp = this;
-      while ( parentFrame == null )
-      {
-        comp = comp.getParent();
-        if ( comp instanceof JFrame )
-        {
-          parentFrame = (JFrame)comp;
+        if (nextLocation == null) {
+            nextLocation = new java.awt.Point(parentFrame.getX() + xOffset * 2, parentFrame.getY() + yOffset * 2);
+        } else {
+            nextLocation.x += xOffset;
+            nextLocation.y += yOffset;
         }
-      }
-    }
-    if ( nextLocation == null )
-    {
-      nextLocation = new java.awt.Point(parentFrame.getX() + xOffset * 2, parentFrame.getY() + yOffset * 2);
-    }
-    else
-    {
-      nextLocation.x += xOffset;
-      nextLocation.y += yOffset;
-    }
-    final Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+        final Rectangle screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 
-    // getMaximumWindowBounds is supposed to return total screen size, across
-    // all screens, but it doesn't seem to, so mutiply width by number of
-    // screens.
-    final GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-    nextLocation.x = nextLocation.x % (screen.width * screens.length);
-    nextLocation.y = nextLocation.y % screen.height;
+        // getMaximumWindowBounds is supposed to return total screen size, across
+        // all screens, but it doesn't seem to, so mutiply width by number of
+        // screens.
+        final GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        nextLocation.x = nextLocation.x % (screen.width * screens.length);
+        nextLocation.y = nextLocation.y % screen.height;
 
-    if ( nextLocation.x + size.getWidth() > screen.width * screens.length )
-    {
-      nextLocation.x = 0;
-    }
-    if ( nextLocation.y + size.getHeight() > screen.height )
-    {
-      nextLocation.y = 0;
+        if (nextLocation.x + size.getWidth() > screen.width * screens.length) {
+            nextLocation.x = 0;
+        }
+        if (nextLocation.y + size.getHeight() > screen.height) {
+            nextLocation.y = 0;
+        }
+
+        return nextLocation;
     }
 
-    return nextLocation;
-  }
+    public void arrangeWindows() {
+        resetLocation();
+        for (int i = 2; i < getItemCount(); i++) {
+            final JFrame window = (JFrame) getItem(i).getClientProperty("window");
+            if (window.getState() == java.awt.Frame.NORMAL) {
+                window.setLocation(getNextLocation(window.getSize()));
+                window.setVisible(true);
+            }
+        }
+    }
 
-
-  public void arrangeWindows ()
-  {
-    resetLocation();
-    for ( int i = 2; i < getItemCount(); i++ )
-    {
-      final JFrame window = (JFrame)getItem(i).getClientProperty("window");
-      if ( window.getState() == java.awt.Frame.NORMAL )
-      {
+    public void addWindow(final JFrame window) {
         window.setLocation(getNextLocation(window.getSize()));
-        window.setVisible(true);
-      }
+
+        final JMenuItem item = new JMenuItem(new AbstractAction(window.getTitle()) {
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                window.setState(java.awt.Frame.NORMAL);
+                window.toFront();
+            }
+        });
+
+        item.putClientProperty("window", window);
+
+        add(item);
+
+        window.addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosed(final WindowEvent e) {
+                remove(item);
+            }
+        });
+
+        window.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(final java.beans.PropertyChangeEvent event) {
+                if (event.getPropertyName().equals("title")) {
+                    item.setText((String) event.getNewValue());
+                }
+            }
+        });
     }
-  }
-
-
-  public void addWindow ( final JFrame window )
-  {
-    window.setLocation(getNextLocation(window.getSize()));
-
-    final JMenuItem item = new JMenuItem(new AbstractAction(window.getTitle())
-      {
-
-        public void actionPerformed ( final ActionEvent e )
-        {
-          window.setState(java.awt.Frame.NORMAL);
-          window.toFront();
-        }
-      });
-
-    item.putClientProperty("window", window);
-
-    add(item);
-
-    window.addWindowListener(new WindowAdapter()
-      {
-
-        @Override
-        public void windowClosed ( final WindowEvent e )
-          {
-            remove(item);
-          }
-      });
-
-    window.addPropertyChangeListener(new java.beans.PropertyChangeListener()
-      {
-
-        public void propertyChange ( final java.beans.PropertyChangeEvent event )
-        {
-          if ( event.getPropertyName().equals("title") )
-          {
-            item.setText((String)event.getNewValue());
-          }
-        }
-      });
-  }
 }

@@ -13,31 +13,23 @@ import javax.swing.JList;
 
 import org.xtuml.masl.inspector.processInterface.StateMetaData;
 
+class CurrentStateListCellRenderer extends javax.swing.DefaultListCellRenderer {
 
-class CurrentStateListCellRenderer extends javax.swing.DefaultListCellRenderer
-{
+    private final Map<Integer, String> lookup = new HashMap<Integer, String>();
 
-  private final Map<Integer, String> lookup = new HashMap<Integer, String>();
-
-  public CurrentStateListCellRenderer ( final StateMetaData[] states )
-  {
-    super();
-    for ( final StateMetaData state : states )
-    {
-      lookup.put(new Integer(state.getId()), state.getName());
+    public CurrentStateListCellRenderer(final StateMetaData[] states) {
+        super();
+        for (final StateMetaData state : states) {
+            lookup.put(new Integer(state.getId()), state.getName());
+        }
     }
-  }
 
-  @Override
-  public java.awt.Component getListCellRendererComponent ( final JList list,
-                                                           final Object value,
-                                                           final int index,
-                                                           final boolean isSelected,
-                                                           final boolean cellHasFocus )
-  {
-    final JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-    label.setText(lookup.get(value));
-    return label;
-  }
+    @Override
+    public java.awt.Component getListCellRendererComponent(final JList list, final Object value, final int index,
+            final boolean isSelected, final boolean cellHasFocus) {
+        final JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        label.setText(lookup.get(value));
+        return label;
+    }
 
 }

@@ -7,24 +7,21 @@ package org.xtuml.masl.inspector.processInterface;
 
 import java.io.File;
 
+public abstract class TerminatorServiceMetaData extends ServiceMetaData {
 
-public abstract class TerminatorServiceMetaData extends ServiceMetaData
-{
+    public abstract TerminatorMetaData getTerminator();
 
-  public abstract TerminatorMetaData getTerminator ();
+    protected abstract boolean isOverride();
 
-  protected abstract boolean isOverride ();
+    @Override
+    public String getFullyQualifiedName() {
+        return getTerminator().getFullyQualifiedName() + "~>" + getName();
+    }
 
-  @Override
-  public String getFullyQualifiedName ()
-  {
-    return getTerminator().getFullyQualifiedName() + "~>" + getName();
-  }
-
-  @Override
-  public File getDirectory ()
-  {
-    return isOverride() ? getTerminator().getDomain().getProcess().getDirectory() : getTerminator().getDomain().getDirectory();
-  }
+    @Override
+    public File getDirectory() {
+        return isOverride() ? getTerminator().getDomain().getProcess().getDirectory()
+                : getTerminator().getDomain().getDirectory();
+    }
 
 }

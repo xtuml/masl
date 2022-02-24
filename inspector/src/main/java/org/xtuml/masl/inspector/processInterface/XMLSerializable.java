@@ -8,12 +8,10 @@ package org.xtuml.masl.inspector.processInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+public interface XMLSerializable {
 
-public interface XMLSerializable
-{
+    // DOM
+    public void fromXML(Node parent);
 
-  // DOM
-  public void fromXML ( Node parent );
-
-  public Node toXML ( Document document );
+    public Node toXML(Document document);
 }

@@ -5,12 +5,9 @@
 //
 package org.xtuml.masl.inspector.socketConnection;
 
+public class DomainData extends org.xtuml.masl.inspector.processInterface.DomainData {
 
-public class DomainData extends org.xtuml.masl.inspector.processInterface.DomainData
-{
-
-  public DomainData ( final DomainMetaData meta )
-  {
-    super(meta);
-  }
+    public DomainData(final DomainMetaData meta) {
+        super(meta);
+    }
 }

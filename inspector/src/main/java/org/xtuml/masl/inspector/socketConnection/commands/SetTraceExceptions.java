@@ -5,11 +5,9 @@
 //
 package org.xtuml.masl.inspector.socketConnection.commands;
 
-public class SetTraceExceptions extends ToggleCommand
-{
+public class SetTraceExceptions extends ToggleCommand {
 
-  public SetTraceExceptions ( final boolean enabled )
-  {
-    super(ServerCommandId.TRACE_EXCEPTIONS, enabled);
-  }
+    public SetTraceExceptions(final boolean enabled) {
+        super(ServerCommandId.TRACE_EXCEPTIONS, enabled);
+    }
 }

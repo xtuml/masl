@@ -10,68 +10,57 @@ import org.w3c.dom.Node;
 import org.xtuml.masl.inspector.socketConnection.ObjectMetaData;
 import org.xtuml.masl.inspector.socketConnection.StateMetaData;
 
+public abstract class StateData extends DataValue<StateMetaData> implements Comparable<StateData> {
 
-public abstract class StateData extends DataValue<StateMetaData>
-    implements Comparable<StateData>
-{
+    protected StateData(final ObjectMetaData object) {
+        this.object = object;
+        this.state = object.getStates()[0];
+    }
 
-  protected StateData ( final ObjectMetaData object )
-  {
-    this.object = object;
-    this.state = object.getStates()[0];
-  }
+    @Override
+    public int compareTo(final StateData o) {
+        return getStateName().compareTo(o.getStateName());
+    }
 
-  public int compareTo ( final StateData o )
-  {
-    return getStateName().compareTo(o.getStateName());
-  }
+    @Override
+    public void fromXML(final Node parent) {
+        setStateName(parent.getFirstChild().getNodeValue());
+    }
 
-  public void fromXML ( final Node parent )
-  {
-    setStateName(parent.getFirstChild().getNodeValue());
-  }
+    public ObjectMetaData getObject() {
+        return object;
+    }
 
-  public ObjectMetaData getObject ()
-  {
-    return object;
-  }
+    public String getStateName() {
+        return state.getName();
+    }
 
-  public String getStateName ()
-  {
-    return state.getName();
-  }
+    @Override
+    public StateMetaData getValue() {
+        return state;
+    }
 
-  @Override
-  public StateMetaData getValue ()
-  {
-    return state;
-  }
+    public void setStateName(final String name) {
+        state = object.getState(name);
+    }
 
-  public void setStateName ( final String name )
-  {
-    state = object.getState(name);
-  }
+    @Override
+    public void setValue(final StateMetaData value) {
+        state = value;
+    }
 
-  @Override
-  public void setValue ( final StateMetaData value )
-  {
-    state = value;
-  }
+    @Override
+    public String toString() {
+        return getStateName();
+    }
 
-  @Override
-  public String toString ()
-  {
-    return getStateName();
-  }
+    @Override
+    public Node toXML(final Document document) {
+        return document.createTextNode(getStateName());
+    }
 
-  public Node toXML ( final Document document )
-  {
-    return document.createTextNode(getStateName());
-  }
+    private final ObjectMetaData object;
 
-  private final ObjectMetaData object;
-
-  private StateMetaData        state;
-
+    private StateMetaData state;
 
 }

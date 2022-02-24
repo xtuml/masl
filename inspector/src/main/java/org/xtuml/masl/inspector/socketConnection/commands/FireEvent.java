@@ -13,41 +13,36 @@ import org.xtuml.masl.inspector.socketConnection.InstanceIdData;
 import org.xtuml.masl.inspector.socketConnection.ObjectMetaData;
 import org.xtuml.masl.inspector.socketConnection.ipc.CommunicationChannel;
 
+public class FireEvent extends CommandStub<VoidType> {
 
-public class FireEvent extends CommandStub<VoidType>
-{
+    private final EventMetaData meta;
+    private final DataValue<?>[] parameters;
+    private final Integer pk;
 
-  private final EventMetaData  meta;
-  private final DataValue<?>[] parameters;
-  private final Integer        pk;
-
-  public FireEvent ( final EventMetaData meta, final ObjectMetaData object, final Integer pk, final DataValue<?>[] parameters )
-  {
-    super(ServerCommandId.FIRE_EVENT);
-    this.meta = meta;
-    this.parameters = parameters;
-    this.pk = pk;
-  }
-
-  @Override
-  public VoidType execute ( final CommunicationChannel channel ) throws IOException
-  {
-    channel.writeData(meta.getObject().getDomain().getId());
-    channel.writeData(meta.getObject().getArchId());
-    channel.writeData(meta.getArchId());
-
-    channel.writeData(false); // No source object
-
-    if ( pk != null )
-    {
-      channel.writeData(new InstanceIdData(pk, meta.getObject()));
+    public FireEvent(final EventMetaData meta, final ObjectMetaData object, final Integer pk,
+            final DataValue<?>[] parameters) {
+        super(ServerCommandId.FIRE_EVENT);
+        this.meta = meta;
+        this.parameters = parameters;
+        this.pk = pk;
     }
-    for ( final DataValue<?> param : parameters )
-    {
-      channel.writeData(param);
-    }
-    channel.flush();
 
-    return null;
-  }
+    @Override
+    public VoidType execute(final CommunicationChannel channel) throws IOException {
+        channel.writeData(meta.getObject().getDomain().getId());
+        channel.writeData(meta.getObject().getArchId());
+        channel.writeData(meta.getArchId());
+
+        channel.writeData(false); // No source object
+
+        if (pk != null) {
+            channel.writeData(new InstanceIdData(pk, meta.getObject()));
+        }
+        for (final DataValue<?> param : parameters) {
+            channel.writeData(param);
+        }
+        channel.flush();
+
+        return null;
+    }
 }
