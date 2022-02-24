@@ -1,4 +1,4 @@
-// 
+//
 // Filename : FireEventDialog.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -14,6 +14,10 @@ import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
 class FireEventDialog extends InvokeDialog {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final EventMetaData event;
     private final ObjectMetaData object;
     private final Integer pk;

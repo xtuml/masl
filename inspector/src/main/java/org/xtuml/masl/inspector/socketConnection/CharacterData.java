@@ -1,4 +1,4 @@
-// 
+//
 // Filename : CharacterData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -16,7 +16,7 @@ public class CharacterData extends org.xtuml.masl.inspector.processInterface.Cha
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        setValue(new Character(channel.readChar()));
+        setValue(Character.valueOf(channel.readChar()));
     }
 
     @Override

@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InstanceViewer.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -41,13 +41,17 @@ import javax.swing.event.TableModelListener;
 import org.xtuml.masl.inspector.Preferences;
 import org.xtuml.masl.inspector.processInterface.Capability;
 import org.xtuml.masl.inspector.processInterface.EventMetaData;
+import org.xtuml.masl.inspector.processInterface.EventMetaData.EventType;
 import org.xtuml.masl.inspector.processInterface.ObjectMetaData;
 import org.xtuml.masl.inspector.processInterface.ObjectServiceMetaData;
 import org.xtuml.masl.inspector.processInterface.ProcessConnection;
-import org.xtuml.masl.inspector.processInterface.EventMetaData.EventType;
 
 class InstanceViewer extends InspectorSubFrame implements TableModelListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private JMenuBar mainMenu;
     private static int s_defaultFontSize = Preferences.getFontSize();
     private static boolean s_showInternalId = Preferences.getShowInternalId();
@@ -367,7 +371,7 @@ class InstanceViewer extends InspectorSubFrame implements TableModelListener {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            setFont((new Integer(e.getActionCommand())).intValue());
+            setFont((Integer.valueOf(e.getActionCommand())).intValue());
         }
     }
 
@@ -404,6 +408,11 @@ class InstanceViewer extends InspectorSubFrame implements TableModelListener {
     }
 
     private class ShowInternalIdAction extends ToggleAction {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         public ShowInternalIdAction(final String name) {
             super(name);

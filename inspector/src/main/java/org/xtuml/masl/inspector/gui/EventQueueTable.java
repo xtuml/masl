@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InstanceTable.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -22,6 +22,10 @@ import org.xtuml.masl.inspector.processInterface.TimerData;
 
 class EventQueueTable extends AutoSizingTable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final JPopupMenu popup = new JPopupMenu();
     private JMenuItem cancelTimer;
 

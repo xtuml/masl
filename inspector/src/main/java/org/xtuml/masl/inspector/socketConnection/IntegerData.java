@@ -1,4 +1,4 @@
-// 
+//
 // Filename : IntegerData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -16,7 +16,7 @@ public class IntegerData extends org.xtuml.masl.inspector.processInterface.Integ
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        setValue(new Integer(channel.readInt()));
+        setValue(Integer.valueOf(channel.readInt()));
     }
 
     @Override

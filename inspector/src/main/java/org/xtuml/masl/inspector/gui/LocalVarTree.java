@@ -1,4 +1,4 @@
-// 
+//
 // Filename : LocalVarTree.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -26,6 +26,10 @@ import org.xtuml.masl.inspector.processInterface.ObjectMetaData;
 
 public class LocalVarTree extends JTree {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final JPopupMenu popup = new JPopupMenu();
 
     public LocalVarTree(final LocalVarTreeModel model) {
@@ -76,8 +80,8 @@ public class LocalVarTree extends JTree {
 
     public void updateComplete() {
         if (expandedNames != null) {
-            for (int i = 0; i < expandedNames.size(); i++) {
-                final TreePath path = ((LocalVarTreeModel) getModel()).getPathForNames(expandedNames.get(i));
+            for (String[] expandedName : expandedNames) {
+                final TreePath path = ((LocalVarTreeModel) getModel()).getPathForNames(expandedName);
                 expandPath(path);
             }
             expandedNames = null;
@@ -88,9 +92,7 @@ public class LocalVarTree extends JTree {
         final Map<ObjectMetaData, List<Integer>> result = new HashMap<ObjectMetaData, List<Integer>>();
 
         final TreePath[] paths = getSelectionPaths();
-        for (int i = 0; i < paths.length; ++i) {
-            final TreePath path = paths[i];
-
+        for (final TreePath path : paths) {
             final LocalVarNode node = (LocalVarNode) path.getLastPathComponent();
             final List<Object> instances = node.getContainedInstances();
             if (instances.size() > 0) {

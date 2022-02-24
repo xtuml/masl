@@ -1,4 +1,4 @@
-// 
+//
 // Filename : SuperSubtypeArrow.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,10 @@ import org.xtuml.masl.inspector.processInterface.SuperSubtypeMetaData;
 
 class SuperSubtypeArrow extends JComponent {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final String uiClassID;
 
     @Override

@@ -1,4 +1,4 @@
-// 
+//
 // Filename : WindowMenu.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -22,6 +22,10 @@ import javax.swing.JMenuItem;
 
 public class WindowMenu extends JMenu {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     public static WindowMenu instance = new WindowMenu();
 
     public static WindowMenu getInstance() {
@@ -38,6 +42,11 @@ public class WindowMenu extends JMenu {
         super("Window");
 
         super.add(new JMenuItem(new AbstractAction("Arrange") {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -102,6 +111,11 @@ public class WindowMenu extends JMenu {
         window.setLocation(getNextLocation(window.getSize()));
 
         final JMenuItem item = new JMenuItem(new AbstractAction(window.getTitle()) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent e) {

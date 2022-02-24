@@ -1,4 +1,4 @@
-// 
+//
 // Filename : DomainPicker.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -12,6 +12,11 @@ import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
 public class DomainPicker extends JComboBox {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public DomainPicker() {
         super();
         try {
@@ -20,9 +25,9 @@ public class DomainPicker extends JComboBox {
             final DomainMetaData[] domains = ProcessConnection.getConnection().getMetaData().getDomains();
             java.util.Arrays.sort(domains);
 
-            for (int i = 0; i < domains.length; i++) {
-                if (!domains[i].isInterface() && !ignoredDomains.contains(domains[i].getName())) {
-                    addItem(domains[i]);
+            for (DomainMetaData domain : domains) {
+                if (!domain.isInterface() && !ignoredDomains.contains(domain.getName())) {
+                    addItem(domain);
                 }
             }
         } catch (final java.rmi.RemoteException e) {

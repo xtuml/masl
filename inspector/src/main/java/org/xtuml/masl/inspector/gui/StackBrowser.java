@@ -1,4 +1,4 @@
-// 
+//
 // Filename : StackBrowser.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -38,6 +38,10 @@ import org.xtuml.masl.inspector.processInterface.WeakProcessStatusListener;
 
 public class StackBrowser extends InspectorSubFrame implements ProcessStatusListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private static int s_defaultFontSize = Preferences.getCodeFontSize();
     private static boolean s_sortLocalVars = Preferences.getSortLocalVars();
 
@@ -260,11 +264,16 @@ public class StackBrowser extends InspectorSubFrame implements ProcessStatusList
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            setFont((new Integer(e.getActionCommand())).intValue());
+            setFont((Integer.valueOf(e.getActionCommand())).intValue());
         }
     }
 
     private class DisplayLocalVarsAction extends ToggleAction {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         public DisplayLocalVarsAction(final String name) {
             super(name);
@@ -283,6 +292,11 @@ public class StackBrowser extends InspectorSubFrame implements ProcessStatusList
 
     private class SortLocalVarsAction extends ToggleAction {
 
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         public SortLocalVarsAction(final String name) {
             super(name);
         }
@@ -297,6 +311,11 @@ public class StackBrowser extends InspectorSubFrame implements ProcessStatusList
     }
 
     private class DisplayEventQueueAction extends ToggleAction {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         public DisplayEventQueueAction(final String name) {
             super(name);
@@ -316,6 +335,11 @@ public class StackBrowser extends InspectorSubFrame implements ProcessStatusList
     }
 
     private class RefreshEventQueueAction extends javax.swing.AbstractAction {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         public RefreshEventQueueAction(final String name) {
             super(name);

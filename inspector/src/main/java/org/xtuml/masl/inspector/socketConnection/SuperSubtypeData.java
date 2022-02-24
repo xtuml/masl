@@ -1,4 +1,4 @@
-// 
+//
 // Filename : SuperSubtypeData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -20,9 +20,9 @@ public class SuperSubtypeData extends org.xtuml.masl.inspector.processInterface.
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        supertypeId = new Integer(channel.readInt());
+        supertypeId = Integer.valueOf(channel.readInt());
         subtypeIndex = channel.readInt();
-        subtypeId = new Integer(channel.readInt());
+        subtypeId = Integer.valueOf(channel.readInt());
     }
 
     @Override

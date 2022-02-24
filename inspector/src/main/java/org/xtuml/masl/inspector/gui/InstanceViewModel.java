@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InstanceViewModel.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -29,6 +29,11 @@ import org.xtuml.masl.inspector.processInterface.StateMetaData;
 import org.xtuml.masl.inspector.processInterface.TypeMetaData;
 
 class InstanceViewModel extends com.jrefinery.ui.SortableTableModel {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     enum ColumnType {
         PK, ATTRIBUTE, CURRENT_STATE, RELATIONSHIP
@@ -63,8 +68,8 @@ class InstanceViewModel extends com.jrefinery.ui.SortableTableModel {
                 f2 = o2.getAttributes()[attNo];
                 break;
             case RELATIONSHIP:
-                f1 = new Integer(o1.getRelCounts()[relNo]);
-                f2 = new Integer(o2.getRelCounts()[relNo]);
+                f1 = Integer.valueOf(o1.getRelCounts()[relNo]);
+                f2 = Integer.valueOf(o2.getRelCounts()[relNo]);
                 break;
             case CURRENT_STATE:
                 f1 = o1.getCurrentState();
@@ -368,7 +373,7 @@ class InstanceViewModel extends com.jrefinery.ui.SortableTableModel {
         case PK:
             headerWidth = headerRenderer.getTableCellRendererComponent(parent, getColumnName(col), false, false, 0, 0)
                     .getPreferredSize().width;
-            cellWidth = cellRenderer.getTableCellRendererComponent(parent, new Integer(10000), false, false, 0, 0)
+            cellWidth = cellRenderer.getTableCellRendererComponent(parent, Integer.valueOf(10000), false, false, 0, 0)
                     .getPreferredSize().width;
             break;
         default:
@@ -406,7 +411,7 @@ class InstanceViewModel extends com.jrefinery.ui.SortableTableModel {
         for (int row = 0; row < data.size(); row++) {
             if (pks.contains(data.get(row).getPrimaryKey())) {
                 pks.remove(data.get(row).getPrimaryKey());
-                rows.add(new Integer(row));
+                rows.add(Integer.valueOf(row));
             }
         }
         return rows;
@@ -575,17 +580,17 @@ class InstanceViewModel extends com.jrefinery.ui.SortableTableModel {
         case Boolean:
             return Boolean.FALSE;
         case Byte:
-            return new Byte((byte) 200);
+            return Byte.valueOf((byte) 200);
         case WCharacter:
         case Character:
-            return new Character('W');
+            return Character.valueOf('W');
         case Integer:
         case LongInteger:
         case LongNatural:
         case Natural:
-            return new Integer(8888888);
+            return Integer.valueOf(8888888);
         case Real:
-            return new Double(888.888888);
+            return Double.valueOf(888.888888);
         default:
             return "WWWWWWWWWWWWWWW";
         }

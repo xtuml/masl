@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectButton.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -25,6 +25,10 @@ import org.xtuml.masl.inspector.processInterface.ObjectServiceMetaData;
 
 public class ObjectButton extends JButton {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private static final Color background = Color.white;
     private static final Color foreground = Color.black;
 

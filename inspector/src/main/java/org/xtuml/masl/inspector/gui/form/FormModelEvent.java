@@ -14,17 +14,22 @@ import java.util.EventObject;
  * the constructors, the FormModelevent can be used to specify the following
  * types of changes:
  * <p>
- * 
+ *
  * <pre>
  * FormModelEvent(source, false); // Values in all fields changed
  * FormModelEvent(source, true); // Form structure changed
  * FormModelEvent(source, 1); // Value in field 1 was changed
  * </pre>
- * 
+ *
  * @see FormModel
  */
 
 public class FormModelEvent extends EventObject {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     /** Specifies all fields on the form. */
     public static final int ALL_FIELDS = -1;

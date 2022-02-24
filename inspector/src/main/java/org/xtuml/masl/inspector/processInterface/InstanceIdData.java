@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InstanceIdData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -76,7 +76,7 @@ public abstract class InstanceIdData extends DataValue<InstanceData> implements 
                 final Element curNode = (Element) parent.getChildNodes().item(i);
                 final String objectName = curNode.getNodeName();
                 meta = domain.getObject(objectName);
-                id = new Integer(curNode.getAttributes().getNamedItem("id").getNodeValue());
+                id = Integer.valueOf(curNode.getAttributes().getNamedItem("id").getNodeValue());
                 break;
             }
         }

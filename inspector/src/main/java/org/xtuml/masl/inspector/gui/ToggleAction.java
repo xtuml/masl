@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ToggleAction.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -12,6 +12,11 @@ import javax.swing.AbstractButton;
 import javax.swing.Icon;
 
 public abstract class ToggleAction extends AbstractAction {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public ToggleAction(final String name) {
         super(name);

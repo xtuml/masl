@@ -1,4 +1,4 @@
-// 
+//
 // Filename : EventQueueTableModel.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -18,6 +18,10 @@ import org.xtuml.masl.inspector.processInterface.WeakProcessStatusListener;
 
 class EventQueueTableModel extends AutoSizingTableModel implements ProcessStatusListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     public static final int EVENT_COL = 0;
     public static final int SOURCE_COL = 1;
     public static final int DEST_COL = 2;

@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -15,8 +15,18 @@ import org.xtuml.masl.inspector.processInterface.TerminatorMetaData;
 
 public class TerminatorList extends DependentObjectList<TerminatorMetaData, DomainMetaData> {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public TerminatorList(final DomainPicker domainPicker) {
         super(new DependentObjectListModel<TerminatorMetaData, DomainMetaData>(domainPicker) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             protected TerminatorMetaData[] getDependentValues(final DomainMetaData domain) {

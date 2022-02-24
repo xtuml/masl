@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InstanceTable.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -25,14 +25,18 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.xtuml.masl.inspector.processInterface.Capability;
 import org.xtuml.masl.inspector.processInterface.EventMetaData;
+import org.xtuml.masl.inspector.processInterface.EventMetaData.EventType;
 import org.xtuml.masl.inspector.processInterface.InstanceData;
 import org.xtuml.masl.inspector.processInterface.ObjectMetaData;
 import org.xtuml.masl.inspector.processInterface.ObjectServiceMetaData;
 import org.xtuml.masl.inspector.processInterface.ProcessConnection;
-import org.xtuml.masl.inspector.processInterface.EventMetaData.EventType;
 
 class InstanceTable extends com.jrefinery.ui.SortableTable implements UpdateListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final ObjectMetaData meta;
     private final JPopupMenu popup = new JPopupMenu();
 
@@ -55,6 +59,11 @@ class InstanceTable extends com.jrefinery.ui.SortableTable implements UpdateList
         // Replace renderer to prevent html parsing of strings
         setDefaultRenderer(String.class, new DefaultTableCellRenderer() {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void setText(final String text) {
                 // Ignore exceptions caused by invalid html
@@ -67,6 +76,11 @@ class InstanceTable extends com.jrefinery.ui.SortableTable implements UpdateList
         });
 
         setDefaultRenderer(Double.class, new DefaultTableCellRenderer() {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void setValue(final Object value) {

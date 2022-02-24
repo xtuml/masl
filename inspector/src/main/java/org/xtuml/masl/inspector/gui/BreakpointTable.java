@@ -1,4 +1,4 @@
-// 
+//
 // Filename : BreakpointTable.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -22,6 +22,11 @@ import org.xtuml.masl.inspector.BreakpointController;
 
 class BreakpointTable extends ToolTipTable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     private final JPopupMenu popup = new JPopupMenu();
 
     private final BreakpointTableModel model;
@@ -37,12 +42,22 @@ class BreakpointTable extends ToolTipTable {
 
         getColumnModel().getColumn(BreakpointTableModel.LINE_COL).setCellRenderer(new DefaultTableCellRenderer() {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             {
                 setHorizontalAlignment(SwingConstants.RIGHT);
             }
         });
 
         popup.add(new AbstractAction("Set Breakpoint") {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent action) {
@@ -55,6 +70,11 @@ class BreakpointTable extends ToolTipTable {
 
         popup.add(new AbstractAction("Clear Breakpoint") {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void actionPerformed(final ActionEvent action) {
                 final int[] rows = getSelectedRows();
@@ -65,6 +85,11 @@ class BreakpointTable extends ToolTipTable {
         });
 
         popup.add(new AbstractAction("Remove Breakpoint") {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent action) {

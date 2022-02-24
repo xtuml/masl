@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ComboList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -15,6 +15,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 public abstract class ComboList extends JList implements java.awt.ItemSelectable {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public ComboList(final ListModel model) {
         super(model);

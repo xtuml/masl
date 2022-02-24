@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectStateList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -12,8 +12,18 @@ import org.xtuml.masl.inspector.processInterface.StateMetaData;
 
 public class ObjectStateList extends ExecutableSourceList<StateMetaData, ObjectMetaData> {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public ObjectStateList(final ObjectList objectList) {
         super(new DependentObjectListModel<StateMetaData, ObjectMetaData>(objectList) {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             protected StateMetaData[] getDependentValues(final ObjectMetaData object) {

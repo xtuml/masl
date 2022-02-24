@@ -1,4 +1,4 @@
-// 
+//
 // Filename : PreferredSizeLayout.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,11 @@ import java.awt.LayoutManager;
 import javax.swing.JComponent;
 
 public class PreferredSizeLayout implements LayoutManager, java.io.Serializable {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void addLayoutComponent(final String name, final Component comp) {

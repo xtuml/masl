@@ -1,4 +1,4 @@
-// 
+//
 // Filename : BreakpointEvent.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -9,6 +9,10 @@ import org.xtuml.masl.inspector.processInterface.SourcePosition;
 
 public class BreakpointEvent extends java.util.EventObject {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final SourcePosition pos;
     private final Boolean active;
 

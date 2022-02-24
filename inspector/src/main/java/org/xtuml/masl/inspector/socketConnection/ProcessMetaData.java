@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ProcessMetaData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -63,7 +63,7 @@ public class ProcessMetaData extends org.xtuml.masl.inspector.processInterface.P
 
         for (final DomainMetaData domain : domains) {
             domainLookupByName.put(domain.getName(), domain);
-            domainLookupById.put(new Integer(domain.getId()), domain);
+            domainLookupById.put(Integer.valueOf(domain.getId()), domain);
             domain.setProcess(this);
         }
 

@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ByteData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -16,7 +16,7 @@ public class ByteData extends org.xtuml.masl.inspector.processInterface.ByteData
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        setValue(new Byte(channel.readByte()));
+        setValue(Byte.valueOf(channel.readByte()));
     }
 
     @Override

@@ -15,6 +15,11 @@ import org.xtuml.masl.inspector.processInterface.StructureData;
 
 public class ParameterForm extends org.xtuml.masl.inspector.gui.form.Form {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public ParameterForm(final ParameterMetaData[] parameters) {
         super(new ParameterModel(parameters));
     }

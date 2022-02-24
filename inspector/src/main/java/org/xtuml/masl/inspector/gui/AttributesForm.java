@@ -22,6 +22,11 @@ import org.xtuml.masl.inspector.processInterface.TimerData;
 
 public class AttributesForm extends Form {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public AttributesForm(final StructureData structure, final boolean editable) {
         super(new AttributesModel(structure, editable));
     }

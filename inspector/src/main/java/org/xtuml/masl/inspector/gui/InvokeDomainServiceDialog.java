@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InvokeDomainServiceDialog.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,10 @@ import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
 class InvokeDomainServiceDialog extends InvokeDialog {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final DomainServiceMetaData service;
 
     public InvokeDomainServiceDialog(final DomainServiceMetaData service) {

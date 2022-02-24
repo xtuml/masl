@@ -19,6 +19,11 @@ import org.xtuml.masl.inspector.processInterface.TypeMetaData.BasicType;
 
 class DictionaryTableModel extends AbstractTableModel {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     public DictionaryTableModel(final DictionaryData data, final boolean editable) {
         this.data = data;
         this.isStructure = data.getValueType().getCollectionDepth() == 0
@@ -198,17 +203,17 @@ class DictionaryTableModel extends AbstractTableModel {
         case Boolean:
             return Boolean.FALSE;
         case Byte:
-            return new Byte((byte) 200);
+            return Byte.valueOf((byte) 200);
         case WCharacter:
         case Character:
-            return new Character('W');
+            return Character.valueOf('W');
         case Integer:
         case LongInteger:
         case LongNatural:
         case Natural:
-            return new Integer(88888888);
+            return Integer.valueOf(88888888);
         case Real:
-            return new Double(888.8888);
+            return Double.valueOf(888.8888);
         case Dictionary:
             return "[88]";
         default:

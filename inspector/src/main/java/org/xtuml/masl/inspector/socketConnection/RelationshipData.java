@@ -1,4 +1,4 @@
-// 
+//
 // Filename : RelationshipData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -20,10 +20,10 @@ public class RelationshipData extends org.xtuml.masl.inspector.processInterface.
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        leftId = new Integer(channel.readInt());
-        rightId = new Integer(channel.readInt());
+        leftId = Integer.valueOf(channel.readInt());
+        rightId = Integer.valueOf(channel.readInt());
         if (meta.getAssocObject() != null) {
-            assocId = new Integer(channel.readInt());
+            assocId = Integer.valueOf(channel.readInt());
         }
     }
 

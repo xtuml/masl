@@ -1,4 +1,4 @@
-// 
+//
 // Filename : StackSource.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -14,6 +14,10 @@ import org.xtuml.masl.inspector.processInterface.StackFrame;
 
 public class StackSource extends SourceCodeTable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final ItemSelectable selector;
 
     public StackSource(final ItemSelectable selector, final SourceCodeTableModel model) {

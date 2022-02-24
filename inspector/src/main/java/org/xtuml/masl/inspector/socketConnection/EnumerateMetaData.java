@@ -1,4 +1,4 @@
-// 
+//
 // Filename : EnumerateMetaData.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -27,7 +27,7 @@ public class EnumerateMetaData extends org.xtuml.masl.inspector.processInterface
         final int size = channel.readInt();
 
         for (int i = 0; i < size; i++) {
-            final Integer value = new Integer(channel.readInt());
+            final Integer value = Integer.valueOf(channel.readInt());
             final String name = channel.readString();
 
             addEnum(value, name);

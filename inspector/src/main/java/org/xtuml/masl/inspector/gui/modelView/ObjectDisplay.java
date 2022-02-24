@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectDisplay.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -23,6 +23,10 @@ import org.xtuml.masl.inspector.processInterface.ObjectMetaData;
 
 public class ObjectDisplay extends JPanel {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final ItemSelectable selector;
     private ObjectMetaData metaObj;
 

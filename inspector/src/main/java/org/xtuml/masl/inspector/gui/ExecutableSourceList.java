@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ExecutableSourceList.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -22,6 +22,10 @@ import org.xtuml.masl.inspector.processInterface.SourcePosition;
 public abstract class ExecutableSourceList<Dependent extends ExecutableSource, Discriminant>
         extends DependentObjectList<Dependent, Discriminant> implements PopupMenuListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     protected JPopupMenu popup = new JPopupMenu();
     private JMenuItem setBreakpointItem;
     private JMenuItem clearBreakpointItem;

@@ -1,4 +1,4 @@
-// 
+//
 // Filename : ObjectDetailsPane.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -14,6 +14,11 @@ import javax.swing.event.ListDataListener;
 import org.xtuml.masl.inspector.Preferences;
 
 class ObjectDetailsPane extends JTabbedPane {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     class TabHider implements ListDataListener {
 

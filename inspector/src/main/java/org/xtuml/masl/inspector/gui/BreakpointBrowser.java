@@ -1,4 +1,4 @@
-// 
+//
 // Filename : BreakpointBrowser.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -20,6 +20,10 @@ import org.xtuml.masl.inspector.BreakpointController;
 
 public class BreakpointBrowser extends InspectorSubFrame {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     static BreakpointBrowser instance = null;
 
     public static void display() {
@@ -74,6 +78,11 @@ public class BreakpointBrowser extends InspectorSubFrame {
 
         breakpointMenu.add(new AbstractAction("Set All") {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void actionPerformed(final ActionEvent action) {
                 BreakpointController.getInstance().setAllBreakpoints();
@@ -82,6 +91,11 @@ public class BreakpointBrowser extends InspectorSubFrame {
 
         breakpointMenu.add(new AbstractAction("Clear All") {
 
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void actionPerformed(final ActionEvent action) {
                 BreakpointController.getInstance().clearAllBreakpoints();
@@ -89,6 +103,11 @@ public class BreakpointBrowser extends InspectorSubFrame {
         });
 
         breakpointMenu.add(new AbstractAction("Remove All") {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
             @Override
             public void actionPerformed(final ActionEvent action) {

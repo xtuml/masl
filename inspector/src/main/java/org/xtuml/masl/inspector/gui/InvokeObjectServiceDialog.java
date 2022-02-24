@@ -1,4 +1,4 @@
-// 
+//
 // Filename : InvokeObjectServiceDialog.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -13,6 +13,10 @@ import org.xtuml.masl.inspector.processInterface.ProcessConnection;
 
 class InvokeObjectServiceDialog extends InvokeDialog {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private final ObjectServiceMetaData service;
     private final Integer pk;
 

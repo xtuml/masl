@@ -1,4 +1,4 @@
-// 
+//
 // Filename : NoSelectTableCellRenderer.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -16,6 +16,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
 class NoSelectTableCellRenderer extends JLabel implements TableCellRenderer, Serializable {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public NoSelectTableCellRenderer() {
         super();
@@ -102,11 +107,11 @@ class NoSelectTableCellRenderer extends JLabel implements TableCellRenderer, Ser
     /**
      * Sets the <code>String</code> object for the cell being rendered to
      * <code>value</code>.
-     * 
+     *
      * @param value the string value for this cell; if value is <code>null</code> it
      *              sets the text value to an empty string
      * @see JLabel#setText
-     * 
+     *
      */
     protected void setValue(final Object value) {
         setText((value == null) ? "" : value.toString());
@@ -127,6 +132,11 @@ class NoSelectTableCellRenderer extends JLabel implements TableCellRenderer, Ser
      * <code>java.beans</code> package. Please see {@link java.beans.XMLEncoder}.
      */
     public static class UIResource extends NoSelectTableCellRenderer implements javax.swing.plaf.UIResource {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
     }
 
 }

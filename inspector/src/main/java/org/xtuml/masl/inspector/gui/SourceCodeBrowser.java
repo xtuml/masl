@@ -1,4 +1,4 @@
-// 
+//
 // Filename : SourceCodeBrowser.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -31,6 +31,10 @@ import org.xtuml.masl.inspector.processInterface.WeakProcessStatusListener;
 
 class SourceCodeBrowser extends InspectorSubFrame implements ProcessStatusListener {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     private static int s_defaultFontSize = Preferences.getCodeFontSize();
     private final SourceCodeTable table;
     private final SourceCodeTableModel model;
@@ -142,7 +146,7 @@ class SourceCodeBrowser extends InspectorSubFrame implements ProcessStatusListen
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            setFont((new Integer(e.getActionCommand())).intValue());
+            setFont((Integer.valueOf(e.getActionCommand())).intValue());
         }
     }
 

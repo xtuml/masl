@@ -1,4 +1,4 @@
-// 
+//
 // Filename : DomainDirectoryChooser.java
 //
 // UK Crown Copyright (c) 2005. All Rights Reserved
@@ -10,6 +10,11 @@ import javax.swing.JFileChooser;
 import org.xtuml.masl.inspector.processInterface.DomainMetaData;
 
 public class DomainDirectoryChooser extends JFileChooser {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public DomainDirectoryChooser(final DomainMetaData domain) {
         setDialogTitle("Domain " + domain.getName() + " Source Directory");
