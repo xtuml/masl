@@ -1,3 +1,5 @@
+package org.xtuml.masl.util;
+
 public class Environment {
 
     public Environment() {

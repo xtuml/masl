@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'java-src'
+        }
+    }
+}
+
+archivesBaseName = 'UtilityDomains'
