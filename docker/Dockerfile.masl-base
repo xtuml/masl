@@ -18,7 +18,7 @@ ENV LD_LIBRARY_PATH=/root/masl/install/lib:/poco-1.7.3-all/lib
 
 # build MASL
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8 -Djava.libary.path=${LD_LIBRARY_PATH}"
-RUN /bin/bash -c "cd /root/masl && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/root/masl/install"
+RUN /bin/bash -c "export JAVA_HOME=\$(dirname \$(dirname \$(dirname \$(readlink -f \$(which java))))) && cd /root/masl && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/root/masl/install"
 RUN mkdir -p /root/masl/core-java/install/masl-core/lib
 RUN /bin/bash -c "cd /root/masl && ninja install"
 
