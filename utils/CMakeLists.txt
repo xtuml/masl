@@ -22,9 +22,6 @@ add_masl_domain(Host_OOA/Host.mod)
 
 generate_masl()
 
-execute_process ( COMMAND gradle -PbuildDir=${CMAKE_CURRENT_BINARY_DIR}/build build
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
-
 include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file (
@@ -47,9 +44,4 @@ install(
   FILES
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
   DESTINATION ${INSTALL_LIB_DIR}/cmake/${PROJECT_NAME}
-  )
-
-install (
-          DIRECTORY   ${CMAKE_CURRENT_BINARY_DIR}/build/libs/
-          DESTINATION ${INSTALL_LIB_DIR}
   )
