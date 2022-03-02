@@ -7,7 +7,7 @@
  * Method:    setenv
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_Environment_setenv(JNIEnv * env, jobject thisObject, jstring p_name, jstring p_value)
+JNIEXPORT void JNICALL Java_org_xtuml_masl_util_Environment_setenv(JNIEnv * env, jobject thisObject, jstring p_name, jstring p_value)
 {
   char * name = env->GetStringUTFChars(p_name, NULL);
   char * value = env->GetStringUTFChars(p_value, NULL);
@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL Java_Environment_setenv(JNIEnv * env, jobject thisObject,
  * Method:    unsetenv
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_Environment_unsetenv(JNIEnv * env, jobject thisObject, jstring p_name)
+JNIEXPORT void JNICALL Java_org_xtuml_masl_util_Environment_unsetenv(JNIEnv * env, jobject thisObject, jstring p_name)
 {
   char * name = env->GetStringUTFChars(p_name, NULL);
   masld_Environment::masls_unsetenv(name);
@@ -33,7 +33,7 @@ JNIEXPORT void JNICALL Java_Environment_unsetenv(JNIEnv * env, jobject thisObjec
  * Method:    getenv
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_Environment_getenv(JNIEnv * env, jobject thisObject, jstring p_name)
+JNIEXPORT jstring JNICALL Java_org_xtuml_masl_util_Environment_getenv(JNIEnv * env, jobject thisObject, jstring p_name)
 {
   char * name = env->GetStringUTFChars(p_name, NULL);
   char * value = masld_Environment::masls_getenv(name).c_str();
@@ -46,7 +46,7 @@ JNIEXPORT jstring JNICALL Java_Environment_getenv(JNIEnv * env, jobject thisObje
  * Method:    isset
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_Environment_isset(JNIEnv * env, jobject thisObject, jstring p_name)
+JNIEXPORT jboolean JNICALL Java_org_xtuml_masl_util_Environment_isset(JNIEnv * env, jobject thisObject, jstring p_name)
 {
   char * name = env->GetStringUTFChars(p_name, NULL);
   bool isset = masld_Environment::masls_isset(name);

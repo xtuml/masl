@@ -7,7 +7,7 @@ repositories {
 sourceSets {
     main {
         java {
-            srcDirs 'java-src'
+            srcDirs 'src/main/java'
         }
     }
 }

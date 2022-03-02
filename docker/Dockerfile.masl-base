@@ -2,7 +2,7 @@
 FROM ubuntu:16.04
 
 # install prerequisites
-RUN apt-get update && apt-get install -y gcc g++ pkg-config cmake ninja-build libsqlite3-dev libboost-all-dev libssl-dev uuid-dev gradle openjdk-8-jdk wget
+RUN apt-get update && apt-get install -y gcc g++ pkg-config cmake ninja-build libsqlite3-dev libboost-all-dev libssl-dev uuid-dev gradle openjdk-8-jdk wget maven
 
 # install poco
 ADD http://pocoproject.org/releases/poco-1.7.3/poco-1.7.3-all.tar.gz poco-1.7.3-all.tar.gz
@@ -13,14 +13,14 @@ RUN /bin/bash -c "cd poco-1.7.3-all && ninja install"
 # create MASL directory
 COPY . /root/masl
 
+# set library path
+ENV LD_LIBRARY_PATH=/root/masl/install/lib:/poco-1.7.3-all/lib
+
 # build MASL
-ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8 -Djava.libary.path=${LD_LIBRARY_PATH}"
 RUN /bin/bash -c "cd /root/masl && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/root/masl/install"
 RUN mkdir -p /root/masl/core-java/install/masl-core/lib
 RUN /bin/bash -c "cd /root/masl && ninja install"
-
-# set library path
-ENV LD_LIBRARY_PATH=/root/masl/install/lib:/poco-1.7.3-all/lib
 
 # create workspace
 WORKDIR /workspace

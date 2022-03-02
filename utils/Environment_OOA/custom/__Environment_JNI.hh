@@ -12,7 +12,7 @@ extern "C" {
  * Method:    setenv
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_Environment_setenv
+JNIEXPORT void JNICALL Java_org_xtuml_masl_util_Environment_setenv
   (JNIEnv *, jobject, jstring, jstring);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_Environment_setenv
  * Method:    unsetenv
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_Environment_unsetenv
+JNIEXPORT void JNICALL Java_org_xtuml_masl_util_Environment_unsetenv
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_Environment_unsetenv
  * Method:    getenv
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_Environment_getenv
+JNIEXPORT jstring JNICALL Java_org_xtuml_masl_util_Environment_getenv
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT jstring JNICALL Java_Environment_getenv
  * Method:    isset
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_Environment_isset
+JNIEXPORT jboolean JNICALL Java_org_xtuml_masl_util_Environment_isset
   (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus
