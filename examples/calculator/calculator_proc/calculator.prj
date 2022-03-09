@@ -1,0 +1,6 @@
+project calculator is
+  
+  domain ALU is
+  end domain;
+
+end project;
