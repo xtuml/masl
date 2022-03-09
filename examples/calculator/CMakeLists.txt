@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(petrol VERSION 1.0)
+project(calculator VERSION 1.0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{HOME}/masl/core-cpp/cmake)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{HOME}/masl/install/lib/cmake/MaslCore)
@@ -17,5 +17,5 @@ find_package(Sqlite3 REQUIRED)
 find_package(Boost REQUIRED QUIET COMPONENTS system)
 link_libraries(Boost::boost)
 
-add_subdirectory(src/PSC_OOA)
-add_subdirectory(src/PETROL_PROC)
+add_subdirectory(src/ALU_OOA)
+add_subdirectory(src/calculator_proc)
