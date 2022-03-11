@@ -4,12 +4,14 @@ project(petrol VERSION 1.0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{HOME}/masl/core-cpp/cmake)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{HOME}/masl/install/lib/cmake/MaslCore)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{HOME}/masl/install/lib/cmake/UtilityDomains)
 
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
 
 include(MaslCoreConfig)
+include(UtilityDomainsConfig)
 include(SimpleAdd)
 
 find_package(Poco REQUIRED COMPONENTS XML Foundation)
