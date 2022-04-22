@@ -21,6 +21,7 @@ file(WRITE ${MASL_DIR}/add_masl_codegen.cmake "")
 file(WRITE ${MASL_DIR}/add_masl_subdirs.cmake "")
 
 set(MASL_CONCURRENCY 10 CACHE STRING "Number of Masl processes to run concurrently")
+set(INSTALL_MASL_DIR ${INSTALL_LIB_DIR}/masl)
 
 set(MaslExportTarget Masl)
 
