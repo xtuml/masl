@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(MaslCore VERSION 0.1)
 
+list(APPEND CMAKE_PREFIX_PATH /opt/poco)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-common)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -70,9 +71,13 @@ install(
 
 install(
   FILES
-              cmake/MavenRepo.cmake
-              cmake/MaslCodeGen.cmake
+              cmake/FindPkgConfigTarget.cmake
+              cmake/FindSqlite3.cmake
               cmake/Masl.cmake
+              cmake/MaslCodeGen.cmake
+              cmake/MaslCoreConfig.cmake.in
+              cmake/MavenRepo.cmake
+              cmake/SimpleAdd.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
   DESTINATION ${INSTALL_LIB_DIR}/cmake/${PROJECT_NAME}
