@@ -20,4 +20,8 @@ public interface ExceptionHandler
   ExceptionReference getException ();
 
   List<? extends Statement> getCode ();
+
+  String getMessageVariable ();
+
+  VariableDefinition getMessageVarDef ();
 }

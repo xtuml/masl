@@ -1873,8 +1873,14 @@ returns [VariableDefinition var]
 
 exceptionHandler
 returns [ExceptionHandler handler]
+scope NameScope;
                               : ^( EXCEPTION_HANDLER
-                                   exceptionReference       { $handler = ExceptionHandler.create ( $exceptionReference.ref ); }
+                                   exceptionReference
+                                   variableName?            { $handler = ExceptionHandler.create ( $exceptionReference.ref, $variableName.name );
+                                                              if ( $variableName.name != null ) {
+                                                                $NameScope::lookup = $handler.getNameLookup();
+                                                              }
+                                                            }
                                    ^(STATEMENT_LIST ( statement              { if ( $handler != null ) $handler.addStatement($statement.st); } 
                                    )* )
                                  )
@@ -1882,7 +1888,12 @@ returns [ExceptionHandler handler]
 
 otherHandler
 returns [ExceptionHandler handler]
-                              : ^( OTHER_HANDLER            { $handler = ExceptionHandler.create( getPosition($OTHER_HANDLER) ); }
+                              : ^( OTHER_HANDLER
+                                   variableName?            { $handler = ExceptionHandler.create ( getPosition($OTHER_HANDLER), $variableName.name );
+                                                              if ( $variableName.name != null ) {
+                                                                $NameScope::lookup = $handler.getNameLookup();
+                                                              }
+                                                            }
                                    ^(STATEMENT_LIST ( statement              { if ( $handler != null ) $handler.addStatement($statement.st); }
                                    )* )
                                  )
