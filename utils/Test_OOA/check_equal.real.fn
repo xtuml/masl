@@ -1,0 +1,11 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::check_equal ( file : in anonymous string, line : in anonymous integer, lhs : in anonymous real, rhs : in anonymous real, epsilon : in anonymous real ) return boolean is
+begin
+  if lhs <= rhs + epsilon and lhs >= rhs - epsilon
+  then
+    return pass(file,line);
+  else
+    return fail(file,line,lhs'image & " != " & rhs'image );
+  end if;
+end;

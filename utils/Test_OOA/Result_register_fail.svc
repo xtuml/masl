@@ -1,0 +1,7 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::Result.register_fail ( file : in anonymous string, line : in anonymous integer, message : in anonymous string ) is
+  result : instance of Result;
+begin
+  result := create Result ( file => file, line => line, count => (find Result ( file = file and line = line ))'length + 1, pass => false, message => message );
+end service;

@@ -1,0 +1,11 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::check_null ( file : in anonymous string, line : in anonymous integer, obj : in instance ) return boolean is
+begin
+  if obj = null
+  then
+    return pass(file,line);
+  else
+    return fail(file,line,"instance is not null" );
+  end if;
+end;

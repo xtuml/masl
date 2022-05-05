@@ -1,0 +1,6 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::check ( file : in anonymous string, line : in anonymous integer, passed : in anonymous boolean, failmessage : in anonymous string ) is
+  result : boolean := check(file,line,passed,failmessage);
+begin
+end;

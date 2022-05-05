@@ -1,0 +1,11 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::check_equal_bag ( file : in anonymous string, line : in anonymous integer, lhs : in anonymous bag of anonymous boolean, rhs : in anonymous bag of anonymous boolean ) return boolean is
+begin
+  if check ( file, line, lhs'length = rhs'length, "Bag size not equal" )
+  then 
+    return check ( file, line, lhs = rhs, "Bag content not equal" );
+  else
+    return false;
+  end if;
+end;

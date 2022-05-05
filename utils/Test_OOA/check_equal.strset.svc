@@ -1,0 +1,6 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::check_equal_set ( file : in anonymous string, line : in anonymous integer, lhs : in anonymous set of anonymous string, rhs : in anonymous set of anonymous string ) is
+  result : boolean := check_equal_set(file,line,lhs,rhs);
+begin
+end;

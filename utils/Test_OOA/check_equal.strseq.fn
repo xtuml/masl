@@ -1,0 +1,26 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::check_equal ( file : in anonymous string, line : in anonymous integer, lhs : in anonymous sequence of anonymous string, rhs : in anonymous sequence of anonymous string ) return boolean is
+  message : string;
+begin
+   if lhs'length /= rhs'length
+   then
+     message := message & "length : " & lhs'length'image & " != " & rhs'length'image;
+   else
+     for i in lhs'range
+     loop
+       if lhs[i] /= rhs[i] 
+       then
+         message := message & "[" & i'image & "] \"" & lhs[i] & "\" != \"" & rhs[i] & "\", ";
+       end if;
+     end loop;          
+   end if;
+
+  if message = "" 
+  then
+    return pass(file,line);
+  else
+    return fail(file,line,message );
+  end if;
+
+end;
