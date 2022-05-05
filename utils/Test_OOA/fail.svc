@@ -1,0 +1,6 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::fail ( file : in anonymous string, line : in anonymous integer, failmessage : in anonymous string ) is
+  result : boolean := fail(file,line,failmessage);
+begin
+end service;

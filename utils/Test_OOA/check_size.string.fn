@@ -1,0 +1,6 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::check_size ( file : in anonymous string, line : in anonymous integer, seq : in anonymous sequence of anonymous string, size : in anonymous integer ) return boolean is
+begin
+  return check_equal(file,line,seq'length,size);
+end;

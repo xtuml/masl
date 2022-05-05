@@ -1,0 +1,6 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::pass ( file : in anonymous string, line : in anonymous integer ) is
+  result : boolean := pass(file,line);
+begin
+end service;

@@ -1,0 +1,32 @@
+// (C) 2022 - UK CROWN OWNED COPYRIGHT. All rights reserved.
+// The copyright of this Software is vested in the Crown and the Software is the property of the Crown.
+public service Test::print_results () is
+  fails : sequence of instance of Result;
+  passes : integer;
+  steps : integer;
+begin
+  fails  := find Result(pass = false);
+  passes  := (find Result(pass = true))'length;
+  steps := passes + fails'length;
+
+  if ( steps > 0 )
+  then
+
+    for failure in fails loop
+      console << failure.file << " failed at line " << failure.line << " (" << failure.count << ") : " << failure.message << endl;
+    end loop;
+
+    console << "Pass Rate : " << passes << " / " << steps << " (" << Format::format_fixed(passes*100.0/steps,false,1) << "%)" << endl;
+
+    if fails'length > 0 
+    then
+      console << "*** TEST FAILED ***" << endl;
+    else
+      console << "*** TEST PASSED ***" << endl;
+    end if;
+  else
+    console << "*** NOTHING TESTED ***" << endl;
+  end if;
+
+end service;
+
