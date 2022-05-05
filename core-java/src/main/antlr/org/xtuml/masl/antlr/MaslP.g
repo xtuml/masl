@@ -1127,12 +1127,16 @@ variableDeclaration           : variableName COLON
                               ;
 
 
-exceptionHandler              : WHEN qualifiedExceptionName GOES_TO statementList         -> ^( EXCEPTION_HANDLER 
+exceptionHandler              : WHEN qualifiedExceptionName
+                                (WITH variableName)? GOES_TO statementList                -> ^( EXCEPTION_HANDLER 
                                                                                                 qualifiedExceptionName 
+                                                                                                variableName?
                                                                                                 statementList)
                               ;
 
-otherHandler                  : WHEN OTHERS GOES_TO statementList                         -> ^( OTHER_HANDLER[$OTHERS] 
+otherHandler                  : WHEN OTHERS
+                                (WITH variableName)? GOES_TO statementList                -> ^( OTHER_HANDLER[$OTHERS] 
+                                                                                                variableName?
                                                                                                 statementList)
                               ;
 

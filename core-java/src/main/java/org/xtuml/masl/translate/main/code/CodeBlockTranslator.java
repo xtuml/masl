@@ -10,16 +10,21 @@ import java.util.List;
 
 import org.xtuml.masl.cppgen.Class;
 import org.xtuml.masl.cppgen.CodeBlock;
+import org.xtuml.masl.cppgen.CodeBlock;
+import org.xtuml.masl.cppgen.Literal;
 import org.xtuml.masl.cppgen.StatementGroup;
 import org.xtuml.masl.cppgen.TryCatchBlock;
 import org.xtuml.masl.cppgen.TypeUsage;
 import org.xtuml.masl.cppgen.Variable;
+import org.xtuml.masl.cppgen.VariableDefinitionStatement;
 import org.xtuml.masl.metamodel.code.ExceptionHandler;
 import org.xtuml.masl.metamodel.code.VariableDefinition;
 import org.xtuml.masl.metamodel.exception.ExceptionReference;
 import org.xtuml.masl.translate.main.Architecture;
 import org.xtuml.masl.translate.main.ExceptionTranslator;
+import org.xtuml.masl.translate.main.Mangler;
 import org.xtuml.masl.translate.main.Scope;
+import org.xtuml.masl.translate.main.Types;
 
 
 
@@ -83,6 +88,15 @@ public class CodeBlockTranslator extends CodeTranslator
     {
       this.handler = handler;
       codeBlock.appendStatement(preamble);
+
+      final VariableDefinition maslMessageVar = handler.getMessageVarDef();
+      if (maslMessageVar != null)
+      {
+        final TypeUsage type = Types.getInstance().getType(maslMessageVar.getType());
+        final Variable messageVar = new Variable(type.getConstType(), Mangler.mangleName(maslMessageVar), new Literal("exception.what()"));
+        getScope().addVariable(maslMessageVar, messageVar.asExpression());
+        codeBlock.appendStatement(new VariableDefinitionStatement(messageVar));
+      }
 
       for ( final org.xtuml.masl.metamodel.code.Statement maslStatement : handler.getCode() )
       {
