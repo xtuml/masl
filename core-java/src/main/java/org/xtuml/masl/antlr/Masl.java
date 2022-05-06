@@ -314,7 +314,11 @@ public class Masl
     }
     else
     {
-      return parseModel(modelFile);
+      final Domain domain = parseModel(modelFile);
+      if (domain.getPragmas().hasPragma(PragmaList.BUILD_SET)) {
+        BuildSet.addBuildSet(domain, new BuildSet(domain.getPragmas().getValue(PragmaList.BUILD_SET)));
+      }
+      return domain;
     }
   }
 
