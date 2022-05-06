@@ -1,0 +1,6 @@
+public service Assertions::assertTrue(axiom: in anonymous boolean, message: in anonymous string) is
+begin
+  if not axiom then
+    raise AssertionFailure(message);
+  end if;
+end service;
