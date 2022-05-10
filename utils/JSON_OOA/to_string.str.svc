@@ -1,4 +1,4 @@
-public service JSON::to_string(str: in string) return string is
+public service JSON::to_string(str: in anonymous string) return anonymous string is
 begin
 
   // check if a null literal

@@ -1,0 +1,4 @@
+public service Assertions::assertEquals(expected: in anonymous boolean, actual: in anonymous boolean) is
+begin
+  assertTrue(expected = actual, "Expected: '" & expected'image & "' but got: '" & actual'image & "'");
+end service;

@@ -1,4 +1,4 @@
-public service JSON::to_string(obj: in JSONObject) return string is
+public service JSON::to_string(obj: in JSONObject) return anonymous string is
 jsonFields: sequence of string;
 begin
   for k in obj'keys loop
