@@ -4,6 +4,4 @@ domain Assertions is
 
   public service assertTrue(axiom: in anonymous boolean, message: in anonymous string);
 
-end domain;
-pragma service_domain(true);
-pragma build_set("UtilityDomains");
+end domain; pragma build_set("UtilityDomains");
