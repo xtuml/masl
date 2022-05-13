@@ -1,0 +1,11 @@
+public service Test::fire_next_timer() return timer is
+timers: sequence of timer;
+begin
+  timers := get_scheduled_timers();
+  if timers'length /= 0 then
+    fire_timer(timers[timers'first]);
+    return timers[timers'first];
+  else
+    raise program_error ("There are no scheduled timers.");
+  end if;
+end service;
