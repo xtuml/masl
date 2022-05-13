@@ -72,6 +72,8 @@ domain Test is
   public service service_event_queue();
   public service get_scheduled_timers() return sequence of timer;
   public service fire_timer(t: in timer);
+  public service fire_scheduled_timers(); pragma filename("fire_scheduled_timers.svc");
+  public service fire_scheduled_timers(stop_at: in timestamp); pragma filename("fire_scheduled_timers.stop_at.svc");
 
 
   object Result is
