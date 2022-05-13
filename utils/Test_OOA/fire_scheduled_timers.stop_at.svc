@@ -1,0 +1,17 @@
+public service Test::fire_scheduled_timers(stop_at: in timestamp) is
+t0: timestamp;
+begin
+  // service the event queues and scheduled timers
+  for t in get_scheduled_timers() loop
+    // don't fire any timers after the stop_at time
+    exit when t'scheduled_at > stop_at;
+    // only service the event queue if this is the first timer or if
+    // the scheduled expiration is different than the previous timer
+    if t'scheduled_at /= t0 then
+      service_event_queue();
+      t0 := t'scheduled_at;
+    end if;
+    fire_timer(t);
+  end loop;
+  service_event_queue();
+end service;

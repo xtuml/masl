@@ -1,0 +1,6 @@
+public service Test::fire_scheduled_timers() is
+timers: sequence of timer;
+begin
+  timers := get_scheduled_timers();
+  fire_scheduled_timers(timers[timers'last]'scheduled_at);
+end service;
