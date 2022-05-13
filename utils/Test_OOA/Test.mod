@@ -70,6 +70,8 @@ domain Test is
 
 
   public service service_event_queue();
+  public service get_scheduled_timers() return sequence of timer;
+  public service fire_timer(t: in timer);
 
 
   object Result is
