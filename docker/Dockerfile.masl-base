@@ -49,3 +49,6 @@ WORKDIR /root
 # copy the libs and bins
 COPY --from=build-stage /opt/masl /opt/masl
 COPY --from=build-stage /opt/poco /opt/poco
+
+# update path
+ENV PATH=$PATH:/opt/masl/bin

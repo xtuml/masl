@@ -14,3 +14,9 @@ install (
           DIRECTORY   ${CMAKE_CURRENT_BINARY_DIR}/install/masl-core/lib/
           DESTINATION ${INSTALL_LIB_DIR}
   )
+
+install (
+          DIRECTORY   ${CMAKE_CURRENT_BINARY_DIR}/install/masl-core/bin/
+          DESTINATION ${INSTALL_BIN_DIR}
+          PATTERN "masl-core*" PERMISSIONS WORLD_EXECUTE
+  )

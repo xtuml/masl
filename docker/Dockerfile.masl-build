@@ -2,5 +2,5 @@
 FROM levistarrett/masl-base
 
 # build script
-COPY docker/build-masl.sh /root/build-masl.sh
-ENTRYPOINT ["/root/build-masl.sh"]
+COPY docker/build-masl.sh /usr/local/bin/build-masl.sh
+ENTRYPOINT ["/usr/local/bin/build-masl.sh"]

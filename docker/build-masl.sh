@@ -1,6 +1,6 @@
 #!/bin/bash
-cp -TRpf /workspace /build
+cp -TRpf /root /build
 cd /build
 cmake . -DCMAKE_INSTALL_PREFIX=/build
 make install
-cp -TRpf /build /workspace
+cp -TRpf /build /root

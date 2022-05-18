@@ -7,5 +7,5 @@ EXPOSE 30000/tcp
 EXPOSE 40000/tcp
 
 # execute script
-COPY docker/execute-masl.sh /root/execute-masl.sh
-ENTRYPOINT ["/root/execute-masl.sh"]
+COPY docker/execute-masl.sh /usr/local/bin/execute-masl.sh
+ENTRYPOINT ["/usr/local/bin/execute-masl.sh"]
