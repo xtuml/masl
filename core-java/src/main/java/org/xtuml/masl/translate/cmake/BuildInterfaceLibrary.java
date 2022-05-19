@@ -27,7 +27,7 @@ public class BuildInterfaceLibrary
                                            Utils.getPathArgs(Collections.<ReferencedFile>emptyList()),
                                            Utils.getNameArgs(library.getDependencies()),
                                            library instanceof Library && ((Library)library).isExport()?exportTarget:null,
-                                           false,
+                                           library.isExport(),
                                            Utils.getPathArgs(library.getPublicHeaders()));
   }
 
