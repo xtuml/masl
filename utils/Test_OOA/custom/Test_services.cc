@@ -9,6 +9,7 @@
 #include "swa/Sequence.hh"
 #include "swa/String.hh"
 #include "swa/EventTimers.hh"
+#include "swa/ProgramError.hh"
 
 namespace masld_Test
 {
@@ -17,7 +18,14 @@ namespace masld_Test
 
   void masls_service_event_queue ( )
   {
-    ::SWA::Process::getInstance().getEventQueue().processEvents();
+    try
+    {
+      ::SWA::Process::getInstance().getEventQueue().processEvents();
+    }
+    catch ( const std::exception& e )
+    {
+      throw ::SWA::ProgramError( "Failed to service event queue:\n" + std::string( e.what() ) );
+    }
   }
 
   ::SWA::Sequence< ::SWA::EventTimers::TimerIdType> masls_get_scheduled_timers ( )

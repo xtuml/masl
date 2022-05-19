@@ -33,33 +33,63 @@ namespace masld_Schedule
                                      const ::SWA::String&     maslp_input )
   {
     const ::SWA::Domain& domain = ::SWA::Process::getInstance().getDomain(maslp_domain_name);
+    const boost::function<void()> service;
     if ( maslp_service_type == maslt_ServiceType::masle_SCENARIO )
     {
-      ::SWA::Process::getInstance().runService(domain.getScenario(maslp_number), maslp_input);
+      service = domain.getScenario(maslp_number);
     }
     else if ( maslp_service_type == maslt_ServiceType::masle_EXTERNAL )
     {
-      ::SWA::Process::getInstance().runService(domain.getExternal(maslp_number), maslp_input);
+      service = domain.getExternal(maslp_number);
     }
     else
     {
-      throw ::SWA::ProgramError("unrecognised service type: " + ::boost::lexical_cast< ::std::string>( maslp_service_type ) );
+      throw ::SWA::ProgramError( "unrecognised service type: " + ::boost::lexical_cast< ::std::string>( maslp_service_type ) );
+    }
+    try
+    {
+      ::SWA::Process::getInstance().runService(service, maslp_input);
+    }
+    catch ( const std::exception& e )
+    {
+      throw ::SWA::ProgramError( "Failed to run service:\n" + std::string( e.what() ) );
     }
   }
 
   void masls_idle ( int32_t maslp_timeout )
   {
-    ::SWA::Process::getInstance().idle(maslp_timeout);
+    try
+    {
+      ::SWA::Process::getInstance().idle(maslp_timeout);
+    }
+    catch ( const std::exception& e )
+    {
+      throw ::SWA::ProgramError( "Exception during idle:\n" + std::string( e.what() ) );
+    }
   }
 
   void masls_pause ( )
   {
-    ::SWA::Process::getInstance().pause();
+    try
+    {
+      ::SWA::Process::getInstance().pause();
+    }
+    catch ( const std::exception& e )
+    {
+      throw ::SWA::ProgramError( "Exception during timeout:\n" + std::string( e.what() ) );
+    }
   }
 
   void masls_terminate ( )
   {
-    ::SWA::Process::getInstance().forceTerminate();
+    try
+    {
+      ::SWA::Process::getInstance().forceTerminate();
+    }
+    catch ( const std::exception& e )
+    {
+      throw ::SWA::ProgramError( "Failed to terminate:\n" + std::string( e.what() ) );
+    }
   }
 
 }
