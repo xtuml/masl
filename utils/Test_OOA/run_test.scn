@@ -1,0 +1,107 @@
+public service Test::run_test() is
+domainName: string;
+testName: string;
+scenarioNumber: integer := -1;
+tearDownName: string;
+tearDownNumber: integer := -1;
+skipTest: boolean := false;
+i: integer := 0;
+begin
+
+  // Parse input parameters
+  console >> domainName;              // read the domain name (required)
+  while not console'eof loop
+    if i = 0 then
+      console >> testName;            // read test name (required)
+    elsif i = 1 then
+      console >> scenarioNumber;      // read scenario number (required);
+    elsif i = 2 then
+      console >> tearDownName;        // read tear down scenario name
+      if tearDownName = "skip" then   // if the name is 'skip', then skip the test
+        tearDownName := "";
+        skipTest := true;
+        exit;
+      end if;
+    elsif i = 3 then
+      console >> tearDownNumber;      // read tear down scenario number
+    elsif i = 4 then
+      declare
+        s: string;
+      begin
+        console >> s;                 // check if the test is skipped
+        skipTest := s = "skip";
+      end;
+    else
+      exit;
+    end if;
+    i := i + 1;
+  end loop;
+
+  // Run the test
+  declare
+    testResult: dictionary;
+    t0: timestamp;
+    t1: timestamp;
+    filename: string;
+  begin
+
+    // Set the test name
+    testResult["suiteName"] := domainName;
+    testResult["testName"] := testName;
+
+    t0 := timestamp'now;
+
+    if skipTest then
+
+      testResult["result"] := "SKIPPED";
+
+    else
+
+      // Log the results to the console
+      Logger::log(Logger::Debug, domainName, testResult["testName"] & ": starting...");
+
+      // Execute the test
+      begin
+        Schedule::run_service(Schedule::SCENARIO, domainName, scenarioNumber);
+        testResult["result"] := "SUCCEEDED";
+      exception
+        when Assertions::AssertionFailure with reason =>
+          testResult["result"] := "FAILED";
+          testResult["details"] := reason;
+        when others with reason =>
+          testResult["result"] := "ERROR";
+          testResult["details"] := reason;
+      end;
+
+      // Execute tear down
+      if tearDownNumber /= -1 then
+
+        // Log the results to the console
+        Logger::log(Logger::Debug, domainName, testResult["testName"] & ": tearing down: '" & tearDownName & "'...");
+
+        begin
+          Schedule::run_service(Schedule::SCENARIO, domainName, tearDownNumber);
+        exception
+          when others with reason =>
+            testResult["result"] := "ERROR";
+            testResult["details"] := reason;
+        end;
+
+      end if;
+
+    end if;
+
+    t1 := timestamp'now;
+    testResult["timestamp"] := t1'image;
+    testResult["duration"] := (t1 - t0)'image;
+
+    // Log the results to the console
+    Logger::log(Logger::Debug, domainName, testResult["testName"] & ": " & testResult["result"]);
+
+    // Output the results
+    filename := "test_results/" & testName & "-results.json";
+    Filesystem::write_file(Filesystem::filename(filename), JSON::to_string(JSON::JSONObject(testResult)));
+
+  end;
+
+end service;

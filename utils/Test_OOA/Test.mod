@@ -76,6 +76,8 @@ domain Test is
   public service fire_scheduled_timers(); pragma filename("fire_scheduled_timers.svc");
   public service fire_scheduled_timers(stop_at: in timestamp); pragma filename("fire_scheduled_timers.stop_at.svc");
 
+  public service run_test(); pragma scenario(1);
+
 
   object Result is
     file  : preferred string;
