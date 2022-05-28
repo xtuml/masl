@@ -74,20 +74,22 @@ begin
       end;
 
       // Execute tear down
-      if tearDownNumber /= -1 then
+      begin
 
-        // Log the results to the console
-        Logger::log(Logger::Debug, domainName, testResult["testName"] & ": tearing down: '" & tearDownName & "'...");
+        // Empty event queue
+        Test::service_event_queue();
 
-        begin
+        // Execute the tear down scenario
+        if tearDownNumber /= -1 then
+          Logger::log(Logger::Debug, domainName, testResult["testName"] & ": tearing down: '" & tearDownName & "'...");
           Schedule::run_service(Schedule::SCENARIO, domainName, tearDownNumber);
-        exception
-          when others with reason =>
-            testResult["result"] := "ERROR";
-            testResult["details"] := reason;
-        end;
+        end if;
 
-      end if;
+      exception
+        when others with reason =>
+          testResult["result"] := "ERROR";
+          testResult["details"] := testResult["details"] & "\n" & "Error ocurred during tear down:\n" & reason;
+      end;
 
     end if;
 
@@ -97,6 +99,9 @@ begin
 
     // Log the results to the console
     Logger::log(Logger::Debug, domainName, testResult["testName"] & ": " & testResult["result"]);
+    if testResult'contains("details") then
+      Logger::log(Logger::Debug, domainName, testResult["details"]);
+    end if;
 
     // Output the results
     filename := "test_results/" & testName & "-results.json";
