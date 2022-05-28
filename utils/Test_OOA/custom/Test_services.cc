@@ -22,9 +22,13 @@ namespace masld_Test
     {
       ::SWA::Process::getInstance().getEventQueue().processEvents();
     }
+    catch ( const ::SWA::Exception& )
+    {
+      throw;
+    }
     catch ( const std::exception& e )
     {
-      throw ::SWA::ProgramError( "Failed to service event queue:\n" + std::string( e.what() ) );
+      throw ::SWA::ProgramError( "Failed to service event queue:\nCaused by:\n" + std::string( e.what() ) );
     }
   }
 
