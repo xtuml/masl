@@ -50,9 +50,13 @@ namespace masld_Schedule
     {
       ::SWA::Process::getInstance().runService(service, maslp_input);
     }
+    catch ( const ::SWA::Exception& )
+    {
+      throw;
+    }
     catch ( const std::exception& e )
     {
-      throw ::SWA::ProgramError( "Failed to run service:\n" + std::string( e.what() ) );
+      throw ::SWA::ProgramError( "Failed to run service:\nCaused by:\n" + std::string( e.what() ) );
     }
   }
 
@@ -62,11 +66,15 @@ namespace masld_Schedule
     {
       ::SWA::Process::getInstance().idle(maslp_timeout);
     }
+    catch ( const ::SWA::Exception& )
+    {
+      throw;
+    }
     catch ( const std::exception& e )
     {
-      throw ::SWA::ProgramError( "Exception during idle:\n" + std::string( e.what() ) );
+        throw ::SWA::ProgramError( "Exception during idle:\nCaused by:\n" + std::string( e.what() ) );
+      }
     }
-  }
 
   void masls_pause ( )
   {
@@ -74,9 +82,13 @@ namespace masld_Schedule
     {
       ::SWA::Process::getInstance().pause();
     }
+    catch ( const ::SWA::Exception& )
+    {
+      throw;
+    }
     catch ( const std::exception& e )
     {
-      throw ::SWA::ProgramError( "Exception during timeout:\n" + std::string( e.what() ) );
+      throw ::SWA::ProgramError( "Exception during timeout:\nCaused by:\n" + std::string( e.what() ) );
     }
   }
 
@@ -86,9 +98,13 @@ namespace masld_Schedule
     {
       ::SWA::Process::getInstance().forceTerminate();
     }
+    catch ( const ::SWA::Exception& )
+    {
+      throw;
+    }
     catch ( const std::exception& e )
     {
-      throw ::SWA::ProgramError( "Failed to terminate:\n" + std::string( e.what() ) );
+      throw ::SWA::ProgramError( "Failed to terminate:\nCaused by:\n" + std::string( e.what() ) );
     }
   }
 
