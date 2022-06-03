@@ -1,0 +1,30 @@
+# build stage
+FROM ubuntu:latest as build
+
+# install dependencies
+RUN apt-get update && apt-get install -y unzip
+
+# download BridgePoint
+ADD https://s3.amazonaws.com/xtuml-releases/nightly-build/org.xtuml.bp.product-linux.gtk.x86_64.zip /bp.zip
+
+# unzip the archive
+RUN unzip /bp.zip
+
+# install stage
+FROM openjdk:11-jre-slim
+
+# copy the necessary files
+RUN mkdir -p /BridgePoint/tools/mc/bin /BridgePoint/tools/mc/schema /BridgePoint/plugins/org.xtuml.bp.x2m
+ADD http://www.antlr3.org/download/antlr-3.5.2-runtime.jar /BridgePoint/tools/mc/bin
+COPY --from=build /BridgePoint/tools/mc/bin/MASLParser.jar /BridgePoint/tools/mc/bin
+COPY --from=build /BridgePoint/tools/mc/bin/xtuml2masl /BridgePoint/tools/mc/bin
+COPY --from=build /BridgePoint/tools/mc/bin/x2m /BridgePoint/tools/mc/bin
+COPY --from=build /BridgePoint/tools/mc/bin/masl /BridgePoint/tools/mc/bin
+COPY --from=build /BridgePoint/plugins/org.xtuml.bp.x2m*/x2m.jar /BridgePoint/plugins/org.xtuml.bp.x2m
+COPY --from=build /BridgePoint/tools/mc/schema/Globals.xtuml /BridgePoint/tools/mc/schema
+
+# set the working directory
+WORKDIR /root
+
+# set the entry point
+ENTRYPOINT ["/BridgePoint/tools/mc/bin/xtuml2masl"]

@@ -37,11 +37,11 @@ FROM base-stage AS install-stage
 # install openjdk-11
 # this must be done after building the compiler itself because there are some
 # incompatibilities with OpenJDK11 during the build only
-ARG ARCH=linux-x64
-ADD https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-$ARCH.tar.gz /scratch/openjdk-11
-RUN mkdir -p /usr/lib/jvm && tar xzf /scratch/openjdk-11 -C /usr/lib/jvm/
-ADD docker/install-java.sh /tmp/install-java.sh
-RUN /bin/bash /tmp/install-java.sh
+#ARG ARCH=linux-x64
+#ADD https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-$ARCH.tar.gz /scratch/openjdk-11
+#RUN mkdir -p /usr/lib/jvm && tar xzf /scratch/openjdk-11 -C /usr/lib/jvm/
+#ADD docker/install-java.sh /tmp/install-java.sh
+#RUN /bin/bash /tmp/install-java.sh
 
 # create workspace
 WORKDIR /root
