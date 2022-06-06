@@ -69,11 +69,37 @@ domain Test is
   public service check_size ( file : in anonymous string, line : in anonymous integer, seq : in anonymous sequence of instance, size : in anonymous integer ) return boolean; pragma filename("check_size.instance.fn");
 
 
+  //! Deliver all pending events in the queue and handle the resulting actions.
+  //! If more events result, continue servicing the queue until it is empty.
   public service service_event_queue();
+
+  //! Returns a sequence of all active scheduled timers at the time of
+  //! invocation. The sequence is in expiration order.
   public service get_scheduled_timers() return sequence of timer;
+
+  //! Fire the timer referenced by `t`. This will cause the associated event to
+  //! be added to the event queue and the timer will be put in the expired state
+  //! (or rescheduled if it is a recurring timer). This service does not
+  //! manipulate system time and therefore subsequent calls to `t'expired_at` may
+  //! result in a timestamp in the future. Additionally, recurring timers will be
+  //! rescheduled with a new expiration time based on the original expiration.
+  //! Firing timers manually should only be done in limited cases to enable
+  //! testing.
   public service fire_timer(t: in timer);
+
+  //! Retrieve and fire the next scheduled timer. A handle to the timer that was
+  //! fired is returned. If no timers are scheduled, `program_error` is raised.
   public service fire_next_timer() return timer;
+
+  //! Retrieve and fire all timers scheduled at the time of invocation. Handle
+  //! all resultant events. If a recurring timer is rescheduled or a new timer
+  //! is scheduled as the result of handling an event, the newly scheduled
+  //! timers are not fired. Timers are fired in order of expiration and events
+  //! are handled after each unique expiration time.
   public service fire_scheduled_timers(); pragma filename("fire_scheduled_timers.svc");
+
+  //! Retrieve and fire all timers as described above. Limit to timers
+  //! scheduled at or before `stop_at`.
   public service fire_scheduled_timers(stop_at: in timestamp); pragma filename("fire_scheduled_timers.stop_at.svc");
 
   public service run_test(); pragma scenario(1);
