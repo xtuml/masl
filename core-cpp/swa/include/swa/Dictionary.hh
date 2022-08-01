@@ -14,7 +14,10 @@
 namespace SWA
 {
   template<class Key,class Value>
-  class Dictionary
+  class Dictionary : private boost::less_than_comparable<Dictionary<Key, Value>, 
+                               boost::equality_comparable<Dictionary<Key, Value>
+                               > 
+                             >
   {
     public:
       typedef boost::unordered_map<Key,Value> Container;
@@ -85,6 +88,9 @@ namespace SWA
       Value& operator[] ( const Key& key ) { return data[key]; }
       const Value& operator[] ( const Key& key ) const { return data[key]; }
 
+      bool operator== ( const Dictionary& rhs ) const { return std::map<Key, Value>(begin(), end()) == std::map<Key, Value>(rhs.begin(), rhs.end()); }
+      bool operator< ( const Dictionary& rhs ) const { return std::map<Key, Value>(begin(), end()) < std::map<Key, Value>(rhs.begin(), rhs.end()); }
+
     private:
       Container data;
 
@@ -121,6 +127,11 @@ namespace SWA
     return stream << "Dictionary size " << obj.size();
   }
 
+  template<class K,class V>
+  inline std::size_t hash_value ( const Dictionary<K,V>& value )
+  {
+    return boost::hash_range(value.begin(),value.end());
+  }
 
 }
 
