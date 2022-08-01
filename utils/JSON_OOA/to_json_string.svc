@@ -1,0 +1,7 @@
+public service JSON::to_json(val: in string) return JSONElement is
+json_element: JSONElement;
+begin
+  json_element.kind := String;
+  json_element.data.str := val;
+  return json_element;
+end service;

@@ -1,0 +1,8 @@
+public service JSON::get_boolean(json_element: in JSONElement) return boolean is
+begin
+if json_element.kind = Boolean then
+  return json_element.data.bool;
+else
+  raise JSONException("JSON element is not a boolean");
+end if;
+end service;

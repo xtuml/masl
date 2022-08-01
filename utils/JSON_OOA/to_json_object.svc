@@ -1,0 +1,9 @@
+public service JSON::to_json(json_object: in JSONObject) return JSONElement is
+json_element: JSONElement;
+begin
+  json_element.kind := Object;
+  for key in json_object'keys loop
+    json_element.data.obj[key] := dump(json_object[key]);
+  end loop;
+  return json_element;
+end service;

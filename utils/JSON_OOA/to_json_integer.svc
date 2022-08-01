@@ -1,0 +1,7 @@
+public service JSON::to_json(val: in integer) return JSONElement is
+json_element: JSONElement;
+begin
+  json_element.kind := Integer;
+  json_element.data.int := val;
+  return json_element;
+end service;
