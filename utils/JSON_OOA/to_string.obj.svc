@@ -1,8 +1,0 @@
-public service JSON::to_string(obj: in JSONObject) return anonymous string is
-jsonFields: sequence of string;
-begin
-  for k in obj'keys loop
-    jsonFields := jsonFields & ("\"" & k & "\"" & ":" & to_string(obj[k]));
-  end loop;
-  return "{" & Strings::join(jsonFields, ",") & "}";
-end service;

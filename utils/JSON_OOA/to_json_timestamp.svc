@@ -1,0 +1,4 @@
+public service JSON::to_json(val: in timestamp) return JSONElement is
+begin
+  return to_json(val'image);
+end service;

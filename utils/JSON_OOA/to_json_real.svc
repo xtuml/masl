@@ -1,0 +1,7 @@
+public service JSON::to_json(val: in real) return JSONElement is
+json_element: JSONElement;
+begin
+  json_element.kind := Real;
+  json_element.data.real := val;
+  return json_element;
+end service;

@@ -1,0 +1,7 @@
+public service JSON::to_json(val: in boolean) return JSONElement is
+json_element: JSONElement;
+begin
+  json_element.kind := Boolean;
+  json_element.data.bool := val;
+  return json_element;
+end service;
