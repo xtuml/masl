@@ -39,38 +39,38 @@ begin
 
   // Run the test
   declare
-    testResult: dictionary;
+    testResult: JSON::JSONObject;
     t0: timestamp;
     t1: timestamp;
     filename: string;
   begin
 
     // Set the test name
-    testResult["suiteName"] := domainName;
-    testResult["testName"] := testName;
+    testResult["suiteName"] := JSON::to_json(domainName);
+    testResult["testName"] := JSON::to_json(testName);
 
     t0 := timestamp'now;
 
     if skipTest then
 
-      testResult["result"] := "SKIPPED";
+      testResult["result"] := JSON::to_json("SKIPPED");
 
     else
 
       // Log the results to the console
-      Logger::log(Logger::Debug, domainName, testResult["testName"] & ": starting...");
+      Logger::log(Logger::Debug, domainName, JSON::get_string(testResult["testName"]) & ": starting...");
 
       // Execute the test
       begin
         Schedule::run_service(Schedule::SCENARIO, domainName, scenarioNumber);
-        testResult["result"] := "SUCCEEDED";
+        testResult["result"] := JSON::to_json("SUCCEEDED");
       exception
         when Assertions::AssertionFailure with reason =>
-          testResult["result"] := "FAILED";
-          testResult["details"] := reason;
+          testResult["result"] := JSON::to_json("FAILED");
+          testResult["details"] := JSON::to_json(reason);
         when others with reason =>
-          testResult["result"] := "ERROR";
-          testResult["details"] := reason;
+          testResult["result"] := JSON::to_json("ERROR");
+          testResult["details"] := JSON::to_json(reason);
       end;
 
       // Execute tear down
@@ -81,31 +81,35 @@ begin
 
         // Execute the tear down scenario
         if tearDownNumber /= -1 then
-          Logger::log(Logger::Debug, domainName, testResult["testName"] & ": tearing down: '" & tearDownName & "'...");
+          Logger::log(Logger::Debug, domainName, JSON::get_string(testResult["testName"]) & ": tearing down: '" & tearDownName & "'...");
           Schedule::run_service(Schedule::SCENARIO, domainName, tearDownNumber);
         end if;
 
       exception
         when others with reason =>
-          testResult["result"] := "ERROR";
-          testResult["details"] := testResult["details"] & "\n" & "Error ocurred during tear down:\n" & reason;
+          testResult["result"] := JSON::to_json("ERROR");
+          if testResult'contains("details") then
+            testResult["details"] := JSON::to_json( JSON::get_string(testResult["details"]) & "\n" & "Error ocurred during tear down:\n" & reason );
+          else
+            testResult["details"] := JSON::to_json( "Error ocurred during tear down:\n" & reason );
+          end if;
       end;
 
     end if;
 
     t1 := timestamp'now;
-    testResult["timestamp"] := t1'image;
-    testResult["duration"] := (t1 - t0)'image;
+    testResult["timestamp"] := JSON::to_json(t1'image);
+    testResult["duration"] := JSON::to_json((t1 - t0)'image);
 
     // Log the results to the console
-    Logger::log(Logger::Debug, domainName, testResult["testName"] & ": " & testResult["result"]);
+    Logger::log(Logger::Debug, domainName, JSON::get_string(testResult["testName"]) & ": " & JSON::get_string(testResult["result"]));
     if testResult'contains("details") then
-      Logger::log(Logger::Debug, domainName, testResult["details"]);
+      Logger::log(Logger::Debug, domainName, JSON::get_string(testResult["details"]));
     end if;
 
     // Output the results
     filename := "test_results/" & testName & "-results.json";
-    //Filesystem::write_file(Filesystem::filename(filename), JSON::to_string(JSON::JSONObject(testResult)));
+    Filesystem::write_file(Filesystem::filename(filename), JSON::dump(testResult));
 
   end;
 
