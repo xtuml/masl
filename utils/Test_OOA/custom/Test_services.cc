@@ -45,7 +45,10 @@ namespace masld_Test
 
   void masls_fire_timer ( const ::SWA::EventTimers::TimerIdType& maslp_t )
   {
-    ::SWA::EventTimers::getInstance().fireTimer(maslp_t, 0);
+    ::SWA::EventTimer& timer = ::SWA::EventTimers::getInstance().getTimer(maslp_t);
+    if (timer.isScheduled()) {
+      ::SWA::EventTimers::getInstance().fireTimer(maslp_t, 0);
+    }
   }
 
 }
