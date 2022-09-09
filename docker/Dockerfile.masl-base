@@ -20,16 +20,18 @@ RUN tar xzf poco-1.7.3-all.tar.gz
 RUN /bin/bash -c "cd poco-1.7.3-all && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/poco"
 RUN /bin/bash -c "cd poco-1.7.3-all && ninja install"
 
-# copy the MASL source code
+# build MASL SWA and code generator
 COPY core-cpp /root/masl/core-cpp
 COPY core-java /root/masl/core-java
-COPY utils /root/masl/utils
 COPY CMakeLists.txt /root/masl/CMakeLists.txt
-
-# build MASL
-RUN /bin/bash -c "export JAVA_HOME=\$(dirname \$(dirname \$(dirname \$(readlink -f \$(which java))))) && cd /root/masl && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/masl"
+RUN /bin/bash -c "cd /root/masl && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/masl"
 RUN mkdir -p /root/masl/core-java/install/masl-core/lib
 RUN /bin/bash -c "cd /root/masl && ninja install"
+
+# build utils
+COPY utils /root/masl/utils
+RUN /bin/bash -c "export JAVA_HOME=\$(dirname \$(dirname \$(dirname \$(readlink -f \$(which java))))) && cd /root/masl/utils && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/masl"
+RUN /bin/bash -c "cd /root/masl/utils && ninja install"
 
 # install stage
 FROM base-stage AS install-stage
