@@ -7,6 +7,3 @@ project(Masl)
 
 add_subdirectory(core-cpp)
 add_subdirectory(core-java)
-add_subdirectory(utils)
-#add_subdirectory(inspector)
-#add_subdirectory(examples/petrol)

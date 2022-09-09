@@ -1,10 +1,31 @@
 #
 # UK Crown Copyright (c) 2016. All Rights Reserved
 #
+cmake_minimum_required(VERSION 3.5)
+
 project(UtilityDomains VERSION 0.1)
 
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} /opt/masl)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} /opt/poco)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /opt/masl/lib/cmake/MaslCore)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /opt/poco/lib/cmake/Poco)
+
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+set(INSTALL_INCLUDE_DIR include CACHE PATH "Installation directory for header files")
+
+include(MaslCoreConfig)
+include(SimpleAdd)
 include(Masl)
+
+add_custom_target (masl-core)
+set_property (TARGET masl-core PROPERTY MAIN_JAR /opt/masl/lib/masl-core.jar)
+
+find_package(Poco REQUIRED COMPONENTS XML Foundation)
+find_package(Sqlite3 REQUIRED)
+find_package(Boost REQUIRED QUIET COMPONENTS system regex)
+link_libraries(Boost::boost Boost::regex)
 
 set(MaslExportTarget ${PROJECT_NAME})
 
