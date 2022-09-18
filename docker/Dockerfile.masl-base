@@ -6,7 +6,7 @@ ENV LD_LIBRARY_PATH=/opt/masl/lib:/opt/poco/lib
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8 -Djava.libary.path=${LD_LIBRARY_PATH}"
 
 # install prerequisites
-RUN apt-get update && apt-get install -y gcc g++ pkg-config cmake ninja-build libsqlite3-dev libboost-all-dev libssl-dev uuid-dev
+RUN apt-get update && apt-get install -y gcc g++ pkg-config cmake ninja-build libsqlite3-dev libboost-all-dev libssl-dev uuid-dev wget
 
 # build sources
 FROM base-stage AS build-stage
@@ -39,11 +39,14 @@ FROM base-stage AS install-stage
 # install openjdk-11
 # this must be done after building the compiler itself because there are some
 # incompatibilities with OpenJDK11 during the build only
-ARG ARCH=linux-x64
-ADD https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-$ARCH.tar.gz /scratch/openjdk-11
-RUN mkdir -p /usr/lib/jvm && tar xzf /scratch/openjdk-11 -C /usr/lib/jvm/
-ADD docker/install-java.sh /tmp/install-java.sh
-RUN /bin/bash /tmp/install-java.sh
+#RUN /bin/bash -c 'case ${TARGETARCH} in \
+#        "amd64")  ARCH=linux-x64      ;; \
+#        "arm64")  ARCH=linux-aarch64  ;; \
+#    esac \
+#    && wget -O /scratch/openjdk-11 https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-$ARCH.tar.gz'
+#RUN mkdir -p /usr/lib/jvm && tar xzf /scratch/openjdk-11 -C /usr/lib/jvm/
+#ADD docker/install-java.sh /tmp/install-java.sh
+#RUN /bin/bash /tmp/install-java.sh
 
 # create workspace
 WORKDIR /root
