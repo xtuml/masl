@@ -1,12 +1,12 @@
 public service JSON::get_object(json_element: in JSONElement) return JSONObject is
 json_object: JSONObject;
 begin
-if json_element.kind = Object then
-  for key in json_element.data.obj'keys loop
-    json_object[key] := parse(json_element.data.obj[key]);
-  end loop;
-  return json_object;
-else
-  raise JSONException("JSON element is not an object");
-end if;
+  if json_element.kind = Object then
+    for key in json_element.data.obj'keys loop
+      json_object[key] := parse(json_element.data.obj[key]);
+    end loop;
+    return json_object;
+  else
+    raise JSONException("JSON element is not an object");
+  end if;
 end service;

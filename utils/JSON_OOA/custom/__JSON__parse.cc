@@ -8,6 +8,7 @@
 #include "swa/parse.hh"
 #include "swa/console.hh"
 
+#include <boost/algorithm/string.hpp>
 #include <string.h>
 #include <stdio.h>
 #include "jsmn.h"
@@ -32,6 +33,7 @@ namespace masld_JSON
     maslt_JSONElement json_element;
     jsmntok_t token = tokens[index];
     std::string token_text = jsmn_get_text(json_string, token);
+    json_element.set_masla_raw() = token_text;
 
     switch (token.type) {
       case JSMN_OBJECT:
@@ -62,6 +64,13 @@ namespace masld_JSON
       case JSMN_STRING:
         json_element.set_masla_kind() = maslt_JSONType::masle_String;
         json_element.set_masla_data().set_masla_str() = token_text;
+        json_element.set_masla_data().set_masla_str() = boost::algorithm::replace_all_copy(json_element.get_masla_data().get_masla_str(), "\\t", "\t");
+        json_element.set_masla_data().set_masla_str() = boost::algorithm::replace_all_copy(json_element.get_masla_data().get_masla_str(), "\\r", "\r");
+        json_element.set_masla_data().set_masla_str() = boost::algorithm::replace_all_copy(json_element.get_masla_data().get_masla_str(), "\\n", "\n");
+        json_element.set_masla_data().set_masla_str() = boost::algorithm::replace_all_copy(json_element.get_masla_data().get_masla_str(), "\\f", "\f");
+        json_element.set_masla_data().set_masla_str() = boost::algorithm::replace_all_copy(json_element.get_masla_data().get_masla_str(), "\\b", "\b");
+        json_element.set_masla_data().set_masla_str() = boost::algorithm::replace_all_copy(json_element.get_masla_data().get_masla_str(), "\\\"", "\"");
+        json_element.set_masla_data().set_masla_str() = boost::algorithm::replace_all_copy(json_element.get_masla_data().get_masla_str(), "\\\\", "\\");
         break;
       case JSMN_PRIMITIVE:
         if (token_text == "true" || token_text == "false") {
