@@ -1,0 +1,11 @@
+private service JSONValidation::create_validation_error(keyword_location: in anonymous string, instance_location: in anonymous string, error_message: in anonymous string, suberrors: in JSON::JSONArray) return JSON::JSONElement is
+error: JSON::JSONObject;
+begin
+  error["keywordLocation"] := JSON::to_json(keyword_location);
+  error["instanceLocation"] := JSON::to_json(instance_location);
+  error["error"] := JSON::to_json(error_message);
+  if suberrors'length > 0 then
+    error["errors"] := JSON::to_json(suberrors);
+  end if;
+  return JSON::to_json(error);
+end service;

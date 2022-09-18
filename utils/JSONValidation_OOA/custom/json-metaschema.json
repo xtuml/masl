@@ -1,0 +1,220 @@
+{
+  "$id": "/opt/masl/share/json/json-metaschema.json",
+  "$schema": "/opt/masl/share/json/json-metaschema.json",
+  "title": "JSON Meta-Schema",
+  "description": "A subset of the JSON-Schema specification implemented by the MASL JSON utility domain",
+  "$ref": "#/$defs/schema",
+  "$defs": {
+    "schema": {
+      "type": ["object", "boolean"],
+      "properties": {
+        "$id": {
+          "description": "The canonical URI for this schema"
+        },
+        "$schema": {
+          "description": "The metaschema to which this schema adheres"
+        },
+        "$defs": {
+          "description": "An object containing reusable subschemas",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/schema"
+          }
+        },
+        "$ref": {
+          "description": "A reference to an externally defined subschema",
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {"$ref": "#/$defs/schema_metadata"},
+        {"$ref": "#/$defs/logical_subschema_validation"},
+        {"$ref": "#/$defs/base_validation"},
+        {"$ref": "#/$defs/numeric_validation"},
+        {"$ref": "#/$defs/string_validation"},
+        {"$ref": "#/$defs/array_validation"},
+        {"$ref": "#/$defs/object_validation"}
+      ],
+      "unevaluatedProperties": false
+    },
+    "schema_metadata": {
+      "description": "Additional valid annotations that are not used by validation",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "logical_subschema_validation": {
+      "description": "Validation rules for matching subschemas in place",
+      "properties": {
+        "allOf": {
+          "description": "Input values must match all of the specified subschemas",
+          "$ref": "#/$defs/subschema_list"
+        },
+        "anyOf": {
+          "description": "Input values must match at least one of the specified subschemas",
+          "$ref": "#/$defs/subschema_list"
+        },
+        "oneOf": {
+          "description": "Input values must match exactly one of the specified subschemas",
+          "$ref": "#/$defs/subschema_list"
+        },
+        "not": {
+          "description": "Input values must not match the specified subschema",
+          "$ref": "#/$defs/schema"
+        }
+      }
+    },
+    "base_validation": {
+      "description": "Validation rules that apply to all types",
+      "properties": {
+        "type": {
+          "description": "Sepcify the type of a value",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/type_specifier"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/type_specifier"
+              }
+            }
+          ]
+        },
+        "enum": {
+          "description": "Specifies a list of valid values",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "const": {
+          "description": "Specifies a single valid value"
+        }
+      }
+    },
+    "numeric_validation": {
+      "description": "Validation rules that apply to reals and integers",
+      "properties": {
+        "multipleOf": {
+          "description": "Input values must be an integer multiple of the specified number",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum": {
+          "description": "Input values must be less than or equal to the specified number",
+          "type": "number"
+        },
+        "exclusiveMaximum": {
+          "description": "Input values must be strictly less than the specified number",
+          "type": "number"
+        },
+        "minimum": {
+          "description": "Input values must be greater than or equal to the specified number",
+          "type": "number"
+        },
+        "exclusiveMinimum": {
+          "description": "Input values must be strictly greater than or equal to the specified number",
+          "type": "number"
+        }
+      }
+    },
+    "string_validation": {
+      "description": "Validation rules that apply to strings",
+      "properties": {
+        "maxLength": {
+          "description": "Length of input values must be less than or equal to the specified number",
+          "$ref": "#/$defs/item_count"
+        },
+        "minLength": {
+          "description": "Length of input values must be greater than or equal to the specified number",
+          "$ref": "#/$defs/item_count"
+        },
+        "pattern": {
+          "description": "Input values must match the specified regex pattern",
+          "type": "string"
+        },
+        "format": {
+          "description": "Input values must match the specified pre-defined format",
+          "enum": ["date-time", "duration"]
+        }
+      }
+    },
+    "array_validation": {
+      "description": "Validation rules that apply to strings",
+      "properties": {
+        "maxItems": {
+          "description": "Length of input values must be less than or equal to the specified number",
+          "$ref": "#/$defs/item_count"
+        },
+        "minItems": {
+          "description": "Length of input values must be greater than or equal to the specified number",
+          "$ref": "#/$defs/item_count"
+        },
+        "uniqueItems": {
+          "description": "Elements of input values must be unique",
+          "type": "boolean"
+        },
+        "items": {
+          "description": "Elements of input values must validate against the subschema",
+          "$ref": "#/$defs/schema"
+        }
+      }
+    },
+    "object_validation": {
+      "description": "Validation rules that apply to objects",
+      "properties": {
+        "maxProperties": {
+          "description": "Number of keys in input values must be less than or equal to the specified number",
+          "$ref": "#/$defs/item_count"
+        },
+        "minProperties": {
+          "description": "Number of keys in input values must be greater than or equal to the specified number",
+          "$ref": "#/$defs/item_count"
+        },
+        "required": {
+          "description": "Specifies a list of required properties",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "description": "Properties of input values must validate against the subschema corresponding to the property name",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/schema"
+          }
+        },
+        "additionalProperties": {
+          "description": "Properties of input values not already matched by 'properties' must validate against the subschema",
+          "$ref": "#/$defs/schema"
+        },
+        "unevaluatedProperties": {
+          "description": "Properties of input values must not already evaluated must validate against the subschema",
+          "$ref": "#/$defs/schema"
+        }
+      }
+    },
+    "type_specifier": {
+      "enum": ["null", "boolean", "object", "array", "number", "string", "integer"]
+    },
+    "item_count": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "subschema_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/schema"
+      }
+    }
+  }
+}

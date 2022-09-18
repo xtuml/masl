@@ -1,0 +1,5 @@
+private service JSONValidation::create_validation_error(keyword_location: in anonymous string, instance_location: in anonymous string, error_message: in anonymous string) return JSON::JSONElement is
+suberrors: readonly JSON::JSONArray;
+begin
+  return create_validation_error(keyword_location, instance_location, error_message, suberrors);
+end service;
