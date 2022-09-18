@@ -30,6 +30,7 @@ domain JSON is
   public type JSONElement is structure
     kind: JSONType := Null;
     data: JSONData;
+    raw: string;
   end structure;
 
   //! A 'JSONObject' is a map of string keys to instances of the 'JSONElement' structure.
@@ -60,6 +61,7 @@ domain JSON is
   public service get_object(json_element: in JSONElement) return JSONObject;
   public service get_array(json_element: in JSONElement) return JSONArray;
   public service get_string(json_element: in JSONElement) return string;
+  public service get_raw_string(json_element: in JSONElement) return string;
   public service get_real(json_element: in JSONElement) return real;
   public service get_integer(json_element: in JSONElement) return integer;
   public service get_boolean(json_element: in JSONElement) return boolean;

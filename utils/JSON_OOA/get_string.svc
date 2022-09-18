@@ -1,8 +1,8 @@
 public service JSON::get_string(json_element: in JSONElement) return string is
 begin
-if json_element.kind = String then
-  return json_element.data.str;
-else
-  raise JSONException("JSON element is not a string");
-end if;
+  if json_element.kind = String then
+    return json_element.data.str;
+  else
+    raise JSONException("JSON element is not a string");
+  end if;
 end service;
