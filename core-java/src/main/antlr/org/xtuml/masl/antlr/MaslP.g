@@ -1549,6 +1549,12 @@ FALSE                         : 'false';
 
 LINE_NO                       : '#LINE#' { setText(""+$line); $type=IntegerLiteral; };
 FILE_NAME                     : '#FILE#' { setText("\"" + maslFile.getFile().getName() + "\""); $type=StringLiteral; };
+SYSTEM_PROPERTY               : '#PROP["' ('A'..'Z' | 'a'..'z' | '.')+ '"]#' {
+                                  final String value = System.getProperty(getText().substring(7, getText().length() - 3));
+                                  // TODO consider escaping the property value
+                                  setText("\"" + (value != null ? value : "") + "\"");
+                                  $type = StringLiteral;
+                              };
 
 
 // Numeric Literals
