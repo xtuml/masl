@@ -1,0 +1,9 @@
+private service JSONValidation::create_validation_annotation(schema_location: in anonymous string, instance_location: in anonymous string, keyword: in anonymous string, result: in JSON::JSONElement) return JSON::JSONElement is
+annotation: JSON::JSONObject;
+begin
+  annotation["keywordLocation"] := JSON::to_json(schema_location);
+  annotation["instanceLocation"] := JSON::to_json(instance_location);
+  annotation["keyword"] := JSON::to_json(keyword);
+  annotation["result"] := result;
+  return JSON::to_json(annotation);
+end service;

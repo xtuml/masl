@@ -1,0 +1,471 @@
+private service JSONValidation::validate(input: in JSON::JSONElement, schema_element: in JSON::JSONElement, instance_path: in anonymous string, schema_path: in anonymous string, defs: in JSON::JSONObject) return JSON::JSONObject is
+errors: JSON::JSONArray;
+annotations: JSON::JSONArray;
+result: JSON::JSONObject;
+schema_definitions: JSON::JSONObject := defs;
+begin
+
+  case schema_element.kind is
+
+    when JSON::Object =>
+      declare
+        schema: JSON::JSONObject;
+      begin
+        schema := JSON::get_object(schema_element);
+
+        // TODO validate '$schema'
+
+        // process '$defs'
+        if schema'contains("$defs") then
+          declare
+            defs: JSON::JSONObject;
+          begin
+            defs := JSON::get_object(schema["$defs"]);
+            for def in defs'keys loop
+              schema_definitions[schema_path & "/$defs/" & def] := defs[def];
+            end loop;
+          end;
+        end if;
+
+        // validate '$ref'
+        if schema'contains("$ref") then
+          if schema_definitions'contains(JSON::get_string(schema["$ref"])) then
+            declare
+              subresult: JSON::JSONObject;
+            begin
+              subresult := validate(input, schema_definitions[JSON::get_string(schema["$ref"])], instance_path, JSON::get_string(schema["$ref"]), schema_definitions);
+              annotations := annotations & JSON::get_array(subresult["annotations"]);
+              erase subresult["annotations"];
+              if not JSON::get_boolean(subresult["valid"]) then
+                errors := errors & JSON::to_json(subresult);
+              end if;
+            end;
+          else
+            errors := errors & create_validation_error(schema_path & "/$ref", "",
+              "Could not resolve schema reference: " & JSON::get_string(schema["$ref"]));
+          end if;
+        end if;
+
+        // validate 'oneOf'
+        if schema'contains("oneOf") then
+          declare
+            subschemas: JSON::JSONArray;
+            subresult: JSON::JSONObject;
+            matching: set of string;
+            suberrors: JSON::JSONArray;
+          begin
+            subschemas := JSON::get_array(schema["oneOf"]);
+            for i in subschemas'range loop
+              subresult := validate(input, subschemas[i], instance_path, schema_path & "/oneOf/" & i'image, schema_definitions);
+              annotations := annotations & JSON::get_array(subresult["annotations"]);
+              erase subresult["annotations"];
+              if JSON::get_boolean(subresult["valid"]) then
+                matching := matching & i'image;
+              else
+                suberrors := suberrors & JSON::to_json(subresult);
+              end if;
+            end loop;
+            if matching'length = 0 then
+              errors := errors & create_validation_error(schema_path & "/oneOf", instance_path,
+                "JSON does not match any schema from 'oneOf'", suberrors);
+            elsif matching'length > 1 then
+              errors := errors & create_validation_error(schema_path & "/oneOf", instance_path,
+                "JSON matches more than one schema from 'oneOf': [" & Strings::join(matching'elements, ", ") & "]");
+            end if;
+          end;
+        end if;
+
+        // validate 'anyOf'
+        if schema'contains("anyOf") then
+          declare
+            subschemas: JSON::JSONArray;
+            subresult: JSON::JSONObject;
+            suberrors: JSON::JSONArray;
+          begin
+            subschemas := JSON::get_array(schema["anyOf"]);
+            for i in subschemas'range loop
+              subresult := validate(input, subschemas[i], instance_path, schema_path & "/anyOf/" & i'image, schema_definitions);
+              annotations := annotations & JSON::get_array(subresult["annotations"]);
+              erase subresult["annotations"];
+              if not JSON::get_boolean(subresult["valid"]) then
+                suberrors := suberrors & JSON::to_json(subresult);
+              end if;
+            end loop;
+            if suberrors'length = subschemas'length then
+              errors := errors & create_validation_error(schema_path & "/anyOf", instance_path,
+                "JSON does not match any schema from 'anyOf'", suberrors);
+            end if;
+          end;
+        end if;
+
+        // validate 'allOf'
+        if schema'contains("allOf") then
+          declare
+            subschemas: JSON::JSONArray;
+            subresult: JSON::JSONObject;
+            suberrors: JSON::JSONArray;
+          begin
+            subschemas := JSON::get_array(schema["allOf"]);
+            for i in subschemas'range loop
+              subresult := validate(input, subschemas[i], instance_path, schema_path & "/allOf/" & i'image, schema_definitions);
+              annotations := annotations & JSON::get_array(subresult["annotations"]);
+              erase subresult["annotations"];
+              if not JSON::get_boolean(subresult["valid"]) then
+                suberrors := suberrors & JSON::to_json(subresult);
+              end if;
+            end loop;
+            if suberrors'length > 0 then
+              errors := errors & create_validation_error(schema_path & "/allOf", instance_path,
+                "JSON does not match all schemas from 'allOf'", suberrors);
+            end if;
+          end;
+        end if;
+
+        if schema'contains("not") then
+          declare
+            subresult: JSON::JSONObject;
+          begin
+            subresult := validate(input, schema["not"], instance_path, schema_path & "/not", schema_definitions);
+            annotations := annotations & JSON::get_array(subresult["annotations"]);
+            erase subresult["annotations"];
+            if JSON::get_boolean(subresult["valid"]) then
+              errors := errors & create_validation_error(schema_path & "/allOf", instance_path,
+                "JSON matches schemas from 'not'");
+            end if;
+          end;
+        end if;
+
+        // validate 'type'
+        if schema'contains("type") then
+          declare
+            schema_types: set of string;
+            input_types: sequence of string;
+          begin
+            if schema["type"].kind = JSON::String then
+              schema_types := JSON::get_string(schema["type"]);
+            elsif schema["type"].kind = JSON::Array then
+              for type_val in JSON::get_array(schema["type"]) loop
+                schema_types := schema_types & JSON::get_string(type_val);
+              end loop;
+            end if;
+            case input.kind is
+              when JSON::Object => input_types := "object";
+              when JSON::Array => input_types := "array";
+              when JSON::String => input_types := "string";
+              when JSON::Real => input_types := "number";
+              when JSON::Integer => input_types := input_types & "integer" & "number";
+              when JSON::Boolean => input_types := "boolean";
+              when JSON::Null => input_types := "null";
+              when others => raise program_error("Unexpected input type: " & input.kind'image);
+            end case;
+            if (input_types'get_unique intersection schema_types)'length = 0 then
+              errors := errors & create_validation_error(schema_path & "/type", instance_path,
+                "Invalid type. Expected [" & Strings::join(schema_types, ", ") & "] but got [" & input_types[input_types'first] & "]");
+            end if;
+          end;
+        end if;
+
+        // validate 'enum'
+        if schema'contains("enum") and schema["enum"].kind = JSON::Array and (JSON::get_array(schema["enum"])'get_unique intersection input)'length = 0 then
+          errors := errors & create_validation_error(schema_path & "/enum", instance_path,
+            "Value '" & JSON::get_raw_string(input) & "' is not defined in enum");
+        end if;
+
+        // validate 'const'
+        if schema'contains("const") and (schema["const"]) /= input then
+          errors := errors & create_validation_error(schema_path & "/const", instance_path,
+            "Value '" & JSON::get_raw_string(input) & "' does not match const");
+        end if;
+
+        // type-specific validation
+        case input.kind is
+          when JSON::Object =>
+            // validate 'properties'
+            if schema'contains("properties") then
+              declare
+                item_result: JSON::JSONObject;
+                instance_properties: JSON::JSONObject;
+                schema_properties: JSON::JSONObject;
+                evaluated_properties: JSON::JSONArray;
+              begin
+                instance_properties := JSON::get_object(input);
+                schema_properties := JSON::get_object(schema["properties"]);
+                for key in (instance_properties'keys intersection schema_properties'keys) loop
+                  item_result := validate(instance_properties[key], schema_properties[key], instance_path & "/" & key, schema_path & "/properties/" & key, schema_definitions);
+                  annotations := annotations & JSON::get_array(item_result["annotations"]);
+                  erase item_result["annotations"];
+                  if not JSON::get_boolean(item_result["valid"]) then
+                    errors := errors & JSON::to_json(item_result);
+                  end if;
+                  evaluated_properties := evaluated_properties & JSON::to_json(key);
+                end loop;
+                if evaluated_properties'length > 0 then
+                  annotations := annotations & create_validation_annotation(schema_path, instance_path, "properties", JSON::to_json(evaluated_properties));
+                end if;
+              end;
+            end if;
+
+            // TODO validate 'patternProperties'
+
+            // validate 'additionalProperties'
+            if schema'contains("additionalProperties") then
+              declare
+                schema_properties: set of string;
+                item_result: JSON::JSONObject;
+                properties: JSON::JSONObject;
+                evaluated_properties: JSON::JSONArray;
+              begin
+                if schema'contains("properties") then
+                  schema_properties := JSON::get_object(schema["properties"])'keys;
+                end if;
+                properties := JSON::get_object(input);
+                // TODO also consider properties already matched by 'patternProperties'
+                for key in (properties'keys not_in schema_properties) loop
+                  if schema["additionalProperties"].kind = JSON::Boolean and not JSON::get_boolean(schema["additionalProperties"]) then
+                    errors := errors & create_validation_error(schema_path & "/additionalProperties", instance_path & "/" & key,
+                      "Property '" & key & "' is not defined and the schema does not allow additional properties");
+                  else
+                    item_result := validate(properties[key], schema["additionalProperties"], instance_path & "/" & key, schema_path & "/additionalProperties", schema_definitions);
+                    annotations := annotations & JSON::get_array(item_result["annotations"]);
+                    erase item_result["annotations"];
+                    if not JSON::get_boolean(item_result["valid"]) then
+                      errors := errors & JSON::to_json(item_result);
+                    end if;
+                  end if;
+                  evaluated_properties := evaluated_properties & JSON::to_json(key);
+                end loop;
+                if evaluated_properties'length > 0 then
+                  annotations := annotations & create_validation_annotation(schema_path, instance_path, "additionalProperties", JSON::to_json(evaluated_properties));
+                end if;
+              end;
+            end if;
+
+            // TODO validate 'propertyNames'
+
+            // validate 'maxProperties'
+            if schema'contains("maxProperties") and JSON::get_object(input)'keys'length > JSON::get_integer(schema["maxProperties"]) then
+              errors := errors & create_validation_error(schema_path & "/maxProperties", instance_path,
+                "Object properties count " & JSON::get_object(input)'keys'length'image & " exceeds maximum count of " & JSON::get_raw_string(schema["maxProperties"]));
+            end if;
+
+            // validate 'minProperties'
+            if schema'contains("minProperties") and JSON::get_object(input)'keys'length < JSON::get_integer(schema["minProperties"]) then
+              errors := errors & create_validation_error(schema_path & "/minProperties", instance_path,
+                "Object properties count " & JSON::get_object(input)'keys'length'image & " is less than the minimum count of " & JSON::get_raw_string(schema["minProperties"]));
+            end if;
+
+            // validate 'required'
+            if schema'contains("required") then
+              declare
+                required_properties: set of string;
+                missing_properties: set of string;
+              begin
+                for property in JSON::get_array(schema["required"]) loop
+                  required_properties := required_properties & JSON::get_string(property);
+                end loop;
+                missing_properties := required_properties not_in JSON::get_object(input)'keys;
+                if missing_properties'length > 0 then
+                  errors := errors & create_validation_error(schema_path & "/required", instance_path,
+                    "Required properties are missing from object: [" & Strings::join(missing_properties, ", ") & "]");
+                end if;
+              end;
+            end if;
+
+            // TODO validate 'dependentRequired'
+
+            // validate 'unevaluatedProperties'
+            if schema'contains("unevaluatedProperties") then
+              declare
+                annotation: JSON::JSONObject;
+                evaluated_properties: set of string;
+                item_result: JSON::JSONObject;
+                properties: JSON::JSONObject;
+                evaluated_properties_json: JSON::JSONArray;
+              begin
+                for annotation_element in annotations loop
+                  annotation := JSON::get_object(annotation_element);
+                  if JSON::get_string(annotation["instanceLocation"]) = instance_path and 
+                      ( JSON::get_string(annotation["keyword"]) = "properties" or
+                        JSON::get_string(annotation["keyword"]) = "patternProperties" or
+                        JSON::get_string(annotation["keyword"]) = "additionalProperties" ) then
+                    for prop in JSON::get_array(annotation["result"]) loop
+                      evaluated_properties := evaluated_properties & JSON::get_string(prop);
+                    end loop;
+                  end if;
+                end loop;
+                properties := JSON::get_object(input);
+                for key in (properties'keys not_in evaluated_properties) loop
+                  if schema["unevaluatedProperties"].kind = JSON::Boolean and not JSON::get_boolean(schema["unevaluatedProperties"]) then
+                    errors := errors & create_validation_error(schema_path & "/unevaluatedProperties", instance_path & "/" & key,
+                      "Property '" & key & "' is not defined and the schema does not allow unevaluated properties");
+                  else
+                    item_result := validate(properties[key], schema["unevaluatedProperties"], instance_path & "/" & key, schema_path & "/unevaluatedProperties", schema_definitions);
+                    annotations := annotations & JSON::get_array(item_result["annotations"]);
+                    erase item_result["annotations"];
+                    if not JSON::get_boolean(item_result["valid"]) then
+                      errors := errors & JSON::to_json(item_result);
+                    end if;
+                  end if;
+                  evaluated_properties_json := evaluated_properties_json & JSON::to_json(key);
+                end loop;
+                if evaluated_properties_json'length > 0 then
+                  annotations := annotations & create_validation_annotation(schema_path, instance_path, "unevaluatedProperties", JSON::to_json(evaluated_properties_json));
+                end if;
+              end;
+            end if;
+
+          when JSON::Array =>
+            // TODO validate 'prefixItems'
+
+            // validate 'items'
+            if schema'contains("items") then
+              declare
+                item_result: JSON::JSONObject;
+                items: JSON::JSONArray;
+              begin
+                items := JSON::get_array(input);
+                for i in items'range loop
+                  item_result := validate(items[i], schema["items"], instance_path & "/" & i'image, schema_path & "/items", schema_definitions);
+                  annotations := annotations & JSON::get_array(item_result["annotations"]);
+                  erase item_result["annotations"];
+                  if not JSON::get_boolean(item_result["valid"]) then
+                    errors := errors & JSON::to_json(item_result);
+                  end if;
+                end loop;
+              end;
+            end if;
+
+            // TODO validate 'contains'
+
+            // validate 'maxItems'
+            if schema'contains("maxItems") and JSON::get_array(input)'length > JSON::get_integer(schema["maxItems"]) then
+              errors := errors & create_validation_error(schema_path & "/maxItems", instance_path,
+                "Array item count " & JSON::get_array(input)'length'image & " exceeds maximum count of " & JSON::get_raw_string(schema["maxItems"]));
+            end if;
+
+            // validate 'minItems'
+            if schema'contains("minItems") and JSON::get_array(input)'length < JSON::get_integer(schema["minItems"]) then
+              errors := errors & create_validation_error(schema_path & "/minItems", instance_path,
+                "Array item count " & JSON::get_array(input)'length'image & " is less than the minimum count of " & JSON::get_raw_string(schema["minItems"]));
+            end if;
+
+            // validate 'uniqueItems'
+            if schema'contains("uniqueItems") and JSON::get_boolean(schema["uniqueItems"]) and JSON::get_array(input)'length > JSON::get_array(input)'get_unique'length then
+              errors := errors & create_validation_error(schema_path & "/uniqueItems", instance_path, "Array items must be unique");
+            end if;
+
+            // TODO validate 'maxContains'
+            // TODO validate 'minContains'
+
+          when JSON::String =>
+            // validate 'maxLength'
+            if schema'contains("maxLength") and JSON::get_string(input)'length > JSON::get_integer(schema["maxLength"]) then
+              errors := errors & create_validation_error(schema_path & "/maxLength", instance_path,
+                "String '" & JSON::get_string(input) & "' exceeds the maximum length of " & JSON::get_raw_string(schema["maxLength"]));
+            end if;
+
+            // validate 'minLength'
+            if schema'contains("minLength") and JSON::get_string(input)'length < JSON::get_integer(schema["minLength"]) then
+              errors := errors & create_validation_error(schema_path & "/minLength", instance_path,
+                "String '" & JSON::get_string(input) & "' is less than the minimum length of " & JSON::get_raw_string(schema["minLength"]));
+            end if;
+
+            // validate 'pattern'
+            if schema'contains("pattern") and not Regex::is_match_anywhere(JSON::get_string(input), Regex::regex(JSON::get_string(schema["pattern"]))) then
+              errors := errors & create_validation_error(schema_path & "/pattern", instance_path,
+                "String '" & JSON::get_string(input) & "' does not match regex pattern '" & JSON::get_string(schema["pattern"]) & "'");
+            end if;
+
+            // validate 'format'
+            if schema'contains("format") then
+              declare
+                format: string;
+                value: string;
+              begin
+                format := JSON::get_string(schema["format"]);
+                if format = "date-time" then
+                  value := timestamp'parse(JSON::get_string(input))'image;
+                elsif format = "duration" then
+                  value := duration'parse(JSON::get_string(input))'image;
+                end if;
+              exception
+                when program_error with e =>
+                  errors := errors & create_validation_error(schema_path & "/format", instance_path,
+                    Strings::trim(Strings::tokenize(Strings::tokenize(e, "\n")[1], ":")[2]) & ": " & JSON::get_string(input));
+              end;
+            end if;
+
+          when JSON::Real | JSON::Integer =>
+            // validate 'multipleOf'
+            if schema'contains("multipleOf") then
+              declare
+                integral_part: real;
+              begin
+                if Math::modf(JSON::get_real(input) / JSON::get_real(schema["multipleOf"]), integral_part) /= 0 then
+                  errors := errors & create_validation_error(schema_path & "/multipleOf", instance_path,
+                    "Number '" & JSON::get_raw_string(input) & "' is not a multiple of '" & JSON::get_raw_string(schema["multipleOf"]) & "'");
+                end if;
+              end;
+            end if;
+
+            // validate 'maximum'
+            if schema'contains("maximum") and JSON::get_real(input) > JSON::get_real(schema["maximum"]) then
+              errors := errors & create_validation_error(schema_path & "/maximum", instance_path,
+                "Number '" & JSON::get_raw_string(input) & "' exceeds maximum of '" & JSON::get_raw_string(schema["maximum"]) & "'");
+            end if;
+
+            // validate 'exclusiveMaximum'
+            if schema'contains("exclusiveMaximum") and JSON::get_real(input) >= JSON::get_real(schema["exclusiveMaximum"]) then
+              errors := errors & create_validation_error(schema_path & "/exclusiveMaximum", instance_path,
+                "Number '" & JSON::get_raw_string(input) & "' exceeds exclusive maximum of '" & JSON::get_raw_string(schema["exclusiveMaximum"]) & "'");
+            end if;
+
+            // validate 'minimum'
+            if schema'contains("minimum") and JSON::get_real(input) < JSON::get_real(schema["minimum"]) then
+              errors := errors & create_validation_error(schema_path & "/minimum", instance_path,
+                "Number '" & JSON::get_raw_string(input) & "' is less than minimum of '" & JSON::get_raw_string(schema["minimum"]) & "'");
+            end if;
+
+            // validate 'exclusiveMinimum'
+            if schema'contains("exclusiveMinimum") and JSON::get_real(input) <= JSON::get_real(schema["exclusiveMinimum"]) then
+              errors := errors & create_validation_error(schema_path & "/exclusiveMinimum", instance_path,
+                "Number '" & JSON::get_raw_string(input) & "' exceeds exclusive minimum of '" & JSON::get_raw_string(schema["exclusiveMinimum"]) & "'");
+            end if;
+
+          when others => null;  // No validation on other types
+
+        end case;
+
+      end;
+
+    when JSON::Boolean =>
+      if not JSON::get_boolean(schema_element) then
+        errors := errors & create_validation_error(schema_path, instance_path, "Schema always fails validation");
+      end if;  
+
+    when others => raise program_error("Unexpected schema type: " & schema_element.kind'image);
+
+  end case;
+
+  // make sure errors are unique
+  errors := errors'get_unique'elements;
+
+  // return result
+  if errors'length > 0 then
+    if errors'length = 1 then
+      result := JSON::get_object(errors[errors'first]);
+    else
+      if schema_path /= "#" then
+        result["keywordLocation"] := JSON::to_json(schema_path);
+      end if;
+      if instance_path /= "#" then
+        result["instanceLocation"] := JSON::to_json(instance_path);
+      end if;
+      result["errors"] := JSON::to_json(errors);
+    end if;
+  end if;
+  result["annotations"] := JSON::to_json(annotations);
+  result["valid"] := JSON::to_json(errors'length = 0);
+  return result;
+
+end service;
