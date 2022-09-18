@@ -38,7 +38,7 @@ public class CharacteristicExpression extends Expression
     @Override
     public BasicType getType ()
     {
-      return SetType.createAnonymous(((CollectionType)getLhs().getType()).getContainedType());
+      return SetType.createAnonymous(((CollectionType)getLhs().getType().getPrimitiveType()).getContainedType());
     }
   }
 
@@ -453,6 +453,16 @@ public class CharacteristicExpression extends Expression
 
         case values:
           return new DictionaryValuesExpression(position, lhs);
+
+        case get_unique:
+          if (lhs.getType().getPrimitiveType() instanceof CollectionType)
+          {
+            return new CharacteristicExpression(position, lhs, TypeLookup.valueOf(characteristic).getType(), arguments);
+          }
+          else
+          {
+            throw new SemanticError(SemanticErrorCode.CharacteristicNotValid, position, characteristic, lhs.getType());
+          }
 
         default:
           return new CharacteristicExpression(position, lhs, TypeLookup.valueOf(characteristic).getType(), arguments);
