@@ -33,20 +33,20 @@ COPY utils /root/masl/utils
 RUN /bin/bash -c "export JAVA_HOME=\$(dirname \$(dirname \$(dirname \$(readlink -f \$(which java))))) && cd /root/masl/utils && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/masl"
 RUN /bin/bash -c "cd /root/masl/utils && ninja install"
 
+# download openjdk-11
+ADD https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-linux-x64.tar.gz /scratch/openjdk-11-amd64
+ADD https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-linux-aarch64.tar.gz /scratch/openjdk-11-arm64
+
 # install stage
 FROM base-stage AS install-stage
 
 # install openjdk-11
 # this must be done after building the compiler itself because there are some
 # incompatibilities with OpenJDK11 during the build only
-#RUN /bin/bash -c 'case ${TARGETARCH} in \
-#        "amd64")  ARCH=linux-x64      ;; \
-#        "arm64")  ARCH=linux-aarch64  ;; \
-#    esac \
-#    && wget -O /scratch/openjdk-11 https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-$ARCH.tar.gz'
-#RUN mkdir -p /usr/lib/jvm && tar xzf /scratch/openjdk-11 -C /usr/lib/jvm/
-#ADD docker/install-java.sh /tmp/install-java.sh
-#RUN /bin/bash /tmp/install-java.sh
+COPY --from=build-stage /scratch/openjdk-11-$TARGETARCH /scratch/openjdk-11-$TARGETARCH
+RUN mkdir -p /usr/lib/jvm && tar xzf /scratch/openjdk-11-$TARGETARCH -C /usr/lib/jvm/
+ADD docker/install-java.sh /tmp/install-java.sh
+RUN /bin/bash /tmp/install-java.sh
 
 # create workspace
 WORKDIR /root
