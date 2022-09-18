@@ -47,8 +47,11 @@ domain JSON is
 
   //! These services dump an instance of 'JSONObject', 'JSONArray', or 'JSONElement' to a JSON string.
   public service dump(json_object: in JSONObject) return anonymous string; pragma filename("dump_object.svc");
+  public service dump(json_object: in JSONObject, pretty: in anonymous boolean) return anonymous string; pragma filename("dump_object_pretty.svc");
   public service dump(json_array: in JSONArray) return anonymous string; pragma filename("dump_array.svc");
+  public service dump(json_array: in JSONArray, pretty: in anonymous boolean) return anonymous string; pragma filename("dump_array_pretty.svc");
   public service dump(json_element: in JSONElement) return anonymous string; pragma filename("dump_element.svc");
+  public service dump(json_element: in JSONElement, pretty: in anonymous boolean) return anonymous string; pragma filename("dump_element_pretty.svc");
 
   //! These services abstract the process of extracting a specific type from an
   //! instance of 'JSONElement'. If the 'kind' field of the given element does

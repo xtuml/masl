@@ -1,0 +1,90 @@
+public service JSON::dump(json_element: in JSONElement, pretty: in anonymous boolean) return anonymous string is
+begin
+
+  case json_element.kind is
+
+    when Object =>
+      
+      declare
+        json_fields: sequence of string;
+      begin
+        for k in json_element.data.obj'keys loop
+          if pretty then
+            // Parse and dump each value. This is horrendously inefficient, but
+            // is required because the nested values are stored as JSON
+            // strings.
+            json_fields := json_fields & ("\"" & k & "\"" & ": " & dump(parse(json_element.data.obj[k]), true));
+          else
+            // each value is stored as a JSON string -- simply append it
+            json_fields := json_fields & ("\"" & k & "\"" & ":" & json_element.data.obj[k]);
+          end if;
+        end loop;
+        if pretty then
+          return "{\n  " & Strings::replace_all(Strings::join(json_fields, ",\n"), "\n", "\n  ") & "\n}";
+        else
+          return "{" & Strings::join(json_fields, ",") & "}";
+        end if;
+      end;
+
+    when Array =>
+
+      if pretty then
+        // Parse and dump each value. This is horrendously inefficient, but
+        // is required because the nested values are stored as JSON
+        // strings.
+        declare
+          json_elements: sequence of string;
+        begin
+          for json_element in json_element.data.arr loop
+            json_elements := json_elements & dump(parse(json_element), true);
+          end loop;
+          return "[\n  " & Strings::replace_all(Strings::join(json_elements, ",\n"), "\n", "\n  ") & "\n]";
+        end;
+      else
+        // each value is stored as a JSON string -- simply append it
+        return "[" & Strings::join(json_element.data.arr, ",") & "]";
+      end if;
+
+    when String =>
+
+      // output as an escaped string with enclosing quotes
+      declare
+        output_string: string := json_element.data.str;
+      begin
+        output_string := Strings::replace_all(output_string, "\"", "\\\"");
+        output_string := Strings::replace_all(output_string, "\\", "\\\\");
+        output_string := Strings::replace_all(output_string, "\b", "\\b");
+        output_string := Strings::replace_all(output_string, "\f", "\\f");
+        output_string := Strings::replace_all(output_string, "\n", "\\n");
+        output_string := Strings::replace_all(output_string, "\r", "\\r");
+        output_string := Strings::replace_all(output_string, "\t", "\\t");
+        return "\"" & output_string & "\"";
+      end;
+
+    when Real =>
+
+      return json_element.data.real'image;
+
+    when Integer =>
+
+      return json_element.data.int'image;
+
+    when Boolean =>
+
+      if json_element.data.bool then
+        return "true";
+      else
+        return "false";
+      end if;
+
+    when Null =>
+
+      return "null";
+
+    when others =>
+
+      raise program_error("Failed to dump unknown JSON element type");
+
+  end case;
+
+end service;
