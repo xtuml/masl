@@ -1,0 +1,4 @@
+public service JSON::dump(json_object: in JSONObject, pretty: in anonymous boolean) return anonymous string is
+begin
+  return dump(to_json(json_object), pretty);
+end service;
