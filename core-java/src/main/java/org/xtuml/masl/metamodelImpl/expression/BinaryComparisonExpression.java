@@ -12,6 +12,7 @@ import org.xtuml.masl.metamodelImpl.type.AnonymousStructure;
 import org.xtuml.masl.metamodelImpl.type.AnyInstanceType;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.BooleanType;
+import org.xtuml.masl.metamodelImpl.type.DictionaryType;
 import org.xtuml.masl.metamodelImpl.type.DurationType;
 import org.xtuml.masl.metamodelImpl.type.EnumerateType;
 import org.xtuml.masl.metamodelImpl.type.RealType;
@@ -70,6 +71,11 @@ public class BinaryComparisonExpression extends BinaryExpression
       else if ( opType.getPrimitiveType() instanceof SequenceType )
       {
         checkOperand(opType.getContainedType(), position);
+      }
+      else if ( opType.getPrimitiveType() instanceof DictionaryType )
+      {
+        checkOperand(((DictionaryType)opType.getPrimitiveType()).getKeyType(), position);
+        checkOperand(((DictionaryType)opType.getPrimitiveType()).getValueType(), position);
       }
       else if ( !((getOperator() == Operator.EQUAL || getOperator() == Operator.NOT_EQUAL) &&
                   (AnyInstanceType.createAnonymous().isConvertibleFrom(opType)) || BooleanType.createAnonymous()
