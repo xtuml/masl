@@ -1,5 +1,6 @@
 {
   "$id": "/opt/masl/share/json/json-metaschema.json",
+  "$version": "1.0.0",
   "$schema": "/opt/masl/share/json/json-metaschema.json",
   "title": "JSON Meta-Schema",
   "description": "A subset of the JSON-Schema specification implemented by the MASL JSON utility domain",
@@ -9,10 +10,16 @@
       "type": ["object", "boolean"],
       "properties": {
         "$id": {
-          "description": "The canonical URI for this schema"
+          "description": "The canonical URI for this schema",
+          "type": "string"
+        },
+        "$version": {
+          "description": "The version identifier for this schema",
+          "type": "string"
         },
         "$schema": {
-          "description": "The metaschema to which this schema adheres"
+          "description": "The metaschema to which this schema adheres",
+          "type": "string"
         },
         "$defs": {
           "description": "An object containing reusable subschemas",
@@ -140,7 +147,7 @@
         },
         "format": {
           "description": "Input values must match the specified pre-defined format",
-          "enum": ["date-time", "duration"]
+          "enum": ["date-time", "duration", "uuid"]
         }
       }
     },

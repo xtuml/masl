@@ -417,6 +417,8 @@ begin
                   value := timestamp'parse(JSON::get_string(input))'image;
                 elsif format = "duration" then
                   value := duration'parse(JSON::get_string(input))'image;
+                elsif format = "uuid" then
+                  value := UUID::extract_raw(UUID::formatted_uuid(JSON::get_string(input)))'image;
                 end if;
               exception
                 when program_error with e =>
