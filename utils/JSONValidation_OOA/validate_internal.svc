@@ -1,4 +1,4 @@
-private service JSONValidation::validate(input: in JSON::JSONElement, schema_element: in JSON::JSONElement, instance_path: in anonymous string, schema_path: in anonymous string, defs: in JSON::JSONObject) return JSON::JSONObject is
+private service JSONValidation::validate(input: in JSON::JSONElement, schema_element: in JSON::JSONElement, metaschema: in JSON::JSONElement, instance_path: in anonymous string, schema_path: in anonymous string, defs: in JSON::JSONObject) return JSON::JSONObject is
 errors: JSON::JSONArray;
 annotations: JSON::JSONArray;
 result: JSON::JSONObject;
@@ -29,21 +29,51 @@ begin
 
         // validate '$ref'
         if schema'contains("$ref") then
-          if schema_definitions'contains(JSON::get_string(schema["$ref"])) then
-            declare
-              subresult: JSON::JSONObject;
-            begin
-              subresult := validate(input, schema_definitions[JSON::get_string(schema["$ref"])], instance_path, JSON::get_string(schema["$ref"]), schema_definitions);
-              annotations := annotations & JSON::get_array(subresult["annotations"]);
-              erase subresult["annotations"];
-              if not JSON::get_boolean(subresult["valid"]) then
-                errors := errors & JSON::to_json(subresult);
-              end if;
-            end;
-          else
-            errors := errors & create_validation_error(schema_path & "/$ref", "",
-              "Could not resolve schema reference: " & JSON::get_string(schema["$ref"]));
-          end if;
+          declare
+            ref_string: string;
+            subschema: JSON::JSONElement;
+          begin
+            ref_string := JSON::get_string(schema["$ref"]);
+            if schema_definitions'contains(ref_string) then
+              subschema := schema_definitions[ref_string];
+            elsif Strings::ends_with(ref_string, ".json") and Filesystem::file_exists(Filesystem::filename(ref_string)) then
+              // try to load a defintion from a file
+              declare
+                schema_result: JSON::JSONObject;
+                schema_errors: JSON::JSONArray;
+                defs: JSON::JSONObject;
+              begin
+                subschema := JSON::parse(Filesystem::read_file(Filesystem::filename(ref_string)));
+                schema_result := validate(subschema, metaschema, metaschema, "#", "#", defs);
+                if not JSON::get_boolean(schema_result["valid"]) then
+                  errors := errors & create_validation_error(schema_path & "/$ref", instance_path,
+                    "Subschema loaded from external file is not valid: " & ref_string, schema_errors & JSON::to_json(schema_result));
+                end if;
+              exception
+                when JSON::JSONException =>
+                  errors := errors & create_validation_error(schema_path & "/$ref", instance_path,
+                    "Subschema loaded from external file could not be parsed: " & ref_string);
+                when others =>
+                  errors := errors & create_validation_error(schema_path & "/$ref", instance_path,
+                    "Subschema could not be loaded from external file: " & ref_string);
+              end;
+            end if;
+            if subschema.kind /= JSON::Null then
+              declare
+                subresult: JSON::JSONObject;
+              begin
+                subresult := validate(input, subschema, metaschema, instance_path, ref_string, schema_definitions);
+                annotations := annotations & JSON::get_array(subresult["annotations"]);
+                erase subresult["annotations"];
+                if not JSON::get_boolean(subresult["valid"]) then
+                  errors := errors & JSON::to_json(subresult);
+                end if;
+              end;
+            else
+              errors := errors & create_validation_error(schema_path & "/$ref", instance_path,
+                "Could not resolve schema reference: " & ref_string);
+            end if;
+          end;
         end if;
 
         // validate 'oneOf'
@@ -56,7 +86,7 @@ begin
           begin
             subschemas := JSON::get_array(schema["oneOf"]);
             for i in subschemas'range loop
-              subresult := validate(input, subschemas[i], instance_path, schema_path & "/oneOf/" & i'image, schema_definitions);
+              subresult := validate(input, subschemas[i], metaschema, instance_path, schema_path & "/oneOf/" & i'image, schema_definitions);
               annotations := annotations & JSON::get_array(subresult["annotations"]);
               erase subresult["annotations"];
               if JSON::get_boolean(subresult["valid"]) then
@@ -84,7 +114,7 @@ begin
           begin
             subschemas := JSON::get_array(schema["anyOf"]);
             for i in subschemas'range loop
-              subresult := validate(input, subschemas[i], instance_path, schema_path & "/anyOf/" & i'image, schema_definitions);
+              subresult := validate(input, subschemas[i], metaschema, instance_path, schema_path & "/anyOf/" & i'image, schema_definitions);
               annotations := annotations & JSON::get_array(subresult["annotations"]);
               erase subresult["annotations"];
               if not JSON::get_boolean(subresult["valid"]) then
@@ -107,7 +137,7 @@ begin
           begin
             subschemas := JSON::get_array(schema["allOf"]);
             for i in subschemas'range loop
-              subresult := validate(input, subschemas[i], instance_path, schema_path & "/allOf/" & i'image, schema_definitions);
+              subresult := validate(input, subschemas[i], metaschema, instance_path, schema_path & "/allOf/" & i'image, schema_definitions);
               annotations := annotations & JSON::get_array(subresult["annotations"]);
               erase subresult["annotations"];
               if not JSON::get_boolean(subresult["valid"]) then
@@ -125,7 +155,7 @@ begin
           declare
             subresult: JSON::JSONObject;
           begin
-            subresult := validate(input, schema["not"], instance_path, schema_path & "/not", schema_definitions);
+            subresult := validate(input, schema["not"], metaschema, instance_path, schema_path & "/not", schema_definitions);
             annotations := annotations & JSON::get_array(subresult["annotations"]);
             erase subresult["annotations"];
             if JSON::get_boolean(subresult["valid"]) then
@@ -191,7 +221,7 @@ begin
                 instance_properties := JSON::get_object(input);
                 schema_properties := JSON::get_object(schema["properties"]);
                 for key in (instance_properties'keys intersection schema_properties'keys) loop
-                  item_result := validate(instance_properties[key], schema_properties[key], instance_path & "/" & key, schema_path & "/properties/" & key, schema_definitions);
+                  item_result := validate(instance_properties[key], schema_properties[key], metaschema, instance_path & "/" & key, schema_path & "/properties/" & key, schema_definitions);
                   annotations := annotations & JSON::get_array(item_result["annotations"]);
                   erase item_result["annotations"];
                   if not JSON::get_boolean(item_result["valid"]) then
@@ -225,7 +255,7 @@ begin
                     errors := errors & create_validation_error(schema_path & "/additionalProperties", instance_path & "/" & key,
                       "Property '" & key & "' is not defined and the schema does not allow additional properties");
                   else
-                    item_result := validate(properties[key], schema["additionalProperties"], instance_path & "/" & key, schema_path & "/additionalProperties", schema_definitions);
+                    item_result := validate(properties[key], schema["additionalProperties"], metaschema, instance_path & "/" & key, schema_path & "/additionalProperties", schema_definitions);
                     annotations := annotations & JSON::get_array(item_result["annotations"]);
                     erase item_result["annotations"];
                     if not JSON::get_boolean(item_result["valid"]) then
@@ -299,7 +329,7 @@ begin
                     errors := errors & create_validation_error(schema_path & "/unevaluatedProperties", instance_path & "/" & key,
                       "Property '" & key & "' is not defined and the schema does not allow unevaluated properties");
                   else
-                    item_result := validate(properties[key], schema["unevaluatedProperties"], instance_path & "/" & key, schema_path & "/unevaluatedProperties", schema_definitions);
+                    item_result := validate(properties[key], schema["unevaluatedProperties"], metaschema, instance_path & "/" & key, schema_path & "/unevaluatedProperties", schema_definitions);
                     annotations := annotations & JSON::get_array(item_result["annotations"]);
                     erase item_result["annotations"];
                     if not JSON::get_boolean(item_result["valid"]) then
@@ -325,7 +355,7 @@ begin
               begin
                 items := JSON::get_array(input);
                 for i in items'range loop
-                  item_result := validate(items[i], schema["items"], instance_path & "/" & i'image, schema_path & "/items", schema_definitions);
+                  item_result := validate(items[i], schema["items"], metaschema, instance_path & "/" & i'image, schema_path & "/items", schema_definitions);
                   annotations := annotations & JSON::get_array(item_result["annotations"]);
                   erase item_result["annotations"];
                   if not JSON::get_boolean(item_result["valid"]) then

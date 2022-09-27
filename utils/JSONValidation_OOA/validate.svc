@@ -1,9 +1,9 @@
 public service JSONValidation::validate(input: in JSON::JSONElement, schema: in JSON::JSONElement) return JSON::JSONObject is
+metaschema: JSON::JSONElement;
 begin
   // validate the schema against the metaschema
   declare
     metaschema_text: string;
-    metaschema: JSON::JSONElement;
     defs: JSON::JSONObject;
     schema_result: JSON::JSONObject;
     schema_errors: JSON::JSONArray;
@@ -11,7 +11,7 @@ begin
   begin
     metaschema_text := Filesystem::read_file(#PROP["metaschema"]#);
     metaschema := JSON::parse(metaschema_text);
-    schema_result := validate(schema, metaschema, "#", "#", defs);
+    schema_result := validate(schema, metaschema, metaschema, "#", "#", defs);
     erase schema_result["annotations"];
     if not JSON::get_boolean(schema_result["valid"]) then
       result["valid"] := JSON::to_json(false);
@@ -26,7 +26,7 @@ begin
     defs: JSON::JSONObject;
     result: JSON::JSONObject;
   begin
-    result := validate(input, schema, "#", "#", defs);
+    result := validate(input, schema, metaschema, "#", "#", defs);
     erase result["annotations"];
     return result;
   end;
