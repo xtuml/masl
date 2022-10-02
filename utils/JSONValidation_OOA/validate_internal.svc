@@ -49,6 +49,7 @@ begin
                   errors := errors & create_validation_error(schema_path & "/$ref", instance_path,
                     "Subschema loaded from external file is not valid: " & ref_string, schema_errors & JSON::to_json(schema_result));
                 end if;
+                ref_string := "#";  // TODO this is a hacky way to make sure that all the schema paths are relative to the root of the new file
               exception
                 when JSON::JSONException =>
                   errors := errors & create_validation_error(schema_path & "/$ref", instance_path,
