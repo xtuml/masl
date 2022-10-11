@@ -1,5 +1,5 @@
 # base image
-FROM levistarrett/masl-base:v1
+FROM levistarrett/masl-base:latest
 
 # invoke the masl compiler
 ENTRYPOINT ["/opt/masl/bin/masl-core"]

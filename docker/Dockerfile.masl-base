@@ -43,6 +43,7 @@ FROM base-stage AS install-stage
 # install openjdk-11
 # this must be done after building the compiler itself because there are some
 # incompatibilities with OpenJDK11 during the build only
+ARG TARGETARCH
 COPY --from=build-stage /scratch/openjdk-11-$TARGETARCH /scratch/openjdk-11-$TARGETARCH
 RUN mkdir -p /usr/lib/jvm && tar xzf /scratch/openjdk-11-$TARGETARCH -C /usr/lib/jvm/
 ADD docker/install-java.sh /tmp/install-java.sh

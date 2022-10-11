@@ -1,4 +1,4 @@
-name: Docker
+name: Build Docker
 on: workflow_dispatch
 jobs:
   docker:
@@ -17,10 +17,31 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
+      - name: Build and push base
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile.masl-base
           platforms: linux/arm64,linux/amd64
           push: true
-          tags: levistarrett/masl-base:multiarch
+          tags: levistarrett/masl-base:latest
+      - name: Build and push build
+        uses: docker/build-push-action@v3
+        with:
+          file: docker/Dockerfile.masl-build
+          platforms: linux/arm64,linux/amd64
+          push: true
+          tags: levistarrett/masl-build:latest
+      - name: Build and push compiler
+        uses: docker/build-push-action@v3
+        with:
+          file: docker/Dockerfile.masl-compiler
+          platforms: linux/arm64,linux/amd64
+          push: true
+          tags: levistarrett/masl-compiler:latest
+      - name: Build and push exe
+        uses: docker/build-push-action@v3
+        with:
+          file: docker/Dockerfile.masl-exe
+          platforms: linux/arm64,linux/amd64
+          push: true
+          tags: levistarrett/masl-exe:latest

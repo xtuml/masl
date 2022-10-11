@@ -1,5 +1,5 @@
 # base image
-FROM levistarrett/masl-base:v1
+FROM levistarrett/masl-base:latest
 
 # expose default ports for inspector
 EXPOSE 20000/tcp

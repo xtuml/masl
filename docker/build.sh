@@ -1,19 +1,19 @@
 #!/bin/bash
 VERSION=v1
-#ARCH=linux-x64
-ARCH=linux-aarch64
+ARCH=amd64
+#ARCH=arm64
 
 # build images
-docker build -t levistarrett/masl-base:$VERSION -f docker/Dockerfile.masl-base . --build-arg ARCH=$ARCH && \
-docker build -t levistarrett/masl-build:$VERSION -f docker/Dockerfile.masl-build . && \
-docker build -t levistarrett/masl-compiler:$VERSION -f docker/Dockerfile.masl-compiler . && \
-docker build -t levistarrett/masl-exe:$VERSION -f docker/Dockerfile.masl-exe .
+docker build -t levistarrett/masl-base:latest -f docker/Dockerfile.masl-base . --build-arg TARGETARCH=$ARCH && \
+docker build -t levistarrett/masl-build:latest -f docker/Dockerfile.masl-build . && \
+docker build -t levistarrett/masl-compiler:latest -f docker/Dockerfile.masl-compiler . && \
+docker build -t levistarrett/masl-exe:latest -f docker/Dockerfile.masl-exe .
 
 # tag latest
-docker tag levistarrett/masl-base:$VERSION levistarrett/masl-base:latest
-docker tag levistarrett/masl-build:$VERSION levistarrett/masl-build:latest
-docker tag levistarrett/masl-compiler:$VERSION levistarrett/masl-compiler:latest
-docker tag levistarrett/masl-exe:$VERSION levistarrett/masl-exe:latest
+docker tag levistarrett/masl-base:latest levistarrett/masl-base:$VERSION
+docker tag levistarrett/masl-build:latest levistarrett/masl-build:$VERSION
+docker tag levistarrett/masl-compiler:latest levistarrett/masl-compiler:$VERSION
+docker tag levistarrett/masl-exe:latest levistarrett/masl-exe:$VERSION
 
 exit
 
