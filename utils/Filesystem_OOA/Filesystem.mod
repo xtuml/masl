@@ -58,6 +58,12 @@ domain Filesystem is
   //! type to hold a file device
   public type file is device;
 
+  //! different types of file lock
+  public type lock_types is enum ( SharedLock, ExclusiveLock );
+
+  //! type to represent a file lock
+  public type file_lock is integer;
+
   //! Opens the file with the specifed name as a read-only device
   public service open_read ( file_name  : in  filename,
                              dev        : out file );
@@ -112,6 +118,22 @@ domain Filesystem is
 
   //! Gets the number of characters remaining to be read from the file. 
   public function get_remaining ( file     : in file ) return anonymous integer;
+
+  //! Attempts to acquire a lock on the file specified by 'file_name'. The call
+  //! returns true if the lock is successfully acquired. If the lock cannot be
+  //! acquired and 'should_block' is false, the call returns false immediately.
+  //! If the lock cannot be acquired and 'should_block' is true, the call blocks
+  //! until the lock can be acquired or until the process is interrupted. The
+  //! lock is released when 'unlock_file' is called on the lock or all open file
+  //! handles associated with the underlying resource are closed. Repeated calls
+  //! to 'lock_file' can be used to change lock type.
+  public function lock_file ( file_name : in filename,
+                              lock_type : in lock_types,
+                              lock      : out file_lock,
+                              should_block : in anonymous boolean ) return anonymous boolean;
+
+  //! Release a file lock
+  public service unlock_file ( lock : in file_lock );
 
   //! Returns the entire contents of the file with the specified name as a string. 
   public function read_file (file_name : in filename) return anonymous string;
