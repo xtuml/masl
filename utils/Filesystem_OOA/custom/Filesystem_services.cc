@@ -21,6 +21,7 @@
 
 
 
+#include <sys/file.h>
 #include <sys/statvfs.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -63,6 +64,7 @@ namespace masld_Filesystem
   const bool localServiceRegistration_masls_copy_tree_preserve = interceptor_masls_copy_tree_preserve::instance().registerLocal( &masls_copy_tree_preserve );
   const bool localServiceRegistration_masls_set_umask = interceptor_masls_set_umask::instance().registerLocal( &masls_set_umask );
   const bool localServiceRegistration_masls_truncate_file = interceptor_masls_truncate_file::instance().registerLocal( &masls_truncate_file );
+  const bool localServiceRegistration_masls_unlock_file = interceptor_masls_unlock_file::instance().registerLocal( &masls_unlock_file );
 
   std::vector<std::string> list_directory ( const std::string& directory_name )
   {
@@ -782,6 +784,55 @@ namespace masld_Filesystem
     buf.assign(maslp_file_name.begin(),maslp_file_name.end());
     buf.push_back('\0');
     return maslt_filename(basename(&buf[0]));
+  }
+
+  bool masls_lock_file ( const maslt_filename&   maslp_file_name,
+                         const maslt_lock_types& maslp_lock_type,
+                         maslt_file_lock&        maslp_lock,
+                         bool                    maslp_should_block )
+  {
+
+    if ( !masls_file_exists(maslp_file_name) ) throw SWA::IOError("File does not exist");
+
+    int operation;
+    if ( maslp_lock_type == maslt_lock_types::masle_ExclusiveLock ) {
+      operation = LOCK_EX;
+    } else if ( maslp_lock_type == maslt_lock_types::masle_ExclusiveLock ) {
+      operation = LOCK_SH;
+    } else {
+      throw SWA::IOError("Unsupported lock type");
+    }
+
+    if ( !maslp_should_block ) {
+      operation |= LOCK_NB;
+    }
+
+    maslp_lock = open(maslp_file_name.c_str(), O_RDONLY);
+    if (maslp_lock < 0) {
+      throw SWA::IOError(::std::strerror(errno));
+    }
+
+    int ret_val = flock(maslp_lock, operation);
+    if (ret_val == 0) {
+      return true;
+    } else if (errno == EWOULDBLOCK) {
+      return false;
+    } else {
+      throw SWA::IOError(::std::strerror(errno));
+    }
+
+  }
+
+  void masls_unlock_file (const maslt_file_lock maslp_lock )
+  {
+    int ret_val = flock(maslp_lock, LOCK_UN);
+    if (ret_val != 0) {
+      throw SWA::IOError(::std::strerror(errno));
+    }
+    ret_val = close(maslp_lock);
+    if (ret_val != 0) {
+      throw SWA::IOError(::std::strerror(errno));
+    }
   }
 
 }
