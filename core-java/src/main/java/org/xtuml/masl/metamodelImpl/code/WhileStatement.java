@@ -49,6 +49,7 @@ public class WhileStatement extends Statement
     super(position);
     this.condition = condition;
     this.statements = statements;
+    statements.forEach(s -> s.setParentStatement(this));
 
     if ( !BooleanType.createAnonymous().isAssignableFrom(condition) )
     {
