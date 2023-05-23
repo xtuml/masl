@@ -27,6 +27,11 @@ namespace SWA
     {
       error += "  #" + boost::lexical_cast<std::string>(depth--) + "\t" + NameFormatter::formatStackFrame(*it) + "\n";
     }
+    try {
+      std::rethrow_if_nested(*this);
+    } catch (const std::exception& e) {
+      error += "Caused by: " + std::string(e.what());
+    }
   }
 
 }
