@@ -26,11 +26,6 @@ public class RaiseStatement extends Statement
     try
     {
 
-      if ( ref == null )
-      {
-        return null;
-      }
-
       if ( message != null )
       {
         StringType.createAnonymous().checkAssignable(message);

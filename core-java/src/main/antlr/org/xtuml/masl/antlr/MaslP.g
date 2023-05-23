@@ -946,9 +946,9 @@ delayStatement                : DELAY expression                                
                                                                                                 expression)
                               ;
 
-raiseStatement                : RAISE qualifiedExceptionName 
-                                      ( LPAREN expression? RPAREN )?                       -> ^( RAISE 
-                                                                                                qualifiedExceptionName
+raiseStatement                : RAISE ( qualifiedExceptionName
+                                        ( LPAREN expression? RPAREN )? )?                  -> ^( RAISE 
+                                                                                                qualifiedExceptionName?
                                                                                                 expression? )
                               ;
 

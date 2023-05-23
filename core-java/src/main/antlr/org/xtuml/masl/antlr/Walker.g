@@ -1638,7 +1638,7 @@ returns [DelayStatement st]
 raiseStatement
 returns [RaiseStatement st]
                               : ^( RAISE
-                                   exceptionReference
+                                   exceptionReference?
                                    expression?
                                  )                          { $st = RaiseStatement.create ( getPosition($RAISE), $exceptionReference.ref, $expression.exp ); }
                               ;
