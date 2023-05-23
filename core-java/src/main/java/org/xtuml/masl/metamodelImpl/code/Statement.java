@@ -18,9 +18,24 @@ public abstract class Statement extends Positioned
     implements org.xtuml.masl.metamodel.code.Statement
 {
 
+  private Statement parent;
+  private PragmaList pragmas;
+
   public Statement ( final Position position )
   {
     super(position);
+    parent = null;
+  }
+
+  public void setParentStatement ( final Statement parent )
+  {
+    this.parent = parent;
+  }
+
+  @Override
+  public Statement getParentStatement ()
+  {
+    return parent;
   }
 
   public void setPragmas ( final PragmaList pragmas )
@@ -33,8 +48,6 @@ public abstract class Statement extends Positioned
   {
     return pragmas;
   }
-
-  private PragmaList pragmas;
 
   @Override
   public int getLineNumber ()
@@ -53,4 +66,27 @@ public abstract class Statement extends Positioned
   {
     return Collections.<Statement>emptyList();
   }
+
+  @Override
+  public boolean inExceptionHandler ()
+  {
+    final Statement parent = getParentStatement();
+    if ( parent != null )
+    {
+      if ( parent instanceof CodeBlock ) {
+        // check if this statement is contained in any of the codeblock handlers
+        final CodeBlock block = (CodeBlock) parent;
+        return block.getExceptionHandlers().stream().flatMap(h -> h.getCode().stream()).anyMatch(this::equals);
+      }
+      else
+      {
+        return parent.inExceptionHandler();
+      }
+    }
+    else
+    {
+      return false;
+    }
+  }
+
 }

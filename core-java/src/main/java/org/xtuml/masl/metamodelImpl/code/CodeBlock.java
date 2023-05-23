@@ -34,6 +34,7 @@ public final class CodeBlock extends Statement
     if ( handler != null )
     {
       exceptionHandlers.add(handler);
+      handler.getCode().forEach(s -> s.setParentStatement(this));
     }
   }
 
@@ -42,6 +43,7 @@ public final class CodeBlock extends Statement
     if ( statement != null )
     {
       statements.add(statement);
+      statement.setParentStatement(this);
     }
   }
 

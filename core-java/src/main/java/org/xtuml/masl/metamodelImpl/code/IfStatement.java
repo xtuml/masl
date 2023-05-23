@@ -135,6 +135,7 @@ public class IfStatement extends Statement
   {
     super(position);
     this.branches = branches;
+    branches.stream().flatMap(b -> b.getStatements().stream()).forEach(s -> s.setParentStatement(this));
   }
 
   @Override

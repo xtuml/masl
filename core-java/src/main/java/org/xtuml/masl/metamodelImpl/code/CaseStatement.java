@@ -136,6 +136,7 @@ public class CaseStatement extends Statement
 
     this.discriminator = discriminator;
     this.alternatives = alternatives;
+    alternatives.stream().flatMap(a -> a.getStatements().stream()).forEach(s -> s.setParentStatement(this));
   }
 
   @Override

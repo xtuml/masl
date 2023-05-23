@@ -8,8 +8,13 @@ package org.xtuml.masl.translate.main.code;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.xtuml.masl.cppgen.Class;
 import org.xtuml.masl.cppgen.Expression;
+import org.xtuml.masl.cppgen.ExpressionStatement;
+import org.xtuml.masl.cppgen.Function;
+import org.xtuml.masl.cppgen.FunctionCall;
+import org.xtuml.masl.cppgen.Namespace;
 import org.xtuml.masl.cppgen.ThrowStatement;
 import org.xtuml.masl.translate.main.ExceptionTranslator;
 import org.xtuml.masl.translate.main.Scope;
@@ -40,7 +45,16 @@ public class RaiseTranslator extends CodeTranslator
         args.add(ExpressionTranslator.createTranslator(raise.getMessage(), getScope()).getReadExpression());
       }
 
-      getCode().appendStatement(new ThrowStatement(exceptionClass.callConstructor(args)));
+      if ( raise.inExceptionHandler() )
+      {
+        final List<Expression> args2 = new ArrayList<Expression>();
+        args2.add(exceptionClass.callConstructor(args));
+        getCode().appendStatement(new ExpressionStatement(new FunctionCall(new Function("throw_with_nested", new Namespace("std")), args2)));
+      }
+      else
+      {
+        getCode().appendStatement(new ThrowStatement(exceptionClass.callConstructor(args)));
+      }
 
     }
 

@@ -59,6 +59,7 @@ public class ForStatement extends Statement
     if ( statement != null )
     {
       statements.add(statement);
+      statement.setParentStatement(this);
     }
   }
 

@@ -22,4 +22,8 @@ public interface Statement
   PragmaList getPragmas ();
 
   List<? extends Statement> getChildStatements ();
+
+  Statement getParentStatement ();
+
+  boolean inExceptionHandler();
 }
