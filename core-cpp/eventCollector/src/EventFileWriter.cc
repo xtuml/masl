@@ -62,7 +62,7 @@ EventFileWriter::~EventFileWriter()
 // ***************************************************************
 bool EventFileWriter::isEnabled()
 {
-   return ofile;  // use implicit conversion to bool.
+   return bool(ofile);
 }
 
 // ***************************************************************

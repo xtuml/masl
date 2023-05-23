@@ -93,8 +93,8 @@ class basic_Device
     void checkRead () const;
     void checkWrite () const;
 
-    bool inputValid() const  { return input_stream; }
-    bool outputValid() const { return output_stream; }
+    bool inputValid() const  { return bool(input_stream); }
+    bool outputValid() const { return bool(output_stream); }
 
 
     void write_raw ( const char* data, size_t size ) const;
