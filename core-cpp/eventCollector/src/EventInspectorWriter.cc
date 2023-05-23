@@ -65,7 +65,7 @@ EventInspectorWriter::~EventInspectorWriter()
 bool EventInspectorWriter::isEnabled()
 {
    // return true if a clientSocket connection exists
-   return clientSocket;  // use implicit bool conversion
+   return bool(clientSocket);
 }
 
 // ***************************************************************

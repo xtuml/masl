@@ -48,7 +48,7 @@ EventConsoleWriter::~EventConsoleWriter()
 // ***************************************************************
 bool EventConsoleWriter::isEnabled()
 {
-   return console;  // use implicit conversion to bool.
+   return bool(console);
 }
 
 // ***************************************************************
