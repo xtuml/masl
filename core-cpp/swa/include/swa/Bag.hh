@@ -267,7 +267,7 @@ namespace SWA
       Bag<T> find ( Predicate predicate ) const
       {
         Bag<T> result;
-        copy_if(data.begin(),data.end(),result.inserter(),predicate);
+        SWA::copy_if(data.begin(),data.end(),result.inserter(),predicate);
         if ( unique ) result.forceUnique();
         if ( sorted ) result.forceUnique();
         return result;

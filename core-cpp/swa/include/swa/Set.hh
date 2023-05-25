@@ -285,7 +285,7 @@ namespace SWA
       Set<T> find ( Predicate predicate ) const
       {
         Set<T> result;
-        copy_if(data.begin(),data.end(),result.inserter(),predicate);
+        SWA::copy_if(data.begin(),data.end(),result.inserter(),predicate);
         if ( unique ) result.forceUnique();
         return result;
       }
