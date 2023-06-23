@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(MaslCore VERSION 0.1)
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
 
 list(APPEND CMAKE_PREFIX_PATH /opt/poco)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-common)
@@ -45,6 +45,7 @@ add_subdirectory(trace)
 add_subdirectory(threadtimer)
 add_subdirectory(backlogMonitor)
 add_subdirectory(eventCollector)
+add_subdirectory(kafka)
 
 
 include(CMakePackageConfigHelpers)

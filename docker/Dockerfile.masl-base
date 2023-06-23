@@ -14,6 +14,17 @@ FROM base-stage AS build-stage
 # install prerequisites
 RUN apt-get install -y gradle openjdk-8-jdk
 
+# install kafka library
+ADD https://github.com/confluentinc/librdkafka/archive/refs/tags/v2.1.1.tar.gz librdkafka-2.1.1.tar.gz
+RUN tar xzf librdkafka-2.1.1.tar.gz
+RUN /bin/bash -c "cd librdkafka-2.1.1 && ./configure --prefix /opt/rdkafka"
+RUN /bin/bash -c "cd librdkafka-2.1.1 && make"
+RUN /bin/bash -c "cd librdkafka-2.1.1 && make install"
+ADD https://github.com/leviathan747/cppkafka/archive/refs/heads/master.tar.gz cppkafka-master.tar.gz
+RUN tar xzf cppkafka-master.tar.gz
+RUN /bin/bash -c "cd cppkafka-master && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/cppkafka -DRDKAFKA_ROOT_DIR=/opt/rdkafka -DCPPKAFKA_BOOST_USE_MULTITHREADED=OFF"
+RUN /bin/bash -c "cd cppkafka-master && ninja install"
+
 # install poco
 ADD http://pocoproject.org/releases/poco-1.7.3/poco-1.7.3-all.tar.gz poco-1.7.3-all.tar.gz
 RUN tar xzf poco-1.7.3-all.tar.gz
@@ -55,6 +66,9 @@ WORKDIR /root
 # copy the libs and bins
 COPY --from=build-stage /opt/masl /opt/masl
 COPY --from=build-stage /opt/poco /opt/poco
+COPY --from=build-stage /opt/rdkafka /opt/rdkafka
+COPY --from=build-stage /opt/cppkafka /opt/cppkafka
+COPY --from=build-stage /cppkafka-master /cppkafka
 
 # update path
 ENV PATH=$PATH:/opt/masl/bin
