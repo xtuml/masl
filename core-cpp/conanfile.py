@@ -40,10 +40,12 @@ class ConanFile(conan.ConanFile):
         self.requires("poco/1.12.4")
         self.requires("fmt/10.0.0")
         self.requires("nlohmann_json/3.11.2")
-        self.requires("boost/1.82.0")
+        self.requires("boost/1.82.0", force=True) # CppKafka is asking for 1.81.0
         self.requires("sqlite3/3.42.0", force=True) # Poco is asking for 3.41.2
         self.requires("libuuid/1.0.3")
         self.requires("expat/2.5.0")
+        self.requires("librdkafka/2.0.2")
+        self.requires("cppkafka/0.4.0")
 
 
     exports_sources= ( "CMakeLists.txt",
@@ -53,6 +55,7 @@ class ConanFile(conan.ConanFile):
                        "codeCoverage/*",
                        "eventCollector/*",
                        "inspectorServer/*",
+                       "kafka/*",
                        "logging/*",
                        "metadata/*",
                        "sockets/*",
