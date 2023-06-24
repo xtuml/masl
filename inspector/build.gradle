@@ -10,7 +10,6 @@ mainClassName = 'org.xtuml.masl.inspector.gui.MainFrame'
 
 jar {
   manifest {
-    attributes 'Main-Class' : mainClassName,
-               'Class-Path' : configurations.compile.collect { it.getName() }.join(' ')
+    attributes 'Main-Class' : mainClassName
   }
 }

@@ -223,13 +223,13 @@ public class CommunicationChannel {
         } else if (type == Byte.class || type == byte.class) {
             return Byte.valueOf(readByte());
         } else if (type == Short.class || type == short.class) {
-            return new Short(readShort());
+            return Short.valueOf(readShort());
         } else if (type == Integer.class || type == int.class) {
             return Integer.valueOf(readInt());
         } else if (type == Long.class || type == long.class) {
-            return new Long(readLong());
+            return Long.valueOf(readLong());
         } else if (type == Float.class || type == float.class) {
-            return new Float(readFloat());
+            return Float.valueOf(readFloat());
         } else if (type == Double.class || type == double.class) {
             return Double.valueOf(readDouble());
         } else if (type == Character.class || type == char.class) {

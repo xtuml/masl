@@ -153,7 +153,15 @@ namespace Inspector
     endPos = buffer + ::read(fp,buffer,BUFFER_SIZE);
     curPos = buffer;
     if ( curPos == endPos ) { throw ConnectionError("Socket gone"); }
-    if ( curPos > endPos ) { throw ConnectionError(strerror(errno)); }
+    if ( curPos > endPos ) { 
+      if ( errno == EINTR ) {
+        // Interrupted, try again
+        updateBuffer();
+      }
+      else {
+        throw ConnectionError(strerror(errno));
+      }
+    }
   }
 
   bool InputBuffer::available()
@@ -171,11 +179,20 @@ namespace Inspector
     }
   }
 
+  // Copy function to copy n bytes from in to out
+  template<class InputIterator, class OutputIterator>
+  void copy_buffer ( InputIterator in, int length, OutputIterator out )
+  {
+    while ( length-- )
+      *out++ = *in++;
+  }
+
+
   template<class T> 
   void BufferedInputStream::readRaw ( T& bytes )
   {
     unsigned char* dest = reinterpret_cast<unsigned char*>(&bytes);  
-    copy_n(InputBufferIterator(buffer),sizeof(T),dest);
+    copy_buffer(InputBufferIterator(buffer),sizeof(T),dest);
   }
 
   void BufferedInputStream::read ( uint64_t& val )

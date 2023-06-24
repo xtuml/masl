@@ -16,7 +16,7 @@ public class ShortData extends org.xtuml.masl.inspector.processInterface.ShortDa
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        setValue(new Short(channel.readShort()));
+        setValue(Short.valueOf(channel.readShort()));
     }
 
     @Override
