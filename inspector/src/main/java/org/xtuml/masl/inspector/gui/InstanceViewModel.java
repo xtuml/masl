@@ -113,7 +113,7 @@ class InstanceViewModel extends com.jrefinery.ui.SortableTableModel {
                 data.add(instance);
                 lastRow = data.size();
             }
-            yield();
+            Thread.yield();
             return cancelLoad;
         }
 

@@ -16,7 +16,7 @@ public class LongData extends org.xtuml.masl.inspector.processInterface.LongData
 
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
-        setValue(new Long(channel.readLong()));
+        setValue(Long.valueOf(channel.readLong()));
     }
 
     @Override

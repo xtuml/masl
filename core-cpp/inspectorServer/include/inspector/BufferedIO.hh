@@ -358,15 +358,7 @@ namespace Inspector {
   };
 
 
-  // Copy function to copy n bytes from in to out
-  template<class InputIterator, class OutputIterator>
-  void copy_n ( InputIterator in, int length, OutputIterator out )
-  {
-    while ( length-- )
-      *out++ = *in++;
-  }
-
-  template<class T> 
+  template<class T>
   void BufferedInputStream::read ( SWA::Sequence<T>& val )
   {
     int start = 0;

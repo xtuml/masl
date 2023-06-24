@@ -17,7 +17,7 @@ public class NaturalData extends org.xtuml.masl.inspector.processInterface.Natur
     @Override
     public void read(final CommunicationChannel channel) throws IOException {
         final long signedValue = channel.readInt();
-        setValue(new Long(signedValue & 0x00000000FFFFFFFFL));
+        setValue(Long.valueOf(signedValue & 0x00000000FFFFFFFFL));
     }
 
     @Override
