@@ -1,5 +1,8 @@
 name: Build Docker
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -17,31 +20,51 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Generate docker metadata for base
+        id: base_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: levistarrett/masl-base
       - name: Build and push base
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile.masl-base
           platforms: linux/arm64,linux/amd64
           push: true
-          tags: levistarrett/masl-base:latest
+          tags: ${{ steps.base_meta.outputs.tags }}
+      - name: Generate docker metadata for build
+        id: build_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: levistarrett/masl-build
       - name: Build and push build
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile.masl-build
           platforms: linux/arm64,linux/amd64
           push: true
-          tags: levistarrett/masl-build:latest
+          tags: ${{ steps.build_meta.outputs.tags }}
+      - name: Generate docker metadata for compiler
+        id: compiler_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: levistarrett/masl-compiler_meta
       - name: Build and push compiler
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile.masl-compiler
           platforms: linux/arm64,linux/amd64
           push: true
-          tags: levistarrett/masl-compiler:latest
+          tags: ${{ steps.compiler_meta.outputs.tags }}
+      - name: Generate docker metadata for exe
+        id: exe_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: levistarrett/masl-exe
       - name: Build and push exe
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile.masl-exe
           platforms: linux/arm64,linux/amd64
           push: true
-          tags: levistarrett/masl-exe:latest
+          tags: ${{ steps.exe_meta.outputs.tags }}
