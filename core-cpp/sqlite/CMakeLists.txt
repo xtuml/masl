@@ -1,7 +1,7 @@
 #
 # UK Crown Copyright (c) 2016. All Rights Reserved
 #
-find_package(Sqlite3 REQUIRED)
+find_package(SQLite3 CONFIG REQUIRED)
 
 simple_add_shared_library(
   NAME      sqlite
@@ -17,8 +17,8 @@ simple_add_shared_library(
             SqliteCriteria.cc
             SqliteTimerMapperSql.cc
   LINKS     
-            sql 
-            Sqlite3::Sqlite3
+            sql
+            SQLite::SQLite3
   EXPORT    MaslCore
   INCLUDES  
             sqlite/BlobData.hh
@@ -35,6 +35,6 @@ simple_add_shared_library(
 simple_add_executable (
   NAME    sqlite3_backup
   SOURCES sqlite3_backup.cc
-  LINKS   Sqlite3::Sqlite3
+  LINKS   SQLite::SQLite3
   INSTALL
   )
