@@ -1,8 +1,12 @@
 //
 // UK Crown Copyright (c) 2016. All Rights Reserved.
 //
-apply plugin: 'antlr'
-apply plugin: 'application'
+
+plugins {
+    id 'antlr'
+    id 'application'
+    id 'java'
+}
 
 description = 'Core MASL Parser'
 
@@ -12,18 +16,25 @@ repositories {
     mavenCentral()
 }
 
+sourceCompatibility = 17
+targetCompatibility = 17
+
+java {
+    withSourcesJar()
+}
 
 dependencies {
-    antlr       'org.antlr:antlr:3.5.2'
-    runtime     'org.antlr:antlr-runtime:3.5.2'
-    compile     'com.google.guava:guava:18.0'
-    testCompile 'junit:junit:4.11'
+    antlr           'org.antlr:antlr:[3.5.2,4)'
+    runtimeOnly     'org.antlr:antlr-runtime:[3.5.2,)'
+    implementation     'com.google.guava:guava:[31.1-jre,)'
+    testImplementation 'junit:junit:[4.13.1,)'
 }
+
+sourcesJar.dependsOn(generateGrammarSource)
 
 jar {
- manifest {
-    attributes 'Main-Class' : mainClassName,
-               'Class-Path' : configurations.compile.collect { it.getName() }.join(' ')
-  }
+    manifest {
+        attributes 'Main-Class' : mainClassName,
+                   'Class-Path' : configurations.compileClasspath.collect { it.getName() }.join(' ')
+    }
 }
-
