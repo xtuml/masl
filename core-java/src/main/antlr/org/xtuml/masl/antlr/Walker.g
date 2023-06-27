@@ -103,6 +103,8 @@ import org.xtuml.masl.metamodelImpl.expression.StructureAggregate;
 import org.xtuml.masl.metamodelImpl.expression.ThisLiteral;
 import org.xtuml.masl.metamodelImpl.expression.TypeNameExpression;
 import org.xtuml.masl.metamodelImpl.expression.UnaryExpression;
+import org.xtuml.masl.metamodelImpl.expression.LiteralExpression;
+import org.xtuml.masl.metamodelImpl.expression.EnumerateLiteral;
 import org.xtuml.masl.metamodelImpl.name.Name;
 import org.xtuml.masl.metamodelImpl.name.NameLookup;
 import org.xtuml.masl.metamodelImpl.object.AttributeDeclaration;
@@ -1355,19 +1357,39 @@ returns [PragmaDefinition def]
 
 pragmaValue
 returns [ String value ]
-                              : identifier                  { $value = $identifier.name; }
-                              | literalExpression           {
-                                                              if ( $literalExpression.exp instanceof StringLiteral ) 
+                              : expression             {
+                                                              LiteralExpression literalValue = $expression.exp.evaluate();
+                                                              if ( literalValue instanceof StringLiteral ) 
                                                               {
-                                                                $value = ((StringLiteral)$literalExpression.exp).getValue();
+                                                                $value = ((StringLiteral)literalValue).getValue();
                                                               }
-                                                              else if ( $literalExpression.exp instanceof CharacterLiteral ) 
+                                                              else if ( literalValue instanceof CharacterLiteral ) 
                                                               {
-                                                                $value = "" + ((CharacterLiteral)$literalExpression.exp).getValue();
+                                                                $value = "" + ((CharacterLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof TimestampLiteral )
+                                                              {
+                                                                $value = "" + ((TimestampLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof BooleanLiteral )
+                                                              {
+                                                                $value = "" + ((BooleanLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof RealLiteral )
+                                                              {
+                                                                $value = "" + ((RealLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof IntegerLiteral )
+                                                              {
+                                                                $value = "" + ((IntegerLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof EnumerateLiteral )
+                                                              {
+                                                                $value = "" + ((EnumerateLiteral)literalValue).getValue();
                                                               }
                                                               else
                                                               {
-                                                               $value = $literalExpression.text;
+                                                               $value = $expression.text;
                                                               }
                                                             }
                               ;
