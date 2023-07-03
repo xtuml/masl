@@ -1,8 +1,26 @@
-// 
-// UK Crown Copyright (c) 2005. All Rights Reserved
-//
-#include "inspector/BufferedIO.hh"
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
 
+#include "inspector/BufferedIO.hh"
 #include <errno.h>
 #include <unistd.h>
 #include <iostream>
@@ -153,7 +171,7 @@ namespace Inspector
     endPos = buffer + ::read(fp,buffer,BUFFER_SIZE);
     curPos = buffer;
     if ( curPos == endPos ) { throw ConnectionError("Socket gone"); }
-    if ( curPos > endPos ) { 
+    if ( curPos > endPos ) {
       if ( errno == EINTR ) {
         // Interrupted, try again
         updateBuffer();
@@ -188,10 +206,10 @@ namespace Inspector
   }
 
 
-  template<class T> 
+  template<class T>
   void BufferedInputStream::readRaw ( T& bytes )
   {
-    unsigned char* dest = reinterpret_cast<unsigned char*>(&bytes);  
+    unsigned char* dest = reinterpret_cast<unsigned char*>(&bytes);
     copy_buffer(InputBufferIterator(buffer),sizeof(T),dest);
   }
 

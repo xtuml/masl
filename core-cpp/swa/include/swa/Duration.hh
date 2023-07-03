@@ -1,6 +1,25 @@
-//
-// UK Crown Copyright (c) 2016. All Rights Reserved.
-//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 #ifndef SWA_Duration_HH
 #define SWA_Duration_HH
 
@@ -9,9 +28,11 @@
 #include <iomanip>
 #include <limits>
 #include <stdint.h>
+#include <nlohmann/json.hpp>
 
 #include "boost/operators.hpp"
 #include "boost/functional/hash.hpp"
+#include "String.hh"
 
 #include "ProgramError.hh"
 
@@ -211,13 +232,21 @@ namespace SWA
       static Tick scaledToTicks ( float scaled, Units scale ) { return scaledToTicks(static_cast<long double>(scaled),scale); }
       static Tick scaledToTicks ( long double scaled, Units scale )
       { 
-        if ( scaled > static_cast<long double>(std::numeric_limits<Tick>::max())/scale ) throw SWA::ProgramError("Duration Overflow");
-        if ( scaled < static_cast<long double>(std::numeric_limits<Tick>::min())/scale ) throw SWA::ProgramError("Duration Underflow");
-        return static_cast<Tick>(roundl(scaled*scale));
+        if ( scaled > static_cast<long double>(std::numeric_limits<Tick>::max())/static_cast<std::int64_t>(scale) ) throw SWA::ProgramError("Duration Overflow");
+        if ( scaled < static_cast<long double>(std::numeric_limits<Tick>::min())/static_cast<std::int64_t>(scale) ) throw SWA::ProgramError("Duration Underflow");
+        return static_cast<Tick>(roundl(scaled*static_cast<std::int64_t>(scale)));
+      }
+      friend void to_json(nlohmann::json& json, const SWA::Duration& v ){
+          json = v.format_iso ( Duration::Day, Duration::Second, true, 9 );
+      }
+
+      friend void from_json(const nlohmann::json& json, SWA::Duration& v ){
+          v = parse(json.get<std::string>());
       }
 
 
-    private:
+
+  private:
 
       explicit Duration ( int64_t ticks ) : ticks(ticks) {}
 
@@ -253,22 +282,10 @@ namespace SWA
     return field1 = field1 & field2;
   }
 
-
-}
-
-
-
-
-
-
-
-namespace boost {
-// Supply a hash function so that SWA::Duration can be used 
-// as a prefered object identifier.
-inline std::size_t hash_value(const SWA::Duration& src)
-{
-  return ::boost::hash_value(src.getTicks()); 
-}
+  inline std::size_t hash_value(const SWA::Duration& src)
+  {
+    return ::boost::hash_value(src.getTicks());
+  }
 
 }
 

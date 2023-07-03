@@ -1,10 +1,29 @@
-//
-// UK Crown Copyright (c) 2016. All Rights Reserved.
-//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 #ifndef SWA_Dictionary_HH
 #define SWA_Dictionary_HH
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/operators.hpp>
 #include <map>
 
@@ -14,13 +33,10 @@
 namespace SWA
 {
   template<class Key,class Value>
-  class Dictionary : private boost::less_than_comparable<Dictionary<Key, Value>, 
-                               boost::equality_comparable<Dictionary<Key, Value>
-                               > 
-                             >
+  class Dictionary
   {
     public:
-      typedef boost::unordered_map<Key,Value> Container;
+      typedef std::unordered_map<Key,Value,boost::hash<Key>> Container;
 
       typedef typename Container::iterator iterator;
       typedef typename Container::const_iterator const_iterator;
@@ -63,7 +79,7 @@ namespace SWA
       explicit Dictionary ( const Dictionary<Key2,Value2>& rhs ) : data(rhs.data.begin(),rhs.data.end()) {}
 
       template<class Key2,class Value2>
-      explicit Dictionary ( const boost::unordered_map<Key2,Value2>& rhs ) : data(rhs.begin(),rhs.end()) {}
+      explicit Dictionary ( const std::unordered_map<Key2,Value2>& rhs ) : data(rhs.begin(),rhs.end()) {}
 
       template<class Key2,class Value2>
       explicit Dictionary ( const std::map<Key2,Value2>& rhs ) : data(rhs.begin(),rhs.end()) {}
@@ -88,15 +104,28 @@ namespace SWA
       Value& operator[] ( const Key& key ) { return data[key]; }
       const Value& operator[] ( const Key& key ) const { return data[key]; }
 
-      bool operator== ( const Dictionary& rhs ) const { return std::map<Key, Value>(begin(), end()) == std::map<Key, Value>(rhs.begin(), rhs.end()); }
-      bool operator< ( const Dictionary& rhs ) const { return std::map<Key, Value>(begin(), end()) < std::map<Key, Value>(rhs.begin(), rhs.end()); }
+      friend void to_json(nlohmann::json& json, const SWA::Dictionary<Key,Value>& v ){
+          json = v.data;
+      }
 
-    private:
+      friend void from_json(const nlohmann::json& json, SWA::Dictionary<Key,Value>& v ){
+          json.get_to(v.data);
+      }
+
+
+  private:
       Container data;
 
-      class key_iterator : public std::iterator<std::input_iterator_tag, Key>, public boost::input_iteratable<key_iterator,Key*>
+      class key_iterator:  public boost::input_iteratable<key_iterator,Key*>
       {
         public:
+          using iterator_category = std::input_iterator_tag;
+          using value_type = Key;
+          using difference_type = std::ptrdiff_t;
+          using pointer =  value_type*;
+          using reference = value_type&;
+
+
           key_iterator ( const const_iterator& pos ) : pos(pos) {}
           const Key& operator*() const { return pos->first; }
           key_iterator& operator++()  { ++pos; return *this; }
@@ -106,9 +135,15 @@ namespace SWA
           const_iterator pos;
       };
 
-      class value_iterator : public std::iterator<std::input_iterator_tag, Value>, public boost::input_iteratable<value_iterator,Value*>
+      class value_iterator : public boost::input_iteratable<value_iterator,Value*>
       {
         public:
+          using iterator_category = std::input_iterator_tag;
+          using value_type = Value;
+          using difference_type = std::ptrdiff_t;
+          using pointer =  value_type*;
+          using reference = value_type&;
+
           value_iterator ( const const_iterator& pos ) : pos(pos) {}
           const Value& operator*() const { return pos->second; }
           value_iterator& operator++()  { ++pos; return *this; }
@@ -127,11 +162,6 @@ namespace SWA
     return stream << "Dictionary size " << obj.size();
   }
 
-  template<class K,class V>
-  inline std::size_t hash_value ( const Dictionary<K,V>& value )
-  {
-    return boost::hash_range(value.begin(),value.end());
-  }
 
 }
 

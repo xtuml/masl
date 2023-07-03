@@ -1,6 +1,25 @@
-//
-// UK Crown Copyright (c) 2016. All Rights Reserved.
-//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 #ifndef SWA_Time_HH
 #define SWA_Time_HH
 
@@ -12,8 +31,10 @@
 
 #include "boost/operators.hpp"
 #include "boost/functional/hash.hpp"
+#include <nlohmann/json.hpp>
 
 #include "ProgramError.hh"
+#include "String.hh"
 #include "math.hh"
 
 namespace SWA
@@ -164,7 +185,16 @@ namespace SWA
       Timestamp addMonths ( int64_t months );
 
 
-    private:
+      friend void to_json(nlohmann::json& json, const SWA::Timestamp v ){
+         json = v.format_iso_ymdhms ( Timestamp::Second, 9 );
+      }
+
+      friend void from_json(const nlohmann::json& json, SWA::Timestamp& v ){
+          v = parse(json.get<std::string>());
+      }
+
+
+  private:
       typedef int64_t Tick;
 
       template<class Iterator>
@@ -181,9 +211,9 @@ namespace SWA
       static Tick scaledToTicks ( float scaled, Units scale ) { return scaledToTicks(static_cast<long double>(scaled),scale); }
       static Tick scaledToTicks ( long double scaled, Units scale )
       { 
-        if ( scaled > static_cast<long double>(std::numeric_limits<Tick>::max())/scale ) throw SWA::ProgramError("Timestamp Overflow");
-        if ( scaled < static_cast<long double>(std::numeric_limits<Tick>::min())/scale ) throw SWA::ProgramError("Timestamp Underflow");
-        return static_cast<Tick>(scaled*scale);
+        if ( scaled > static_cast<long double>(std::numeric_limits<Tick>::max())/static_cast<std::int64_t>(scale) ) throw SWA::ProgramError("Timestamp Overflow");
+        if ( scaled < static_cast<long double>(std::numeric_limits<Tick>::min())/static_cast<std::int64_t>(scale) ) throw SWA::ProgramError("Timestamp Underflow");
+        return static_cast<Tick>(scaled*static_cast<std::int64_t>(scale));
       }
 
       static int64_t toTicks ( tm& split, int64_t nanos );
@@ -270,21 +300,11 @@ namespace SWA
   {
     return Timestamp::TimestampFields(~static_cast<uint32_t>(field));
   }
-}
 
-
-
-
-
-
-
-namespace boost {
-// Supply a hash function so that SWA::Timestamp can be used 
-// as a prefered object identifier.
-inline std::size_t hash_value(const SWA::Timestamp& src)
-{
-  return ::boost::hash_value(src.getTicks()); 
-}
+  inline std::size_t hash_value(const SWA::Timestamp& src)
+  {
+    return ::boost::hash_value(src.getTicks());
+  }
 
 }
 

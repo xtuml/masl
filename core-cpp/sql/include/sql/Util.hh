@@ -1,8 +1,24 @@
-// 
-// Filename : sql.hh
-//
-// UK Crown Copyright (c) 2007. All Rights Reserved
-//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
 
 #ifndef Sql_Util_HH
 #define Sql_Util_HH 
@@ -39,7 +55,7 @@ namespace SQL {
 //*****************************************************************************
 //*****************************************************************************
 template <class T >
-struct PairFirst :  public std::unary_function<T,typename T::first_type>
+struct PairFirst
 {
    typename T::first_type operator()(const T& pair) { return pair.first; }
 };
@@ -47,7 +63,7 @@ struct PairFirst :  public std::unary_function<T,typename T::first_type>
 //*****************************************************************************
 //*****************************************************************************
 template <class T>
-struct PairSecond : public std::unary_function<T,typename T::second_type>
+struct PairSecond
 {
    typename T::second_type operator()(const T& pair) { return pair.second; }
 };
@@ -55,7 +71,7 @@ struct PairSecond : public std::unary_function<T,typename T::second_type>
 // ***********************************************************************
 // ***********************************************************************
 template <class T>
-struct Subscript : std::unary_function<typename T::key_type, typename T::mapped_type>
+struct Subscript
 {
    typedef typename T::mapped_type  result_type;
    typedef typename T::key_type     argument_type;
@@ -95,7 +111,7 @@ struct PsObject_Traits
 // ***********************************************************************
 // ***********************************************************************
 template <class T>
-class TableStatementGenerator : public std::unary_function<typename T::p_object_ptr,void>
+class TableStatementGenerator
 {
    public:
     typedef  boost::function<void(const T&, const typename T::p_object_ptr&,std::string&)> MethodType;
@@ -127,7 +143,7 @@ TableStatementGenerator<T> StatementGenerator(const T& table, typename TableStat
 // ***********************************************************************
 // ***********************************************************************
 template <class T, class P = std::equal_to<typename T::first_type> >
-class AssociativeKeyAccessor : public std::unary_function<T,bool>
+class AssociativeKeyAccessor
 {
    public:
       AssociativeKeyAccessor(const typename T::first_type& key):key_(key){}
@@ -151,7 +167,7 @@ AssociativeKeyAccessor<typename T::value_type> matchKey(const T& container, cons
 // ***********************************************************************
 // ***********************************************************************
 template <class C>
-class MatchObjectIdentity : public std::unary_function<typename C::value_type,bool>
+class MatchObjectIdentity
 {
   public:
      typedef typename C::key_type   key_type;
@@ -170,7 +186,7 @@ class MatchObjectIdentity : public std::unary_function<typename C::value_type,bo
 // ***********************************************************************
 // ***********************************************************************
 template <class T, class K>
-class ArchitectureKeyMatch : public std::unary_function<T,bool>
+class ArchitectureKeyMatch
 {
    public:
       ArchitectureKeyMatch(const K& key):key_(key){}
@@ -185,7 +201,7 @@ class ArchitectureKeyMatch : public std::unary_function<T,bool>
 // ***********************************************************************
 // ***********************************************************************
 template <class O, class A>
-class OneAttributeSelector : public std::unary_function<boost::shared_ptr<O>,bool>
+class OneAttributeSelector
 {
     public:
         typedef A (O::* GetMethodType)();
@@ -204,7 +220,7 @@ class OneAttributeSelector : public std::unary_function<boost::shared_ptr<O>,boo
 // ***********************************************************************
 // ***********************************************************************
 template <class O, class A, class B>
-class TwoAttributeSelector : public std::unary_function<boost::shared_ptr<O>,bool>
+class TwoAttributeSelector
 {
     public:
         typedef A (O::* GetMethodOneType)();

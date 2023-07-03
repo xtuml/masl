@@ -1,6 +1,25 @@
-//
-// UK Crown Copyright (c) 2016. All Rights Reserved.
-//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 #ifndef ASN1_BER_Decode_HH
 #define ASN1_BER_Decode_HH
 
@@ -17,7 +36,6 @@
 #include "swa/Timestamp.hh"
 #include "swa/Device.hh"
 #include "swa/ObjectPtr.hh"
-#include "swa/remove_const.hh"
 
 
 namespace ASN1
@@ -248,11 +266,19 @@ namespace ASN1
       for ( typename Decoder<I>::ChildIterator childIt = decoder.getChildrenBegin(), end = decoder.getChildrenEnd();
            childIt != end; ++childIt )
       {
-        // Strip const off value type, as we are passing it by 
-        // reference rather than assigning diectly to it 
-        typename boost::remove_const<typename T::value_type>::type value;
-        decode(*childIt,value);
-        *ins++ = value;
+          if constexpr ( requires {
+                      typename T::value_type::first_type;
+                      typename T::value_type::second_type;
+              }) {
+                // Strip const from key type for associative containers
+              std::pair<std::remove_const_t<typename T::value_type::first_type>,typename T::value_type::second_type> element;
+              decode(*childIt,element);
+              *ins++ = element;
+          } else {
+              typename T::value_type element;
+              decode(*childIt,element);
+              *ins++ = element;
+          }
       }
     }
 

@@ -1,23 +1,24 @@
-//============================================================================
-// UK Crown Copyright (c) 2008. All rights reserved.
-//
-// File:  socketQos.hh 
-//
-// Description:    
-//    Networks can be configured for Quality Of Service. The masl network has
-// implemented QoS using DiffServ. DiffServ enables data streams to be associated
-// with pre-defined DiffServ Code point (DSCP) values which enables routers to 
-// manage the streams. 
-//    If a masl application uses sockets to transport data then the socket must
-// be associated with a suitable QoS value. At a minimum masl traffic should be
-// associated with the default DSCP value, as this gives the lowest QoS guarantees. 
-// Apply this DSCP value to traffic produced by very low priority streams such as
-// utility or inspection tools. All other traffic should be tagged with the associated
-// protocol (TCP/UDP/MCAST) qos values defined below.
-//     By default the client and listener applications defined by this library are 
-// automatically configured for QoS (see socketSockets.hh), a developer does not have 
-// to explicitly set dscp unless a non-standard value needs to be applied.
-//============================================================================//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
 
 #ifndef SOCKET_qos__
 #define SOCKET_qos__
@@ -35,7 +36,7 @@ class QoS
   public:
 
      // These are the DSCP values that should 
-     // be used by masl network traffic. Use a NO_QOS value that is out of range of
+     // be used by network traffic. Use a NO_QOS value that is out of range of
      // a valid 6 bit QoS value.
      enum { DEFAULT_QOS = 0, TCP_QOS = 26, UDP_QOS = 26, MCAST_QOS = 26, NO_QOS = 1000 };
 

@@ -1,25 +1,25 @@
-//============================================================================
-// UK Crown Copyright (c) 2005. All rights reserved.
-//
-// File:    socketOption.hh
-//
-// Description:    
-//     Define a series of classes that will enable socket configuration using 
-// set/get sockopt and fcntl. Some of the  options can be set and get while 
-// others only allow one of these mechanisms. Therefore a specialisation of the
-// SocketOption class has been produced to handle these cases. 
-//    The actual options that can be used for a particular platform are defined 
-// in a file socketOption.<platform_name>.
-// These platform specific files are included at the end of this file, only the
-// options for the platform currently being built against will be exposed to the
-// compiler.
-//     If the current set of options does not include the functionality to configure
-// a required option then either the existing classes can be specialised for the
-// required option, or if it requires new system calls then a new option class can be
-// created. This class needs to support a set and get method taking an integer
-// parameter; the socket descriptor.
-// 
-//============================================================================//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 #ifndef SOCKET_socketOption__
 #define SOCKET_socketOption__
 
