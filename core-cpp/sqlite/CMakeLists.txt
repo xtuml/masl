@@ -1,8 +1,12 @@
-#
-# UK Crown Copyright (c) 2016. All Rights Reserved
-#
-find_package(SQLite3 CONFIG REQUIRED)
+# ----------------------------------------------------------------------------
+# (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+# The copyright of this Software is vested in the Crown
+# and the Software is the property of the Crown.
+# ----------------------------------------------------------------------------
+# Classification: UK OFFICIAL
+# ----------------------------------------------------------------------------
 
+find_package(SQLite3 CONFIG QUIET REQUIRED)
 simple_add_shared_library(
   NAME      sqlite
   SOURCES   

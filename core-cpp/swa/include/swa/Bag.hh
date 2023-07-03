@@ -1,6 +1,25 @@
-//
-// UK Crown Copyright (c) 2016. All Rights Reserved.
-//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 #ifndef SWA_Bag_HH
 #define SWA_Bag_HH
 
@@ -12,7 +31,7 @@
 #include "ObjectPtr.hh"
 #include "collection.hh"
 #include "boost/operators.hpp"
-#include "reverse_iterator_patch.hh"
+#include <nlohmann/json.hpp>
 
 namespace SWA
 {
@@ -422,7 +441,18 @@ namespace SWA
       }
 
 
-    private:
+      friend void to_json(nlohmann::json& json, const SWA::Bag<T> v ){
+          json = v.data;
+      }
+
+      friend void from_json(const nlohmann::json& json, SWA::Bag<T>& v ){
+          json.get_to(v.data);
+          v.unique = false;
+          v.sorted = false;
+      }
+
+
+  private:
       mutable Container data;
       mutable bool unique;
       mutable bool sorted;

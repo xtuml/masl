@@ -1,9 +1,25 @@
-//============================================================================//
-// UK Crown Copyright (c) 2007. All rights reserved.
-//
-// File:  EventCollector.hh
-//
-//============================================================================//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 #ifndef Events_EventCollector_HH
 #define Events_EventCollector_HH
 
@@ -108,7 +124,7 @@ namespace EVENTS {
        virtual void processingEvent ( int domainId, int objectId, int eventId, int destObjectId, SWA::IdType instanceId );
 
        // ***************************************************************** 
-       //! Report that the masl process has generated a creation or 
+       //! Report that the masl process has generated a creation or
        //! assigner state event.
        //! 
        //! @param domainId     the domain the event was generated from
@@ -119,7 +135,7 @@ namespace EVENTS {
        virtual void generatingEvent ( int domainId, int objectId, int eventId, int destObjectId );
 
        // ***************************************************************** 
-       //! Report that the masl process has processed a creation or 
+       //! Report that the masl process has processed a creation or
        //! assigner state event.
        //! 
        //! @param domainId     the domain the event was generated from

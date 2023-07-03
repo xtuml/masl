@@ -1,6 +1,24 @@
-//
-// UK Crown Copyright (c) 2016. All Rights Reserved.
-//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
 #ifndef ASN1_DER_Encode_HH
 #define ASN1_DER_Encode_HH
 
@@ -51,6 +69,66 @@ namespace ASN1
     Buffer encodeReal    ( float    value );
 
     Buffer encodeBitString ( boost::dynamic_bitset<Octet> value );
+
+    // Specialised encoders for other type not determinable by Encoding traits
+    // Must be fully specialised for any T not covered by the known Encodings
+    template<class T>
+    Encoder encodeValue ( const T& value );
+
+    template<>
+    Encoder encodeValue ( const boost::dynamic_bitset<Octet>& value );
+
+    template<size_t bits>
+    Encoder encodeValue ( const std::bitset<bits>& value );
+
+    template<class T1, class T2>
+    Encoder encodeValue ( const std::pair<T1,T2>& value );
+
+    template<>
+    Encoder encodeValue ( const boost::tuple<>& value );
+
+    template<class T0>
+    Encoder encodeValue ( const boost::tuple<T0>& value );
+
+    template<class T0, class T1>
+    Encoder encodeValue ( const boost::tuple<T0,T1>& value );
+
+    template<class T0, class T1, class T2>
+    Encoder encodeValue ( const boost::tuple<T0,T1,T2>& value );
+
+    template<class T0, class T1, class T2, class T3>
+    Encoder encodeValue ( const boost::tuple<T0,T1,T2,T3>& value );
+
+    template<class T0, class T1, class T2, class T3, class T4>
+    Encoder encodeValue ( const boost::tuple<T0,T1,T2,T3,T4>& value );
+
+    template<class T0, class T1, class T2, class T3, class T4, class T5>
+    Encoder encodeValue ( const boost::tuple<T0,T1,T2,T3,T4,T5>& value );
+
+    template<class T0, class T1, class T2, class T3, class T4, class T5, class T6>
+    Encoder encodeValue ( const boost::tuple<T0,T1,T2,T3,T4,T5,T6>& value );
+
+    template<class T0, class T1, class T2, class T3, class T4, class T5, class T6, class T7>
+    Encoder encodeValue ( const boost::tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value );
+
+    template<class T0, class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8>
+    Encoder encodeValue ( const boost::tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value );
+
+    template<class T0, class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9>
+    Encoder encodeValue ( const boost::tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value );
+
+    template<>
+    Encoder encodeValue ( const SWA::Duration& value );
+
+    template<>
+    Encoder encodeValue ( const SWA::Timestamp& value );
+
+    template<>
+    Encoder encodeValue ( const SWA::Device& value );
+
+    template<class T>
+    Encoder encodeValue ( const SWA::ObjectPtr<T>& value );
+
 
     // Encoders for types covered by Encoding traits
     template<class T>
@@ -133,11 +211,6 @@ namespace ASN1
       }
       return result;
     }
-
-    // Specialised encoders for other type not determinable by Encoding traits
-    // Must be fully specialised for any T not covered by the known Encodings
-    template<class T>
-    Encoder encodeValue ( const T& value );
 
 
     template<class T>
@@ -320,11 +393,7 @@ namespace ASN1
       return result;
     }
 
-    inline void f ()
-    {
-      encodeValue(std::pair<int,int>(1,2));
-    }
-    // Masl Types
+     // Masl Types
     template<>
     inline Encoder encodeValue ( const SWA::Duration& value )  { return encode(value.nanos()); }
 
@@ -336,7 +405,7 @@ namespace ASN1
 
     template<class T>
     Encoder encodeValue ( const SWA::ObjectPtr<T>& value )
-    { 
+    {
       if ( value.isNull() || value.isDeleted() )
       {
         return encode(::SWA::IdType());

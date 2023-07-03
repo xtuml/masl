@@ -1,17 +1,25 @@
-//============================================================================
-// UK Crown Copyright (c) 2005. All rights reserved.
-//
-// File:    socketProtocol.hh
-//
-// Description:
-//     Define a series of structures that encapsulate the address family and
-// protocol family types that can be used during the creation of a socket. Each
-// protocol family type defines a series of static functions that wrap the allowed
-// function set for a particular protocol family. This enables the socket functions 
-// bind,listen,connect and accept to be correctly type checked against the address 
-// family the socket has been created with.
-//
-//============================================================================//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 #ifndef SOCKET_socketProtocolP__
 #define SOCKET_socketProtocolP__
 
@@ -116,10 +124,7 @@ struct UnixAddressFamily
     static void cleanup(const socket_address_type& iAddress)
     {
          Logger::trace ("UnixAddressFamily::cleanup");
-         if (iAddress.sun_path != NULL){
-             Logger::trace ("UnixAddressFamily::cleanup - unlink file ",iAddress.sun_path);
 	     unlink(iAddress.sun_path);
-	 }    
     }
 
    private:
@@ -144,7 +149,7 @@ struct InetAddressFamily
        return sizeof(iAddress); 
     }
     
-    // Returns textual name, i.e. dell121pc2.servalan.benhall.gchq
+    // Returns textual name
     static std::string getHostName (const socket_address_type& iAddress)
     {
 	 struct hostent* hostAddr = gethostbyaddr(reinterpret_cast<const char*>(&(iAddress.sin_addr.s_addr)),sizeof(iAddress.sin_addr.s_addr),AF_INET);

@@ -1,8 +1,24 @@
-// 
-// Filename : pm_buffered_io.hh
-//
-// UK Crown Copyright (c) 2005. All Rights Reserved
-//
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
 #ifndef Inspector_BufferedIO_HH
 #define Inspector_BufferedIO_HH
 
@@ -19,6 +35,7 @@
 #include "swa/Dictionary.hh"
 #include "swa/ObjectPtr.hh"
 #include "swa/Set.hh"
+#include "swa/Device.hh"
 
 
 namespace Inspector {
@@ -89,6 +106,9 @@ namespace Inspector {
       void write ( const SWA::ObjectPtr<T>& val );
 
       void write ( const SWA::ObjectPtr<void>& val );
+
+      template<class T>
+      void write ( const SWA::basic_Device<T>& val ) {}
 
       void write ( const char* val );
 
@@ -216,7 +236,7 @@ namespace Inspector {
       void setFp(int fp) { this->fp = fp;curPos = buffer; endPos = buffer;}
 
       unsigned char get()
-      { 
+      {
         if ( curPos == endPos ) updateBuffer();
         return *curPos;
       }
@@ -225,7 +245,7 @@ namespace Inspector {
       bool empty() { return curPos == endPos; }
 
       void advance()
-      { 
+      {
         if ( curPos == endPos ) updateBuffer();
         ++curPos;
       }
@@ -234,14 +254,19 @@ namespace Inspector {
 
   // InputBufferIterator provides an STL InputIterator wrapper 
   // around the InputBuffer 
-  class InputBufferIterator 
-    : public std::iterator<std::input_iterator_tag,unsigned char,void,void,void>
+  class InputBufferIterator
   {
     private:
       InputBuffer& buffer;
       unsigned char proxyChar;
 
     public:
+      using iterator_category = std::input_iterator_tag;
+      using value_type = unsigned char;
+      using difference_type = void;
+      using pointer =  void;
+      using reference = void;
+
       InputBufferIterator(InputBuffer& buffer) : buffer(buffer) {}
 
       value_type operator*()
@@ -337,6 +362,9 @@ namespace Inspector {
       void read ( signed char& val );
       void read ( bool& val );
       void read ( SWA::ObjectPtr<void>& val ) {}
+
+      template<class T>
+      void read ( SWA::basic_Device<T>& val ) {}
 
       // Returns true if bytes are available to be read.
       bool available() { return buffer.available();}
