@@ -3,66 +3,66 @@
   UK Crown Copyright (c) 2016. All Rights Reserved
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-  <xs:element name="translator">
-    <xs:complexType>
-      <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" ref="cmdline"/>    
-      <xs:choice minOccurs="0" maxOccurs="1">
-        <xs:choice maxOccurs="unbounded">
-            <xs:element minOccurs="0" maxOccurs="unbounded" name="configure"/> 
-            <xs:choice maxOccurs="unbounded">
-               <xs:element ref="add"/>
-               <xs:element ref="skip"/>
-               <xs:element name="override"/>
-            </xs:choice>
-            <xs:element maxOccurs="1" ref="only"/>         
-        </xs:choice>
-      </xs:choice> 
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="cmdline">
-    <xs:complexType>
-      <xs:attribute name="option" use="required"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="add">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
-      </xs:sequence>
-      <xs:attribute name="name" use="required"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="configure">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
-      </xs:sequence>
-      <xs:attribute name="name" use="required"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="only">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
-      </xs:sequence>
-      <xs:attribute name="name" use="required"/>
-     </xs:complexType>
-  </xs:element>
-  <xs:element name="skip">
-    <xs:complexType>
-     <xs:sequence>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
-      </xs:sequence>
-      <xs:attribute name="name" use="required"/>
-    </xs:complexType>
-  </xs:element>
-   <xs:element name="property">
-    <xs:complexType>
-      <xs:attribute name="name"  use="required"/>
-      <xs:attribute name="value" use="required"/>
-    </xs:complexType>
-  </xs:element>
-  
+    <xs:element name="translator">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="cmdline"/>
+                <xs:choice minOccurs="0" maxOccurs="1">
+                    <xs:choice maxOccurs="unbounded">
+                        <xs:element minOccurs="0" maxOccurs="unbounded" name="configure"/>
+                        <xs:choice maxOccurs="unbounded">
+                            <xs:element ref="add"/>
+                            <xs:element ref="skip"/>
+                            <xs:element name="override"/>
+                        </xs:choice>
+                        <xs:element maxOccurs="1" ref="only"/>
+                    </xs:choice>
+                </xs:choice>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="cmdline">
+        <xs:complexType>
+            <xs:attribute name="option" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="add">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="configure">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="only">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="skip">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+            </xs:sequence>
+            <xs:attribute name="name" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="property">
+        <xs:complexType>
+            <xs:attribute name="name" use="required"/>
+            <xs:attribute name="value" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>

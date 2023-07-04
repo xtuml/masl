@@ -1,79 +1,78 @@
-//
-// UK Crown Copyright (c) 2011. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.javagen.ast.expr;
 
+public interface Literal extends Expression {
 
-public interface Literal
-    extends Expression
-{
+    interface BooleanLiteral extends Literal {
 
-  interface BooleanLiteral
-      extends Literal
-  {
+        boolean getValue();
 
-    boolean getValue ();
+        void setValue(boolean value);
+    }
 
-    void setValue ( boolean value );
-  }
+    interface CharacterLiteral extends Literal {
 
-  interface CharacterLiteral
-      extends Literal
-  {
+        char getValue();
 
-    char getValue ();
+        void setValue(char value);
+    }
 
-    void setValue ( char value );
-  }
+    interface DoubleLiteral extends Literal {
 
-  interface DoubleLiteral
-      extends Literal
-  {
+        double getValue();
 
-    double getValue ();
+        void setValue(double value);
+    }
 
-    void setValue ( double value );
-  }
+    interface FloatLiteral extends Literal {
 
-  interface FloatLiteral
-      extends Literal
-  {
+        float getValue();
 
-    float getValue ();
+        void setValue(float value);
+    }
 
-    void setValue ( float value );
-  }
+    interface IntegerLiteral extends Literal {
 
-  interface IntegerLiteral
-      extends Literal
-  {
+        int getValue();
 
-    int getValue ();
+        void setValue(int value);
+    }
 
-    void setValue ( int value );
-  }
+    interface LongLiteral extends Literal {
 
-  interface LongLiteral
-      extends Literal
-  {
+        long getValue();
 
-    long getValue ();
+        void setValue(long value);
+    }
 
-    void setValue ( long value );
-  }
+    interface NullLiteral extends Literal {
+    }
 
-  interface NullLiteral
-      extends Literal
-  {
-  }
+    interface StringLiteral extends Literal {
 
-  interface StringLiteral
-      extends Literal
-  {
+        String getValue();
 
-    String getValue ();
-
-    void setValue ( String value );
-  }
+        void setValue(String value);
+    }
 
 }

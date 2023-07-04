@@ -1,12 +1,25 @@
 /*
- * Filename : ObjectTranslator.java
- * 
- * UK Crown Copyright (c) 2008. All Rights Reserved
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.translate.sql.main;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.xtuml.masl.cppgen.Class;
 import org.xtuml.masl.cppgen.Function;
@@ -20,176 +33,145 @@ import org.xtuml.masl.metamodel.relationship.NormalRelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.RelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.SubtypeRelationshipDeclaration;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class ObjectTranslator
-{
+public class ObjectTranslator {
 
-  private final ObjectDeclaration                        objectDecl;
-  private final SqlFrameworkTranslator                   framework;
+    private final ObjectDeclaration objectDecl;
+    private final SqlFrameworkTranslator framework;
 
-  private final List<GeneratedClass>                     classList                   = new ArrayList<GeneratedClass>();
-  private final List<NormalRelationshipDeclaration>      normalRelationshipDeclList  = new ArrayList<NormalRelationshipDeclaration>();
-  private final List<SubtypeRelationshipDeclaration>     subtypeRelationshipDeclList = new ArrayList<SubtypeRelationshipDeclaration>();
-  private final List<AssociativeRelationshipDeclaration> assocRelationshipDeclList   = new ArrayList<AssociativeRelationshipDeclaration>();
+    private final List<GeneratedClass> classList = new ArrayList<GeneratedClass>();
+    private final List<NormalRelationshipDeclaration>
+            normalRelationshipDeclList =
+            new ArrayList<NormalRelationshipDeclaration>();
+    private final List<SubtypeRelationshipDeclaration>
+            subtypeRelationshipDeclList =
+            new ArrayList<SubtypeRelationshipDeclaration>();
+    private final List<AssociativeRelationshipDeclaration>
+            assocRelationshipDeclList =
+            new ArrayList<AssociativeRelationshipDeclaration>();
 
-  private final Namespace                                namespace;
-  private final ImplementationClass                      implClass;
+    private final Namespace namespace;
+    private final ImplementationClass implClass;
 
-  ObjectTranslator ( final SqlFrameworkTranslator parent, final ObjectDeclaration objDec )
-  {
-    objectDecl = objDec;
-    framework = parent;
-    namespace = framework.getDatabase().getDatabaseTraits().getNameSpace();
+    ObjectTranslator(final SqlFrameworkTranslator parent, final ObjectDeclaration objDec) {
+        objectDecl = objDec;
+        framework = parent;
+        namespace = framework.getDatabase().getDatabaseTraits().getNameSpace();
 
-    implClass = new ImplementationClass(this, objectDecl, namespace);
-    classList.add(implClass);
-    classList.add(new PopulationClass(this, objectDecl, namespace));
-    classList.add(new MapperClass(this, objectDecl, namespace));
-    classList.add(new MapperSqlClass(this, objectDecl, namespace));
-  }
-
-  Database getDatabase ()
-  {
-    return framework.getDatabase();
-  }
-
-  SqlFrameworkTranslator getFrameworkTranslator ()
-  {
-    return framework;
-  }
-
-  void addRelationship ( final RelationshipDeclaration relationship )
-  {
-
-    if ( relationship instanceof NormalRelationshipDeclaration )
-    {
-      final NormalRelationshipDeclaration normalRelDecl = (NormalRelationshipDeclaration)relationship;
-      if ( normalRelDecl.getLeftObject() == objectDecl || normalRelDecl.getRightObject() == objectDecl )
-      {
-        normalRelationshipDeclList.add(normalRelDecl);
-      }
+        implClass = new ImplementationClass(this, objectDecl, namespace);
+        classList.add(implClass);
+        classList.add(new PopulationClass(this, objectDecl, namespace));
+        classList.add(new MapperClass(this, objectDecl, namespace));
+        classList.add(new MapperSqlClass(this, objectDecl, namespace));
     }
-    else if ( relationship instanceof SubtypeRelationshipDeclaration )
-    {
-      final SubtypeRelationshipDeclaration subtypeRelDecl = (SubtypeRelationshipDeclaration)relationship;
-      if ( subtypeRelDecl.getSupertype() == objectDecl || subtypeRelDecl.getSubtypes().contains(objectDecl) )
-      {
-        subtypeRelationshipDeclList.add(subtypeRelDecl);
-      }
+
+    Database getDatabase() {
+        return framework.getDatabase();
     }
-    else if ( relationship instanceof AssociativeRelationshipDeclaration )
-    {
-      final AssociativeRelationshipDeclaration assocRelDecl = (AssociativeRelationshipDeclaration)relationship;
-      if ( assocRelDecl.getLeftObject() == objectDecl ||
+
+    SqlFrameworkTranslator getFrameworkTranslator() {
+        return framework;
+    }
+
+    void addRelationship(final RelationshipDeclaration relationship) {
+
+        if (relationship instanceof NormalRelationshipDeclaration normalRelDecl) {
+            if (normalRelDecl.getLeftObject() == objectDecl || normalRelDecl.getRightObject() == objectDecl) {
+                normalRelationshipDeclList.add(normalRelDecl);
+            }
+        } else if (relationship instanceof SubtypeRelationshipDeclaration subtypeRelDecl) {
+            if (subtypeRelDecl.getSupertype() == objectDecl || subtypeRelDecl.getSubtypes().contains(objectDecl)) {
+                subtypeRelationshipDeclList.add(subtypeRelDecl);
+            }
+        } else if (relationship instanceof AssociativeRelationshipDeclaration assocRelDecl) {
+            if (assocRelDecl.getLeftObject() == objectDecl ||
                 assocRelDecl.getRightObject() == objectDecl ||
-                assocRelDecl.getAssocObject() == objectDecl )
-      {
-        assocRelationshipDeclList.add(assocRelDecl);
-      }
+                assocRelDecl.getAssocObject() == objectDecl) {
+                assocRelationshipDeclList.add(assocRelDecl);
+            }
+        }
     }
-  }
 
-
-  void translateModel ()
-  {
-    doAttributes();
-    doRelationships();
-    doEvents();
-  }
-
-  void translateActions ()
-  {
-    doFinds();
-    doNavigates();
-  }
-
-  org.xtuml.masl.translate.main.object.ObjectTranslator getMainObjectTranslator ( final ObjectDeclaration declaration )
-  {
-    return org.xtuml.masl.translate.main.object.ObjectTranslator.getInstance(declaration);
-  }
-
-  public Class getClass ( final String name )
-  {
-    Class requiredClass = null;
-    for ( final GeneratedClass currentClass : classList )
-    {
-      if ( currentClass.getClassName().equals(name) )
-      {
-        requiredClass = currentClass.getCppClass();
-        break;
-      }
+    void translateModel() {
+        doAttributes();
+        doRelationships();
+        doEvents();
     }
-    return requiredClass;
-  }
 
-  List<NormalRelationshipDeclaration> getNormalRelationships ()
-  {
-    return normalRelationshipDeclList;
-  }
-
-  List<SubtypeRelationshipDeclaration> getSubTypeRelationships ()
-  {
-    return subtypeRelationshipDeclList;
-  }
-
-  List<AssociativeRelationshipDeclaration> getAssociativeRelationships ()
-  {
-    return assocRelationshipDeclList;
-  }
-
-  public Function getSetterMethod ( final AttributeDeclaration attribute )
-  {
-    return implClass.getSetterMethod(attribute);
-  }
-
-  TypedefType getKeyType ( final IdentifierDeclaration identifier )
-  {
-    return implClass.getKeyType(identifier);
-  }
-
-  Function getKeyGetterFn ( final IdentifierDeclaration identifier )
-  {
-    return implClass.getKeyGetterFn(identifier);
-  }
-
-  private void doAttributes ()
-  {
-    for ( final GeneratedClass currentClass : classList )
-    {
-      currentClass.translateAttributes();
+    void translateActions() {
+        doFinds();
+        doNavigates();
     }
-  }
 
-  private void doRelationships ()
-  {
-    for ( final GeneratedClass currentClass : classList )
-    {
-      currentClass.translateRelationships();
+    org.xtuml.masl.translate.main.object.ObjectTranslator getMainObjectTranslator(final ObjectDeclaration declaration) {
+        return org.xtuml.masl.translate.main.object.ObjectTranslator.getInstance(declaration);
     }
-  }
 
-  private void doEvents ()
-  {
-    for ( final GeneratedClass currentClass : classList )
-    {
-      currentClass.translateEvents();
+    public Class getClass(final String name) {
+        Class requiredClass = null;
+        for (final GeneratedClass currentClass : classList) {
+            if (currentClass.getClassName().equals(name)) {
+                requiredClass = currentClass.getCppClass();
+                break;
+            }
+        }
+        return requiredClass;
     }
-  }
 
-  private void doFinds ()
-  {
-    for ( final GeneratedClass currentClass : classList )
-    {
-      currentClass.translateFind();
+    List<NormalRelationshipDeclaration> getNormalRelationships() {
+        return normalRelationshipDeclList;
     }
-  }
 
-  private void doNavigates ()
-  {
-    for ( final GeneratedClass currentClass : classList )
-    {
-      currentClass.translateNavigations();
+    List<SubtypeRelationshipDeclaration> getSubTypeRelationships() {
+        return subtypeRelationshipDeclList;
     }
-  }
+
+    List<AssociativeRelationshipDeclaration> getAssociativeRelationships() {
+        return assocRelationshipDeclList;
+    }
+
+    public Function getSetterMethod(final AttributeDeclaration attribute) {
+        return implClass.getSetterMethod(attribute);
+    }
+
+    TypedefType getKeyType(final IdentifierDeclaration identifier) {
+        return implClass.getKeyType(identifier);
+    }
+
+    Function getKeyGetterFn(final IdentifierDeclaration identifier) {
+        return implClass.getKeyGetterFn(identifier);
+    }
+
+    private void doAttributes() {
+        for (final GeneratedClass currentClass : classList) {
+            currentClass.translateAttributes();
+        }
+    }
+
+    private void doRelationships() {
+        for (final GeneratedClass currentClass : classList) {
+            currentClass.translateRelationships();
+        }
+    }
+
+    private void doEvents() {
+        for (final GeneratedClass currentClass : classList) {
+            currentClass.translateEvents();
+        }
+    }
+
+    private void doFinds() {
+        for (final GeneratedClass currentClass : classList) {
+            currentClass.translateFind();
+        }
+    }
+
+    private void doNavigates() {
+        for (final GeneratedClass currentClass : classList) {
+            currentClass.translateNavigations();
+        }
+    }
 
 }

@@ -1,150 +1,140 @@
-//
-// File: TestMultiplicativeExpression.java
-//
-// UK Crown Copyright (c) 2008. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.metamodelImpl.expression;
 
 import junit.framework.TestCase;
-
 import org.xtuml.masl.error.ErrorCode;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
-import org.xtuml.masl.metamodelImpl.expression.BinaryExpression;
-import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
-
 import org.xtuml.masl.unittest.ErrorLog;
 
+public class TestAdditiveExpression extends TestCase {
 
-public class TestAdditiveExpression extends TestCase
-{
+    private static final TestExpressions exprA = TestExpressions.expr1;
+    private static final TestExpressions exprB = TestExpressions.expr2;
+    private static final TestTypes typesA = TestTypes.data1;
 
-  private static final TestExpressions exprA  = TestExpressions.expr1;
-  private static final TestExpressions exprB  = TestExpressions.expr2;
-  private static final TestTypes       typesA = TestTypes.data1;
+    public void checkResultType(final Expression lhs,
+                                final Expression rhs,
+                                final BasicType expected,
+                                final boolean expectedAnon) {
+        ErrorLog.getInstance().reset();
+        final Expression
+                expression =
+                BinaryExpression.create(lhs,
+                                        new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.PLUS),
+                                        rhs);
+        assertNotNull(expression);
+        final BasicType result = expression.getType();
+        assertEquals(expected, result);
 
-  public void checkResultType ( final Expression lhs, final Expression rhs, final BasicType expected, final boolean expectedAnon )
-  {
-    ErrorLog.getInstance().reset();
-    final Expression expression = BinaryExpression.create(lhs,
-                                                          new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.PLUS),
-                                                          rhs);
-    assertNotNull(expression);
-    final BasicType result = expression.getType();
-    assertEquals(expected, result);
+        if (expectedAnon) {
+            assertTrue("Expected Anonymous", result.isAnonymousType());
+        } else {
+            assertFalse("Expected Named", result.isAnonymousType());
+        }
 
-    if ( expectedAnon )
-    {
-      assertTrue("Expected Anonymous", result.isAnonymousType());
+        ErrorLog.getInstance().checkErrors();
     }
-    else
-    {
-      assertFalse("Expected Named", result.isAnonymousType());
+
+    public void checkError(final Expression lhs, final Expression rhs, final ErrorCode... errors) {
+        ErrorLog.getInstance().reset();
+        assertNull(BinaryExpression.create(lhs,
+                                           new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.PLUS),
+                                           rhs));
+
+        ErrorLog.getInstance().checkErrors(errors);
     }
 
-    ErrorLog.getInstance().checkErrors();
-  }
+    public void test_IntA_IntA() {
+        checkResultType(exprA.namedUdIntType, exprA.namedUdIntType, typesA.udIntType, false);
+    }
 
-  public void checkError ( final Expression lhs, final Expression rhs, final ErrorCode... errors )
-  {
-    ErrorLog.getInstance().reset();
-    assertNull(BinaryExpression.create(lhs, new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.PLUS), rhs));
+    public void test_IntA_IntB() {
+        checkError(exprA.namedUdIntType, exprB.namedUdIntType, SemanticErrorCode.OperatorOperandsNotCompatible);
+    }
 
-    ErrorLog.getInstance().checkErrors(errors);
-  }
+    public void test_IntA_AnonInt() {
+        checkResultType(exprA.namedUdIntType, exprA.anonBInteger, typesA.udIntType, false);
+    }
 
-  public void test_IntA_IntA ()
-  {
-    checkResultType(exprA.namedUdIntType, exprA.namedUdIntType, typesA.udIntType, false);
-  }
+    public void test_AnonInt_IntA() {
+        checkResultType(exprA.anonBInteger, exprA.namedUdIntType, typesA.udIntType, false);
+    }
 
-  public void test_IntA_IntB ()
-  {
-    checkError(exprA.namedUdIntType, exprB.namedUdIntType, SemanticErrorCode.OperatorOperandsNotCompatible);
-  }
+    public void test_AnonInt_AnonInt() {
+        checkResultType(exprA.anonBInteger, exprA.anonBInteger, typesA.bInteger, true);
+    }
 
-  public void test_IntA_AnonInt ()
-  {
-    checkResultType(exprA.namedUdIntType, exprA.anonBInteger, typesA.udIntType, false);
-  }
+    public void test_RealA_RealA() {
+        checkResultType(exprA.namedUdRealType, exprA.namedUdRealType, typesA.udRealType, false);
+    }
 
-  public void test_AnonInt_IntA ()
-  {
-    checkResultType(exprA.anonBInteger, exprA.namedUdIntType, typesA.udIntType, false);
-  }
+    public void test_RealA_RealB() {
+        checkError(exprA.namedUdRealType, exprB.namedUdRealType, SemanticErrorCode.OperatorOperandsNotCompatible);
+    }
 
-  public void test_AnonInt_AnonInt ()
-  {
-    checkResultType(exprA.anonBInteger, exprA.anonBInteger, typesA.bInteger, true);
-  }
+    public void test_RealA_AnonReal() {
+        checkResultType(exprA.namedUdRealType, exprA.anonBReal, typesA.udRealType, false);
+    }
 
+    public void test_AnonReal_RealA() {
+        checkResultType(exprA.anonBReal, exprA.namedUdRealType, typesA.udRealType, false);
+    }
 
-  public void test_RealA_RealA ()
-  {
-    checkResultType(exprA.namedUdRealType, exprA.namedUdRealType, typesA.udRealType, false);
-  }
+    public void test_AnonReal_AnonReal() {
+        checkResultType(exprA.anonBReal, exprA.anonBReal, typesA.bReal, true);
+    }
 
-  public void test_RealA_RealB ()
-  {
-    checkError(exprA.namedUdRealType, exprB.namedUdRealType, SemanticErrorCode.OperatorOperandsNotCompatible);
-  }
+    public void test_IntA_RealA() {
+        checkError(exprA.namedUdIntType, exprA.namedUdRealType, SemanticErrorCode.OperatorOperandsNotCompatible);
+    }
 
-  public void test_RealA_AnonReal ()
-  {
-    checkResultType(exprA.namedUdRealType, exprA.anonBReal, typesA.udRealType, false);
-  }
+    public void test_IntA_AnonReal() {
+        checkError(exprA.namedUdIntType, exprA.anonBReal, SemanticErrorCode.OperatorOperandsNotCompatible);
+    }
 
-  public void test_AnonReal_RealA ()
-  {
-    checkResultType(exprA.anonBReal, exprA.namedUdRealType, typesA.udRealType, false);
-  }
+    public void test_AnonInt_RealA() {
+        checkResultType(exprA.anonBInteger, exprA.namedUdRealType, typesA.udRealType, false);
+    }
 
-  public void test_AnonReal_AnonReal ()
-  {
-    checkResultType(exprA.anonBReal, exprA.anonBReal, typesA.bReal, true);
-  }
+    public void test_AnonInt_AnonReal() {
+        checkResultType(exprA.anonBInteger, exprA.anonBReal, typesA.bReal, true);
+    }
 
+    public void test_RealA_IntA() {
+        checkError(exprA.namedUdRealType, exprB.namedUdIntType, SemanticErrorCode.OperatorOperandsNotCompatible);
+    }
 
-  public void test_IntA_RealA ()
-  {
-    checkError(exprA.namedUdIntType, exprA.namedUdRealType, SemanticErrorCode.OperatorOperandsNotCompatible);
-  }
+    public void test_RealA_AnonInt() {
+        checkResultType(exprA.namedUdRealType, exprA.anonBInteger, typesA.udRealType, false);
+    }
 
-  public void test_IntA_AnonReal ()
-  {
-    checkError(exprA.namedUdIntType, exprA.anonBReal, SemanticErrorCode.OperatorOperandsNotCompatible);
-  }
+    public void test_AnonReal_IntA() {
+        checkError(exprA.anonBReal, exprA.namedUdIntType, SemanticErrorCode.OperatorOperandsNotCompatible);
+    }
 
-  public void test_AnonInt_RealA ()
-  {
-    checkResultType(exprA.anonBInteger, exprA.namedUdRealType, typesA.udRealType, false);
-  }
-
-  public void test_AnonInt_AnonReal ()
-  {
-    checkResultType(exprA.anonBInteger, exprA.anonBReal, typesA.bReal, true);
-  }
-
-
-  public void test_RealA_IntA ()
-  {
-    checkError(exprA.namedUdRealType, exprB.namedUdIntType, SemanticErrorCode.OperatorOperandsNotCompatible);
-  }
-
-  public void test_RealA_AnonInt ()
-  {
-    checkResultType(exprA.namedUdRealType, exprA.anonBInteger, typesA.udRealType, false);
-  }
-
-  public void test_AnonReal_IntA ()
-  {
-    checkError(exprA.anonBReal, exprA.namedUdIntType, SemanticErrorCode.OperatorOperandsNotCompatible);
-  }
-
-  public void test_AnonReal_AnonInt ()
-  {
-    checkResultType(exprA.anonBReal, exprA.anonBInteger, typesA.bReal, true);
-  }
-
+    public void test_AnonReal_AnonInt() {
+        checkResultType(exprA.anonBReal, exprA.anonBInteger, typesA.bReal, true);
+    }
 
 }

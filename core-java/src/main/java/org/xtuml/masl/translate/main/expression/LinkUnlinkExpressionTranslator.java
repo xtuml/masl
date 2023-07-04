@@ -1,8 +1,24 @@
-//
-// File: NameExpressionTranslator.java
-//
-// UK Crown Copyright (c) 2006. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.translate.main.expression;
 
 import org.xtuml.masl.cppgen.Expression;
@@ -13,94 +29,85 @@ import org.xtuml.masl.translate.main.Scope;
 import org.xtuml.masl.translate.main.object.ObjectTranslator;
 import org.xtuml.masl.translate.main.object.RelationshipTranslator;
 
+public class LinkUnlinkExpressionTranslator extends ExpressionTranslator {
 
+    LinkUnlinkExpressionTranslator(final LinkUnlinkExpression linkUnlink, final Scope scope) {
 
-public class LinkUnlinkExpressionTranslator extends ExpressionTranslator
-{
+        final Expression lhs = ExpressionTranslator.createTranslator(linkUnlink.getLhs(), scope).getReadExpression();
 
-  LinkUnlinkExpressionTranslator ( final LinkUnlinkExpression linkUnlink, final Scope scope )
-  {
+        final Expression
+                rhs =
+                linkUnlink.getRhs() == null ?
+                null :
+                ExpressionTranslator.createTranslator(linkUnlink.getRhs(), scope).getReadExpression();
 
-    final Expression lhs = ExpressionTranslator.createTranslator(linkUnlink.getLhs(), scope).getReadExpression();
+        RelationshipTranslator.PublicAccessors relTrans;
 
-    final Expression rhs = linkUnlink.getRhs() == null ? null : ExpressionTranslator.createTranslator(linkUnlink.getRhs(), scope)
-                                                                                    .getReadExpression();
+        Function linkFn;
+        final boolean unlink = linkUnlink.getLinkType() == LinkUnlinkExpression.Type.UNLINK;
 
-    RelationshipTranslator.PublicAccessors relTrans;
+        Expression from;
+        Expression to = null;
+        boolean fromMulti = false;
 
-    Function linkFn;
-    final boolean unlink = linkUnlink.getLinkType() == LinkUnlinkExpression.Type.UNLINK;
+        // Switch lhs & rhs if linking many to one so that optimised versions can be
+        // used
+        if (linkUnlink.getLhs().getType().isCollection() &&
+            linkUnlink.getRhs() != null &&
+            !linkUnlink.getRhs().getType().isCollection()) {
 
-    Expression from;
-    Expression to = null;
-    boolean fromMulti = false;
+            from = rhs;
+            to = lhs;
+            final ObjectTranslator fromObj = ObjectTranslator.getInstance(linkUnlink.getRhsObject());
+            relTrans =
+                    fromObj.getRelationshipTranslator(linkUnlink.getRelationship().getReverseSpec()).getPublicAccessors();
 
-    // Switch lhs & rhs if linking many to one so that optimised versions can be
-    // used
-    if ( linkUnlink.getLhs().getType().isCollection()
-         && linkUnlink.getRhs() != null
-         && !linkUnlink.getRhs().getType().isCollection() )
-    {
+            linkFn =
+                    unlink ?
+                    relTrans.getDeducedAssocMultipleUnlinkFunction() :
+                    relTrans.getDeducedAssocMultipleLinkFunction();
+        } else {
+            from = lhs;
 
-      from = rhs;
-      to = lhs;
-      final ObjectTranslator fromObj = ObjectTranslator.getInstance(linkUnlink.getRhsObject());
-      relTrans = fromObj.getRelationshipTranslator(linkUnlink.getRelationship().getReverseSpec()).getPublicAccessors();
+            final ObjectTranslator fromObj = ObjectTranslator.getInstance(linkUnlink.getLhsObject());
+            relTrans = fromObj.getRelationshipTranslator(linkUnlink.getRelationship()).getPublicAccessors();
 
-      linkFn = unlink ? relTrans.getDeducedAssocMultipleUnlinkFunction() : relTrans.getDeducedAssocMultipleLinkFunction();
-    }
-    else
-    {
-      from = lhs;
+            if (rhs == null) {
+                assert unlink;
+                linkFn = relTrans.getDeducedAssocAllUnlinkFunction();
+            } else {
+                to = rhs;
+                if (linkUnlink.getRhs().getType().isCollection()) {
+                    linkFn =
+                            unlink ?
+                            relTrans.getDeducedAssocMultipleUnlinkFunction() :
+                            relTrans.getDeducedAssocMultipleLinkFunction();
+                } else {
+                    linkFn =
+                            unlink ?
+                            relTrans.getDeducedAssocSingleUnlinkFunction() :
+                            relTrans.getDeducedAssocSingleLinkFunction();
+                }
+            }
 
-      final ObjectTranslator fromObj = ObjectTranslator.getInstance(linkUnlink.getLhsObject());
-      relTrans = fromObj.getRelationshipTranslator(linkUnlink.getRelationship()).getPublicAccessors();
-
-      if ( rhs == null )
-      {
-        assert unlink;
-        linkFn = relTrans.getDeducedAssocAllUnlinkFunction();
-      }
-      else
-      {
-        to = rhs;
-        if ( linkUnlink.getRhs().getType().isCollection() )
-        {
-          linkFn = unlink ? relTrans.getDeducedAssocMultipleUnlinkFunction() : relTrans.getDeducedAssocMultipleLinkFunction();
+            fromMulti = linkUnlink.getLhs().getType().isCollection();
         }
-        else
-        {
-          linkFn = unlink ? relTrans.getDeducedAssocSingleUnlinkFunction() : relTrans.getDeducedAssocSingleLinkFunction();
+
+        if (fromMulti) {
+            final Function multiLinkFn = unlink ? Architecture.unlink : Architecture.link;
+            if (to == null) {
+                setReadExpression(multiLinkFn.asFunctionCall(from, linkFn.asFunctionPointer()));
+            } else {
+                setReadExpression(multiLinkFn.asFunctionCall(from, to, linkFn.asFunctionPointer()));
+            }
+        } else {
+            if (to == null) {
+                setReadExpression(linkFn.asFunctionCall(from, true));
+            } else {
+                setReadExpression(linkFn.asFunctionCall(from, true, to));
+            }
         }
-      }
-
-      fromMulti = linkUnlink.getLhs().getType().isCollection();
+        setWriteableExpression(getReadExpression());
     }
-
-    if ( fromMulti )
-    {
-      final Function multiLinkFn = unlink ? Architecture.unlink : Architecture.link;
-      if ( to == null )
-      {
-        setReadExpression(multiLinkFn.asFunctionCall(from, linkFn.asFunctionPointer()));
-      }
-      else
-      {
-        setReadExpression(multiLinkFn.asFunctionCall(from, to, linkFn.asFunctionPointer()));
-      }
-    }
-    else
-    {
-      if ( to == null )
-      {
-        setReadExpression(linkFn.asFunctionCall(from, true));
-      }
-      else
-      {
-        setReadExpression(linkFn.asFunctionCall(from, true, to));
-      }
-    }
-    setWriteableExpression(getReadExpression());
-  }
 
 }

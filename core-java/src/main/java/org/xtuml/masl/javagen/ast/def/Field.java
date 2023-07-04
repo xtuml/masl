@@ -1,6 +1,24 @@
-//
-// UK Crown Copyright (c) 2011. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.javagen.ast.def;
 
 import org.xtuml.masl.javagen.ast.ASTNode;
@@ -8,46 +26,42 @@ import org.xtuml.masl.javagen.ast.expr.Expression;
 import org.xtuml.masl.javagen.ast.expr.FieldAccess;
 import org.xtuml.masl.javagen.ast.types.Type;
 
+public interface Field extends TypeMember, ASTNode {
 
-public interface Field
-    extends TypeMember, ASTNode
-{
+    String getName();
 
-  String getName ();
+    Modifiers getModifiers();
 
-  Modifiers getModifiers ();
+    Type getType();
 
-  Type getType ();
+    Type setType(Type type);
 
-  Type setType ( Type type );
+    void setName(String name);
 
-  void setName ( String name );
+    FieldAccess asExpression();
 
-  FieldAccess asExpression ();
+    void setVisibility(Visibility visibility);
 
-  void setVisibility ( Visibility visibility );
+    Visibility getVisibility();
 
-  Visibility getVisibility ();
+    void setStatic();
 
-  void setStatic ();
+    void setFinal();
 
-  void setFinal ();
+    void setTransient();
 
-  void setTransient ();
+    void setVolatile();
 
-  void setVolatile ();
+    boolean isStatic();
 
-  boolean isStatic ();
+    boolean isFinal();
 
-  boolean isFinal ();
+    boolean isVolatile();
 
-  boolean isVolatile ();
+    boolean isTransient();
 
-  boolean isTransient ();
+    Expression getInitialValue();
 
-  Expression getInitialValue ();
-
-  Expression setInitialValue ( Expression initialValue );
-
+    Expression setInitialValue(Expression initialValue);
 
 }

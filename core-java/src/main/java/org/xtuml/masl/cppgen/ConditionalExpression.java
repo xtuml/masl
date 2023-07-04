@@ -1,109 +1,115 @@
-//
-// File: TernaryExpression.java
-//
-// UK Crown Copyright (c) 2006. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.cppgen;
 
 import java.util.Set;
 
-
 /**
  * Writes code for the C++ contitional operator <code>a?b:c</code>
  */
-public class ConditionalExpression extends Expression
-{
+public class ConditionalExpression extends Expression {
 
-  /**
-   * Creates a conditional expression of the form <code>a?b:c</code>
-   * 
-
-   *          The condition expression
-
-   *          The expression to evaluate if the condition is true
-
-   *          The expression to evaluate if the condition is false
-   */
-  public ConditionalExpression ( final Expression conditionExpression,
+    /**
+     * Creates a conditional expression of the form <code>a?b:c</code>
+     * <p>
+     * <p>
+     * The condition expression
+     * <p>
+     * The expression to evaluate if the condition is true
+     * <p>
+     * The expression to evaluate if the condition is false
+     */
+    public ConditionalExpression(final Expression conditionExpression,
                                  final Expression trueExpression,
-                                 final Expression falseExpression )
-  {
-    this.conditionExpression = conditionExpression;
-    this.trueExpression = trueExpression;
-    this.falseExpression = falseExpression;
-  }
+                                 final Expression falseExpression) {
+        this.conditionExpression = conditionExpression;
+        this.trueExpression = trueExpression;
+        this.falseExpression = falseExpression;
+    }
 
-  @Override
-  boolean isTemplateType ()
-  {
-    return trueExpression.isTemplateType() || falseExpression.isTemplateType();
-  }
+    @Override
+    boolean isTemplateType() {
+        return trueExpression.isTemplateType() || falseExpression.isTemplateType();
+    }
 
+    @Override
+    /**
+     * {@inheritDoc}
+     *
+     * If the sub expressions are also condition
+     * expressions (as determined by the precedence) then parenthesise them
+     * anyway, even though it may not be strictly necessary, as the resulting code
+     * is virtually impossible for a human to parse otherwise!
+     */
+    String getCode(final Namespace currentNamespace, final String alignment) {
+        return (getPrecedence() <= conditionExpression.getPrecedence() ? "(" : "") +
+               conditionExpression.getCode(currentNamespace, alignment) +
+               (getPrecedence() <= conditionExpression.getPrecedence() ? ")" : "") +
+               "\t? " +
+               (getPrecedence() <= trueExpression.getPrecedence() ? "(" : "") +
+               trueExpression.getCode(currentNamespace, alignment + "\t") +
+               (getPrecedence() <= trueExpression.getPrecedence() ? ")" : "") +
+               "\n" +
+               alignment +
+               "\t: " +
+               (getPrecedence() <= falseExpression.getPrecedence() ? "(" : "") +
+               falseExpression.getCode(currentNamespace, alignment + "\t") +
+               (getPrecedence() <= falseExpression.getPrecedence() ? ")" : "");
+    }
 
-  @Override
-  /**
-   * {@inheritDoc}
-   * 
-   * If the sub expressions are also condition
-   * expressions (as determined by the precedence) then parenthesise them
-   * anyway, even though it may not be strictly necessary, as the resulting code
-   * is virtually impossible for a human to parse otherwise!
-   */
-  String getCode ( final Namespace currentNamespace, final String alignment )
-  {
-    return (getPrecedence() <= conditionExpression.getPrecedence() ? "(" : "")
-           + conditionExpression.getCode(currentNamespace, alignment)
-           + (getPrecedence() <= conditionExpression.getPrecedence() ? ")" : "")
-           + "\t? "
-           + (getPrecedence() <= trueExpression.getPrecedence() ? "(" : "")
-           + trueExpression.getCode(currentNamespace, alignment + "\t")
-           + (getPrecedence() <= trueExpression.getPrecedence() ? ")" : "")
-           + "\n"
-           + alignment
-           + "\t: "
-           + (getPrecedence() <= falseExpression.getPrecedence() ? "(" : "")
-           + falseExpression.getCode(currentNamespace, alignment + "\t")
-           + (getPrecedence() <= falseExpression.getPrecedence() ? ")" : "");
-  }
+    @Override
+    Set<Declaration> getForwardDeclarations() {
+        final Set<Declaration> result = super.getForwardDeclarations();
+        result.addAll(conditionExpression.getForwardDeclarations());
+        result.addAll(trueExpression.getForwardDeclarations());
+        result.addAll(falseExpression.getForwardDeclarations());
+        return result;
+    }
 
-  @Override
-  Set<Declaration> getForwardDeclarations ()
-  {
-    final Set<Declaration> result = super.getForwardDeclarations();
-    result.addAll(conditionExpression.getForwardDeclarations());
-    result.addAll(trueExpression.getForwardDeclarations());
-    result.addAll(falseExpression.getForwardDeclarations());
-    return result;
-  }
+    @Override
+    Set<CodeFile> getIncludes() {
+        final Set<CodeFile> result = super.getIncludes();
+        result.addAll(conditionExpression.getIncludes());
+        result.addAll(trueExpression.getIncludes());
+        result.addAll(falseExpression.getIncludes());
+        return result;
+    }
 
-  @Override
-  Set<CodeFile> getIncludes ()
-  {
-    final Set<CodeFile> result = super.getIncludes();
-    result.addAll(conditionExpression.getIncludes());
-    result.addAll(trueExpression.getIncludes());
-    result.addAll(falseExpression.getIncludes());
-    return result;
-  }
+    @Override
+    int getPrecedence() {
+        return 15;
+    }
 
-  @Override
-  int getPrecedence ()
-  {
-    return 15;
-  }
-
-  /**
-   * The condition expression
-   */
-  private final Expression conditionExpression;
-  /**
-   * The expression to evaluate if the condition is false
-   */
-  private final Expression falseExpression;
-  /**
-   * The expression to evaluate if the condition is true
-   */
-  private final Expression trueExpression;
-
+    /**
+     * The condition expression
+     */
+    private final Expression conditionExpression;
+    /**
+     * The expression to evaluate if the condition is false
+     */
+    private final Expression falseExpression;
+    /**
+     * The expression to evaluate if the condition is true
+     */
+    private final Expression trueExpression;
 
 }

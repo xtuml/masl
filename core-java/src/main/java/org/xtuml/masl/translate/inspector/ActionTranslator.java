@@ -1,39 +1,28 @@
-//
-// File: ActionTranslator.java
-//
-// UK Crown Copyright (c) 2008. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.translate.inspector;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.xtuml.masl.cppgen.ArrayAccess;
-import org.xtuml.masl.cppgen.BinaryExpression;
-import org.xtuml.masl.cppgen.BinaryOperator;
-import org.xtuml.masl.cppgen.BreakStatement;
 import org.xtuml.masl.cppgen.Class;
-import org.xtuml.masl.cppgen.CodeBlock;
-import org.xtuml.masl.cppgen.CodeFile;
-import org.xtuml.masl.cppgen.Comment;
-import org.xtuml.masl.cppgen.DeclarationGroup;
-import org.xtuml.masl.cppgen.Expression;
-import org.xtuml.masl.cppgen.ForStatement;
-import org.xtuml.masl.cppgen.Function;
-import org.xtuml.masl.cppgen.FunctionObjectCall;
-import org.xtuml.masl.cppgen.IfStatement;
-import org.xtuml.masl.cppgen.Literal;
-import org.xtuml.masl.cppgen.Namespace;
-import org.xtuml.masl.cppgen.ReturnStatement;
-import org.xtuml.masl.cppgen.StatementGroup;
-import org.xtuml.masl.cppgen.Std;
-import org.xtuml.masl.cppgen.SwitchStatement;
-import org.xtuml.masl.cppgen.TypeUsage;
-import org.xtuml.masl.cppgen.TypedefType;
-import org.xtuml.masl.cppgen.UnaryExpression;
-import org.xtuml.masl.cppgen.UnaryOperator;
-import org.xtuml.masl.cppgen.Variable;
-import org.xtuml.masl.cppgen.Visibility;
+import org.xtuml.masl.cppgen.*;
 import org.xtuml.masl.cppgen.SwitchStatement.CaseCondition;
 import org.xtuml.masl.metamodel.code.VariableDefinition;
 import org.xtuml.masl.metamodel.common.ParameterDefinition;
@@ -45,360 +34,338 @@ import org.xtuml.masl.metamodel.project.ProjectTerminatorService;
 import org.xtuml.masl.metamodel.statemodel.State;
 import org.xtuml.masl.metamodel.type.BasicType;
 import org.xtuml.masl.metamodel.type.TypeDefinition.ActualType;
-import org.xtuml.masl.translate.main.Architecture;
-import org.xtuml.masl.translate.main.DomainServiceTranslator;
-import org.xtuml.masl.translate.main.Mangler;
-import org.xtuml.masl.translate.main.ProjectTerminatorServiceTranslator;
-import org.xtuml.masl.translate.main.TerminatorServiceTranslator;
-import org.xtuml.masl.translate.main.Types;
+import org.xtuml.masl.translate.main.*;
 import org.xtuml.masl.translate.main.object.ObjectServiceTranslator;
 
+import java.util.ArrayList;
+import java.util.List;
 
-class ActionTranslator
-{
+class ActionTranslator {
 
-  ActionTranslator ( final DomainService service, final DomainTranslator domainTranslator )
-  {
-    this.localVars = service.getLocalVariables();
-    this.params = service.getParameters();
+    ActionTranslator(final DomainService service, final DomainTranslator domainTranslator) {
+        this.localVars = service.getLocalVariables();
+        this.params = service.getParameters();
 
-    this.codeFile = domainTranslator.getCodeFile();
+        this.codeFile = domainTranslator.getCodeFile();
 
-    this.handlerClass = new Class(Mangler.mangleName(service) + "Handler", domainTranslator.getNamespace());
-    this.invokerClass = new Class(Mangler.mangleName(service) + "Invoker", domainTranslator.getNamespace());
-    codeFile.addClassDeclaration(handlerClass);
-    codeFile.addClassDeclaration(invokerClass);
-    group = handlerClass.createDeclarationGroup();
+        this.handlerClass = new Class(Mangler.mangleName(service) + "Handler", domainTranslator.getNamespace());
+        this.invokerClass = new Class(Mangler.mangleName(service) + "Invoker", domainTranslator.getNamespace());
+        codeFile.addClassDeclaration(handlerClass);
+        codeFile.addClassDeclaration(invokerClass);
+        group = handlerClass.createDeclarationGroup();
 
-    final DomainServiceTranslator serviceTranslator = DomainServiceTranslator.getInstance(service);
-    // Only the domain and terminator based services are invoked using the
-    // service interceptor classes, any other services should be directly
-    // invoked.
-    serviceInterceptor = serviceTranslator.getServiceInterceptor();
-    if ( serviceInterceptor != null )
-    {
-      serviceFunction = new Function("callService");
-    }
-    else
-    {
-      serviceFunction = serviceTranslator.getFunction();
-    }
+        final DomainServiceTranslator serviceTranslator = DomainServiceTranslator.getInstance(service);
+        // Only the domain and terminator based services are invoked using the
+        // service interceptor classes, any other services should be directly
+        // invoked.
+        serviceInterceptor = serviceTranslator.getServiceInterceptor();
+        if (serviceInterceptor != null) {
+            serviceFunction = new Function("callService");
+        } else {
+            serviceFunction = serviceTranslator.getFunction();
+        }
 
-    isInstance = false;
-    object = null;
-    mainObjectTranslator = null;
-
-  }
-
-  ActionTranslator ( final ObjectService service, final ObjectTranslator objectTranslator )
-  {
-    this.localVars = service.getLocalVariables();
-    this.params = service.getParameters();
-    object = service.getParentObject();
-    mainObjectTranslator = org.xtuml.masl.translate.main.object.ObjectTranslator.getInstance(object);
-
-    this.codeFile = objectTranslator.getCodeFile();
-
-    this.handlerClass = new Class(Mangler.mangleName(service) + "Handler",
-                                  objectTranslator.getNamespace());
-    this.invokerClass = new Class(Mangler.mangleName(service) + "Invoker",
-                                  objectTranslator.getNamespace());
-    codeFile.addClassDeclaration(handlerClass);
-    codeFile.addClassDeclaration(invokerClass);
-    group = handlerClass.createDeclarationGroup();
-    serviceInterceptor = null;
-    serviceFunction = ObjectServiceTranslator.getInstance(service).getFunction();
-    isInstance = service.isInstance();
-  }
-
-
-  ActionTranslator ( final DomainTerminatorService service, final TerminatorTranslator terminatorTranslator )
-  {
-    this.localVars = service.getLocalVariables();
-    this.params = service.getParameters();
-
-    this.codeFile = terminatorTranslator.getCodeFile();
-
-    this.handlerClass = new Class(Mangler.mangleName(service) + "Handler",
-                                  terminatorTranslator.getNamespace());
-    this.invokerClass = new Class(Mangler.mangleName(service) + "Invoker",
-                                  terminatorTranslator.getNamespace());
-    codeFile.addClassDeclaration(handlerClass);
-    codeFile.addClassDeclaration(invokerClass);
-    group = handlerClass.createDeclarationGroup();
-    serviceInterceptor = null;
-    serviceFunction = TerminatorServiceTranslator.getInstance(service).getFunction();
-    isInstance = false;
-    object = null;
-    mainObjectTranslator = null;
-  }
-
-  ActionTranslator ( final ProjectTerminatorService service, final ProjectTranslator projectTranslator, final Namespace namespace )
-  {
-    this.localVars = service.getLocalVariables();
-    this.params = service.getParameters();
-
-    this.codeFile = projectTranslator.getCodeFile();
-
-    this.handlerClass = new Class(Mangler.mangleName(service) + "Handler",
-                                  namespace);
-    this.invokerClass = new Class(Mangler.mangleName(service) + "Invoker",
-                                  namespace);
-    codeFile.addClassDeclaration(handlerClass);
-    codeFile.addClassDeclaration(invokerClass);
-    group = handlerClass.createDeclarationGroup();
-    serviceInterceptor = null;
-    serviceFunction = ProjectTerminatorServiceTranslator.getInstance(service).getFunction();
-    isInstance = false;
-    object = null;
-    mainObjectTranslator = null;
-  }
-
-
-  ActionTranslator ( final State state, final ObjectTranslator objectTranslator )
-  {
-    this.localVars = state.getLocalVariables();
-    this.params = state.getParameters();
-    object = state.getParentObject();
-    mainObjectTranslator = org.xtuml.masl.translate.main.object.ObjectTranslator.getInstance(object);
-
-    this.codeFile = objectTranslator.getCodeFile();
-
-    this.handlerClass = new Class(Mangler.mangleName(state) + "Handler",
-                                  objectTranslator.getNamespace(),
-                                  codeFile);
-    codeFile.addClassDeclaration(handlerClass);
-    group = handlerClass.createDeclarationGroup();
-    serviceFunction = null;
-    serviceInterceptor = null;
-    invokerClass = null;
-    isInstance = state.getType() == State.Type.NORMAL || state.getType() == State.Type.TERMINAL;
-  }
-
-
-  Class getHandlerClass ()
-  {
-    return handlerClass;
-  }
-
-  void translate ()
-  {
-    handlerClass.addSuperclass(Inspector.actionHandlerClass, Visibility.PUBLIC);
-    if ( serviceFunction != null )
-    {
-      addInvoker();
-    }
-    addLocalVarsWriter();
-  }
-
-  private void addInvoker ()
-  {
-    final DeclarationGroup functions = invokerClass.createDeclarationGroup();
-    final DeclarationGroup vars = invokerClass.createDeclarationGroup();
-    final Function constructor = invokerClass.createConstructor(functions, Visibility.PUBLIC);
-    constructor.declareInClass(true);
-
-    final Expression channel = constructor.createParameter(new TypeUsage(Inspector.commChannel, TypeUsage.Reference), "channel")
-                                          .asExpression();
-
-    Variable thisPtr = null;
-
-    if ( isInstance )
-    {
-      thisPtr = invokerClass.createMemberVariable(vars,
-                                                  "thisVar",
-                                                  org.xtuml.masl.translate.main.object.ObjectTranslator.getInstance(object)
-                                                                                                      .getPointerType(),
-                                                  Visibility.PRIVATE);
-      constructor.getCode()
-                 .appendStatement(new BinaryExpression(channel, BinaryOperator.RIGHT_SHIFT, thisPtr.asExpression())
-                                                                                                                   .asStatement());
+        isInstance = false;
+        object = null;
+        mainObjectTranslator = null;
 
     }
 
-    final Function invoker = invokerClass.createMemberFunction(functions, "operator()", Visibility.PUBLIC);
-    invoker.declareInClass(true);
+    ActionTranslator(final ObjectService service, final ObjectTranslator objectTranslator) {
+        this.localVars = service.getLocalVariables();
+        this.params = service.getParameters();
+        object = service.getParentObject();
+        mainObjectTranslator = org.xtuml.masl.translate.main.object.ObjectTranslator.getInstance(object);
 
-    final List<Expression> invokeArgs = new ArrayList<Expression>();
+        this.codeFile = objectTranslator.getCodeFile();
 
-    for ( final ParameterDefinition param : params )
-    {
-      final TypeUsage type = Types.getInstance().getType(param.getType());
-      if ( canRead(param.getType().getBasicType()) )
-      {
-        final Variable arg = invokerClass
-                                         .createMemberVariable(vars, Mangler.mangleName(param), type, Visibility.PRIVATE);
-        constructor.getCode()
-                   .appendStatement(new BinaryExpression(channel, BinaryOperator.RIGHT_SHIFT, arg.asExpression())
-                                                                                                                 .asStatement());
-        invokeArgs.add(arg.asExpression());
-      }
-      else
-      {
-
-        final Variable arg = new Variable(type, Mangler.mangleName(param));
-        invoker.getCode().appendStatement(arg.asStatement());
-        invokeArgs.add(arg.asExpression());
-      }
+        this.handlerClass = new Class(Mangler.mangleName(service) + "Handler", objectTranslator.getNamespace());
+        this.invokerClass = new Class(Mangler.mangleName(service) + "Invoker", objectTranslator.getNamespace());
+        codeFile.addClassDeclaration(handlerClass);
+        codeFile.addClassDeclaration(invokerClass);
+        group = handlerClass.createDeclarationGroup();
+        serviceInterceptor = null;
+        serviceFunction = ObjectServiceTranslator.getInstance(service).getFunction();
+        isInstance = service.isInstance();
     }
 
+    ActionTranslator(final DomainTerminatorService service, final TerminatorTranslator terminatorTranslator) {
+        this.localVars = service.getLocalVariables();
+        this.params = service.getParameters();
 
-    Expression invokeExpression = isInstance ? serviceFunction.asFunctionCall(thisPtr.asExpression(), true, invokeArgs)
-                                            : serviceFunction.asFunctionCall(invokeArgs);
+        this.codeFile = terminatorTranslator.getCodeFile();
 
-    // If the service has an associated interceptor class then
-    // do not directly invoke the function, invoke through the
-    // interceptor class which will decide whether to invoke a
-    // local or remote implementation.
-    if ( serviceInterceptor != null )
-    {
-      // Create cpp line:
-      // ::masld_FMT::maslsi_add_aerial_to_collecting_site::instance().callService()(
-      // maslp_aerial_name, maslp_minimum_operating_frequency);
-      final Expression instanceFnCall = serviceInterceptor.asClass().callStaticFunction("instance");
-      invokeExpression = new FunctionObjectCall(serviceFunction.asFunctionCall(instanceFnCall, false), invokeArgs);
+        this.handlerClass = new Class(Mangler.mangleName(service) + "Handler", terminatorTranslator.getNamespace());
+        this.invokerClass = new Class(Mangler.mangleName(service) + "Invoker", terminatorTranslator.getNamespace());
+        codeFile.addClassDeclaration(handlerClass);
+        codeFile.addClassDeclaration(invokerClass);
+        group = handlerClass.createDeclarationGroup();
+        serviceInterceptor = null;
+        serviceFunction = TerminatorServiceTranslator.getInstance(service).getFunction();
+        isInstance = false;
+        object = null;
+        mainObjectTranslator = null;
     }
 
-    invoker.getCode().appendStatement(isInstance ? new IfStatement(thisPtr.asExpression(), invokeExpression.asStatement())
-                                                : invokeExpression.asStatement());
+    ActionTranslator(final ProjectTerminatorService service,
+                     final ProjectTranslator projectTranslator,
+                     final Namespace namespace) {
+        this.localVars = service.getLocalVariables();
+        this.params = service.getParameters();
 
-    final Function getInvoker = handlerClass.createMemberFunction(group, "getInvoker", Visibility.PUBLIC);
-    getInvoker.setReturnType(new TypeUsage(Inspector.callable));
-    getInvoker.setConst(true);
-    codeFile.addFunctionDefinition(getInvoker);
-    final Expression channel2 = getInvoker.createParameter(new TypeUsage(Inspector.commChannel, TypeUsage.Reference), "channel")
-                                          .asExpression();
+        this.codeFile = projectTranslator.getCodeFile();
 
-    getInvoker.getCode().appendStatement(new ReturnStatement(invokerClass.callConstructor(channel2)));
-
-
-  }
-
-  private void addLocalVarsWriter ()
-  {
-    final Function writer = handlerClass.createMemberFunction(group, "writeLocalVars", Visibility.PUBLIC);
-    writer.setConst(true);
-
-    final Expression channel = writer.createParameter(new TypeUsage(Inspector.commChannel, TypeUsage.Reference), "channel")
-                                     .asExpression();
-    final Expression frame = writer.createParameter(new TypeUsage(Architecture.stackFrameClass, TypeUsage.ConstReference), "frame")
-                                   .asExpression();
-
-    codeFile.addFunctionDefinition(writer);
-
-    if ( isInstance )
-    {
-      final Function getter = new Function("getThis");
-      getter.addTemplateSpecialisation(new TypeUsage(mainObjectTranslator.getMainClass()));
-      final Expression thisVal = getter.asFunctionCall(frame, false);
-
-      final Expression value = mainObjectTranslator.getPointerType().getType().callConstructor(thisVal);
-
-      final StatementGroup action = new StatementGroup(Comment.createComment("Write this"));
-      action.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, value).asStatement());
-      writer.getCode().appendStatement(action);
+        this.handlerClass = new Class(Mangler.mangleName(service) + "Handler", namespace);
+        this.invokerClass = new Class(Mangler.mangleName(service) + "Invoker", namespace);
+        codeFile.addClassDeclaration(handlerClass);
+        codeFile.addClassDeclaration(invokerClass);
+        group = handlerClass.createDeclarationGroup();
+        serviceInterceptor = null;
+        serviceFunction = ProjectTerminatorServiceTranslator.getInstance(service).getFunction();
+        isInstance = false;
+        object = null;
+        mainObjectTranslator = null;
     }
 
-    for ( int i = 0; i < params.size(); ++i )
-    {
-      final Expression paramId = new Literal(i);
-      final Expression paramVal = new ArrayAccess(new Function("getParameters").asFunctionCall(frame, false), paramId);
+    ActionTranslator(final State state, final ObjectTranslator objectTranslator) {
+        this.localVars = state.getLocalVariables();
+        this.params = state.getParameters();
+        object = state.getParentObject();
+        mainObjectTranslator = org.xtuml.masl.translate.main.object.ObjectTranslator.getInstance(object);
 
-      final ParameterDefinition param = params.get(i);
-      if ( canRead(param.getType().getBasicType()) )
-      {
-        final Function getter = new Function("getValue");
-        getter.addTemplateSpecialisation(Types.getInstance().getType(param.getType()));
-        final Expression value = getter.asFunctionCall(paramVal, false);
+        this.codeFile = objectTranslator.getCodeFile();
 
-        final StatementGroup action = new StatementGroup(Comment.createComment("Write " + param.getName()));
-        action.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, value).asStatement());
-        writer.getCode().appendStatement(action);
-      }
+        this.handlerClass = new Class(Mangler.mangleName(state) + "Handler", objectTranslator.getNamespace(), codeFile);
+        codeFile.addClassDeclaration(handlerClass);
+        group = handlerClass.createDeclarationGroup();
+        serviceFunction = null;
+        serviceInterceptor = null;
+        invokerClass = null;
+        isInstance = state.getType() == State.Type.NORMAL || state.getType() == State.Type.TERMINAL;
     }
 
-    final Function staticIntCast = Std.static_cast(new TypeUsage(Std.int32));
-    final Variable loopVar = new Variable(new TypeUsage(Std.uint32), "i", new Literal(0));
-    final Expression increment = new UnaryExpression(UnaryOperator.PREINCREMENT, loopVar.asExpression());
-    final Expression lvSize = staticIntCast.asFunctionCall(new Function("size").asFunctionCall(new Function("getLocalVars").asFunctionCall(frame,
-                                                                                                                                           false),
-                                                                                               false));
-
-    final StatementGroup writeLocalVars = new StatementGroup(Comment.createComment("Write Local Variables"));
-    writer.getCode().appendStatement(writeLocalVars);
-
-    writeLocalVars.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, lvSize).asStatement());
-
-    final Expression endCond = new BinaryExpression(loopVar.asExpression(), BinaryOperator.LESS_THAN, lvSize);
-
-    final CodeBlock forBlock = new CodeBlock();
-
-    final ForStatement forLoop = new ForStatement(loopVar.asStatement(), endCond, increment, forBlock);
-
-    final Expression lvVal = new ArrayAccess(new Function("getLocalVars").asFunctionCall(frame, false), loopVar.asExpression());
-    final Expression lvId = new Function("getId").asFunctionCall(lvVal, false);
-
-    forBlock.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, lvId).asStatement());
-
-    final List<CaseCondition> caseConditions = new ArrayList<CaseCondition>();
-
-    for ( int i = 0; i < localVars.size(); ++i )
-    {
-      final VariableDefinition localVar = localVars.get(i);
-      final Function getter = new Function("getValue");
-      getter.addTemplateSpecialisation(Types.getInstance().getType(localVar.getType()));
-      final Expression value = getter.asFunctionCall(lvVal, false);
-
-      final StatementGroup action = new StatementGroup(Comment.createComment("Write " + localVar.getName()));
-      if ( canWrite(localVar.getType().getBasicType()) )
-      {
-        action.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, value).asStatement());
-      }
-      action.appendStatement(new BreakStatement());
-
-      caseConditions.add(new CaseCondition(new Literal(i), action));
+    Class getHandlerClass() {
+        return handlerClass;
     }
 
-    if ( caseConditions.size() > 0 )
-    {
-      forBlock.appendStatement(new SwitchStatement(lvId, caseConditions));
-      writeLocalVars.appendStatement(forLoop);
+    void translate() {
+        handlerClass.addSuperclass(Inspector.actionHandlerClass, Visibility.PUBLIC);
+        if (serviceFunction != null) {
+            addInvoker();
+        }
+        addLocalVarsWriter();
     }
 
-  }
+    private void addInvoker() {
+        final DeclarationGroup functions = invokerClass.createDeclarationGroup();
+        final DeclarationGroup vars = invokerClass.createDeclarationGroup();
+        final Function constructor = invokerClass.createConstructor(functions, Visibility.PUBLIC);
+        constructor.declareInClass(true);
 
-  private boolean canRead ( final BasicType paramType )
-  {
-    return !(paramType.getBasicType().getActualType() == ActualType.EVENT ||
-             paramType.getBasicType().getActualType() == ActualType.DEVICE || paramType.getBasicType().getActualType() == ActualType.ANY_INSTANCE);
-  }
+        final Expression
+                channel =
+                constructor.createParameter(new TypeUsage(Inspector.commChannel, TypeUsage.Reference),
+                                            "channel").asExpression();
 
-  private boolean canWrite ( final BasicType paramType )
-  {
-    return !(paramType.getBasicType().getActualType() == ActualType.EVENT ||
-             paramType.getBasicType().getActualType() == ActualType.DEVICE || paramType.getBasicType().getActualType() == ActualType.ANY_INSTANCE);
-  }
+        Variable thisPtr = null;
 
-  private final List<? extends VariableDefinition>                   localVars;
+        if (isInstance) {
+            thisPtr =
+                    invokerClass.createMemberVariable(vars,
+                                                      "thisVar",
+                                                      org.xtuml.masl.translate.main.object.ObjectTranslator.getInstance(
+                                                              object).getPointerType(),
+                                                      Visibility.PRIVATE);
+            constructor.getCode().appendStatement(new BinaryExpression(channel,
+                                                                       BinaryOperator.RIGHT_SHIFT,
+                                                                       thisPtr.asExpression()).asStatement());
 
-  private final List<? extends ParameterDefinition>                  params;
+        }
 
-  private final CodeFile                                             codeFile;
+        final Function invoker = invokerClass.createMemberFunction(functions, "operator()", Visibility.PUBLIC);
+        invoker.declareInClass(true);
 
-  private final Class                                                handlerClass;
-  private final Class                                                invokerClass;
+        final List<Expression> invokeArgs = new ArrayList<Expression>();
 
+        for (final ParameterDefinition param : params) {
+            final TypeUsage type = Types.getInstance().getType(param.getType());
+            if (canRead(param.getType().getBasicType())) {
+                final Variable
+                        arg =
+                        invokerClass.createMemberVariable(vars, Mangler.mangleName(param), type, Visibility.PRIVATE);
+                constructor.getCode().appendStatement(new BinaryExpression(channel,
+                                                                           BinaryOperator.RIGHT_SHIFT,
+                                                                           arg.asExpression()).asStatement());
+                invokeArgs.add(arg.asExpression());
+            } else {
 
-  private final DeclarationGroup                                     group;
+                final Variable arg = new Variable(type, Mangler.mangleName(param));
+                invoker.getCode().appendStatement(arg.asStatement());
+                invokeArgs.add(arg.asExpression());
+            }
+        }
 
+        Expression
+                invokeExpression =
+                isInstance ?
+                serviceFunction.asFunctionCall(thisPtr.asExpression(), true, invokeArgs) :
+                serviceFunction.asFunctionCall(invokeArgs);
 
-  private final Function                                             serviceFunction;
-  private final TypedefType                                          serviceInterceptor;
+        // If the service has an associated interceptor class then
+        // do not directly invoke the function, invoke through the
+        // interceptor class which will decide whether to invoke a
+        // local or remote implementation.
+        if (serviceInterceptor != null) {
+            // Create cpp line:
+            // ::masld_FMT::maslsi_add_aerial_to_collecting_site::instance().callService()(
+            // maslp_aerial_name, maslp_minimum_operating_frequency);
+            final Expression instanceFnCall = serviceInterceptor.asClass().callStaticFunction("instance");
+            invokeExpression =
+                    new FunctionObjectCall(serviceFunction.asFunctionCall(instanceFnCall, false), invokeArgs);
+        }
 
-  private final ObjectDeclaration                                    object;
-  private final org.xtuml.masl.translate.main.object.ObjectTranslator mainObjectTranslator;
+        invoker.getCode().appendStatement(isInstance ?
+                                          new IfStatement(thisPtr.asExpression(), invokeExpression.asStatement()) :
+                                          invokeExpression.asStatement());
 
-  private final boolean                                              isInstance;
+        final Function getInvoker = handlerClass.createMemberFunction(group, "getInvoker", Visibility.PUBLIC);
+        getInvoker.setReturnType(new TypeUsage(Inspector.callable));
+        getInvoker.setConst(true);
+        codeFile.addFunctionDefinition(getInvoker);
+        final Expression
+                channel2 =
+                getInvoker.createParameter(new TypeUsage(Inspector.commChannel, TypeUsage.Reference),
+                                           "channel").asExpression();
 
+        getInvoker.getCode().appendStatement(new ReturnStatement(invokerClass.callConstructor(channel2)));
+
+    }
+
+    private void addLocalVarsWriter() {
+        final Function writer = handlerClass.createMemberFunction(group, "writeLocalVars", Visibility.PUBLIC);
+        writer.setConst(true);
+
+        final Expression
+                channel =
+                writer.createParameter(new TypeUsage(Inspector.commChannel, TypeUsage.Reference),
+                                       "channel").asExpression();
+        final Expression
+                frame =
+                writer.createParameter(new TypeUsage(Architecture.stackFrameClass, TypeUsage.ConstReference),
+                                       "frame").asExpression();
+
+        codeFile.addFunctionDefinition(writer);
+
+        if (isInstance) {
+            final Function getter = new Function("getThis");
+            getter.addTemplateSpecialisation(new TypeUsage(mainObjectTranslator.getMainClass()));
+            final Expression thisVal = getter.asFunctionCall(frame, false);
+
+            final Expression value = mainObjectTranslator.getPointerType().getType().callConstructor(thisVal);
+
+            final StatementGroup action = new StatementGroup(Comment.createComment("Write this"));
+            action.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, value).asStatement());
+            writer.getCode().appendStatement(action);
+        }
+
+        for (int i = 0; i < params.size(); ++i) {
+            final Expression paramId = new Literal(i);
+            final Expression
+                    paramVal =
+                    new ArrayAccess(new Function("getParameters").asFunctionCall(frame, false), paramId);
+
+            final ParameterDefinition param = params.get(i);
+            if (canRead(param.getType().getBasicType())) {
+                final Function getter = new Function("getValue");
+                getter.addTemplateSpecialisation(Types.getInstance().getType(param.getType()));
+                final Expression value = getter.asFunctionCall(paramVal, false);
+
+                final StatementGroup action = new StatementGroup(Comment.createComment("Write " + param.getName()));
+                action.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, value).asStatement());
+                writer.getCode().appendStatement(action);
+            }
+        }
+
+        final Function staticIntCast = Std.static_cast(new TypeUsage(Std.int32));
+        final Variable loopVar = new Variable(new TypeUsage(Std.uint32), "i", new Literal(0));
+        final Expression increment = new UnaryExpression(UnaryOperator.PREINCREMENT, loopVar.asExpression());
+        final Expression
+                lvSize =
+                staticIntCast.asFunctionCall(new Function("size").asFunctionCall(new Function("getLocalVars").asFunctionCall(
+                        frame,
+                        false), false));
+
+        final StatementGroup writeLocalVars = new StatementGroup(Comment.createComment("Write Local Variables"));
+        writer.getCode().appendStatement(writeLocalVars);
+
+        writeLocalVars.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, lvSize).asStatement());
+
+        final Expression endCond = new BinaryExpression(loopVar.asExpression(), BinaryOperator.LESS_THAN, lvSize);
+
+        final CodeBlock forBlock = new CodeBlock();
+
+        final ForStatement forLoop = new ForStatement(loopVar.asStatement(), endCond, increment, forBlock);
+
+        final Expression
+                lvVal =
+                new ArrayAccess(new Function("getLocalVars").asFunctionCall(frame, false), loopVar.asExpression());
+        final Expression lvId = new Function("getId").asFunctionCall(lvVal, false);
+
+        forBlock.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, lvId).asStatement());
+
+        final List<CaseCondition> caseConditions = new ArrayList<CaseCondition>();
+
+        for (int i = 0; i < localVars.size(); ++i) {
+            final VariableDefinition localVar = localVars.get(i);
+            final Function getter = new Function("getValue");
+            getter.addTemplateSpecialisation(Types.getInstance().getType(localVar.getType()));
+            final Expression value = getter.asFunctionCall(lvVal, false);
+
+            final StatementGroup action = new StatementGroup(Comment.createComment("Write " + localVar.getName()));
+            if (canWrite(localVar.getType().getBasicType())) {
+                action.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, value).asStatement());
+            }
+            action.appendStatement(new BreakStatement());
+
+            caseConditions.add(new CaseCondition(new Literal(i), action));
+        }
+
+        if (caseConditions.size() > 0) {
+            forBlock.appendStatement(new SwitchStatement(lvId, caseConditions));
+            writeLocalVars.appendStatement(forLoop);
+        }
+
+    }
+
+    private boolean canRead(final BasicType paramType) {
+        return !(paramType.getBasicType().getActualType() == ActualType.EVENT ||
+                 paramType.getBasicType().getActualType() == ActualType.DEVICE ||
+                 paramType.getBasicType().getActualType() == ActualType.ANY_INSTANCE);
+    }
+
+    private boolean canWrite(final BasicType paramType) {
+        return !(paramType.getBasicType().getActualType() == ActualType.EVENT ||
+                 paramType.getBasicType().getActualType() == ActualType.DEVICE ||
+                 paramType.getBasicType().getActualType() == ActualType.ANY_INSTANCE);
+    }
+
+    private final List<? extends VariableDefinition> localVars;
+
+    private final List<? extends ParameterDefinition> params;
+
+    private final CodeFile codeFile;
+
+    private final Class handlerClass;
+    private final Class invokerClass;
+
+    private final DeclarationGroup group;
+
+    private final Function serviceFunction;
+    private final TypedefType serviceInterceptor;
+
+    private final ObjectDeclaration object;
+    private final org.xtuml.masl.translate.main.object.ObjectTranslator mainObjectTranslator;
+
+    private final boolean isInstance;
 
 }

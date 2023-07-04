@@ -1,8 +1,24 @@
-//
-// File: RelationshipSpecification.java
-//
-// UK Crown Copyright (c) 2006. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.metamodelImpl.relationship;
 
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
@@ -13,229 +29,190 @@ import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.expression.ObjectNameExpression;
 import org.xtuml.masl.metamodelImpl.object.ObjectDeclaration;
 
+public class RelationshipSpecification implements org.xtuml.masl.metamodel.relationship.RelationshipSpecification {
 
+    public class Reference extends Positioned {
 
-public class RelationshipSpecification
-    implements org.xtuml.masl.metamodel.relationship.RelationshipSpecification
-{
+        private Reference(final Position position) {
+            super(position);
+        }
 
-  public class Reference extends Positioned
-  {
+        public RelationshipSpecification getRelationshipSpec() {
+            return RelationshipSpecification.this;
+        }
 
-    private Reference ( final Position position )
-    {
-      super(position);
     }
 
-    public RelationshipSpecification getRelationshipSpec ()
-    {
-      return RelationshipSpecification.this;
+    public Reference getReference(final Position position) {
+        return new Reference(position);
     }
 
-  }
+    private final RelationshipDeclaration relationship;
+    private final ObjectDeclaration fromObject;
+    private final boolean conditional;
+    private final MultiplicityType mult;
+    private final String role;
+    private final ObjectDeclaration toObject;
 
-  public Reference getReference ( final Position position )
-  {
-    return new Reference(position);
-  }
-
-
-  private final RelationshipDeclaration relationship;
-  private final ObjectDeclaration       fromObject;
-  private final boolean                 conditional;
-  private final MultiplicityType        mult;
-  private final String                  role;
-  private final ObjectDeclaration       toObject;
-
-
-  public static Reference createReference ( final Expression lhs,
+    public static Reference createReference(final Expression lhs,
                                             final RelationshipDeclaration.Reference relRef,
                                             final String role,
                                             final ObjectNameExpression objRef,
                                             final boolean allowToAssoc,
-                                            final boolean forceToAssoc )
-  {
-    if ( lhs == null || relRef == null )
-    {
-      return null;
+                                            final boolean forceToAssoc) {
+        if (lhs == null || relRef == null) {
+            return null;
+        }
+
+        try {
+            ObjectDeclaration object;
+            if (lhs instanceof ObjectNameExpression) {
+                object = ((ObjectNameExpression) lhs).getObject();
+            } else {
+                object = ObjectDeclaration.getObject(lhs, true);
+            }
+
+            return object.getRelationshipSpec(relRef,
+                                              role,
+                                              objRef,
+                                              allowToAssoc,
+                                              forceToAssoc).getReference(relRef.getPosition());
+        } catch (final SemanticError e) {
+            e.report();
+            return null;
+        }
     }
 
-    try
-    {
-      ObjectDeclaration object;
-      if ( lhs instanceof ObjectNameExpression )
-      {
-        object = ((ObjectNameExpression)lhs).getObject();
-      }
-      else
-      {
-        object = ObjectDeclaration.getObject(lhs, true);
-      }
-
-      return object.getRelationshipSpec(relRef, role, objRef, allowToAssoc, forceToAssoc).getReference(relRef.getPosition());
+    public RelationshipSpecification(final RelationshipDeclaration relationship, final HalfRelationship half) {
+        this(relationship,
+             half.getFromObject().getObject(),
+             half.isConditional(),
+             half.getRole(),
+             half.getMult(),
+             half.getToObject().getObject());
     }
-    catch ( final SemanticError e )
-    {
-      e.report();
-      return null;
+
+    private RelationshipSpecification reverseSpec = null;
+
+    public void setReverseSpec(final RelationshipSpecification reverseSpec) {
+        this.reverseSpec = reverseSpec;
     }
-  }
 
+    @Override
+    public RelationshipSpecification getReverseSpec() {
+        return reverseSpec;
+    }
 
-  public RelationshipSpecification ( final RelationshipDeclaration relationship, final HalfRelationship half )
-  {
-    this(relationship, half.getFromObject().getObject(), half.isConditional(), half.getRole(), half.getMult(), half.getToObject()
-                                                                                                                   .getObject());
-  }
+    private RelationshipSpecification assocSpec = null;
 
-  private RelationshipSpecification reverseSpec = null;
+    public void setAssocSpec(final RelationshipSpecification assocSpec) {
+        this.assocSpec = assocSpec;
+    }
 
-  public void setReverseSpec ( final RelationshipSpecification reverseSpec )
-  {
-    this.reverseSpec = reverseSpec;
-  }
+    @Override
+    public RelationshipSpecification getAssocSpec() {
+        return assocSpec;
+    }
 
-  @Override
-  public RelationshipSpecification getReverseSpec ()
-  {
-    return reverseSpec;
-  }
+    private RelationshipSpecification nonAssocSpec = null;
 
-  private RelationshipSpecification assocSpec = null;
+    public void setNonAssocSpec(final RelationshipSpecification nonAssocSpec) {
+        this.nonAssocSpec = nonAssocSpec;
+    }
 
-  public void setAssocSpec ( final RelationshipSpecification assocSpec )
-  {
-    this.assocSpec = assocSpec;
-  }
+    @Override
+    public RelationshipSpecification getNonAssocSpec() {
+        return nonAssocSpec;
+    }
 
-  @Override
-  public RelationshipSpecification getAssocSpec ()
-  {
-    return assocSpec;
-  }
-
-  private RelationshipSpecification nonAssocSpec = null;
-
-  public void setNonAssocSpec ( final RelationshipSpecification nonAssocSpec )
-  {
-    this.nonAssocSpec = nonAssocSpec;
-  }
-
-  @Override
-  public RelationshipSpecification getNonAssocSpec ()
-  {
-    return nonAssocSpec;
-  }
-
-
-  
-  public RelationshipSpecification ( final RelationshipDeclaration relationship,
+    public RelationshipSpecification(final RelationshipDeclaration relationship,
                                      final ObjectDeclaration fromObject,
                                      final boolean conditional,
                                      final String role,
                                      final MultiplicityType mult,
-                                     final ObjectDeclaration toObject )
-  {
-    this.relationship = relationship;
-    this.fromObject = fromObject;
-    this.conditional = conditional;
-    this.role = role;
-    this.mult = mult;
-    this.toObject = toObject;
-  }
+                                     final ObjectDeclaration toObject) {
+        this.relationship = relationship;
+        this.fromObject = fromObject;
+        this.conditional = conditional;
+        this.role = role;
+        this.mult = mult;
+        this.toObject = toObject;
+    }
 
-  
-  @Override
-  public String getRole ()
-  {
-    return this.role;
-  }
+    @Override
+    public String getRole() {
+        return this.role;
+    }
 
-  @Override
-  public String toString ()
-  {
-    return relationship.getName() + (role == null ? "" : "." + role) + "." + toObject.getName();
-  }
+    @Override
+    public String toString() {
+        return relationship.getName() + (role == null ? "" : "." + role) + "." + toObject.getName();
+    }
 
+    @Override
+    public RelationshipDeclaration getRelationship() {
+        return relationship;
+    }
 
-  @Override
-  public RelationshipDeclaration getRelationship ()
-  {
-    return relationship;
-  }
+    @Override
+    public ObjectDeclaration getDestinationObject() {
+        return toObject;
+    }
 
-  @Override
-  public ObjectDeclaration getDestinationObject ()
-  {
-    return toObject;
-  }
+    @Override
+    public ObjectDeclaration getFromObject() {
+        return fromObject;
+    }
 
-  @Override
-  public ObjectDeclaration getFromObject ()
-  {
-    return fromObject;
-  }
+    @Override
+    public org.xtuml.masl.metamodel.relationship.MultiplicityType getCardinality() {
+        return mult.getType();
+    }
 
+    @Override
+    public boolean getConditional() {
+        return conditional;
+    }
 
-  @Override
-  public org.xtuml.masl.metamodel.relationship.MultiplicityType getCardinality ()
-  {
-    return mult.getType();
-  }
+    @Override
+    public boolean isToAssociative() {
+        final RelationshipDeclaration dec = getRelationship();
+        return dec instanceof AssociativeRelationshipDeclaration &&
+               ((AssociativeRelationshipDeclaration) dec).getAssocObject() == getDestinationObject();
+    }
 
-  @Override
-  public boolean getConditional ()
-  {
-    return conditional;
-  }
+    @Override
+    public boolean isFromAssociative() {
+        final RelationshipDeclaration dec = getRelationship();
+        return dec instanceof AssociativeRelationshipDeclaration &&
+               ((AssociativeRelationshipDeclaration) dec).getAssocObject() == getFromObject();
+    }
 
-  @Override
-  public boolean isToAssociative ()
-  {
-    final RelationshipDeclaration dec = getRelationship();
-    return dec instanceof AssociativeRelationshipDeclaration
-           && ((AssociativeRelationshipDeclaration)dec).getAssocObject() == getDestinationObject();
-  }
+    public void setFormalisingEnd() {
+        isFormalisingEnd = true;
+    }
 
-  @Override
-  public boolean isFromAssociative ()
-  {
-    final RelationshipDeclaration dec = getRelationship();
-    return dec instanceof AssociativeRelationshipDeclaration
-           && ((AssociativeRelationshipDeclaration)dec).getAssocObject() == getFromObject();
-  }
+    @Override
+    public boolean isFormalisingEnd() {
+        return isFormalisingEnd;
+    }
 
-  public void setFormalisingEnd ()
-  {
-    isFormalisingEnd = true;
-  }
+    private boolean isFormalisingEnd = false;
 
-  @Override
-  public boolean isFormalisingEnd ()
-  {
-    return isFormalisingEnd;
-  }
+    public void setRequiresFormalising() {
+        requiresFormalising = true;
+        setFormalisingEnd();
+    }
 
-  private boolean isFormalisingEnd = false;
+    public boolean requiresFormalising() {
+        return requiresFormalising;
+    }
 
+    private boolean requiresFormalising = false;
 
-  public void setRequiresFormalising ()
-  {
-    requiresFormalising = true;
-    setFormalisingEnd();
-  }
-
-  public boolean requiresFormalising ()
-  {
-    return requiresFormalising;
-  }
-
-  private boolean requiresFormalising = false;
-
-  @Override
-  public <R, P> R accept ( final ASTNodeVisitor<R, P> v, final P p ) throws Exception
-  {
-    return v.vistRelationshipSpecification(this, p);
-  }
+    @Override
+    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+        return v.vistRelationshipSpecification(this, p);
+    }
 
 }

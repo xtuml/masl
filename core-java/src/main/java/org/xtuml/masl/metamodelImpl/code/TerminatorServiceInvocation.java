@@ -1,39 +1,50 @@
-//
-// File: DelayStatement.java
-//
-// UK Crown Copyright (c) 2006. All Rights Reserved.
-//
-package org.xtuml.masl.metamodelImpl.code;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.List;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.metamodelImpl.code;
 
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.domain.DomainTerminatorService;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 
-
+import java.util.List;
 
 public class TerminatorServiceInvocation extends ServiceInvocation<DomainTerminatorService>
-    implements org.xtuml.masl.metamodel.code.TerminatorServiceInvocation
-{
+        implements org.xtuml.masl.metamodel.code.TerminatorServiceInvocation {
 
-  TerminatorServiceInvocation ( final Position position, final DomainTerminatorService service, final List<Expression> arguments )
-  {
-    super(position, service, arguments);
-  }
+    TerminatorServiceInvocation(final Position position,
+                                final DomainTerminatorService service,
+                                final List<Expression> arguments) {
+        super(position, service, arguments);
+    }
 
-  @Override
-  protected String getCallPrefix ()
-  {
-    return getService().getTerminator().getName() + "~>" + getService().getName();
-  }
+    @Override
+    protected String getCallPrefix() {
+        return getService().getTerminator().getName() + "~>" + getService().getName();
+    }
 
-  @Override
-  public <R, P> R accept ( final ASTNodeVisitor<R, P> v, final P p ) throws Exception
-  {
-    return v.visitTerminatorServiceInvocation(this, p);
-  }
-
+    @Override
+    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+        return v.visitTerminatorServiceInvocation(this, p);
+    }
 
 }

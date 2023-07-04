@@ -1,20 +1,29 @@
-//
-// UK Crown Copyright (c) 2016. All Rights Reserved.
-//
-package org.xtuml.masl.metamodelImpl.statemodel;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.metamodelImpl.statemodel;
 
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.code.CodeBlock;
-import org.xtuml.masl.metamodelImpl.common.CheckedLookup;
-import org.xtuml.masl.metamodelImpl.common.LocalVariableCollector;
-import org.xtuml.masl.metamodelImpl.common.ParameterDefinition;
-import org.xtuml.masl.metamodelImpl.common.Position;
-import org.xtuml.masl.metamodelImpl.common.Positioned;
-import org.xtuml.masl.metamodelImpl.common.PragmaList;
+import org.xtuml.masl.metamodelImpl.common.*;
 import org.xtuml.masl.metamodelImpl.error.AlreadyDefined;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
@@ -23,217 +32,180 @@ import org.xtuml.masl.metamodelImpl.name.Named;
 import org.xtuml.masl.metamodelImpl.object.ObjectDeclaration;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class State extends Positioned
-    implements org.xtuml.masl.metamodel.statemodel.State, Named
-{
+public class State extends Positioned implements org.xtuml.masl.metamodel.statemodel.State, Named {
 
-  public static void create ( final Position position,
+    public static void create(final Position position,
                               final ObjectDeclaration object,
                               final String name,
                               final StateType type,
                               final List<ParameterDefinition> parameters,
-                              final PragmaList pragmas )
-  {
-    if ( object == null || name == null || type == null )
-    {
-      return;
+                              final PragmaList pragmas) {
+        if (object == null || name == null || type == null) {
+            return;
+        }
+        try {
+            object.addState(new State(position, object, name, type, parameters, pragmas));
+        } catch (final SemanticError e) {
+            e.report();
+        }
     }
-    try
-    {
-      object.addState(new State(position, object, name, type, parameters, pragmas));
-    }
-    catch ( final SemanticError e )
-    {
-      e.report();
-    }
-  }
 
-  private State ( final Position position,
+    private State(final Position position,
                   final ObjectDeclaration object,
                   final String name,
                   final StateType type,
                   final List<ParameterDefinition> parameters,
-                  final PragmaList pragmas )
-  {
-    super(position);
-    this.name = name;
-    this.parentObject = object;
-    this.type = type;
-    this.params = new CheckedLookup<ParameterDefinition>(SemanticErrorCode.ParameterAlreadyDefinedOnState,
-                                                         SemanticErrorCode.ParameterNotFoundOnState,
-                                                         this);
-    for ( final ParameterDefinition param : parameters )
-    {
-      try
-      {
-        if ( param != null )
-        {
-          addParameter(param);
+                  final PragmaList pragmas) {
+        super(position);
+        this.name = name;
+        this.parentObject = object;
+        this.type = type;
+        this.params =
+                new CheckedLookup<ParameterDefinition>(SemanticErrorCode.ParameterAlreadyDefinedOnState,
+                                                       SemanticErrorCode.ParameterNotFoundOnState,
+                                                       this);
+        for (final ParameterDefinition param : parameters) {
+            try {
+                if (param != null) {
+                    addParameter(param);
+                }
+            } catch (final AlreadyDefined e) {
+                // Report error, and ignore parameter
+                e.report();
+            }
         }
-      }
-      catch ( final AlreadyDefined e )
-      {
-        // Report error, and ignore parameter
-        e.report();
-      }
+        this.declarationPragmas = pragmas;
+
     }
-    this.declarationPragmas = pragmas;
 
-  }
-
-  public void addParameter ( final ParameterDefinition param ) throws AlreadyDefined
-  {
-    nameLookup.addName(param);
-    params.put(param.getName(), param);
-    signature.add(param.getType());
-  }
-
-  
-  @Override
-  public CodeBlock getCode ()
-  {
-    return this.code;
-  }
-
-  @Override
-  public PragmaList getDeclarationPragmas ()
-  {
-    return declarationPragmas;
-  }
-
-  @Override
-  public PragmaList getDefinitionPragmas ()
-  {
-    return definitionPragmas;
-  }
-
-  @Override
-  public String getFileHash ()
-  {
-    return fileHash;
-  }
-
-  @Override
-  public String getFileName ()
-  {
-    return parentObject.getKeyLetters() + (isAssigner() ? "-A_" : "_") + name + ".al";
-  }
-
-  @Override
-  public String getName ()
-  {
-    return name;
-  }
-
-  public NameLookup getNameLookup ()
-  {
-    return nameLookup;
-  }
-
-  @Override
-  public List<ParameterDefinition> getParameters ()
-  {
-    return Collections.unmodifiableList(params.asList());
-  }
-
-
-  @Override
-  public List<org.xtuml.masl.metamodel.code.VariableDefinition> getLocalVariables ()
-  {
-    if ( code == null )
-    {
-      return Collections.<org.xtuml.masl.metamodel.code.VariableDefinition>emptyList();
+    public void addParameter(final ParameterDefinition param) throws AlreadyDefined {
+        nameLookup.addName(param);
+        params.put(param.getName(), param);
+        signature.add(param.getType());
     }
-    else
-    {
-      return new LocalVariableCollector(code).getLocalVariables();
+
+    @Override
+    public CodeBlock getCode() {
+        return this.code;
     }
-  }
 
-  @Override
-  public ObjectDeclaration getParentObject ()
-  {
-    return parentObject;
-  }
+    @Override
+    public PragmaList getDeclarationPragmas() {
+        return declarationPragmas;
+    }
 
-  @Override
-  public String getQualifiedName ()
-  {
-    return parentObject.getDomain().getName() + "::" + parentObject.getName() + "." + name;
-  }
+    @Override
+    public PragmaList getDefinitionPragmas() {
+        return definitionPragmas;
+    }
 
-  @Override
-  public Type getType ()
-  {
-    return type.getType();
-  }
+    @Override
+    public String getFileHash() {
+        return fileHash;
+    }
 
-  public boolean isAssigner ()
-  {
-    return type == StateType.ASSIGNER_START || type == StateType.ASSIGNER;
-  }
+    @Override
+    public String getFileName() {
+        return parentObject.getKeyLetters() + (isAssigner() ? "-A_" : "_") + name + ".al";
+    }
 
-  public boolean isInstance ()
-  {
-    return type == StateType.NORMAL || type == StateType.TERMINAL;
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
 
+    public NameLookup getNameLookup() {
+        return nameLookup;
+    }
 
-  /**
+    @Override
+    public List<ParameterDefinition> getParameters() {
+        return Collections.unmodifiableList(params.asList());
+    }
 
-   *          The code to set.
-   */
-  public void setCode ( final CodeBlock code )
-  {
-    this.code = code;
-  }
+    @Override
+    public List<org.xtuml.masl.metamodel.code.VariableDefinition> getLocalVariables() {
+        if (code == null) {
+            return Collections.emptyList();
+        } else {
+            return new LocalVariableCollector(code).getLocalVariables();
+        }
+    }
 
-  public void setDefinitionPragmas ( final PragmaList pragmas )
-  {
-    definitionPragmas = pragmas;
-  }
+    @Override
+    public ObjectDeclaration getParentObject() {
+        return parentObject;
+    }
 
-  public void setFileHash ( final String fileHash )
-  {
-    this.fileHash = fileHash;
-  }
+    @Override
+    public String getQualifiedName() {
+        return parentObject.getDomain().getName() + "::" + parentObject.getName() + "." + name;
+    }
 
-  @Override
-  public String toString ()
-  {
-    final String title = type + (type == StateType.NORMAL ? "" : " ") + "state\t" + name + "\t(\t";
-    return title
-           + org.xtuml.masl.utils.TextUtils.formatList(params.asList(), "", ",\n\t\t\t", "")
-           + " );\n"
-           + declarationPragmas;
-  }
+    @Override
+    public Type getType() {
+        return type.getType();
+    }
 
-  @Override
-  public <R, P> R accept ( final ASTNodeVisitor<R, P> v, final P p ) throws Exception
-  {
-    return v.visitState(this, p);
-  }
+    public boolean isAssigner() {
+        return type == StateType.ASSIGNER_START || type == StateType.ASSIGNER;
+    }
 
+    public boolean isInstance() {
+        return type == StateType.NORMAL || type == StateType.TERMINAL;
+    }
 
-  private final String                             name;
+    /**
+     * The code to set.
+     */
+    public void setCode(final CodeBlock code) {
+        this.code = code;
+    }
 
-  private final StateType                          type;
+    public void setDefinitionPragmas(final PragmaList pragmas) {
+        definitionPragmas = pragmas;
+    }
 
-  private final CheckedLookup<ParameterDefinition> params;
+    public void setFileHash(final String fileHash) {
+        this.fileHash = fileHash;
+    }
 
-  private final PragmaList                         declarationPragmas;
+    @Override
+    public String toString() {
+        final String title = type + (type == StateType.NORMAL ? "" : " ") + "state\t" + name + "\t(\t";
+        return title +
+               org.xtuml.masl.utils.TextUtils.formatList(params.asList(), "", ",\n\t\t\t", "") +
+               " );\n" +
+               declarationPragmas;
+    }
 
-  private CodeBlock                                code              = null;
+    @Override
+    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+        return v.visitState(this, p);
+    }
 
-  private PragmaList                               definitionPragmas = null;
+    private final String name;
 
-  private final NameLookup                         nameLookup        = new NameLookup();
+    private final StateType type;
 
-  private final List<BasicType>                    signature         = new ArrayList<BasicType>();
+    private final CheckedLookup<ParameterDefinition> params;
 
-  private final ObjectDeclaration                  parentObject;
+    private final PragmaList declarationPragmas;
 
-  private String                                   fileHash          = null;
+    private CodeBlock code = null;
+
+    private PragmaList definitionPragmas = null;
+
+    private final NameLookup nameLookup = new NameLookup();
+
+    private final List<BasicType> signature = new ArrayList<BasicType>();
+
+    private final ObjectDeclaration parentObject;
+
+    private String fileHash = null;
 
 }

@@ -14,3 +14,4 @@ rules.ninja
 *.so.1.0
 /install
 install_manifest.txt
+.idea/

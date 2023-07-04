@@ -4,105 +4,105 @@
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="custom">
-    <xs:complexType>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="group" type="group"/>
-        <xs:element name="headers" type="files"/>
-        <xs:element name="includepath" type="include-path"/>
-        <xs:element name="executable" type="installable-group"/>
-        <xs:element name="library" type="installable-group"/>
-        <xs:element name="skipexecutable" type="named"/>
-        <xs:element name="skiplibrary" type="named"/>
-        <xs:element name="publish">
-          <xs:complexType>
+    <xs:element name="custom">
+        <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
-              <xs:element name="etc" type="publish-subdir"/>
-              <xs:element name="share" type="publish-subdir"/>
-              <xs:element name="doc" type="publish-subdir"/>
-              <xs:element name="include" type="publish-subdir"/>
-              <xs:element name="top" type="publish-subdir"/>
-              <xs:element name="bin" type="publish-dir"/>
-              <xs:element name="lib" type="publish-dir"/>
+                <xs:element name="group" type="group"/>
+                <xs:element name="headers" type="files"/>
+                <xs:element name="includepath" type="include-path"/>
+                <xs:element name="executable" type="installable-group"/>
+                <xs:element name="library" type="installable-group"/>
+                <xs:element name="skipexecutable" type="named"/>
+                <xs:element name="skiplibrary" type="named"/>
+                <xs:element name="publish">
+                    <xs:complexType>
+                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="etc" type="publish-subdir"/>
+                            <xs:element name="share" type="publish-subdir"/>
+                            <xs:element name="doc" type="publish-subdir"/>
+                            <xs:element name="include" type="publish-subdir"/>
+                            <xs:element name="top" type="publish-subdir"/>
+                            <xs:element name="bin" type="publish-dir"/>
+                            <xs:element name="lib" type="publish-dir"/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
             </xs:choice>
-          </xs:complexType>
-        </xs:element>
-      </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="nonEmptyString">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:attribute name="name" type="nonEmptyString"/>
+
+    <xs:complexType name="named">
+        <xs:attribute ref="name" use="required"/>
     </xs:complexType>
-  </xs:element>
-    
-  <xs:simpleType name="nonEmptyString">
-    <xs:restriction base="xs:string">
-      <xs:minLength value="1"/>
-    </xs:restriction>
-  </xs:simpleType>
-  
-  <xs:attribute name="name" type="nonEmptyString"/>
- 
-  <xs:complexType name="named">
-    <xs:attribute ref="name" use="required"/>
-  </xs:complexType>
 
-  <xs:complexType name="files">
-    <xs:complexContent>
-      <xs:extension base="named">
-        <xs:sequence minOccurs="0" maxOccurs="unbounded">
-          <xs:element name="file" type="named"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
+    <xs:complexType name="files">
+        <xs:complexContent>
+            <xs:extension base="named">
+                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="file" type="named"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
-  <xs:complexType name="group">
-    <xs:complexContent>
-      <xs:extension base="named">
-        <xs:sequence minOccurs="0" maxOccurs="unbounded">
-          <xs:choice>
-            <xs:element name="file" type="named"/>
-            <xs:element name="skipfile" type="named"/>
-            <xs:element name="groupref" type="named"/>
-            <xs:element name="dependency" type="dependency"/>
-            <xs:element name="skipdependency" type="named"/>
-            <xs:element name="libpath" type="named"/>
-          </xs:choice>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
+    <xs:complexType name="group">
+        <xs:complexContent>
+            <xs:extension base="named">
+                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xs:choice>
+                        <xs:element name="file" type="named"/>
+                        <xs:element name="skipfile" type="named"/>
+                        <xs:element name="groupref" type="named"/>
+                        <xs:element name="dependency" type="dependency"/>
+                        <xs:element name="skipdependency" type="named"/>
+                        <xs:element name="libpath" type="named"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
-  <xs:complexType name="installable-group">
-    <xs:complexContent>
-      <xs:extension base="group">
-        <xs:attribute name="install" default="false" type="xs:boolean"/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  
-  <xs:complexType name="publish-dir">
-    <xs:complexContent>
-      <xs:extension base="group"/>
-    </xs:complexContent>
-  </xs:complexType>
- 
-  <xs:complexType name="publish-subdir">
-    <xs:complexContent>
-      <xs:extension base="publish-dir">
-        <xs:attribute name="subdir" default="." type="xs:string"/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  
-  <xs:complexType name="dependency">
-    <xs:complexContent>
-      <xs:extension base="named">
-        <xs:attribute name="external" default="false" type="xs:boolean"/>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-  
-  <xs:complexType name="include-path">
-    <xs:attribute ref="name"/>
-    <xs:attribute name="literal" type="nonEmptyString"/>
-  </xs:complexType>
+    <xs:complexType name="installable-group">
+        <xs:complexContent>
+            <xs:extension base="group">
+                <xs:attribute name="install" default="false" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
- </xs:schema>
+    <xs:complexType name="publish-dir">
+        <xs:complexContent>
+            <xs:extension base="group"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="publish-subdir">
+        <xs:complexContent>
+            <xs:extension base="publish-dir">
+                <xs:attribute name="subdir" default="." type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="dependency">
+        <xs:complexContent>
+            <xs:extension base="named">
+                <xs:attribute name="external" default="false" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="include-path">
+        <xs:attribute ref="name"/>
+        <xs:attribute name="literal" type="nonEmptyString"/>
+    </xs:complexType>
+
+</xs:schema>

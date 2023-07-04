@@ -1,8 +1,24 @@
-//
-// File: ServiceInvocationTranslator.java
-//
-// UK Crown Copyright (c) 2006. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.translate.main.code;
 
 import org.xtuml.masl.cppgen.CodeBlock;
@@ -22,7 +38,6 @@ import org.xtuml.masl.translate.main.TerminatorServiceTranslator;
 import org.xtuml.masl.translate.main.expression.ExpressionTranslator;
 import org.xtuml.masl.translate.main.object.ObjectServiceTranslator;
 
-
 /**
  * When calling domain based services or terminator services the actual call
  * undertaken is not statically bound at compile time (with a direct call to the
@@ -32,146 +47,126 @@ import org.xtuml.masl.translate.main.object.ObjectServiceTranslator;
  * invoked at the call site will therefore depend on what libraries have been
  * included in the build and what method(s) they register.
  */
-public class ServiceInvocationTranslator extends CodeTranslator
-{
+public class ServiceInvocationTranslator extends CodeTranslator {
 
-  protected ServiceInvocationTranslator ( final DomainServiceInvocation invocation,
+    protected ServiceInvocationTranslator(final DomainServiceInvocation invocation,
                                           final Scope parentScope,
-                                          final CodeTranslator parentTranslator )
-  {
-    super(invocation, parentScope, parentTranslator);
-    final DomainServiceTranslator translator = DomainServiceTranslator.getInstance(invocation.getService());
+                                          final CodeTranslator parentTranslator) {
+        super(invocation, parentScope, parentTranslator);
+        final DomainServiceTranslator translator = DomainServiceTranslator.getInstance(invocation.getService());
 
-    final ArgumentTranslator args = new ArgumentTranslator(invocation.getService().getParameters(),
-                                                           invocation.getArguments(),
-                                                           getScope());
+        final ArgumentTranslator
+                args =
+                new ArgumentTranslator(invocation.getService().getParameters(), invocation.getArguments(), getScope());
 
-    // The service might be a call to another domain, so get the required
-    // interceptor type. Intercepter classes are not produced for externals
-    // or senerio files as these methods should not be direclty invoked
-    // by any MASL service invocation statements so don't need to check for
-    // null.
-    Expression fnCall;
-    if ( invocation.getPragmas().getValue(PragmaList.SCOPE).equals("local") )
-    {
-      fnCall = translator.getLocalInvocation(args.getArguments());
-    }
-    else if ( invocation.getPragmas().getValue(PragmaList.SCOPE).equals("remote") )
-    {
-      fnCall = translator.getRemoteInvocation(args.getArguments());
-    }
-    else
-    {
-      fnCall = translator.getInvocation(args.getArguments());
+        // The service might be a call to another domain, so get the required
+        // interceptor type. Intercepter classes are not produced for externals
+        // or senerio files as these methods should not be direclty invoked
+        // by any MASL service invocation statements so don't need to check for
+        // null.
+        Expression fnCall;
+        if (invocation.getPragmas().getValue(PragmaList.SCOPE).equals("local")) {
+            fnCall = translator.getLocalInvocation(args.getArguments());
+        } else if (invocation.getPragmas().getValue(PragmaList.SCOPE).equals("remote")) {
+            fnCall = translator.getRemoteInvocation(args.getArguments());
+        } else {
+            fnCall = translator.getInvocation(args.getArguments());
+        }
+
+        if (args.getTempVariableDefinitions().size() > 0) {
+            final CodeBlock codeBlock = new CodeBlock();
+            getCode().appendStatement(codeBlock);
+            codeBlock.appendStatement(args.getTempVariableDefinitions());
+            codeBlock.appendStatement(fnCall.asStatement());
+            codeBlock.appendStatement(args.getOutParameterAssignments());
+        } else {
+            getCode().appendStatement(fnCall.asStatement());
+        }
     }
 
-    if ( args.getTempVariableDefinitions().size() > 0 )
-    {
-      final CodeBlock codeBlock = new CodeBlock();
-      getCode().appendStatement(codeBlock);
-      codeBlock.appendStatement(args.getTempVariableDefinitions());
-      codeBlock.appendStatement(fnCall.asStatement());
-      codeBlock.appendStatement(args.getOutParameterAssignments());
-    }
-    else
-    {
-      getCode().appendStatement(fnCall.asStatement());
-    }
-  }
-
-  protected ServiceInvocationTranslator ( final TerminatorServiceInvocation invocation,
+    protected ServiceInvocationTranslator(final TerminatorServiceInvocation invocation,
                                           final Scope parentScope,
-                                          final CodeTranslator parentTranslator )
-  {
-    super(invocation, parentScope, parentTranslator);
-    final TerminatorServiceTranslator translator = TerminatorServiceTranslator.getInstance(invocation.getService());
+                                          final CodeTranslator parentTranslator) {
+        super(invocation, parentScope, parentTranslator);
+        final TerminatorServiceTranslator translator = TerminatorServiceTranslator.getInstance(invocation.getService());
 
-    final Function function = translator.getFunction();
-    final ArgumentTranslator args = new ArgumentTranslator(invocation.getService().getParameters(),
-                                                           invocation.getArguments(),
-                                                           getScope());
+        final Function function = translator.getFunction();
+        final ArgumentTranslator
+                args =
+                new ArgumentTranslator(invocation.getService().getParameters(), invocation.getArguments(), getScope());
 
-    // The service might be a call to another domain, so get the required
-    // interceptor type.
-    if ( args.getTempVariableDefinitions().size() > 0 )
-    {
-      final CodeBlock codeBlock = new CodeBlock();
-      getCode().appendStatement(codeBlock);
-      codeBlock.appendStatement(args.getTempVariableDefinitions());
-      codeBlock.appendStatement(new ExpressionStatement(function.asFunctionCall(args.getArguments())));
-      codeBlock.appendStatement(args.getOutParameterAssignments());
+        // The service might be a call to another domain, so get the required
+        // interceptor type.
+        if (args.getTempVariableDefinitions().size() > 0) {
+            final CodeBlock codeBlock = new CodeBlock();
+            getCode().appendStatement(codeBlock);
+            codeBlock.appendStatement(args.getTempVariableDefinitions());
+            codeBlock.appendStatement(new ExpressionStatement(function.asFunctionCall(args.getArguments())));
+            codeBlock.appendStatement(args.getOutParameterAssignments());
+        } else {
+            getCode().appendStatement(new ExpressionStatement(function.asFunctionCall(args.getArguments())));
+        }
     }
-    else
-    {
-      getCode().appendStatement(new ExpressionStatement(function.asFunctionCall(args.getArguments())));
-    }
-  }
 
-
-  protected ServiceInvocationTranslator ( final InstanceServiceInvocation invocation,
+    protected ServiceInvocationTranslator(final InstanceServiceInvocation invocation,
                                           final Scope parentScope,
-                                          final CodeTranslator parentTranslator )
-  {
-    super(invocation, parentScope, parentTranslator);
+                                          final CodeTranslator parentTranslator) {
+        super(invocation, parentScope, parentTranslator);
 
-    final ObjectService service = invocation.getService();
-    final Function function = ObjectServiceTranslator.getInstance(service).getFunction();
-    final ArgumentTranslator args = new ArgumentTranslator(invocation.getService().getParameters(),
-                                                           invocation.getArguments(),
-                                                           getScope());
-    final Expression instance = ExpressionTranslator.createTranslator(invocation.getInstance(), getScope()).getReadExpression();
+        final ObjectService service = invocation.getService();
+        final Function function = ObjectServiceTranslator.getInstance(service).getFunction();
+        final ArgumentTranslator
+                args =
+                new ArgumentTranslator(invocation.getService().getParameters(), invocation.getArguments(), getScope());
+        final Expression
+                instance =
+                ExpressionTranslator.createTranslator(invocation.getInstance(), getScope()).getReadExpression();
 
-    // A static object method can be called through an instance of the
-    // associated
-    // object type. Therefore detect this situation and change the instance
-    // function
-    // call for a static function call.
-    ExpressionStatement funcCallExpr = new ExpressionStatement(function.asFunctionCall(instance, true, args.getArguments()));
-    if ( !service.isInstance() )
-    {
-      funcCallExpr = new ExpressionStatement(function.asFunctionCall(args.getArguments()));
+        // A static object method can be called through an instance of the
+        // associated
+        // object type. Therefore detect this situation and change the instance
+        // function
+        // call for a static function call.
+        ExpressionStatement
+                funcCallExpr =
+                new ExpressionStatement(function.asFunctionCall(instance, true, args.getArguments()));
+        if (!service.isInstance()) {
+            funcCallExpr = new ExpressionStatement(function.asFunctionCall(args.getArguments()));
+        }
+
+        if (args.getTempVariableDefinitions().size() > 0) {
+            final CodeBlock codeBlock = new CodeBlock();
+            getCode().appendStatement(codeBlock);
+
+            codeBlock.appendStatement(args.getTempVariableDefinitions());
+            codeBlock.appendStatement(funcCallExpr);
+            codeBlock.appendStatement(args.getOutParameterAssignments());
+        } else {
+            getCode().appendStatement(funcCallExpr);
+        }
     }
 
-    if ( args.getTempVariableDefinitions().size() > 0 )
-    {
-      final CodeBlock codeBlock = new CodeBlock();
-      getCode().appendStatement(codeBlock);
-
-      codeBlock.appendStatement(args.getTempVariableDefinitions());
-      codeBlock.appendStatement(funcCallExpr);
-      codeBlock.appendStatement(args.getOutParameterAssignments());
-    }
-    else
-    {
-      getCode().appendStatement(funcCallExpr);
-    }
-  }
-
-  protected ServiceInvocationTranslator ( final ObjectServiceInvocation invocation,
+    protected ServiceInvocationTranslator(final ObjectServiceInvocation invocation,
                                           final Scope parentScope,
-                                          final CodeTranslator parentTranslator )
-  {
-    super(invocation, parentScope, parentTranslator);
+                                          final CodeTranslator parentTranslator) {
+        super(invocation, parentScope, parentTranslator);
 
-    final ObjectService service = invocation.getService();
-    final Function function = ObjectServiceTranslator.getInstance(service).getFunction();
-    final ArgumentTranslator args = new ArgumentTranslator(invocation.getService().getParameters(),
-                                                           invocation.getArguments(),
-                                                           getScope());
+        final ObjectService service = invocation.getService();
+        final Function function = ObjectServiceTranslator.getInstance(service).getFunction();
+        final ArgumentTranslator
+                args =
+                new ArgumentTranslator(invocation.getService().getParameters(), invocation.getArguments(), getScope());
 
-    if ( args.getTempVariableDefinitions().size() > 0 )
-    {
-      final CodeBlock codeBlock = new CodeBlock();
-      getCode().appendStatement(codeBlock);
+        if (args.getTempVariableDefinitions().size() > 0) {
+            final CodeBlock codeBlock = new CodeBlock();
+            getCode().appendStatement(codeBlock);
 
-      codeBlock.appendStatement(args.getTempVariableDefinitions());
-      codeBlock.appendStatement(new ExpressionStatement(function.asFunctionCall(args.getArguments())));
-      codeBlock.appendStatement(args.getOutParameterAssignments());
+            codeBlock.appendStatement(args.getTempVariableDefinitions());
+            codeBlock.appendStatement(new ExpressionStatement(function.asFunctionCall(args.getArguments())));
+            codeBlock.appendStatement(args.getOutParameterAssignments());
+        } else {
+            getCode().appendStatement(new ExpressionStatement(function.asFunctionCall(args.getArguments())));
+        }
     }
-    else
-    {
-      getCode().appendStatement(new ExpressionStatement(function.asFunctionCall(args.getArguments())));
-    }
-  }
 
 }
