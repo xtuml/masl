@@ -38,7 +38,7 @@ public class PragmaPrefs implements TranslatorPreferences {
 
     @Override
     public List<String> getRunTranslators() {
-        final List<String> result = new ArrayList<String>(getList(ONLY_TRANSLATOR));
+        final List<String> result = new ArrayList<>(getList(ONLY_TRANSLATOR));
         result.addAll(getList(RUN_TRANSLATOR));
         return result;
     }

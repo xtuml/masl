@@ -47,8 +47,8 @@ public class ASTImpl extends ASTNodeImpl implements AST {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitAST(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitAST(this);
     }
 
     @Override
@@ -679,13 +679,11 @@ public class ASTImpl extends ASTNodeImpl implements AST {
 
     }
 
-    final private List<PackageImpl> packages = new ChildNodeList<PackageImpl>(this);
+    final private List<PackageImpl> packages = new ChildNodeList<>(this);
 
-    final private Map<java.lang.Package, MirroredPackageImpl>
-            packageLookup =
-            new HashMap<java.lang.Package, MirroredPackageImpl>();
+    final private Map<java.lang.Package, MirroredPackageImpl> packageLookup = new HashMap<>();
 
-    final private static Map<java.lang.Class<?>, Tag> primitiveTypeLookup = new HashMap<java.lang.Class<?>, Tag>();
+    final private static Map<java.lang.Class<?>, Tag> primitiveTypeLookup = new HashMap<>();
 
     static {
         primitiveTypeLookup.put(Boolean.TYPE, Tag.BOOLEAN);

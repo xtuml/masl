@@ -23,26 +23,23 @@ package org.xtuml.masl.translate.cmake;
 
 import org.xtuml.masl.cppgen.SharedLibrary;
 import org.xtuml.masl.translate.cmake.functions.SimpleAddSharedLibrary;
-import org.xtuml.masl.translate.cmake.language.arguments.SimpleArgument;
+import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 import org.xtuml.masl.translate.cmake.language.commands.Command;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.stream.Collectors;
 
 public class BuildSharedLibrary implements CMakeListsItem {
 
     public BuildSharedLibrary(final SharedLibrary library, final File sourcePath) {
         addLib =
-                new SimpleAddSharedLibrary(Utils.getNameArg(library),
+                new SimpleAddSharedLibrary(new SingleArgument(library.getName()),
                                            Utils.getPathArgs(library.getBodyFiles()),
-                                           Utils.getNameArgs(library.getDependencies().stream().filter(fg -> !(fg.getName() !=
-                                                                                                               null &&
-                                                                                                               fg.getName().contains(
-                                                                                                                       "common_metadata"))).collect(
-                                                   Collectors.toSet())),
-                                           library.isExport() ? exportTarget : null,
+                                           Utils.getNameArgs(library.getDependencies()),
+                                           library.isExport() ?
+                                           new SingleArgument(library.getParent().getName()) :
+                                           null,
                                            library.isExport(),
                                            Utils.getPathArgs(library.getPublicHeaders()));
     }
@@ -53,6 +50,4 @@ public class BuildSharedLibrary implements CMakeListsItem {
     }
 
     private final Command addLib;
-
-    private static final SimpleArgument exportTarget = new Variable("MaslExportTarget").getReference();
 }

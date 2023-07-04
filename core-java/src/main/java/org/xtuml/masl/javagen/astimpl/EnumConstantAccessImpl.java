@@ -57,8 +57,8 @@ public class EnumConstantAccessImpl extends ExpressionImpl implements EnumConsta
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitEnumConstantAccess(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitEnumConstantAccess(this);
     }
 
     private EnumConstantImpl constant;
@@ -76,5 +76,5 @@ public class EnumConstantAccessImpl extends ExpressionImpl implements EnumConsta
         this.qualifier.set((TypeQualifierImpl) var);
     }
 
-    private final ChildNode<TypeQualifierImpl> qualifier = new ChildNode<TypeQualifierImpl>(this);
+    private final ChildNode<TypeQualifierImpl> qualifier = new ChildNode<>(this);
 }

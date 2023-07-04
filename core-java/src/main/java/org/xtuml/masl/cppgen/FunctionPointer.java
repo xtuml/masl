@@ -28,8 +28,8 @@ public class FunctionPointer extends Expression {
     private final Function function;
 
     /**
-     * Creates a function pointer expression from a given function. The function
-     * can be either a free function or a member function.
+     * Creates a function pointer expression from a given function. The function can
+     * be either a free function or a member function.
      * <p>
      * <p>
      * the function to create a pointer to

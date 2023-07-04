@@ -43,10 +43,10 @@ public class ExpressionStatementImpl extends StatementImpl
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitExpressionStatement(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitExpressionStatement(this);
     }
 
-    private final ChildNode<ExpressionImpl> expression = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> expression = new ChildNode<>(this);
 
 }

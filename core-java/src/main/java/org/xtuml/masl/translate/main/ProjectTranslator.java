@@ -30,12 +30,11 @@ import org.xtuml.masl.metamodel.project.ProjectTerminator;
 import org.xtuml.masl.metamodel.project.ProjectTerminatorService;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
-import org.xtuml.masl.translate.build.BuildSet;
+import org.xtuml.masl.translate.building.BuildSet;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * MASL domains are grouped in to projects to form deployable components. The
@@ -51,15 +50,14 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
 
     private final Map<ProjectTerminatorService, ProjectTerminatorServiceTranslator>
             terminatorServices =
-            new HashMap<ProjectTerminatorService, ProjectTerminatorServiceTranslator>();
+            new HashMap<>();
 
     /**
      * The class uses the singleton pattern to only allow one instance of the
      * project translator within the current JVM.
      *
      * @param project a {@link org.xtuml.masl.metamodel.project.Project} object.
-     * @return The translator being used to translate the current project
-     * definition
+     * @return The translator being used to translate the current project definition
      */
     static public ProjectTranslator getInstance(final Project project) {
         return getInstance(ProjectTranslator.class, project);
@@ -71,6 +69,9 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
      */
     private ProjectTranslator(final Project project) {
         super(project);
+
+        fullDomains = project.getFullDomains();
+        interfaceDomains = project.getInterfaceDomains();
 
         buildSet = BuildSet.getBuildSet(project);
         library = new SharedLibrary(project.getProjectName()).inBuildSet(buildSet).withCCDefaultExtensions();
@@ -101,19 +102,20 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
                                                                                             main.getArgv())));
     }
 
+    public Set<Domain> getFullDomains() {
+        return fullDomains;
+    }
+
+    public Set<Domain> getInterfaceDomains() {
+        return interfaceDomains;
+    }
+
     /**
      * Translate the specified project into the required c++ code.
      */
     @Override
     public void translate() {
         translateTerminatorCode();
-
-        Set<Domain> fullDomains = project.getDomains().stream().map(d -> d.getDomain()).collect(Collectors.toSet());
-        Set<Domain>
-                interfaceDomains =
-                project.getDomains().stream().flatMap(d -> d.getDomain().getReferencedInterfaces().stream()).collect(
-                        Collectors.toSet());
-        interfaceDomains.removeAll(fullDomains);
 
         for (final Domain interfaceDomain : interfaceDomains) {
             getLibrary().addDependency(DomainTranslator.getInstance(interfaceDomain).getInterfaceLibrary());
@@ -173,6 +175,8 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
     }
 
     public static final String NativeStubsFile = "NativeStubs.cc";
+    private final Set<Domain> fullDomains;
+    private final Set<Domain> interfaceDomains;
 
     public CodeFile getNativeStubs() {
         return Suppliers.memoize(() -> new Library("native").inBuildSet(buildSet).createBodyFile(NativeStubsFile)).get();

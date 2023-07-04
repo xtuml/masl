@@ -38,8 +38,8 @@ class ThisImpl extends ExpressionImpl implements This {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitThis(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitThis(this);
     }
 
     @Override
@@ -80,6 +80,6 @@ class ThisImpl extends ExpressionImpl implements This {
 
     private TypeBodyImpl typeBody;
 
-    private final ChildNode<TypeQualifierImpl> qualifier = new ChildNode<TypeQualifierImpl>(this);
+    private final ChildNode<TypeQualifierImpl> qualifier = new ChildNode<>(this);
 
 }

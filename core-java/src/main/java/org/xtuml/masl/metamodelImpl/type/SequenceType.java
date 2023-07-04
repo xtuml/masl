@@ -21,11 +21,13 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.utils.HashCode;
 
+import java.util.List;
 import java.util.Objects;
 
 public final class SequenceType extends CollectionType implements org.xtuml.masl.metamodel.type.SequenceType {
@@ -109,8 +111,13 @@ public final class SequenceType extends CollectionType implements org.xtuml.masl
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSequenceType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitSequenceType(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(super.children(), bound);
     }
 
 }

@@ -86,8 +86,8 @@ public class JavaPreferences implements TranslatorPreferences {
     private final String name;
     private boolean override = false;
 
-    private final List<String> runTranslators = new ArrayList<String>();
+    private final List<String> runTranslators = new ArrayList<>();
 
-    private final List<String> skipTranslators = new ArrayList<String>();
+    private final List<String> skipTranslators = new ArrayList<>();
 
 }

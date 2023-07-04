@@ -98,11 +98,10 @@ public class TenaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
      * Constructor
      * <p>
      * <p>
-     * the Mapper object that this class must generate an SQL
-     * implementation for.
+     * the Mapper object that this class must generate an SQL implementation for.
      * <p>
-     * generated C++ Mapper Interface class that this generated MapperSQL
-     * class must adhere to
+     * generated C++ Mapper Interface class that this generated MapperSQL class must
+     * adhere to
      * <p>
      * the actual associative relationship
      * <p>
@@ -148,8 +147,8 @@ public class TenaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
     }
 
     /**
-     * @return the SQL column name for the object on the left hand side (LHS) of
-     * the relationship.
+     * @return the SQL column name for the object on the left hand side (LHS) of the
+     * relationship.
      */
     public String getLeftColumnName() {
         return tableTranslator.getLeftColumnName();
@@ -354,8 +353,8 @@ public class TenaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
     }
 
     /**
-     * Add a method to access the database to get the current number of rows in
-     * the link table.
+     * Add a method to access the database to get the current number of rows in the
+     * link table.
      */
     protected void addExecuteMethods() {
         final Function
@@ -472,8 +471,8 @@ public class TenaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
 
     /**
      * Add the loadLhs method defined by the interface. This will access the
-     * database to read the link table information using a where clause based on
-     * the value of a rhs object id.
+     * database to read the link table information using a where clause based on the
+     * value of a rhs object id.
      */
     private void addLoadLhs() {
         final Function loadLhsFn = mapperSqlClass.createMemberFunction(loadGroup, "loadLhs", Visibility.PUBLIC);
@@ -492,8 +491,8 @@ public class TenaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
 
     /**
      * Add the loadRhs method defined by the interface. This will access the
-     * database to read the link table information using a where clause based on
-     * the value of a lhs object id.
+     * database to read the link table information using a where clause based on the
+     * value of a lhs object id.
      */
     private void addLoadRhs() {
         final Function loadRhsFn = mapperSqlClass.createMemberFunction(loadGroup, "loadRhs", Visibility.PUBLIC);
@@ -512,8 +511,8 @@ public class TenaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
 
     /**
      * Add the loadAss method defined by the interface. This will access the
-     * database to read the link table information using a where clause based on
-     * the value of a ass object id.
+     * database to read the link table information using a where clause based on the
+     * value of a ass object id.
      */
     private void addLoadAss() {
         final Function loadAssFn = mapperSqlClass.createMemberFunction(loadGroup, "loadAss", Visibility.PUBLIC);

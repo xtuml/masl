@@ -23,21 +23,21 @@ package org.xtuml.masl.translate.inspector;
 
 import org.xtuml.masl.cppgen.Class;
 import org.xtuml.masl.cppgen.*;
+import org.xtuml.masl.metamodel.PreOrderASTNodeVisitor;
+import org.xtuml.masl.metamodel.code.DomainServiceInvocation;
 import org.xtuml.masl.metamodel.domain.Domain;
 import org.xtuml.masl.metamodel.domain.DomainService;
 import org.xtuml.masl.metamodel.domain.DomainTerminator;
+import org.xtuml.masl.metamodel.expression.DomainFunctionInvocation;
 import org.xtuml.masl.metamodel.object.ObjectDeclaration;
 import org.xtuml.masl.metamodel.relationship.AssociativeRelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.NormalRelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.RelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.SubtypeRelationshipDeclaration;
-import org.xtuml.masl.metamodel.type.EnumerateType;
-import org.xtuml.masl.metamodel.type.StructureElement;
-import org.xtuml.masl.metamodel.type.StructureType;
-import org.xtuml.masl.metamodel.type.TypeDeclaration;
+import org.xtuml.masl.metamodel.type.*;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
-import org.xtuml.masl.translate.build.FileGroup;
+import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.main.*;
 
 import java.util.*;
@@ -47,6 +47,7 @@ import java.util.*;
 public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator {
 
     private final org.xtuml.masl.translate.main.DomainTranslator mainTranslator;
+    private final org.xtuml.masl.translate.metadata.DomainTranslator metaTranslator;
 
     private final Namespace domainNamespace;
 
@@ -61,17 +62,33 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     private DomainTranslator(final Domain domain) {
         super(domain);
         mainTranslator = org.xtuml.masl.translate.main.DomainTranslator.getInstance(domain);
+        metaTranslator = org.xtuml.masl.translate.metadata.DomainTranslator.getInstance(domain);
         this.domainNamespace = new Namespace(Mangler.mangleName(domain), Inspector.inspectorNamespace);
 
         this.library =
                 new SharedLibrary(mainTranslator.getLibrary().getName() +
-                                  "_inspector").inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
-        this.interfaceLibrary =
-                new SharedLibrary(mainTranslator.getLibrary().getName() +
-                                  "_if_inspector").inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
-        library.addDependency(interfaceLibrary);
+                                  "_inspector").withDefaultHeaderPath(domain.getName() + "_OOA").inBuildSet(
+                        mainTranslator.getBuildSet()).withCCDefaultExtensions();
         library.addDependency(Inspector.library);
-        interfaceLibrary.addDependency(Inspector.library);
+        library.addDependency(metaTranslator.getLibrary());
+
+        if (domain.getPragmas().hasPragma("service_domain")) {
+            interfaceLibrary = library;
+        } else {
+            this.interfaceLibrary =
+                    new SharedLibrary(mainTranslator.getLibrary().getName() + "_if_inspector").withDefaultHeaderPath(
+                            domain.getName() +
+                            "_OOA").inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
+            interfaceLibrary.addDependency(Inspector.library);
+            interfaceLibrary.addDependency(metaTranslator.getInterfaceLibrary());
+            library.addDependency(interfaceLibrary);
+        }
+
+        typesHeaderFile = interfaceLibrary.createInterfaceHeader("Inspector_types" + Mangler.mangleFile(domain));
+
+        for (Domain dep : domain.getReferencedInterfaces()) {
+            library.addDependency(getInstance(dep).interfaceLibrary);
+        }
 
     }
 
@@ -81,7 +98,27 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
      */
     @Override
     public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.DomainTranslator>singletonList(mainTranslator);
+        return Arrays.asList(mainTranslator, metaTranslator);
+    }
+
+    class DomainServiceFinder extends PreOrderASTNodeVisitor {
+
+        @Override
+        public void visitDomainServiceInvocation(final DomainServiceInvocation node) {
+            final Domain depDomain = node.getService().getDomain();
+            if (depDomain != domain) {
+                library.addDependency(getInstance(node.getService().getDomain()).interfaceLibrary);
+            }
+        }
+
+        @Override
+        public void visitDomainFunctionInvocation(final DomainFunctionInvocation node) {
+            final Domain depDomain = node.getService().getDomain();
+            if (depDomain != domain) {
+                library.addDependency(getInstance(node.getService().getDomain()).interfaceLibrary);
+            }
+        }
+
     }
 
     @Override
@@ -97,11 +134,15 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                     typesCodeFile :
                     privateTypesCodeFile;
             if (type.getTypeDefinition() instanceof StructureType) {
-                codeFile.addFunctionDefinition(addStructureWriter((StructureType) type.getTypeDefinition()));
-                codeFile.addFunctionDefinition(addStructureReader((StructureType) type.getTypeDefinition()));
+                Function writer = addStructureWriter((StructureType) type.getTypeDefinition());
+                codeFile.addFunctionDefinition(writer);
+                Function reader = addStructureReader((StructureType) type.getTypeDefinition());
+                codeFile.addFunctionDefinition(reader);
             } else if (type.getTypeDefinition() instanceof EnumerateType) {
-                codeFile.addFunctionDefinition(addEnumerationWriter((EnumerateType) type.getTypeDefinition()));
-                codeFile.addFunctionDefinition(addEnumerationReader((EnumerateType) type.getTypeDefinition()));
+                Function writer = addEnumerationWriter((EnumerateType) type.getTypeDefinition());
+                codeFile.addFunctionDefinition(writer);
+                Function reader = addEnumerationReader((EnumerateType) type.getTypeDefinition());
+                codeFile.addFunctionDefinition(reader);
             }
         }
 
@@ -127,25 +168,21 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         addRegistration();
 
+        new DomainServiceFinder().visit(domain);
+
     }
 
     TerminatorTranslator getTerminatorTranslator(final DomainTerminator terminator) {
         return terminatorTranslators.get(terminator);
     }
 
-    ObjectTranslator getObjectTranslator(final ObjectTranslator terminator) {
+    ObjectTranslator getObjectTranslator(final ObjectDeclaration terminator) {
         return objectTranslators.get(terminator);
     }
 
-    private final Map<ObjectDeclaration, ObjectTranslator>
-            objectTranslators =
-            new HashMap<ObjectDeclaration, ObjectTranslator>();
-    private final Map<DomainTerminator, TerminatorTranslator>
-            terminatorTranslators =
-            new HashMap<DomainTerminator, TerminatorTranslator>();
-    private final Map<DomainService, ActionTranslator>
-            serviceTranslators =
-            new HashMap<DomainService, ActionTranslator>();
+    private final Map<ObjectDeclaration, ObjectTranslator> objectTranslators = new HashMap<>();
+    private final Map<DomainTerminator, TerminatorTranslator> terminatorTranslators = new HashMap<>();
+    private final Map<DomainService, ActionTranslator> serviceTranslators = new HashMap<>();
 
     private DeclarationGroup group;
 
@@ -226,7 +263,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                                            "channel").asExpression();
         final Expression relId = relCreator.createParameter(new TypeUsage(FundamentalType.INT), "relId").asExpression();
 
-        final List<SwitchStatement.CaseCondition> relHandlers = new ArrayList<SwitchStatement.CaseCondition>();
+        final List<SwitchStatement.CaseCondition> relHandlers = new ArrayList<>();
 
         for (final RelationshipDeclaration rel : domain.getRelationships()) {
             final Expression id = RelationshipTranslator.getInstance(rel).getRelationshipId();
@@ -337,7 +374,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
             group.appendStatement(supObj.asStatement());
 
-            final List<SwitchStatement.CaseCondition> subHandlers = new ArrayList<SwitchStatement.CaseCondition>();
+            final List<SwitchStatement.CaseCondition> subHandlers = new ArrayList<>();
 
             int index = 0;
             for (final ObjectDeclaration subObjDecl : srel.getSubtypes()) {
@@ -494,10 +531,34 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                                                     false);
     }
 
+    private Function getWriter(BasicType type) {
+        if (type.getBasicType() instanceof UserDefinedType) {
+            return new Function("write",
+                                null,
+                                getInstance(((UserDefinedType) type.getBasicType()).getDomain()).typesHeaderFile);
+        } else if (type.getBasicType() instanceof CollectionType) {
+            return getWriter(((CollectionType) type.getBasicType()).getContainedType());
+        } else {
+            return new Function("write");
+        }
+    }
+
+    private Function getReader(BasicType type) {
+        if (type.getBasicType() instanceof UserDefinedType) {
+            return new Function("read",
+                                null,
+                                getInstance(((UserDefinedType) type.getBasicType()).getDomain()).typesHeaderFile);
+        } else if (type.getBasicType() instanceof CollectionType) {
+            return getReader(((CollectionType) type.getBasicType()).getContainedType());
+        } else {
+            return new Function("read");
+        }
+    }
+
     private Statement writeElement(final Structure structTrans,
                                    final StructureElement element,
                                    final Expression value) {
-        final Function write = new Function("write");
+        final Function write = getWriter(element.getType());
         final Statement
                 result =
                 write.asFunctionCall(structTrans.getGetter(element).asFunctionCall(value, false)).asStatement();
@@ -505,7 +566,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     }
 
     private Statement readElement(final Structure structTrans, final StructureElement element, final Expression value) {
-        final Function read = new Function("read");
+        final Function read = getReader(element.getType());
         final Statement
                 result =
                 read.asFunctionCall(structTrans.getSetter(element).asFunctionCall(value, false)).asStatement();
@@ -522,6 +583,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
     private CodeFile codeFile;
     private CodeFile typesCodeFile;
+    private final CodeFile typesHeaderFile;
     private CodeFile privateTypesCodeFile;
 
     private Class domainHandlerClass;

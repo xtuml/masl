@@ -47,15 +47,11 @@ public class ImplementationClass implements GeneratedClass {
     private final Namespace namespace;
     private final ObjectDeclaration objectDeclaration;
     private final ObjectTranslator objectTranslator;
-    private final HashMap<AttributeDeclaration, Variable> attributeMap = new HashMap<AttributeDeclaration, Variable>();
-    private final HashMap<AttributeDeclaration, Function> setterMethods = new HashMap<AttributeDeclaration, Function>();
+    private final HashMap<AttributeDeclaration, Variable> attributeMap = new HashMap<>();
+    private final HashMap<AttributeDeclaration, Function> setterMethods = new HashMap<>();
 
-    private final HashMap<IdentifierDeclaration, Function>
-            identifierKeyGetterFns =
-            new HashMap<IdentifierDeclaration, Function>();
-    private final HashMap<IdentifierDeclaration, TypedefType>
-            identifierKeyTypes =
-            new HashMap<IdentifierDeclaration, TypedefType>();
+    private final HashMap<IdentifierDeclaration, Function> identifierKeyGetterFns = new HashMap<>();
+    private final HashMap<IdentifierDeclaration, TypedefType> identifierKeyTypes = new HashMap<>();
 
     private CodeFile bodyFile;
     private CodeFile headerFile;
@@ -646,7 +642,9 @@ public class ImplementationClass implements GeneratedClass {
         final Expression
                 populationCorrelateFnCall =
                 populationNavigateFn.asFunctionCall(getPopulationFnCall,
-                                                    false, self.asExpression(), derivedRhs.asExpression());
+                                                    false,
+                                                    self.asExpression(),
+                                                    derivedRhs.asExpression());
         classCorrelateFn.getCode().appendStatement(new ReturnStatement(populationCorrelateFnCall));
     }
 
@@ -981,8 +979,7 @@ public class ImplementationClass implements GeneratedClass {
         final Function populationLinkFn = new Function(linkFn.getName());
         final Expression
                 populationLinkFnCall =
-                populationLinkFn.asFunctionCall(getPopulationFnCall,
-                                                false, derviedThis, derived.asExpression());
+                populationLinkFn.asFunctionCall(getPopulationFnCall, false, derviedThis, derived.asExpression());
         linkFn.getCode().appendExpression(populationLinkFnCall);
     }
 
@@ -1048,8 +1045,8 @@ public class ImplementationClass implements GeneratedClass {
     }
 
     private void addPrimaryKeyType() {
-        final List<TypeUsage> identiferTupleTypes = new ArrayList<TypeUsage>();
-        final List<Expression> identiferConstructorList = new ArrayList<Expression>();
+        final List<TypeUsage> identiferTupleTypes = new ArrayList<>();
+        final List<Expression> identiferConstructorList = new ArrayList<>();
         for (final AttributeDeclaration attributeDecl : objectDeclaration.getAttributes()) {
             if (attributeDecl.isPreferredIdentifier()) {
                 final TypeUsage attributeType = getMainDomainTranslator().getTypes().getType(attributeDecl.getType());
@@ -1094,8 +1091,8 @@ public class ImplementationClass implements GeneratedClass {
     }
 
     private void addIdentifierKeyType(final IdentifierDeclaration identifierSpec, final int identifierIndex) {
-        final List<TypeUsage> identTupleTypes = new ArrayList<TypeUsage>();
-        final List<Expression> identConstructorList = new ArrayList<Expression>();
+        final List<TypeUsage> identTupleTypes = new ArrayList<>();
+        final List<Expression> identConstructorList = new ArrayList<>();
         // Define the key type for the object.
         for (final AttributeDeclaration attributeDecl : identifierSpec.getAttributes()) {
             final TypeUsage attributeType = getMainDomainTranslator().getTypes().getType(attributeDecl.getType());

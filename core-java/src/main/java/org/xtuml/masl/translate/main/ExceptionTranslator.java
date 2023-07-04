@@ -28,7 +28,6 @@ import org.xtuml.masl.metamodel.exception.ExceptionDeclaration;
 import org.xtuml.masl.metamodel.exception.ExceptionReference;
 import org.xtuml.masl.metamodel.exception.UserDefinedException;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
@@ -39,9 +38,7 @@ public class ExceptionTranslator {
         return archExceptions.get(type);
     }
 
-    public final static Map<BuiltinException.Type, Class>
-            archExceptions =
-            new EnumMap<BuiltinException.Type, Class>(BuiltinException.Type.class);
+    public final static Map<BuiltinException.Type, Class> archExceptions = new EnumMap<>(BuiltinException.Type.class);
 
     static {
         archExceptions.put(BuiltinException.Type.PROGRAM_ERROR, Architecture.programError);
@@ -82,8 +79,7 @@ public class ExceptionTranslator {
         final Variable
                 message =
                 msgConstructor.createParameter(new TypeUsage(Std.string, TypeUsage.ConstReference), "message");
-        msgConstructor.setSuperclassArgs(Architecture.maslException,
-                                         Collections.<Expression>singletonList(message.asExpression()));
+        msgConstructor.setSuperclassArgs(Architecture.maslException, Collections.singletonList(message.asExpression()));
         msgConstructor.declareInClass(true);
 
     }

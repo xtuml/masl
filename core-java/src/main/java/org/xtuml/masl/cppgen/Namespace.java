@@ -37,27 +37,25 @@ public class Namespace {
     /**
      * Writes code to open a namespace, ready for declarations to be written into.
      * If a namespace declaration is already open it is closed down level by level
-     * until a namespace that is an ancestor of the required namspace is found.
-     * Once all namespaces that are not ancestors of the required namespace have
-     * been closed, namespace declarations are opened to the level of the required
+     * until a namespace that is an ancestor of the required namspace is found. Once
+     * all namespaces that are not ancestors of the required namespace have been
+     * closed, namespace declarations are opened to the level of the required
      * namespace.
      * <p>
      * For example, given a current namespace of <code>A::B1::C1</code> and a
-     * required namespace of <code>A::B2::C2</code>, namespaces <code>C1</code>
-     * and <code>B1</code> would be closed and code>B2</code> and <code>C2
-     * </code> would be
-     * opened.
+     * required namespace of <code>A::B2::C2</code>, namespaces <code>C1</code> and
+     * <code>B1</code> would be closed and code>B2</code> and <code>C2
+     * </code> would be opened.
      * <p>
      * <p>
      * the writer to write code to
      * <p>
      * the current indent level
      * <p>
-     * the namespace currently open. <code>null</code> if no namespace is
-     * open.
+     * the namespace currently open. <code>null</code> if no namespace is open.
      * <p>
-     * the namepace required to be open. <code>null</code> if all
-     * namespaces are to be closed.
+     * the namepace required to be open. <code>null</code> if all namespaces are to
+     * be closed.
      *
      * @return the new indent level
      * @throws IOException
@@ -149,13 +147,13 @@ public class Namespace {
     }
 
     /**
-     * Gets the hierachy of namespaces containing this namespace, starting with
-     * the outermost namespace, ending with this namspace.
+     * Gets the hierachy of namespaces containing this namespace, starting with the
+     * outermost namespace, ending with this namspace.
      *
      * @return a hierachy of namespaces containing this one.
      */
     private List<String> getNamespaceList() {
-        final LinkedList<String> result = new LinkedList<String>();
+        final LinkedList<String> result = new LinkedList<>();
         Namespace current = this;
         while (current != null) {
             result.addFirst(current.getName());
@@ -181,9 +179,9 @@ public class Namespace {
     }
 
     /**
-     * Gets the fully qualified name of this namespace. The fully qualified name
-     * is the name required to uniquely identify this namespace when referencing
-     * it from outside a namespace.
+     * Gets the fully qualified name of this namespace. The fully qualified name is
+     * the name required to uniquely identify this namespace when referencing it
+     * from outside a namespace.
      *
      * @return the fully qualified namespace name
      */
@@ -192,10 +190,10 @@ public class Namespace {
     }
 
     /**
-     * Gets the qualified name of this namespace. The qualified name is the
-     * shortest name needed to reference a namespace from within a given
-     * namespace. For example the qualified name of <code>A::B::C::D</code> from
-     * inside <code>A::B</code> would be <code>C::D</code>, but from inside
+     * Gets the qualified name of this namespace. The qualified name is the shortest
+     * name needed to reference a namespace from within a given namespace. For
+     * example the qualified name of <code>A::B::C::D</code> from inside
+     * <code>A::B</code> would be <code>C::D</code>, but from inside
      * <code>E::F<code> would be <code>::A::B::C::D</code>
      * <p>
      * <p>
@@ -225,7 +223,7 @@ public class Namespace {
                 qualName = parent;
             }
         }
-        final List<String> params = new ArrayList<String>();
+        final List<String> params = new ArrayList<>();
         for (final TemplateSpecialisation param : templateSpecialisations) {
             params.add(param.getValue(currentNamespace));
         }
@@ -240,8 +238,7 @@ public class Namespace {
     }
 
     /**
-     * Determines whether the supplied namespace has this namespace as an
-     * ancestor.
+     * Determines whether the supplied namespace has this namespace as an ancestor.
      *
      * @return <code>true</code> if this namespace contains the supplied namespace
      */
@@ -266,6 +263,6 @@ public class Namespace {
         return getQualifiedName();
     }
 
-    private final List<TemplateSpecialisation> templateSpecialisations = new ArrayList<TemplateSpecialisation>();
+    private final List<TemplateSpecialisation> templateSpecialisations = new ArrayList<>();
 
 }

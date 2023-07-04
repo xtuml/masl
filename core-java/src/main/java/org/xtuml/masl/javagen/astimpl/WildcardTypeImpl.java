@@ -65,12 +65,12 @@ public class WildcardTypeImpl extends TypeImpl implements WildcardType {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitWildcardType(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitWildcardType(this);
     }
 
-    private final ChildNode<ReferenceTypeImpl> superBound = new ChildNode<ReferenceTypeImpl>(this);
-    private final ChildNode<ReferenceTypeImpl> extendsBound = new ChildNode<ReferenceTypeImpl>(this);
+    private final ChildNode<ReferenceTypeImpl> superBound = new ChildNode<>(this);
+    private final ChildNode<ReferenceTypeImpl> extendsBound = new ChildNode<>(this);
 
     @Override
     public TypeImpl deepCopy() {

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -33,13 +34,13 @@ import java.util.*;
 
 public class SplitExpression extends Expression implements org.xtuml.masl.metamodel.expression.SplitExpression {
 
-    private final static Map<String, Set<Field>> tsDateLookup = new HashMap<String, Set<Field>>();
-    private final static Map<String, Set<Field>> tsTimeLookup = new HashMap<String, Set<Field>>();
+    private final static Map<String, Set<Field>> tsDateLookup = new HashMap<>();
+    private final static Map<String, Set<Field>> tsTimeLookup = new HashMap<>();
 
-    private final static Map<Character, Field> durDayLookup = new HashMap<Character, Field>();
-    private final static Map<Character, Field> durTimeLookup = new HashMap<Character, Field>();
-    private final static Map<Character, Field> durFractionalLookup = new HashMap<Character, Field>();
-    private final static Map<String, Type> typeLookup = new HashMap<String, Type>();
+    private final static Map<Character, Field> durDayLookup = new HashMap<>();
+    private final static Map<Character, Field> durTimeLookup = new HashMap<>();
+    private final static Map<Character, Field> durFractionalLookup = new HashMap<>();
+    private final static Map<String, Type> typeLookup = new HashMap<>();
 
     static {
         tsDateLookup.put("y", EnumSet.of(Field.CalendarYear));
@@ -238,7 +239,7 @@ public class SplitExpression extends Expression implements org.xtuml.masl.metamo
     @Override
     public Expression getFindSkeletonInner() {
         List<Expression> args = null;
-        args = new ArrayList<Expression>();
+        args = new ArrayList<>();
         for (final Expression arg : arguments) {
             args.add(arg.getFindSkeleton());
         }
@@ -279,7 +280,7 @@ public class SplitExpression extends Expression implements org.xtuml.masl.metamo
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         if (lhs != null) {
             params.addAll(lhs.getFindArguments());
         }
@@ -293,7 +294,7 @@ public class SplitExpression extends Expression implements org.xtuml.masl.metamo
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         if (lhs != null) {
             params.addAll(lhs.getConcreteFindParameters());
         }
@@ -391,7 +392,7 @@ public class SplitExpression extends Expression implements org.xtuml.masl.metamo
     }
 
     private List<BasicType> getFieldTypes() {
-        final List<BasicType> eltypes = new ArrayList<BasicType>(this.fields.size());
+        final List<BasicType> eltypes = new ArrayList<>(this.fields.size());
         for (int i = 0; i < this.fields.size(); ++i) {
             eltypes.add(IntegerType.createAnonymous());
         }
@@ -400,8 +401,8 @@ public class SplitExpression extends Expression implements org.xtuml.masl.metamo
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSplitExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitSplitExpression(this);
     }
 
     private final Expression lhs;
@@ -413,11 +414,8 @@ public class SplitExpression extends Expression implements org.xtuml.masl.metamo
     private final Set<Field> fields = EnumSet.noneOf(Field.class);
 
     @Override
-    public List<Expression> getChildExpressions() {
-        final List<Expression> result = new ArrayList<Expression>();
-        result.add(lhs);
-        result.addAll(arguments);
-        return result;
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs, arguments);
     }
 
 }

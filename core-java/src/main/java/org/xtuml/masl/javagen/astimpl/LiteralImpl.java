@@ -34,8 +34,8 @@ abstract class LiteralImpl extends ExpressionImpl implements Literal {
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitBooleanLiteral(this, p);
+        public void accept(final ASTNodeVisitor v) throws Exception {
+            v.visitBooleanLiteral(this);
         }
 
         @Override
@@ -59,8 +59,8 @@ abstract class LiteralImpl extends ExpressionImpl implements Literal {
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitCharacterLiteral(this, p);
+        public void accept(final ASTNodeVisitor v) throws Exception {
+            v.visitCharacterLiteral(this);
         }
 
         @Override
@@ -84,8 +84,8 @@ abstract class LiteralImpl extends ExpressionImpl implements Literal {
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitDoubleLiteral(this, p);
+        public void accept(final ASTNodeVisitor v) throws Exception {
+            v.visitDoubleLiteral(this);
         }
 
         @Override
@@ -109,8 +109,8 @@ abstract class LiteralImpl extends ExpressionImpl implements Literal {
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitFloatLiteral(this, p);
+        public void accept(final ASTNodeVisitor v) throws Exception {
+            v.visitFloatLiteral(this);
         }
 
         @Override
@@ -134,8 +134,8 @@ abstract class LiteralImpl extends ExpressionImpl implements Literal {
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitIntegerLiteral(this, p);
+        public void accept(final ASTNodeVisitor v) throws Exception {
+            v.visitIntegerLiteral(this);
         }
 
         @Override
@@ -159,8 +159,8 @@ abstract class LiteralImpl extends ExpressionImpl implements Literal {
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitLongLiteral(this, p);
+        public void accept(final ASTNodeVisitor v) throws Exception {
+            v.visitLongLiteral(this);
         }
 
         @Override
@@ -183,8 +183,8 @@ abstract class LiteralImpl extends ExpressionImpl implements Literal {
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitNullLiteral(this, p);
+        public void accept(final ASTNodeVisitor v) throws Exception {
+            v.visitNullLiteral(this);
         }
 
     }
@@ -197,8 +197,8 @@ abstract class LiteralImpl extends ExpressionImpl implements Literal {
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitStringLiteral(this, p);
+        public void accept(final ASTNodeVisitor v) throws Exception {
+            v.visitStringLiteral(this);
         }
 
         @Override

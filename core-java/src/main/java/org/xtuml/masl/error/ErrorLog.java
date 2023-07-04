@@ -35,7 +35,7 @@ public class ErrorLog {
         return instance;
     }
 
-    private final List<ErrorListener> errorListeners = new ArrayList<ErrorListener>();
+    private final List<ErrorListener> errorListeners = new ArrayList<>();
 
     public void addErrorListener(final ErrorListener listener) {
         errorListeners.add(listener);

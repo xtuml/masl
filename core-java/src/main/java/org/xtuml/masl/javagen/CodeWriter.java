@@ -36,12 +36,12 @@ import java.io.*;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
+public class CodeWriter extends AbstractASTNodeVisitor {
 
     @Override
-    public final Void visitNull(final Void p) throws Exception {
+    public final void visitNull() throws Exception {
         writer.write("###NULL###");
-        return null;
+
     }
 
     public void clear() {
@@ -54,14 +54,14 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
     }
 
     @Override
-    public Void visitArrayType(final ArrayType node, final Void param) throws Exception {
+    public void visitArrayType(final ArrayType node) throws Exception {
         visit(node.getElementType());
         writer.write("[]");
-        return null;
+
     }
 
     @Override
-    public Void visitAssert(final Assert node, final Void param) throws Exception {
+    public void visitAssert(final Assert node) throws Exception {
         writer.write(getIndent());
         visit(node.getCondition());
         if (node.getMessage() != null) {
@@ -69,28 +69,28 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             visit(node.getMessage());
         }
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitAST(final AST node, final Void param) throws Exception {
+    public void visitAST(final AST node) throws Exception {
         visit(node.getChildNodes());
-        return null;
+
     }
 
     @Override
-    public Void visitBreak(final Break node, final Void param) throws Exception {
+    public void visitBreak(final Break node) throws Exception {
         writer.write(getIndent());
         writer.write("break");
         if (node.getReferencedLabel() != null) {
             writer.write(" " + node.getReferencedLabel().getName());
         }
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitCatch(final Catch node, final Void param) throws Exception {
+    public void visitCatch(final Catch node) throws Exception {
         writer.write(getIndent());
         writer.write("catch ( ");
         visit(node.getException());
@@ -98,19 +98,19 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         ++indent;
         visit(node.getCodeBlock());
         --indent;
-        return null;
+
     }
 
     @Override
-    public Void visitCharacterLiteral(final Literal.CharacterLiteral node, final Void param) throws Exception {
+    public void visitCharacterLiteral(final Literal.CharacterLiteral node) throws Exception {
         writer.write("'");
         appendCharLiteral(node.getValue());
         writer.write("'");
-        return null;
+
     }
 
     @Override
-    public Void visitCodeBlock(final CodeBlock node, final Void param) throws Exception {
+    public void visitCodeBlock(final CodeBlock node) throws Exception {
         --indent;
         writer.write(getIndent() + "{\n");
         ++indent;
@@ -118,17 +118,17 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         --indent;
         writer.write(getIndent() + "}\n");
         ++indent;
-        return null;
+
     }
 
     @Override
-    public Void visitComment(final Comment node, final Void param) throws Exception {
+    public void visitComment(final Comment node) throws Exception {
         TextUtils.textBlock(writer, getIndent(), "", "//", node.getText(), "", true);
-        return null;
+
     }
 
     @Override
-    public Void visitCompilationUnit(final CompilationUnit node, final Void param) throws Exception {
+    public void visitCompilationUnit(final CompilationUnit node) throws Exception {
         if (node.getPackage() != null) {
             writer.write("package " + node.getPackage().getName() + ";\n\n");
         }
@@ -136,21 +136,21 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         writer.write("\n");
         visit(node.getTypeDeclarations());
         writer.write("\n");
-        return null;
+
     }
 
     @Override
-    public Void visitConditional(final Conditional node, final Void param) throws Exception {
+    public void visitConditional(final Conditional node) throws Exception {
         visit(node.getCondition());
         writer.write(" ? ");
         visit(node.getTrueValue());
         writer.write(" : ");
         visit(node.getFalseValue());
-        return null;
+
     }
 
     @Override
-    public Void visitConstructor(final Constructor node, final Void param) throws Exception {
+    public void visitConstructor(final Constructor node) throws Exception {
         writer.write(getIndent());
         visit(node.getModifiers());
         formatList(node.getTypeParameters(), "<", ",", "> ");
@@ -167,39 +167,39 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             --indent;
         }
         writer.write("\n\n");
-        return null;
+
     }
 
     @Override
-    public Void visitContinue(final Continue node, final Void param) throws Exception {
+    public void visitContinue(final Continue node) throws Exception {
         writer.write(getIndent());
         writer.write("continue");
         if (node.getReferencedLabel() != null) {
             writer.write(" " + node.getReferencedLabel().getName());
         }
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitDeclaredType(final DeclaredType node, final Void param) throws Exception {
+    public void visitDeclaredType(final DeclaredType node) throws Exception {
         if (node.getQualifier() != null) {
             visit(node.getQualifier());
             writer.write(".");
         }
         writer.write(node.getTypeDeclaration().getName());
         formatList(node.getTypeArguments(), "<", ",", ">");
-        return null;
+
     }
 
     @Override
-    public Void visitDoubleLiteral(final Literal.DoubleLiteral node, final Void param) throws Exception {
+    public void visitDoubleLiteral(final Literal.DoubleLiteral node) throws Exception {
         writer.write(String.valueOf(node.getValue()));
-        return null;
+
     }
 
     @Override
-    public Void visitDoWhile(final DoWhile node, final Void param) throws Exception {
+    public void visitDoWhile(final DoWhile node) throws Exception {
         writer.write(getIndent());
         writer.write("do\n");
         ++indent;
@@ -209,26 +209,26 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         writer.write("while (");
         visit(node.getCondition());
         writer.write(" )\n");
-        return null;
+
     }
 
     @Override
-    public Void visitEmptyStatement(final EmptyStatement node, final Void param) throws Exception {
+    public void visitEmptyStatement(final EmptyStatement node) throws Exception {
         writer.write(getIndent());
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitExpressionStatement(final ExpressionStatement node, final Void param) throws Exception {
+    public void visitExpressionStatement(final ExpressionStatement node) throws Exception {
         writer.write(getIndent());
         visit(node.getExpression());
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitField(final Field node, final Void param) throws Exception {
+    public void visitField(final Field node) throws Exception {
         writer.write(getIndent());
         visit(node.getModifiers());
         visit(node.getType());
@@ -238,11 +238,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             visit(node.getInitialValue());
         }
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitFieldAccess(final FieldAccess node, final Void param) throws Exception {
+    public void visitFieldAccess(final FieldAccess node) throws Exception {
         if (node.getInstance() != null) {
             visit(node.getInstance());
             writer.write(".");
@@ -251,24 +251,24 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             writer.write(".");
         }
         writer.write(node.getField().getName());
-        return null;
+
     }
 
     @Override
-    public Void visitArrayLengthAccess(final ArrayLengthAccess node, final Void param) throws Exception {
+    public void visitArrayLengthAccess(final ArrayLengthAccess node) throws Exception {
         visit(node.getInstance());
         writer.write(".length");
-        return null;
+
     }
 
     @Override
-    public Void visitFloatLiteral(final Literal.FloatLiteral node, final Void param) throws Exception {
+    public void visitFloatLiteral(final Literal.FloatLiteral node) throws Exception {
         writer.write(node.getValue() + "f");
-        return null;
+
     }
 
     @Override
-    public Void visitFor(final For node, final Void param) throws Exception {
+    public void visitFor(final For node) throws Exception {
         writer.write(getIndent());
         writer.write("for ( ");
         if (node.getVariable() != null) {
@@ -289,11 +289,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         ++indent;
         visit(node.getStatement());
         --indent;
-        return null;
+
     }
 
     @Override
-    public Void visitIf(final If node, final Void param) throws Exception {
+    public void visitIf(final If node) throws Exception {
         if (!(node.getParentNode() instanceof If && node == ((If) node.getParentNode()).getElse())) {
             writer.write(getIndent());
         }
@@ -316,38 +316,38 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
                 --indent;
             }
         }
-        return null;
+
     }
 
     @Override
-    public Void visitInitializerBlock(final InitializerBlock node, final Void param) throws Exception {
+    public void visitInitializerBlock(final InitializerBlock node) throws Exception {
         if (node.isStatic()) {
             writer.write(getIndent() + "static\n");
         }
         ++indent;
         visit(node.getCodeBlock());
         --indent;
-        return null;
+
     }
 
     @Override
-    public Void visitIntegerLiteral(final Literal.IntegerLiteral node, final Void param) throws Exception {
+    public void visitIntegerLiteral(final Literal.IntegerLiteral node) throws Exception {
         writer.write(String.valueOf(node.getValue()));
-        return null;
+
     }
 
     @Override
-    public Void visitLabeledStatement(final LabeledStatement node, final Void param) throws Exception {
+    public void visitLabeledStatement(final LabeledStatement node) throws Exception {
         writer.write(getIndent());
         writer.write(node.getName() + " :\n");
         ++indent;
         visit(node.getStatement());
         --indent;
-        return null;
+
     }
 
     @Override
-    public Void visitLocalVariable(final LocalVariable node, final Void param) throws Exception {
+    public void visitLocalVariable(final LocalVariable node) throws Exception {
         visit(node.getModifiers());
         visit(node.getType());
         writer.write(" " + node.getName());
@@ -355,25 +355,25 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             writer.write(" = ");
             visit(node.getInitialValue());
         }
-        return null;
+
     }
 
     @Override
-    public Void visitLocalVariableDeclaration(final LocalVariableDeclaration node, final Void param) throws Exception {
+    public void visitLocalVariableDeclaration(final LocalVariableDeclaration node) throws Exception {
         writer.write(getIndent());
         visit(node.getLocalVariable());
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitLongLiteral(final Literal.LongLiteral node, final Void param) throws Exception {
+    public void visitLongLiteral(final Literal.LongLiteral node) throws Exception {
         writer.write(node.getValue() + "L");
-        return null;
+
     }
 
     @Override
-    public Void visitMethod(final Method node, final Void param) throws Exception {
+    public void visitMethod(final Method node) throws Exception {
         writer.write(getIndent());
         visit(node.getModifiers());
         formatList(node.getTypeParameters(), "<", ",", "> ");
@@ -391,11 +391,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             --indent;
         }
         writer.write("\n");
-        return null;
+
     }
 
     @Override
-    public Void visitMethodInvocation(final MethodInvocation node, final Void param) throws Exception {
+    public void visitMethodInvocation(final MethodInvocation node) throws Exception {
         if (node.getInstance() != null) {
             visit(node.getInstance());
             writer.write(".");
@@ -409,11 +409,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         writer.write("(");
         formatList(node.getArguments(), "", ", ", "");
         writer.write(")");
-        return null;
+
     }
 
     @Override
-    public Void visitConstructorInvocation(final ConstructorInvocation node, final Void param) throws Exception {
+    public void visitConstructorInvocation(final ConstructorInvocation node) throws Exception {
         writer.write(getIndent());
         if (node.getEnclosingInstance() != null) {
             visit(node.getEnclosingInstance());
@@ -429,19 +429,18 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         formatList(node.getArguments(), "", ", ", "");
         writer.write(");\n");
 
-        return null;
     }
 
     @Override
-    public Void visitModifiers(final Modifiers node, final Void param) throws Exception {
+    public void visitModifiers(final Modifiers node) throws Exception {
         for (final Modifier modifier : node.getModifiers()) {
             writer.write(modifier.toString().toLowerCase() + " ");
         }
-        return null;
+
     }
 
     @Override
-    public Void visitNewInstance(final NewInstance node, final Void param) throws Exception {
+    public void visitNewInstance(final NewInstance node) throws Exception {
         if (node.getOuterInstance() != null) {
             visit(node.getOuterInstance());
             writer.write(".");
@@ -458,32 +457,32 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             visit(node.getTypeBody());
             --indent;
         }
-        return null;
+
     }
 
     @Override
-    public Void visitNullLiteral(final Literal.NullLiteral node, final Void param) throws Exception {
+    public void visitNullLiteral(final Literal.NullLiteral node) throws Exception {
         writer.write("null");
-        return null;
+
     }
 
     @Override
-    public Void visitPackage(final Package node, final Void param) throws Exception {
+    public void visitPackage(final Package node) throws Exception {
         formatList(node.getCompilationUnits(),
                    "",
                    "\n==================================================================================\n",
                    "");
-        return null;
+
     }
 
     @Override
-    public Void visitPackageQualifier(final PackageQualifier node, final Void param) throws Exception {
+    public void visitPackageQualifier(final PackageQualifier node) throws Exception {
         writer.write(node.getPackage().getName());
-        return null;
+
     }
 
     @Override
-    public Void visitParameter(final Parameter node, final Void param) throws Exception {
+    public void visitParameter(final Parameter node) throws Exception {
         visit(node.getModifiers());
         if (node.getType() instanceof ArrayType &&
             node.getParentCallable().isVarArgs() &&
@@ -494,19 +493,19 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             visit(node.getType());
         }
         writer.write(" " + node.getName());
-        return null;
+
     }
 
     @Override
-    public Void visitParenthesizedExpression(final ParenthesizedExpression node, final Void param) throws Exception {
+    public void visitParenthesizedExpression(final ParenthesizedExpression node) throws Exception {
         writer.write("(");
         visit(node.getExpression());
         writer.write(")");
-        return null;
+
     }
 
     @Override
-    public Void visitPostfixExpression(final PostfixExpression node, final Void param) throws Exception {
+    public void visitPostfixExpression(final PostfixExpression node) throws Exception {
         visit(node.getExpression());
         switch (node.getOperator()) {
             case INCREMENT:
@@ -516,11 +515,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
                 writer.write("--");
                 break;
         }
-        return null;
+
     }
 
     @Override
-    public Void visitPrefixExpression(final PrefixExpression node, final Void param) throws Exception {
+    public void visitPrefixExpression(final PrefixExpression node) throws Exception {
         switch (node.getOperator()) {
             case INCREMENT:
                 writer.write("++");
@@ -530,11 +529,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
                 break;
         }
         visit(node.getExpression());
-        return null;
+
     }
 
     @Override
-    public Void visitPrimitiveType(final PrimitiveType node, final Void param) throws Exception {
+    public void visitPrimitiveType(final PrimitiveType node) throws Exception {
         switch (node.getTag()) {
             case BOOLEAN:
                 writer.write("boolean");
@@ -564,11 +563,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
                 writer.write("void");
                 break;
         }
-        return null;
+
     }
 
     @Override
-    public Void visitReturn(final Return node, final Void param) throws Exception {
+    public void visitReturn(final Return node) throws Exception {
         writer.write(getIndent());
         writer.write("return");
         if (node.getReturnValue() != null) {
@@ -576,32 +575,31 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             visit(node.getReturnValue());
         }
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitStringLiteral(final Literal.StringLiteral node, final Void param) throws Exception {
+    public void visitStringLiteral(final Literal.StringLiteral node) throws Exception {
         writer.write("\"");
         for (final char a : node.getValue().toCharArray()) {
             appendCharLiteral(a);
         }
         writer.write("\"");
 
-        return null;
     }
 
     @Override
-    public Void visitSuperQualifier(final SuperQualifier node, final Void param) throws Exception {
+    public void visitSuperQualifier(final SuperQualifier node) throws Exception {
         if (node.getQualifier() != null) {
             visit(node.getQualifier());
             writer.write(".");
         }
         writer.write("super");
-        return null;
+
     }
 
     @Override
-    public Void visitSwitch(final Switch node, final Void param) throws Exception {
+    public void visitSwitch(final Switch node) throws Exception {
         writer.write(getIndent());
         writer.write("switch ( ");
         visit(node.getDiscriminator());
@@ -613,11 +611,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         --indent;
         writer.write(getIndent());
         writer.write("}\n");
-        return null;
+
     }
 
     @Override
-    public Void visitSwitchBlock(final Switch.SwitchBlock node, final Void param) throws Exception {
+    public void visitSwitchBlock(final Switch.SwitchBlock node) throws Exception {
         formatList(node.getCaseLabels(), getIndent() + "case ", ":\n" + getIndent() + "case ", ":\n");
         if (node.isDefault()) {
             writer.write(getIndent() + "default:\n");
@@ -625,11 +623,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         ++indent;
         visit(node.getStatements());
         --indent;
-        return null;
+
     }
 
     @Override
-    public Void visitSynchronizedBlock(final SynchronizedBlock node, final Void param) throws Exception {
+    public void visitSynchronizedBlock(final SynchronizedBlock node) throws Exception {
         writer.write(getIndent());
         writer.write("synchronised (");
         visit(node.getLockExpression());
@@ -637,30 +635,30 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         ++indent;
         visit(node.getCodeBlock());
         --indent;
-        return null;
+
     }
 
     @Override
-    public Void visitThis(final This node, final Void param) throws Exception {
+    public void visitThis(final This node) throws Exception {
         if (node.getQualifier() != null) {
             visit(node.getQualifier());
             writer.write(".");
         }
         writer.write("this");
-        return null;
+
     }
 
     @Override
-    public Void visitThrow(final Throw node, final Void param) throws Exception {
+    public void visitThrow(final Throw node) throws Exception {
         writer.write(getIndent());
         writer.write("throw ");
         visit(node.getThrownExpression());
         writer.write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitTry(final Try node, final Void param) throws Exception {
+    public void visitTry(final Try node) throws Exception {
         writer.write(getIndent());
         writer.write("try\n");
         ++indent;
@@ -674,22 +672,22 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             visit(node.getFinallyBlock());
             --indent;
         }
-        return null;
+
     }
 
     @Override
-    public Void visitTypeBody(final TypeBody node, final Void param) throws Exception {
+    public void visitTypeBody(final TypeBody node) throws Exception {
         writer.write(getIndent() + "{\n");
         ++indent;
         formatList(node.getEnumConstants(), "", ",\n", ";\n");
         visit(node.getMembers());
         --indent;
         writer.write(getIndent() + "}");
-        return null;
+
     }
 
     @Override
-    public Void visitTypeDeclaration(final TypeDeclaration node, final Void param) throws Exception {
+    public void visitTypeDeclaration(final TypeDeclaration node) throws Exception {
         writer.write(getIndent());
         visit(node.getModifiers());
         if (node.isInterface()) {
@@ -719,40 +717,40 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         writer.write("\n");
         visit(node.getTypeBody());
         writer.write("\n\n");
-        return null;
+
     }
 
     @Override
-    public Void visitTypeDeclarationStatement(final TypeDeclarationStatement node, final Void param) throws Exception {
+    public void visitTypeDeclarationStatement(final TypeDeclarationStatement node) throws Exception {
         visit(node.getTypeDeclaration());
-        return null;
+
     }
 
     @Override
-    public Void visitTypeParameter(final TypeParameter node, final Void param) throws Exception {
+    public void visitTypeParameter(final TypeParameter node) throws Exception {
         writer.write(node.getName());
         formatList(node.getExtendsBounds(), " extends ", " & ", "");
-        return null;
+
     }
 
     @Override
-    public Void visitTypeQualifier(final TypeQualifier node, final Void param) throws Exception {
+    public void visitTypeQualifier(final TypeQualifier node) throws Exception {
         if (node.getQualifier() != null) {
             visit(node.getQualifier());
             writer.write(".");
         }
         writer.write(node.getTypeDeclaration().getName());
-        return null;
+
     }
 
     @Override
-    public Void visitTypeVariable(final TypeVariable node, final Void param) throws Exception {
+    public void visitTypeVariable(final TypeVariable node) throws Exception {
         writer.write(node.getName());
-        return null;
+
     }
 
     @Override
-    public Void visitUnaryExpression(final UnaryExpression node, final Void param) throws Exception {
+    public void visitUnaryExpression(final UnaryExpression node) throws Exception {
         switch (node.getOperator()) {
             case PLUS:
                 writer.write("+");
@@ -768,17 +766,17 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
                 break;
         }
         visit(node.getExpression());
-        return null;
+
     }
 
     @Override
-    public Void visitvariableAccess(final VariableAccess node, final Void param) throws Exception {
+    public void visitvariableAccess(final VariableAccess node) throws Exception {
         writer.write(node.getVariable().getName());
-        return null;
+
     }
 
     @Override
-    public Void visitWhile(final While node, final Void param) throws Exception {
+    public void visitWhile(final While node) throws Exception {
         writer.write(getIndent());
         writer.write("while (");
         visit(node.getCondition());
@@ -786,11 +784,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         ++indent;
         visit(node.getStatement());
         --indent;
-        return null;
+
     }
 
     @Override
-    public Void visitWildcardType(final WildcardType node, final Void param) throws Exception {
+    public void visitWildcardType(final WildcardType node) throws Exception {
         writer.write("?");
         if (node.getSuperBound() != null) {
             writer.write(" super ");
@@ -800,7 +798,7 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             writer.write(" extends ");
             visit(node.getExtendsBound());
         }
-        return null;
+
     }
 
     private void formatList(final Collection<? extends ASTNode> nodes,
@@ -839,24 +837,24 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             "                                                                                                                           ";
 
     @Override
-    public Void visitArrayAccess(final ArrayAccess node, final Void param) throws Exception {
+    public void visitArrayAccess(final ArrayAccess node) throws Exception {
         visit(node.getArrayExpression());
         writer.write("[");
         visit(node.getIndexExpression());
         writer.write("]");
-        return null;
+
     }
 
     @Override
-    public Void visitArrayInitializer(final ArrayInitializer node, final Void param) throws Exception {
+    public void visitArrayInitializer(final ArrayInitializer node) throws Exception {
         writer.write("{");
         formatList(node.getElements(), " ", ", ", " ");
         writer.write("}");
-        return null;
+
     }
 
     @Override
-    public Void visitAssignmen(final Assignment node, final Void param) throws Exception {
+    public void visitAssignmen(final Assignment node) throws Exception {
         visit(node.getTarget());
         writer.write(" ");
         switch (node.getOperator()) {
@@ -899,11 +897,11 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         }
         writer.write(" ");
         visit(node.getSource());
-        return null;
+
     }
 
     @Override
-    public Void visitBinaryExpression(final BinaryExpression node, final Void param) throws Exception {
+    public void visitBinaryExpression(final BinaryExpression node) throws Exception {
         visit(node.getLhs());
         writer.write(" ");
         switch (node.getOperator()) {
@@ -971,26 +969,26 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         }
         writer.write(" ");
         visit(node.getRhs());
-        return null;
+
     }
 
     @Override
-    public Void visitBooleanLiteral(final Literal.BooleanLiteral node, final Void param) throws Exception {
+    public void visitBooleanLiteral(final Literal.BooleanLiteral node) throws Exception {
         writer.write(node.getValue() ? "true" : "false");
-        return null;
+
     }
 
     @Override
-    public Void visitCast(final Cast node, final Void param) throws Exception {
+    public void visitCast(final Cast node) throws Exception {
         writer.write("(");
         visit(node.getType());
         writer.write(")");
         visit(node.getExpression());
-        return null;
+
     }
 
     @Override
-    public Void visitEnumConstant(final EnumConstant node, final Void param) throws Exception {
+    public void visitEnumConstant(final EnumConstant node) throws Exception {
         writer.write(getIndent() + node.getName());
         formatList(node.getArguments(), "( ", ", ", " )");
         if (node.getTypeBody() != null) {
@@ -1000,21 +998,21 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             writer.write("\n");
             --indent;
         }
-        return null;
+
     }
 
     @Override
-    public Void visitEnumConstantAccess(final EnumConstantAccess node, final Void param) throws Exception {
+    public void visitEnumConstantAccess(final EnumConstantAccess node) throws Exception {
         if (node.getQualifier() != null) {
             visit(node.getQualifier());
             writer.write(".");
         }
         writer.write(node.getConstant().getName());
-        return null;
+
     }
 
     @Override
-    public Void visitNewArray(final NewArray node, final Void param) throws Exception {
+    public void visitNewArray(final NewArray node) throws Exception {
         writer.write("new ");
         Type type = node.getType();
         while (type instanceof ArrayType) {
@@ -1028,7 +1026,7 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         if (node.getInitialValue() != null) {
             visit(node.getInitialValue());
         }
-        return null;
+
     }
 
     private void appendCharLiteral(final char literal) throws Exception {
@@ -1072,10 +1070,10 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
     }
 
     @Override
-    public Void visitClassLiteral(final ClassLiteral node, final Void param) throws Exception {
+    public void visitClassLiteral(final ClassLiteral node) throws Exception {
         visit(node.getType());
         writer.write(".class");
-        return null;
+
     }
 
     private void writeQualifiedName(final TypeDeclaration declaration) throws Exception {
@@ -1088,7 +1086,7 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
     }
 
     @Override
-    public Void visitImport(final Import node, final Void param) throws Exception {
+    public void visitImport(final Import node) throws Exception {
         writer.write(getIndent() + "import ");
         if (node.isStatic()) {
             writer.write("static ");
@@ -1104,7 +1102,7 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             writer.write("." + node.getImportedName());
         }
         writer.write(";\n");
-        return null;
+
     }
 
     public void dump(final File outputDirectory, final Package pkg) throws Exception {

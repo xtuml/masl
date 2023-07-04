@@ -213,7 +213,7 @@ public abstract class ConcreteObjectTranslator {
                                                  mainObjectTranslator.getPopulation().getCreateInstance(),
                                                  Visibility.PUBLIC);
         getPopulationBodyFile().addFunctionDefinition(creator);
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         for (final Variable param : creator.getParameters()) {
             params.add(param.asExpression());
         }
@@ -221,7 +221,7 @@ public abstract class ConcreteObjectTranslator {
         Expression identifierTaken = null;
         for (final IdentifierDeclaration identifier : objectDeclaration.getIdentifiers()) {
             boolean needsCheck = true;
-            final List<Expression> checkParams = new ArrayList<Expression>();
+            final List<Expression> checkParams = new ArrayList<>();
             for (final AttributeDeclaration att : identifier.getAttributes()) {
                 // If attribute is flagged as unique, then there is no need to check it,
                 // as we can already guarantee uniqueness

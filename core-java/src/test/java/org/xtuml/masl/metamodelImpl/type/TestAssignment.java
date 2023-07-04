@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,14 +20,15 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.type;
-
-import junit.framework.TestCase;
-import org.xtuml.masl.metamodelImpl.expression.TypedExpression;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.xtuml.masl.metamodelImpl.expression.TypedExpression;
+
+import junit.framework.TestCase;
 
 public abstract class TestAssignment extends TestCase {
 
@@ -90,14 +91,8 @@ public abstract class TestAssignment extends TestCase {
     public static class BStringAssignment extends TestAssignment {
 
         public BStringAssignment() {
-            super(types.bString,
-                  expr.namedBString,
-                  expr.anonBString,
-                  expr.anonBWString,
-                  expr.anonSeqOfCharacter,
-                  expr.anonSeqOfAnonCharacter,
-                  expr.anonSeqOfAnonWCharacter,
-                  expr.anonSetOfCharacter);
+            super(types.bString, expr.namedBString, expr.anonBString, expr.anonBWString, expr.anonSeqOfCharacter,
+                    expr.anonSeqOfAnonCharacter, expr.anonSeqOfAnonWCharacter, expr.anonSetOfCharacter);
         }
     }
 
@@ -118,14 +113,8 @@ public abstract class TestAssignment extends TestCase {
     public static class BWStringAssignment extends TestAssignment {
 
         public BWStringAssignment() {
-            super(types.bWString,
-                  expr.namedBWString,
-                  expr.anonBString,
-                  expr.anonBWString,
-                  expr.anonSeqOfWCharacter,
-                  expr.anonSeqOfAnonCharacter,
-                  expr.anonSeqOfAnonWCharacter,
-                  expr.anonSetOfWCharacter);
+            super(types.bWString, expr.namedBWString, expr.anonBString, expr.anonBWString, expr.anonSeqOfWCharacter,
+                    expr.anonSeqOfAnonCharacter, expr.anonSeqOfAnonWCharacter, expr.anonSetOfWCharacter);
         }
     }
 
@@ -167,149 +156,90 @@ public abstract class TestAssignment extends TestCase {
     public static class UdIntTypeConstrainedTypeAssignment extends TestAssignment {
 
         public UdIntTypeConstrainedTypeAssignment() {
-            super(types.udIntTypeConstrainedType,
-                  expr.namedUdIntTypeConstrainedType,
-                  expr.anonBInteger,
-                  expr.anonBByte);
+            super(types.udIntTypeConstrainedType, expr.namedUdIntTypeConstrainedType, expr.anonBInteger,
+                    expr.anonBByte);
         }
     }
 
     public static class SeqOfRealAssignment extends TestAssignment {
 
         public SeqOfRealAssignment() {
-            super(types.seqOfReal,
-                  expr.namedSeqOfReal,
-                  expr.anonSeqOfReal,
-                  expr.anonSeqOfAnonReal,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.seqOfReal, expr.namedSeqOfReal, expr.anonSeqOfReal, expr.anonSeqOfAnonReal,
+                    expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class SeqOfIntAssignment extends TestAssignment {
 
         public SeqOfIntAssignment() {
-            super(types.seqOfInt,
-                  expr.namedSeqOfInt,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.seqOfInt, expr.namedSeqOfInt, expr.anonSeqOfInt, expr.anonSetOfInt, expr.anonBagOfInt,
+                    expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class SeqOfCharacterAssignment extends TestAssignment {
 
         public SeqOfCharacterAssignment() {
-            super(types.seqOfCharacter,
-                  expr.namedSeqOfCharacter,
-                  expr.anonSeqOfCharacter,
-                  expr.anonSeqOfAnonCharacter,
-                  expr.anonSeqOfAnonWCharacter,
-                  expr.anonSetOfCharacter,
-                  expr.anonBString,
-                  expr.anonBWString);
+            super(types.seqOfCharacter, expr.namedSeqOfCharacter, expr.anonSeqOfCharacter, expr.anonSeqOfAnonCharacter,
+                    expr.anonSeqOfAnonWCharacter, expr.anonSetOfCharacter, expr.anonBString, expr.anonBWString);
         }
     }
 
     public static class SeqOfWCharacterAssignment extends TestAssignment {
 
         public SeqOfWCharacterAssignment() {
-            super(types.seqOfWCharacter,
-                  expr.namedSeqOfWCharacter,
-                  expr.anonSeqOfWCharacter,
-                  expr.anonSeqOfAnonCharacter,
-                  expr.anonSeqOfAnonWCharacter,
-                  expr.anonSetOfWCharacter,
-                  expr.anonBString,
-                  expr.anonBWString);
+            super(types.seqOfWCharacter, expr.namedSeqOfWCharacter, expr.anonSeqOfWCharacter,
+                    expr.anonSeqOfAnonCharacter, expr.anonSeqOfAnonWCharacter, expr.anonSetOfWCharacter,
+                    expr.anonBString, expr.anonBWString);
         }
     }
 
     public static class SetOfIntAssignment extends TestAssignment {
 
         public SetOfIntAssignment() {
-            super(types.setOfInt,
-                  expr.namedSetOfInt,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.setOfInt, expr.namedSetOfInt, expr.anonSeqOfInt, expr.anonSetOfInt, expr.anonBagOfInt,
+                    expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class SetOfCharacterAssignment extends TestAssignment {
 
         public SetOfCharacterAssignment() {
-            super(types.setOfCharacter,
-                  expr.namedSetOfCharacter,
-                  expr.anonSeqOfCharacter,
-                  expr.anonSeqOfAnonCharacter,
-                  expr.anonSeqOfAnonWCharacter,
-                  expr.anonSetOfCharacter,
-                  expr.anonBString,
-                  expr.anonBWString);
+            super(types.setOfCharacter, expr.namedSetOfCharacter, expr.anonSeqOfCharacter, expr.anonSeqOfAnonCharacter,
+                    expr.anonSeqOfAnonWCharacter, expr.anonSetOfCharacter, expr.anonBString, expr.anonBWString);
         }
     }
 
     public static class SetOfWCharacterAssignment extends TestAssignment {
 
         public SetOfWCharacterAssignment() {
-            super(types.setOfWCharacter,
-                  expr.namedSetOfWCharacter,
-                  expr.anonSeqOfWCharacter,
-                  expr.anonSeqOfAnonCharacter,
-                  expr.anonSeqOfAnonWCharacter,
-                  expr.anonSetOfWCharacter,
-                  expr.anonBString,
-                  expr.anonBWString);
+            super(types.setOfWCharacter, expr.namedSetOfWCharacter, expr.anonSeqOfWCharacter,
+                    expr.anonSeqOfAnonCharacter, expr.anonSeqOfAnonWCharacter, expr.anonSetOfWCharacter,
+                    expr.anonBString, expr.anonBWString);
         }
     }
 
     public static class BagOfIntAssignment extends TestAssignment {
 
         public BagOfIntAssignment() {
-            super(types.bagOfInt,
-                  expr.namedBagOfInt,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.bagOfInt, expr.namedBagOfInt, expr.anonSeqOfInt, expr.anonSetOfInt, expr.anonBagOfInt,
+                    expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class Array1OfIntAssignment extends TestAssignment {
 
         public Array1OfIntAssignment() {
-            super(types.array1to10OfInt,
-                  expr.namedArray1to10OfInt,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.array1to10OfInt, expr.namedArray1to10OfInt, expr.anonSeqOfInt, expr.anonSetOfInt,
+                    expr.anonBagOfInt, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class Array2OfIntAssignment extends TestAssignment {
 
         public Array2OfIntAssignment() {
-            super(types.array2to11OfInt,
-                  expr.namedArray2to11OfInt,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.array2to11OfInt, expr.namedArray2to11OfInt, expr.anonSeqOfInt, expr.anonSetOfInt,
+                    expr.anonBagOfInt, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
@@ -323,390 +253,260 @@ public abstract class TestAssignment extends TestCase {
     public static class SeqOfSeqOfIntAssignment extends TestAssignment {
 
         public SeqOfSeqOfIntAssignment() {
-            super(types.seqOfSeqOfInt,
-                  expr.namedSeqOfSeqOfInt,
-                  expr.anonSeqOfSeqOfInt,
-                  expr.anonSetOfSeqOfInt,
-                  expr.anonBagOfSeqOfInt);
+            super(types.seqOfSeqOfInt, expr.namedSeqOfSeqOfInt, expr.anonSeqOfSeqOfInt, expr.anonSetOfSeqOfInt,
+                    expr.anonBagOfSeqOfInt);
         }
     }
 
     public static class SeqOfSetOfIntAssignment extends TestAssignment {
 
         public SeqOfSetOfIntAssignment() {
-            super(types.seqOfSetOfInt,
-                  expr.namedSeqOfSetOfInt,
-                  expr.anonSeqOfSetOfInt,
-                  expr.anonSetOfSetOfInt,
-                  expr.anonBagOfSetOfInt);
+            super(types.seqOfSetOfInt, expr.namedSeqOfSetOfInt, expr.anonSeqOfSetOfInt, expr.anonSetOfSetOfInt,
+                    expr.anonBagOfSetOfInt);
         }
     }
 
     public static class SeqOfBagOfIntAssignment extends TestAssignment {
 
         public SeqOfBagOfIntAssignment() {
-            super(types.seqOfBagOfInt,
-                  expr.namedSeqOfBagOfInt,
-                  expr.anonSeqOfBagOfInt,
-                  expr.anonSetOfBagOfInt,
-                  expr.anonBagOfBagOfInt);
+            super(types.seqOfBagOfInt, expr.namedSeqOfBagOfInt, expr.anonSeqOfBagOfInt, expr.anonSetOfBagOfInt,
+                    expr.anonBagOfBagOfInt);
         }
     }
 
     public static class SeqOfArrayOfIntAssignment extends TestAssignment {
 
         public SeqOfArrayOfIntAssignment() {
-            super(types.seqOfArrayOfInt,
-                  expr.namedSeqOfArrayOfInt,
-                  expr.anonSeqOfArrayOfInt,
-                  expr.anonSetOfArrayOfInt,
-                  expr.anonBagOfArrayOfInt);
+            super(types.seqOfArrayOfInt, expr.namedSeqOfArrayOfInt, expr.anonSeqOfArrayOfInt, expr.anonSetOfArrayOfInt,
+                    expr.anonBagOfArrayOfInt);
         }
     }
 
     public static class SeqOfUdIntTypeAssignment extends TestAssignment {
 
         public SeqOfUdIntTypeAssignment() {
-            super(types.seqOfUdIntType,
-                  expr.namedSeqOfUdIntType,
-                  expr.anonSeqOfUdIntType,
-                  expr.anonSetOfUdIntType,
-                  expr.anonBagOfUdIntType,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.seqOfUdIntType, expr.namedSeqOfUdIntType, expr.anonSeqOfUdIntType, expr.anonSetOfUdIntType,
+                    expr.anonBagOfUdIntType, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class SeqOfUdCharacterTypeAssignment extends TestAssignment {
 
         public SeqOfUdCharacterTypeAssignment() {
-            super(types.seqOfUdCharacterType,
-                  expr.namedSeqOfUdCharacterType,
-                  expr.anonSeqOfUdCharacterType,
-                  expr.anonSeqOfAnonCharacter,
-                  expr.anonSeqOfAnonWCharacter,
-                  expr.anonBString,
-                  expr.anonBWString);
+            super(types.seqOfUdCharacterType, expr.namedSeqOfUdCharacterType, expr.anonSeqOfUdCharacterType,
+                    expr.anonSeqOfAnonCharacter, expr.anonSeqOfAnonWCharacter, expr.anonBString, expr.anonBWString);
         }
     }
 
     public static class SeqOfUdIntTypeTypeAssignment extends TestAssignment {
 
         public SeqOfUdIntTypeTypeAssignment() {
-            super(types.seqOfUdIntTypeType,
-                  expr.namedSeqOfUdIntTypeType,
-                  expr.anonSeqOfUdIntTypeType,
-                  expr.anonSetOfUdIntTypeType,
-                  expr.anonBagOfUdIntTypeType,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.seqOfUdIntTypeType, expr.namedSeqOfUdIntTypeType, expr.anonSeqOfUdIntTypeType,
+                    expr.anonSetOfUdIntTypeType, expr.anonBagOfUdIntTypeType, expr.anonSeqOfAnonInt,
+                    expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class SetOfSeqOfIntAssignment extends TestAssignment {
 
         public SetOfSeqOfIntAssignment() {
-            super(types.setOfSeqOfInt,
-                  expr.namedSetOfSeqOfInt,
-                  expr.anonSeqOfSeqOfInt,
-                  expr.anonSetOfSeqOfInt,
-                  expr.anonBagOfSeqOfInt);
+            super(types.setOfSeqOfInt, expr.namedSetOfSeqOfInt, expr.anonSeqOfSeqOfInt, expr.anonSetOfSeqOfInt,
+                    expr.anonBagOfSeqOfInt);
         }
     }
 
     public static class SetOfSetOfIntAssignment extends TestAssignment {
 
         public SetOfSetOfIntAssignment() {
-            super(types.setOfSetOfInt,
-                  expr.namedSetOfSetOfInt,
-                  expr.anonSeqOfSetOfInt,
-                  expr.anonSetOfSetOfInt,
-                  expr.anonBagOfSetOfInt);
+            super(types.setOfSetOfInt, expr.namedSetOfSetOfInt, expr.anonSeqOfSetOfInt, expr.anonSetOfSetOfInt,
+                    expr.anonBagOfSetOfInt);
         }
     }
 
     public static class SetOfBagOfIntAssignment extends TestAssignment {
 
         public SetOfBagOfIntAssignment() {
-            super(types.setOfBagOfInt,
-                  expr.namedSetOfBagOfInt,
-                  expr.anonSeqOfBagOfInt,
-                  expr.anonSetOfBagOfInt,
-                  expr.anonBagOfBagOfInt);
+            super(types.setOfBagOfInt, expr.namedSetOfBagOfInt, expr.anonSeqOfBagOfInt, expr.anonSetOfBagOfInt,
+                    expr.anonBagOfBagOfInt);
         }
     }
 
     public static class SetOfArrayOfIntAssignment extends TestAssignment {
 
         public SetOfArrayOfIntAssignment() {
-            super(types.setOfArrayOfInt,
-                  expr.namedSetOfArrayOfInt,
-                  expr.anonSeqOfArrayOfInt,
-                  expr.anonSetOfArrayOfInt,
-                  expr.anonBagOfArrayOfInt);
+            super(types.setOfArrayOfInt, expr.namedSetOfArrayOfInt, expr.anonSeqOfArrayOfInt, expr.anonSetOfArrayOfInt,
+                    expr.anonBagOfArrayOfInt);
         }
     }
 
     public static class SetOfUdIntTypeAssignment extends TestAssignment {
 
         public SetOfUdIntTypeAssignment() {
-            super(types.setOfUdIntType,
-                  expr.namedSetOfUdIntType,
-                  expr.anonSeqOfUdIntType,
-                  expr.anonSetOfUdIntType,
-                  expr.anonBagOfUdIntType,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.setOfUdIntType, expr.namedSetOfUdIntType, expr.anonSeqOfUdIntType, expr.anonSetOfUdIntType,
+                    expr.anonBagOfUdIntType, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class SetOfUdIntTypeTypeAssignment extends TestAssignment {
 
         public SetOfUdIntTypeTypeAssignment() {
-            super(types.setOfUdIntTypeType,
-                  expr.namedSetOfUdIntTypeType,
-                  expr.anonSeqOfUdIntTypeType,
-                  expr.anonSetOfUdIntTypeType,
-                  expr.anonBagOfUdIntTypeType,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.setOfUdIntTypeType, expr.namedSetOfUdIntTypeType, expr.anonSeqOfUdIntTypeType,
+                    expr.anonSetOfUdIntTypeType, expr.anonBagOfUdIntTypeType, expr.anonSeqOfAnonInt,
+                    expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class BagOfSeqOfIntAssignment extends TestAssignment {
 
         public BagOfSeqOfIntAssignment() {
-            super(types.bagOfSeqOfInt,
-                  expr.namedBagOfSeqOfInt,
-                  expr.anonSeqOfSeqOfInt,
-                  expr.anonSetOfSeqOfInt,
-                  expr.anonBagOfSeqOfInt);
+            super(types.bagOfSeqOfInt, expr.namedBagOfSeqOfInt, expr.anonSeqOfSeqOfInt, expr.anonSetOfSeqOfInt,
+                    expr.anonBagOfSeqOfInt);
         }
     }
 
     public static class BagOfSetOfIntAssignment extends TestAssignment {
 
         public BagOfSetOfIntAssignment() {
-            super(types.bagOfSetOfInt,
-                  expr.namedBagOfSetOfInt,
-                  expr.anonSeqOfSetOfInt,
-                  expr.anonSetOfSetOfInt,
-                  expr.anonBagOfSetOfInt);
+            super(types.bagOfSetOfInt, expr.namedBagOfSetOfInt, expr.anonSeqOfSetOfInt, expr.anonSetOfSetOfInt,
+                    expr.anonBagOfSetOfInt);
         }
     }
 
     public static class BagOfBagOfIntAssignment extends TestAssignment {
 
         public BagOfBagOfIntAssignment() {
-            super(types.bagOfBagOfInt,
-                  expr.namedBagOfBagOfInt,
-                  expr.anonSeqOfBagOfInt,
-                  expr.anonSetOfBagOfInt,
-                  expr.anonBagOfBagOfInt);
+            super(types.bagOfBagOfInt, expr.namedBagOfBagOfInt, expr.anonSeqOfBagOfInt, expr.anonSetOfBagOfInt,
+                    expr.anonBagOfBagOfInt);
         }
     }
 
     public static class BagOfArrayOfIntAssignment extends TestAssignment {
 
         public BagOfArrayOfIntAssignment() {
-            super(types.bagOfArrayOfInt,
-                  expr.namedBagOfArrayOfInt,
-                  expr.anonSeqOfArrayOfInt,
-                  expr.anonSetOfArrayOfInt,
-                  expr.anonBagOfArrayOfInt);
+            super(types.bagOfArrayOfInt, expr.namedBagOfArrayOfInt, expr.anonSeqOfArrayOfInt, expr.anonSetOfArrayOfInt,
+                    expr.anonBagOfArrayOfInt);
         }
     }
 
     public static class BagOfUdIntTypeAssignment extends TestAssignment {
 
         public BagOfUdIntTypeAssignment() {
-            super(types.bagOfUdIntType,
-                  expr.namedBagOfUdIntType,
-                  expr.anonSeqOfUdIntType,
-                  expr.anonSetOfUdIntType,
-                  expr.anonBagOfUdIntType,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.bagOfUdIntType, expr.namedBagOfUdIntType, expr.anonSeqOfUdIntType, expr.anonSetOfUdIntType,
+                    expr.anonBagOfUdIntType, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class BagOfUdIntTypeTypeAssignment extends TestAssignment {
 
         public BagOfUdIntTypeTypeAssignment() {
-            super(types.bagOfUdIntTypeType,
-                  expr.namedBagOfUdIntTypeType,
-                  expr.anonSeqOfUdIntTypeType,
-                  expr.anonSetOfUdIntTypeType,
-                  expr.anonBagOfUdIntTypeType,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.bagOfUdIntTypeType, expr.namedBagOfUdIntTypeType, expr.anonSeqOfUdIntTypeType,
+                    expr.anonSetOfUdIntTypeType, expr.anonBagOfUdIntTypeType, expr.anonSeqOfAnonInt,
+                    expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class ArrayOfSeqOfIntAssignment extends TestAssignment {
 
         public ArrayOfSeqOfIntAssignment() {
-            super(types.arrayOfSeqOfInt,
-                  expr.namedArrayOfSeqOfInt,
-                  expr.anonSeqOfSeqOfInt,
-                  expr.anonSetOfSeqOfInt,
-                  expr.anonBagOfSeqOfInt);
+            super(types.arrayOfSeqOfInt, expr.namedArrayOfSeqOfInt, expr.anonSeqOfSeqOfInt, expr.anonSetOfSeqOfInt,
+                    expr.anonBagOfSeqOfInt);
         }
     }
 
     public static class ArrayOfSetOfIntAssignment extends TestAssignment {
 
         public ArrayOfSetOfIntAssignment() {
-            super(types.arrayOfSetOfInt,
-                  expr.namedArrayOfSetOfInt,
-                  expr.anonSeqOfSetOfInt,
-                  expr.anonSetOfSetOfInt,
-                  expr.anonBagOfSetOfInt);
+            super(types.arrayOfSetOfInt, expr.namedArrayOfSetOfInt, expr.anonSeqOfSetOfInt, expr.anonSetOfSetOfInt,
+                    expr.anonBagOfSetOfInt);
         }
     }
 
     public static class ArrayOfBagOfIntAssignment extends TestAssignment {
 
         public ArrayOfBagOfIntAssignment() {
-            super(types.arrayOfBagOfInt,
-                  expr.namedArrayOfBagOfInt,
-                  expr.anonSeqOfBagOfInt,
-                  expr.anonSetOfBagOfInt,
-                  expr.anonBagOfBagOfInt);
+            super(types.arrayOfBagOfInt, expr.namedArrayOfBagOfInt, expr.anonSeqOfBagOfInt, expr.anonSetOfBagOfInt,
+                    expr.anonBagOfBagOfInt);
         }
     }
 
     public static class ArrayOfArrayOfIntAssignment extends TestAssignment {
 
         public ArrayOfArrayOfIntAssignment() {
-            super(types.arrayOfArrayOfInt,
-                  expr.namedArrayOfArrayOfInt,
-                  expr.anonSeqOfArrayOfInt,
-                  expr.anonSetOfArrayOfInt,
-                  expr.anonBagOfArrayOfInt);
+            super(types.arrayOfArrayOfInt, expr.namedArrayOfArrayOfInt, expr.anonSeqOfArrayOfInt,
+                    expr.anonSetOfArrayOfInt, expr.anonBagOfArrayOfInt);
         }
     }
 
     public static class ArrayOfUdIntTypeAssignment extends TestAssignment {
 
         public ArrayOfUdIntTypeAssignment() {
-            super(types.arrayOfUdIntType,
-                  expr.namedArrayOfUdIntType,
-                  expr.anonSeqOfUdIntType,
-                  expr.anonSetOfUdIntType,
-                  expr.anonBagOfUdIntType,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.arrayOfUdIntType, expr.namedArrayOfUdIntType, expr.anonSeqOfUdIntType, expr.anonSetOfUdIntType,
+                    expr.anonBagOfUdIntType, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class ArrayOfUdIntTypeTypeAssignment extends TestAssignment {
 
         public ArrayOfUdIntTypeTypeAssignment() {
-            super(types.arrayOfUdIntTypeType,
-                  expr.namedArrayOfUdIntTypeType,
-                  expr.anonSeqOfUdIntTypeType,
-                  expr.anonSetOfUdIntTypeType,
-                  expr.anonBagOfUdIntTypeType,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.arrayOfUdIntTypeType, expr.namedArrayOfUdIntTypeType, expr.anonSeqOfUdIntTypeType,
+                    expr.anonSetOfUdIntTypeType, expr.anonBagOfUdIntTypeType, expr.anonSeqOfAnonInt,
+                    expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class UdSeqOfIntAssignment extends TestAssignment {
 
         public UdSeqOfIntAssignment() {
-            super(types.udSeqOfIntType,
-                  expr.namedUdSeqOfIntType,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.udSeqOfIntType, expr.namedUdSeqOfIntType, expr.anonSeqOfInt, expr.anonSetOfInt,
+                    expr.anonBagOfInt, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class UdSetOfIntAssignment extends TestAssignment {
 
         public UdSetOfIntAssignment() {
-            super(types.udSetOfIntType,
-                  expr.namedUdSetOfIntType,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.udSetOfIntType, expr.namedUdSetOfIntType, expr.anonSeqOfInt, expr.anonSetOfInt,
+                    expr.anonBagOfInt, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class UdBagOfIntAssignment extends TestAssignment {
 
         public UdBagOfIntAssignment() {
-            super(types.udBagOfIntType,
-                  expr.namedUdBagOfIntType,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.udBagOfIntType, expr.namedUdBagOfIntType, expr.anonSeqOfInt, expr.anonSetOfInt,
+                    expr.anonBagOfInt, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class UdArrayOfIntAssignment extends TestAssignment {
 
         public UdArrayOfIntAssignment() {
-            super(types.udArray1to10OfIntType,
-                  expr.namedUdArray1to10OfIntType,
-                  expr.anonSeqOfInt,
-                  expr.anonSetOfInt,
-                  expr.anonBagOfInt,
-                  expr.anonSeqOfAnonInt,
-                  expr.anonSetOfAnonInt,
-                  expr.anonBagOfAnonInt);
+            super(types.udArray1to10OfIntType, expr.namedUdArray1to10OfIntType, expr.anonSeqOfInt, expr.anonSetOfInt,
+                    expr.anonBagOfInt, expr.anonSeqOfAnonInt, expr.anonSetOfAnonInt, expr.anonBagOfAnonInt);
         }
     }
 
     public static class UdTrivialStructAssignment extends TestAssignment {
 
         public UdTrivialStructAssignment() {
-            super(types.udTrivialStructType,
-                  expr.namedUdTrivialStructType,
-                  expr.anonAnonTrivialStruct,
-                  expr.anonAnonTrivialAnonStruct,
-                  expr.namedUdIntType,
-                  expr.anonBInteger,
-                  expr.anonBByte);
+            super(types.udTrivialStructType, expr.namedUdTrivialStructType, expr.anonAnonTrivialStruct,
+                    expr.anonAnonTrivialAnonStruct, expr.namedUdIntType, expr.anonBInteger, expr.anonBByte);
         }
     }
 
     public static class UdSimpleStructAssignment extends TestAssignment {
 
         public UdSimpleStructAssignment() {
-            super(types.udSimpleStructType,
-                  expr.namedUdSimpleStructType,
-                  expr.anonAnonSimpleStruct,
-                  expr.anonAnonSimpleAnonStruct);
+            super(types.udSimpleStructType, expr.namedUdSimpleStructType, expr.anonAnonSimpleStruct,
+                    expr.anonAnonSimpleAnonStruct);
         }
     }
 
     public static class UdComplexStructAssignment extends TestAssignment {
 
         public UdComplexStructAssignment() {
-            super(types.udComplexStructType,
-                  expr.namedUdComplexStructType,
-                  expr.anonAnonComplexStruct,
-                  expr.anonAnonComplexAnonStruct);
+            super(types.udComplexStructType, expr.namedUdComplexStructType, expr.anonAnonComplexStruct,
+                    expr.anonAnonComplexAnonStruct);
         }
     }
 
@@ -720,13 +520,8 @@ public abstract class TestAssignment extends TestCase {
     public static class AnyInstanceAssignment extends TestAssignment {
 
         public AnyInstanceAssignment() {
-            super(types.anyInstance,
-                  expr.namedInstance1,
-                  expr.anonInstance1,
-                  expr.anonInstance2,
-                  expr.namedInstance2,
-                  expr.anonAnyInstance,
-                  expr.namedAnyInstance);
+            super(types.anyInstance, expr.namedInstance1, expr.anonInstance1, expr.anonInstance2, expr.namedInstance2,
+                    expr.anonAnyInstance, expr.namedAnyInstance);
         }
     }
 
@@ -744,25 +539,98 @@ public abstract class TestAssignment extends TestCase {
         }
     }
 
-    private static final TestTypes types = TestTypes.data1;
-    private static final TestExpressions expr = TestExpressions.expr1;
+    private static TestTypes types = TestTypes.data1;
+    private static TestExpressions expr = TestExpressions.expr1;
 
     private final BasicType targetType;
-    private final Set<TypedExpression> assignableExpressions = new HashSet<TypedExpression>();
+    private final Set<TypedExpression> assignableExpressions = new HashSet<>();
 
     protected TestAssignment(final BasicType targetType, final TypedExpression... assignables) {
         this.targetType = targetType;
         assignableExpressions.addAll(Arrays.asList(assignables));
     }
 
+    public static boolean allAssignable(final List<BasicType> source, final List<BasicType> target) {
+        if (source.size() != target.size()) {
+            return false;
+        }
+        for (int i = 0; i < source.size(); ++i) {
+            if (!isAssignable(source.get(i), target.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isAssignable(final BasicType source, final BasicType target) {
+        return isAssignable(source, target, true);
+    }
+
+    public static boolean isAssignable(final BasicType source, final BasicType target, final boolean allowSeqPromote) {
+
+        if (source.equals(target)) {
+            return true;
+        }
+
+        if (source instanceof InstanceType && target instanceof AnyInstanceType) {
+            return true;
+        }
+
+        if (source.isAnonymousType() || target.isAnonymousType()) {
+            if (source.getPrimitiveType().equals(target.getPrimitiveType())) {
+                return true;
+            }
+
+            if (source.getPrimitiveType().equals(IntegerType.createAnonymous())
+                    && target.getPrimitiveType().equals(RealType.createAnonymous())) {
+                return true;
+            }
+
+            if (source.getPrimitiveType() instanceof InstanceType
+                    && target.getPrimitiveType() instanceof AnyInstanceType
+                    || source instanceof AnyInstanceType && target.getPrimitiveType() instanceof InstanceType) {
+                return true;
+            }
+
+            if (target.getPrimitiveType() instanceof CollectionType) {
+                if (source.getPrimitiveType() instanceof CollectionType
+                        && isAssignable(source.getContainedType(), target.getContainedType(), allowSeqPromote)) {
+                    return true;
+                }
+            }
+
+            if (target.getPrimitiveType() instanceof AnonymousStructure) {
+                if (source.getPrimitiveType() instanceof AnonymousStructure
+                        && allAssignable(((AnonymousStructure) source.getPrimitiveType()).getElements(),
+                                ((AnonymousStructure) target.getPrimitiveType()).getElements())) {
+                    return true;
+                }
+            }
+
+        }
+
+        if (allowSeqPromote & target.getPrimitiveType() instanceof CollectionType
+                && isAssignable(source, target.getContainedType(), allowSeqPromote)) {
+            return true;
+        }
+
+        if (target.getPrimitiveType() instanceof AnonymousStructure
+                && ((AnonymousStructure) target.getPrimitiveType()).getElements().size() == 1 && isAssignable(source,
+                        ((AnonymousStructure) target.getPrimitiveType()).getElements().get(0), allowSeqPromote)) {
+            return true;
+        }
+
+        return false;
+    }
+
     private void checkResult(final TypedExpression assignable) {
-        final String
-                message =
-                targetType + " := " + (assignable.getType().isAnonymousType() ? "anon " : "") + assignable.getType();
+        final String message = targetType + " := " + assignable.getType();
         if (assignableExpressions.contains(assignable)) {
             assertTrue(message + " should be assignable", targetType.isAssignableFrom(assignable));
+            assertTrue(message + " should be assignable", isAssignable(assignable.getType(), targetType, false));
         } else {
             assertFalse(message + " should not be assignable", targetType.isAssignableFrom(assignable));
+            assertFalse(message + " should not be assignable", isAssignable(assignable.getType(), targetType, false));
         }
     }
 

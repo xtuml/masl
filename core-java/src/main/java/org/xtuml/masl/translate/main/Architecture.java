@@ -23,7 +23,7 @@ package org.xtuml.masl.translate.main;
 
 import org.xtuml.masl.cppgen.Class;
 import org.xtuml.masl.cppgen.*;
-import org.xtuml.masl.translate.build.BuildSet;
+import org.xtuml.masl.translate.building.BuildSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -315,14 +315,14 @@ public final class Architecture {
         }
 
         public final static Expression getCombine(final List<Expression> fields, final List<Expression> values) {
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
             params.add(combineFields(fields));
             params.addAll(values);
             return timestampClass.callConstructor(params);
         }
 
         public final static Expression getSplit(final Expression lhs, final List<Expression> fields) {
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
             params.add(combineFields(fields));
             return new Function("getSplit").asFunctionCall(lhs, false, params);
         }
@@ -340,14 +340,14 @@ public final class Architecture {
         }
 
         public final static Expression getCombine(final List<Expression> fields, final List<Expression> values) {
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
             params.add(combineFields(fields));
             params.addAll(values);
             return durationClass.callConstructor(params);
         }
 
         public final static Expression getSplit(final Expression lhs, final List<Expression> fields) {
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
             params.add(combineFields(fields));
             return new Function("getSplit").asFunctionCall(lhs, false, params);
         }
@@ -567,17 +567,17 @@ public final class Architecture {
     }
 
     /**
-     * When a domain based service declaration is encountered during the parsing
-     * of a MASL model file, the domain based service needs to be associated with
-     * an interceptor type so that invocations of the service can be bound at
-     * runtime rather than compile time. Therefore return the associated
-     * interceptor class for the specified domain based service.
+     * When a domain based service declaration is encountered during the parsing of
+     * a MASL model file, the domain based service needs to be associated with an
+     * interceptor type so that invocations of the service can be bound at runtime
+     * rather than compile time. Therefore return the associated interceptor class
+     * for the specified domain based service.
      */
     public static Class createServiceInterceptor(final Class serviceTag, final Function function) {
         final Class interceptorClass = new Class("ServiceInterceptor", NAMESPACE, serviceInteceptor);
 
         interceptorClass.addTemplateSpecialisation(new TypeUsage(serviceTag));
-        interceptorClass.addTemplateSpecialisation(new TypeUsage(function.asFunctionPointerType()));
+        interceptorClass.addTemplateSpecialisation(new TypeUsage(function.asFunctionSignatureType()));
 
         return interceptorClass;
     }
@@ -868,14 +868,14 @@ public final class Architecture {
         private final static Namespace LOG_NAMESPACE = new Namespace("Logging");
         private final static CodeFile loggingInc = loggingLib.createInterfaceHeader("logging/Logging.hh");
 
-        private final static Function trace = new Function("logging/trace.hh", LOG_NAMESPACE, loggingInc);
-        private final static Function debug = new Function("logging/debug.hh", LOG_NAMESPACE, loggingInc);
-        private final static Function information = new Function("logging/information.hh", LOG_NAMESPACE, loggingInc);
-        private final static Function notice = new Function("logging/notice.hh", LOG_NAMESPACE, loggingInc);
-        private final static Function warning = new Function("logging/warning.hh", LOG_NAMESPACE, loggingInc);
-        private final static Function error = new Function("logging/error.hh", LOG_NAMESPACE, loggingInc);
-        private final static Function critical = new Function("logging/critical.hh", LOG_NAMESPACE, loggingInc);
-        private final static Function fatal = new Function("logging/fatal.hh", LOG_NAMESPACE, loggingInc);
+        private final static Function trace = new Function("trace", LOG_NAMESPACE, loggingInc);
+        private final static Function debug = new Function("debug", LOG_NAMESPACE, loggingInc);
+        private final static Function information = new Function("information", LOG_NAMESPACE, loggingInc);
+        private final static Function notice = new Function("notice", LOG_NAMESPACE, loggingInc);
+        private final static Function warning = new Function("warning", LOG_NAMESPACE, loggingInc);
+        private final static Function error = new Function("error", LOG_NAMESPACE, loggingInc);
+        private final static Function critical = new Function("critical", LOG_NAMESPACE, loggingInc);
+        private final static Function fatal = new Function("fatal", LOG_NAMESPACE, loggingInc);
 
         public static Statement logTrace(final Expression message) {
             return trace.asFunctionCall(message).asStatement();

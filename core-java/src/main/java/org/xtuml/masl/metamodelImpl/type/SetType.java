@@ -76,8 +76,8 @@ public class SetType extends CollectionType implements org.xtuml.masl.metamodel.
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSetType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitSetType(this);
     }
 
 }

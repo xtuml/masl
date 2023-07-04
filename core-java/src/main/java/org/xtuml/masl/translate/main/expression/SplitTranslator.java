@@ -35,7 +35,7 @@ import java.util.Map;
 public class SplitTranslator extends ExpressionTranslator {
 
     private final Expression lhs;
-    private final List<Expression> arguments = new ArrayList<Expression>();
+    private final List<Expression> arguments = new ArrayList<>();
 
     SplitTranslator(final SplitExpression splitExpression, final Scope scope) {
         for (final org.xtuml.masl.metamodel.expression.Expression arg : splitExpression.getArguments()) {
@@ -59,14 +59,14 @@ public class SplitTranslator extends ExpressionTranslator {
 
     void translateCombine(final SplitExpression splitExpression) {
         if (splitExpression.getType().getBasicType().getActualType() == TypeDefinition.ActualType.DURATION) {
-            final List<Expression> fields = new ArrayList<Expression>();
+            final List<Expression> fields = new ArrayList<>();
             for (final SplitExpression.Field field : splitExpression.getFields()) {
                 fields.add(durationFieldLookup.get(field));
             }
 
             setReadExpression(Architecture.Duration.getCombine(fields, arguments));
         } else {
-            final List<Expression> fields = new ArrayList<Expression>();
+            final List<Expression> fields = new ArrayList<>();
             for (final SplitExpression.Field field : splitExpression.getFields()) {
                 fields.add(timestampFieldLookup.get(field));
             }
@@ -77,14 +77,14 @@ public class SplitTranslator extends ExpressionTranslator {
 
     void translateSplit(final SplitExpression splitExpression) {
         if (splitExpression.getLhs().getType().getBasicType().getActualType() == TypeDefinition.ActualType.DURATION) {
-            final List<Expression> fields = new ArrayList<Expression>();
+            final List<Expression> fields = new ArrayList<>();
             for (final SplitExpression.Field field : splitExpression.getFields()) {
                 fields.add(durationFieldLookup.get(field));
             }
 
             setReadExpression(Architecture.Duration.getSplit(lhs, fields));
         } else {
-            final List<Expression> fields = new ArrayList<Expression>();
+            final List<Expression> fields = new ArrayList<>();
             for (final SplitExpression.Field field : splitExpression.getFields()) {
                 fields.add(timestampFieldLookup.get(field));
             }
@@ -96,10 +96,10 @@ public class SplitTranslator extends ExpressionTranslator {
 
     private static final Map<SplitExpression.Field, Expression>
             durationFieldLookup =
-            new EnumMap<SplitExpression.Field, Expression>(SplitExpression.Field.class);
+            new EnumMap<>(SplitExpression.Field.class);
     private static final Map<SplitExpression.Field, Expression>
             timestampFieldLookup =
-            new EnumMap<SplitExpression.Field, Expression>(SplitExpression.Field.class);
+            new EnumMap<>(SplitExpression.Field.class);
 
     static {
         timestampFieldLookup.put(SplitExpression.Field.CalendarYear, Architecture.Timestamp.splitCalendarYear);

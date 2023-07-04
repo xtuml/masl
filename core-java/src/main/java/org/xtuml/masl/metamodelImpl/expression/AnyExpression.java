@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -30,7 +31,6 @@ import org.xtuml.masl.metamodelImpl.type.IntegerType;
 import org.xtuml.masl.utils.HashCode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,8 +65,7 @@ public class AnyExpression extends Expression implements org.xtuml.masl.metamode
             }
             if (obj.getClass() == getClass()) {
                 final AnyExpression obj2 = ((AnyExpression) obj);
-                return collection.equals(obj2.collection) &&
-                       (Objects.equals(count, obj2.count));
+                return collection.equals(obj2.collection) && (Objects.equals(count, obj2.count));
             } else {
                 return false;
             }
@@ -103,7 +102,7 @@ public class AnyExpression extends Expression implements org.xtuml.masl.metamode
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(collection.getFindArguments());
         if (count != null) {
             params.addAll(count.getFindArguments());
@@ -114,7 +113,7 @@ public class AnyExpression extends Expression implements org.xtuml.masl.metamode
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(collection.getConcreteFindParameters());
         if (count != null) {
             params.addAll(count.getConcreteFindParameters());
@@ -142,13 +141,13 @@ public class AnyExpression extends Expression implements org.xtuml.masl.metamode
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitAnyExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitAnyExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(collection, count);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(collection, count);
     }
 
 }

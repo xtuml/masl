@@ -30,7 +30,6 @@ import org.xtuml.masl.translate.main.ASN1;
 import org.xtuml.masl.translate.sql.main.Database;
 import org.xtuml.masl.translate.sql.main.SqlFrameworkTranslator;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;

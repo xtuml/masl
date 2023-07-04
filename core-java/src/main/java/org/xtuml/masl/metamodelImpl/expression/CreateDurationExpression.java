@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.type.TypeDefinition.ActualType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -30,12 +31,15 @@ import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.RealType;
 import org.xtuml.masl.utils.HashCode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CreateDurationExpression extends Expression
         implements org.xtuml.masl.metamodel.expression.CreateDurationExpression {
 
-    private final static Map<String, Field> fieldLookup = new HashMap<String, Field>();
+    private final static Map<String, Field> fieldLookup = new HashMap<>();
 
     static {
         fieldLookup.put("weeks", Field.Weeks);
@@ -137,13 +141,13 @@ public class CreateDurationExpression extends Expression
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        return new ArrayList<Expression>(argument.getFindArguments());
+        return new ArrayList<>(argument.getFindArguments());
 
     }
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        return new ArrayList<FindParameterExpression>(argument.getConcreteFindParameters());
+        return new ArrayList<>(argument.getConcreteFindParameters());
 
     }
 
@@ -156,13 +160,13 @@ public class CreateDurationExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCreateDurationExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitCreateDurationExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.<Expression>singletonList(argument);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(argument);
     }
 
     private final Expression argument;

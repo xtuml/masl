@@ -53,8 +53,8 @@ class FieldImpl extends TypeMemberImpl implements Field, ModifiersImpl.Filter {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitField(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitField(this);
     }
 
     @Override
@@ -117,9 +117,9 @@ class FieldImpl extends TypeMemberImpl implements Field, ModifiersImpl.Filter {
     }
 
     private String name;
-    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<ModifiersImpl>(this);
-    private final ChildNode<TypeImpl> type = new ChildNode<TypeImpl>(this);
-    private final ChildNode<ExpressionImpl> initialValue = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<>(this);
+    private final ChildNode<TypeImpl> type = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> initialValue = new ChildNode<>(this);
 
     @Override
     public FieldAccessImpl asExpression() {

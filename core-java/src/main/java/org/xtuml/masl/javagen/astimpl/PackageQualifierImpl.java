@@ -38,8 +38,8 @@ public class PackageQualifierImpl extends QualifierImpl implements PackageQualif
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitPackageQualifier(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitPackageQualifier(this);
     }
 
     private final Package pkg;

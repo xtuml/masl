@@ -24,12 +24,11 @@ package org.xtuml.masl.translate.inmemory;
 import com.google.common.collect.Iterables;
 import org.xtuml.masl.cppgen.Executable;
 import org.xtuml.masl.cppgen.Library;
+import org.xtuml.masl.metamodel.domain.Domain;
 import org.xtuml.masl.metamodel.project.Project;
-import org.xtuml.masl.metamodel.project.ProjectDomain;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -51,7 +50,7 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
 
     @Override
     public Collection<org.xtuml.masl.translate.ProjectTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.ProjectTranslator>singletonList(mainProjectTranslator);
+        return Collections.singletonList(mainProjectTranslator);
     }
 
     @Override
@@ -63,8 +62,8 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
 
         executable.addDependency(mainProjectTranslator.getLibrary());
 
-        for (final ProjectDomain domain : project.getDomains()) {
-            executable.addDependency(DomainTranslator.getInstance(domain.getDomain()).getLibrary());
+        for (final Domain domain : mainProjectTranslator.getFullDomains()) {
+            executable.addDependency(DomainTranslator.getInstance(domain).getLibrary());
         }
     }
 

@@ -23,6 +23,7 @@ package org.xtuml.masl.translate.cmake;
 
 import org.xtuml.masl.cppgen.Executable;
 import org.xtuml.masl.translate.cmake.functions.SimpleAddExecutable;
+import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class BuildExecutable implements CMakeListsItem {
 
     public BuildExecutable(final Executable exe, final File sourcePath) {
         addLib =
-                new SimpleAddExecutable(Utils.getNameArg(exe),
+                new SimpleAddExecutable(new SingleArgument(exe.getName()),
                                         Utils.getPathArgs(exe.getFiles()),
                                         Utils.getNameArgs(exe.getDependencies()),
                                         exe.isExport());

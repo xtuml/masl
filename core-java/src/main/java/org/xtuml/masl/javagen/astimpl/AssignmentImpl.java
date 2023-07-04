@@ -35,8 +35,8 @@ class AssignmentImpl extends ExpressionImpl implements Assignment {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitAssignmen(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitAssignmen(this);
     }
 
     @Override
@@ -84,8 +84,8 @@ class AssignmentImpl extends ExpressionImpl implements Assignment {
         return 1;
     }
 
-    private final ChildNode<ExpressionImpl> target = new ChildNode<ExpressionImpl>(this);
-    private final ChildNode<ExpressionImpl> source = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> target = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> source = new ChildNode<>(this);
 
     Operator operator;
 }

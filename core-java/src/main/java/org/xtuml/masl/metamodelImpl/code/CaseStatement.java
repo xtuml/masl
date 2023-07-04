@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
@@ -96,8 +97,18 @@ public class CaseStatement extends Statement implements org.xtuml.masl.metamodel
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitCaseAlternative(this, p);
+        public void accept(final ASTNodeVisitor v) {
+            v.visitCaseAlternative(this);
+        }
+
+        @Override
+        public List<ASTNode> children() {
+            final List<ASTNode> result = new ArrayList<>();
+            if (conditions != null) {
+                result.addAll(conditions);
+            }
+            result.addAll(statements);
+            return result;
         }
 
     }
@@ -141,7 +152,7 @@ public class CaseStatement extends Statement implements org.xtuml.masl.metamodel
 
     @Override
     public List<Statement> getChildStatements() {
-        final List<Statement> result = new ArrayList<Statement>();
+        final List<Statement> result = new ArrayList<>();
 
         for (final Alternative alt : alternatives) {
             result.addAll(alt.getStatements());
@@ -157,7 +168,7 @@ public class CaseStatement extends Statement implements org.xtuml.masl.metamodel
 
     @Override
     public String toAbbreviatedString() {
-        final List<String> alts = new ArrayList<String>();
+        final List<String> alts = new ArrayList<>();
         for (final Alternative alternative : alternatives) {
             alts.add(alternative.toAbbreviatedString());
         }
@@ -170,8 +181,13 @@ public class CaseStatement extends Statement implements org.xtuml.masl.metamodel
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCaseStatement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitCaseStatement(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(discriminator, alternatives);
     }
 
 }

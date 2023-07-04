@@ -32,8 +32,6 @@ public interface DomainTerminator extends ASTNode {
 
     Domain getDomain();
 
-    String getKeyLetters();
-
     String getName();
 
     List<? extends DomainTerminatorService> getServices();

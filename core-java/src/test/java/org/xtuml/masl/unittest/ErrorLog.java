@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,14 +20,13 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.unittest;
+import java.util.HashMap;
 
 import org.junit.Assert;
 import org.xtuml.masl.error.ErrorCode;
 import org.xtuml.masl.error.ErrorListener;
 import org.xtuml.masl.error.MaslError;
 import org.xtuml.masl.utils.TextUtils;
-
-import java.util.HashMap;
 
 public class ErrorLog implements ErrorListener {
 
@@ -73,7 +72,7 @@ public class ErrorLog implements ErrorListener {
         reset();
     }
 
-    private final HashMap<ErrorCode, Integer> raised = new HashMap<ErrorCode, Integer>();
+    private final HashMap<ErrorCode, Integer> raised = new HashMap<>();
 
     public static ErrorLog getInstance() {
         return instance;

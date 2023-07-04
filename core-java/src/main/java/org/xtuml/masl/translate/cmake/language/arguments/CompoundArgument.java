@@ -23,6 +23,7 @@ package org.xtuml.masl.translate.cmake.language.arguments;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,16 @@ public class CompoundArgument implements SimpleArgument {
 
     public CompoundArgument(final Iterable<? extends SimpleArgument> args) {
         this.args = ImmutableList.copyOf(args);
+
+    }
+
+    public CompoundArgument(final SimpleArgument... args) {
+        this.args = ImmutableList.copyOf(args);
+
+    }
+
+    public CompoundArgument(final String... args) {
+        this.args = ImmutableList.copyOf(Arrays.stream(args).map(SingleArgument::new).collect(Collectors.toList()));
 
     }
 

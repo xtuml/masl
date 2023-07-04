@@ -60,8 +60,8 @@ public class DomainFunctionInvocation extends FunctionInvocation<DomainService>
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDomainFunctionInvocation(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDomainFunctionInvocation(this);
     }
 
 }

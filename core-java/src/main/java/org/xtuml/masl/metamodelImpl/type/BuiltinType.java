@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.NotFound;
@@ -28,20 +29,21 @@ import org.xtuml.masl.metamodelImpl.error.NotFoundGlobal;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class BuiltinType extends BasicType implements org.xtuml.masl.metamodel.type.BuiltinType {
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitBuiltinType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitBuiltinType(this);
     }
 
     private enum Type {
         CHARACTER, WCHARACTER, STRING, WSTRING, BOOLEAN, BYTE, SMALLINTEGER, INTEGER, REAL, DEVICE, DURATION, TIMESTAMP, INSTANCE, EVENT, TIMER
     }
 
-    private static final Map<String, Type> lookup = new HashMap<String, Type>();
+    private static final Map<String, Type> lookup = new HashMap<>();
 
     static {
         lookup.put("character", Type.CHARACTER);
@@ -164,4 +166,10 @@ public abstract class BuiltinType extends BasicType implements org.xtuml.masl.me
     abstract public BuiltinType getBasicType();
 
     private final String text;
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
+    }
+
 }

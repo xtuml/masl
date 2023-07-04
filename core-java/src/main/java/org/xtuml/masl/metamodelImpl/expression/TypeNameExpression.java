@@ -21,10 +21,13 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.InternalType;
+
+import java.util.List;
 
 public class TypeNameExpression extends Expression implements org.xtuml.masl.metamodel.TypeNameExpression {
 
@@ -69,8 +72,13 @@ public class TypeNameExpression extends Expression implements org.xtuml.masl.met
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTypeNameExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTypeNameExpression(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

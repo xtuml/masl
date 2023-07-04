@@ -44,45 +44,15 @@ public class Filter {
         String convert(String string);
     }
 
-    public static final WordFilter TO_LOWER = new WordFilter() {
+    public static final WordFilter TO_LOWER = string -> string.toLowerCase();
 
-        @Override
-        public String convert(final String string) {
-            return string.toLowerCase();
-        }
-    };
+    public static final WordFilter TO_UPPER = string -> string.toUpperCase();
 
-    public static final WordFilter TO_UPPER = new WordFilter() {
+    public static final WordFilter TO_CAMEL = string -> TextUtils.upperFirst(string.toLowerCase());
 
-        @Override
-        public String convert(final String string) {
-            return string.toUpperCase();
-        }
-    };
+    public static final WordFilter NO_CHANGE = string -> string;
 
-    public static final WordFilter TO_CAMEL = new WordFilter() {
-
-        @Override
-        public String convert(final String string) {
-            return TextUtils.upperFirst(string.toLowerCase());
-        }
-    };
-
-    public static final WordFilter NO_CHANGE = new WordFilter() {
-
-        @Override
-        public String convert(final String string) {
-            return string;
-        }
-    };
-
-    public static final WordFilter INITIAL_LETTER = new WordFilter() {
-
-        @Override
-        public String convert(final String string) {
-            return string.substring(0, 1);
-        }
-    };
+    public static final WordFilter INITIAL_LETTER = string -> string.substring(0, 1);
 
     private final String separator;
     private final WordFilter firstWordFilter;
@@ -112,20 +82,20 @@ public class Filter {
     }
 
     public Filter addPrefix(final String prefix) {
-        final LinkedList<String> newPrefix = new LinkedList<String>(this.prefix);
+        final LinkedList<String> newPrefix = new LinkedList<>(this.prefix);
         newPrefix.addFirst(prefix);
         return new Filter(newPrefix, firstWordFilter, wordFilter, separator, suffix);
     }
 
     public Filter addSuffix(final String suffix) {
-        final LinkedList<String> newSuffix = new LinkedList<String>(this.suffix);
+        final LinkedList<String> newSuffix = new LinkedList<>(this.suffix);
         newSuffix.addLast(suffix);
         return new Filter(prefix, firstWordFilter, wordFilter, separator, newSuffix);
     }
 
     public String convert(final String string) {
 
-        final List<Object> allWords = new ArrayList<Object>();
+        final List<Object> allWords = new ArrayList<>();
         allWords.addAll(prefix);
         allWords.addAll(Arrays.asList(splitPattern.split(string)));
         allWords.addAll(suffix);

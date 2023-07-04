@@ -42,8 +42,8 @@ class NewInstanceImpl extends ExpressionImpl implements NewInstance {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitNewInstance(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitNewInstance(this);
     }
 
     @Override
@@ -114,9 +114,9 @@ class NewInstanceImpl extends ExpressionImpl implements NewInstance {
         return 13;
     }
 
-    private final ChildNodeList<ExpressionImpl> arguments = new ChildNodeList<ExpressionImpl>(this);
-    private final ChildNodeList<ReferenceTypeImpl> typeArguments = new ChildNodeList<ReferenceTypeImpl>(this);
-    private final ChildNode<TypeBodyImpl> typeBody = new ChildNode<TypeBodyImpl>(this);
-    private final ChildNode<DeclaredTypeImpl> instanceType = new ChildNode<DeclaredTypeImpl>(this);
-    private final ChildNode<ExpressionImpl> outerInstance = new ChildNode<ExpressionImpl>(this);
+    private final ChildNodeList<ExpressionImpl> arguments = new ChildNodeList<>(this);
+    private final ChildNodeList<ReferenceTypeImpl> typeArguments = new ChildNodeList<>(this);
+    private final ChildNode<TypeBodyImpl> typeBody = new ChildNode<>(this);
+    private final ChildNode<DeclaredTypeImpl> instanceType = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> outerInstance = new ChildNode<>(this);
 }

@@ -21,11 +21,14 @@
  */
 package org.xtuml.masl.metamodelImpl.relationship;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
 import org.xtuml.masl.metamodelImpl.domain.Domain;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
+
+import java.util.List;
 
 public abstract class RelationshipDeclaration extends Positioned
         implements org.xtuml.masl.metamodel.relationship.RelationshipDeclaration {
@@ -93,6 +96,11 @@ public abstract class RelationshipDeclaration extends Positioned
     @Override
     public String toString() {
         return "relationship " + getName() + "\tis\t";
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(pragmas);
     }
 
 }

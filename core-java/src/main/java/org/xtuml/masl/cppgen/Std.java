@@ -47,6 +47,7 @@ public class Std {
     private final static CodeFile sstreamInc = system.createSystemHeader("sstream");
     private final static CodeFile iteratorInc = system.createSystemHeader("iterator");
     private final static CodeFile algorithmInc = system.createSystemHeader("algorithm");
+    private final static CodeFile tupleInc = system.createSystemHeader("tuple");
 
     /**
      * The <code>::std</code> namespace
@@ -99,8 +100,7 @@ public class Std {
     }
 
     /**
-     * Creates a <code>{@literal ::std::make_pair(first,second)}</code> method
-     * call
+     * Creates a <code>{@literal ::std::make_pair(first,second)}</code> method call
      * <p>
      * <p>
      * the first argument
@@ -360,6 +360,36 @@ public class Std {
         final Function dynamic_cast = new Function("dynamic_cast");
         dynamic_cast.addTemplateSpecialisation(type);
         return dynamic_cast;
+    }
+
+    /**
+     * Creates a <code>{@literal const_cast<type>}</code> function
+     * <p>
+     * <p>
+     * the type template parameter
+     *
+     * @return the const_cast function
+     */
+    public static Expression tie(final List<Expression> expressions) {
+        final Function tie = new Function("tie", std, tupleInc);
+        return tie.asFunctionCall(expressions);
+    }
+
+    public static Expression move(final Expression expression) {
+        final Function move = new Function("move", std, utilityInc);
+        return move.asFunctionCall(expression);
+    }
+
+    public static Expression get(TypeUsage type, Expression value) {
+        Function get = new Function("get", std);
+        get.addTemplateSpecialisation(type);
+        return get.asFunctionCall(value);
+    }
+
+    public static Expression get(Expression index, Expression value) {
+        Function get = new Function("get", std);
+        get.addTemplateSpecialisation(index);
+        return get.asFunctionCall(value);
     }
 
     /**

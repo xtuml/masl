@@ -35,7 +35,6 @@ import org.xtuml.masl.translate.main.object.EventTranslator;
 import org.xtuml.masl.translate.sql.main.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -138,7 +137,7 @@ final class SqliteTraits implements DatabaseTraits {
         decodeFn.setReturnType(new TypeUsage(Architecture.event.getEventPtr()));
         final Variable blob = decodeFn.createParameter(new TypeUsage(getBlobClass(), TypeUsage.Reference), "blob");
 
-        final List<Expression> createArgs = new ArrayList<Expression>();
+        final List<Expression> createArgs = new ArrayList<>();
 
         if (event.getParameters().size() > 0) {
             final StatementGroup vars = new StatementGroup();
@@ -150,7 +149,7 @@ final class SqliteTraits implements DatabaseTraits {
             final Class decoderType = ASN1.BERDecoder(iterator);
             final Variable
                     decoder =
-                    new Variable(new TypeUsage(decoderType), "decoder", Collections.<Expression>singletonList(bufBegin));
+                    new Variable(new TypeUsage(decoderType), "decoder", Collections.singletonList(bufBegin));
             decodeFn.getCode().appendStatement(decoder.asStatement());
 
             decodeFn.getCode().appendStatement(ASN1.checkHeader(decoder.asExpression(), ASN1.sequenceTag, true));
@@ -202,7 +201,8 @@ final class SqliteTraits implements DatabaseTraits {
             final Variable
                     encoder =
                     new Variable(new TypeUsage(ASN1.DEREncoder),
-                                 "encoder", Collections.<Expression>singletonList(ASN1.sequenceTag));
+                                 "encoder",
+                                 Collections.singletonList(ASN1.sequenceTag));
             encodeFn.getCode().appendStatement(encoder.asStatement());
 
             for (final ParameterDefinition param : event.getParameters()) {

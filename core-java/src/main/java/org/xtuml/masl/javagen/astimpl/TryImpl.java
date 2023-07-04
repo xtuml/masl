@@ -37,8 +37,8 @@ public class TryImpl extends StatementImpl implements Try {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTry(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitTry(this);
     }
 
     @Override
@@ -74,9 +74,9 @@ public class TryImpl extends StatementImpl implements Try {
         return (CodeBlockImpl) code;
     }
 
-    private final List<CatchImpl> catchClauses = new ChildNodeList<CatchImpl>(this);
-    private final ChildNode<CodeBlockImpl> mainBlock = new ChildNode<CodeBlockImpl>(this);
-    private final ChildNode<CodeBlockImpl> finallyBlock = new ChildNode<CodeBlockImpl>(this);
+    private final List<CatchImpl> catchClauses = new ChildNodeList<>(this);
+    private final ChildNode<CodeBlockImpl> mainBlock = new ChildNode<>(this);
+    private final ChildNode<CodeBlockImpl> finallyBlock = new ChildNode<>(this);
 
     @Override
     public Catch addCatch(final Type type, final String name) {

@@ -85,12 +85,17 @@ public class Function {
 
             final StringWriter definition = new StringWriter();
 
-            final List<String> templateParamNames = new ArrayList<String>();
+            final List<String> templateParamNames = new ArrayList<>();
             for (final TemplateParameter templateParameter : templateParameters) {
                 templateParamNames.add(templateParameter.getName());
             }
 
-            definition.write(TextUtils.formatList(templateParamNames, indent + "template<", ", ", ">\n"));
+            if ((isImplicitSpecialization || templateSpecialisations.size() > 0) && templateParamNames.size() == 0) {
+                definition.write(indent + "template<>\n");
+            } else {
+                definition.write(TextUtils.formatList(templateParamNames, indent + "template<", "", "", ", ", ">\n"));
+            }
+
             definition.write(indent);
             if (isExternC) {
                 definition.write("Extern \"C\" ");
@@ -135,14 +140,14 @@ public class Function {
             if ((isDestructor || !isPure) && isDeclaredInClass) {
                 if (isDeclaredInClass) {
                     if (isConstructor()) {
-                        final List<String> inits = new ArrayList<String>();
+                        final List<String> inits = new ArrayList<>();
 
                         final List<Class> superclasses = getDeclaration().getParentClass().getSuperclasses();
 
                         for (final Class clazz : superclasses) {
                             final List<Expression> params = superclassArgs.get(clazz);
                             if (params != null && params.size() > 0) {
-                                final List<String> paramCode = new ArrayList<String>();
+                                final List<String> paramCode = new ArrayList<>();
                                 for (final Expression param : params) {
                                     paramCode.add(param.getCode(declaration.getParentNamespace()));
                                 }
@@ -187,7 +192,7 @@ public class Function {
 
             final StringWriter definition = new StringWriter();
 
-            final List<String> templateParamNames = new ArrayList<String>();
+            final List<String> templateParamNames = new ArrayList<>();
             for (final TemplateParameter templateParameter : templateParameters) {
                 templateParamNames.add(templateParameter.getName());
             }
@@ -242,14 +247,14 @@ public class Function {
                     definition.append("extern \"C\" ");
                 }
 
-                final List<String> templateParamNames = new ArrayList<String>();
+                final List<String> templateParamNames = new ArrayList<>();
                 for (final TemplateParameter templateParameter : templateParameters) {
                     templateParamNames.add(templateParameter.getName());
                 }
 
                 Class parentClass = getDeclaration().getParentClass();
                 while (parentClass != null) {
-                    final List<String> parentTemplateParamNames = new ArrayList<String>();
+                    final List<String> parentTemplateParamNames = new ArrayList<>();
                     for (final TemplateParameter templateParameter : parentClass.getTemplateParameters()) {
                         parentTemplateParamNames.add(templateParameter.getName());
                     }
@@ -305,14 +310,14 @@ public class Function {
                 writer.write("\n");
 
                 if (isConstructor()) {
-                    final List<String> inits = new ArrayList<String>();
+                    final List<String> inits = new ArrayList<>();
 
                     final List<Class> superclasses = getDeclaration().getParentClass().getSuperclasses();
 
                     for (final Class clazz : superclasses) {
                         final List<Expression> params = superclassArgs.get(clazz);
                         if (params != null && params.size() > 0) {
-                            final List<String> paramCode = new ArrayList<String>();
+                            final List<String> paramCode = new ArrayList<>();
                             for (final Expression param : params) {
                                 paramCode.add(param.getCode(declaration.getParentNamespace()));
                             }
@@ -426,8 +431,8 @@ public class Function {
     }
 
     /**
-     * Creates a function in the supplied namespace, and marks is as declared in
-     * the supplied CodeFile. This would normally be used for functions which are
+     * Creates a function in the supplied namespace, and marks is as declared in the
+     * supplied CodeFile. This would normally be used for functions which are
      * declared in external header files, and hence need no further definition.
      * <p>
      * <p>
@@ -445,15 +450,14 @@ public class Function {
     }
 
     /**
-     * Creates a function in the supplied namespace, and marks is as declared in
-     * the supplied CodeFiles. This would normally be used for functions which are
+     * Creates a function in the supplied namespace, and marks is as declared in the
+     * supplied CodeFiles. This would normally be used for functions which are
      * declared in external header files, and hence need no further definition. It
-     * may be necessray to use this version rather than the single code file
-     * version when a function is overloaded in more than one header file for
-     * different parameter types, but you don't want to be concerned with working
-     * out which particular one is required. This happens frequently with system
-     * header files, particularly math functions overloaded for different numeric
-     * types
+     * may be necessray to use this version rather than the single code file version
+     * when a function is overloaded in more than one header file for different
+     * parameter types, but you don't want to be concerned with working out which
+     * particular one is required. This happens frequently with system header files,
+     * particularly math functions overloaded for different numeric types
      * <p>
      * <p>
      * the name of the function
@@ -526,15 +530,14 @@ public class Function {
     }
 
     /**
-     * Creates a member function call for this function as a member function on
-     * the supplied object, passing the supplied arguments.
+     * Creates a member function call for this function as a member function on the
+     * supplied object, passing the supplied arguments.
      * <p>
      * <p>
      * The object containing the member function
      * <p>
-     * pass <code>true</code> if the
-     * <code>{@literal obj->function}</code> syntax is to be used, or
-     * <code>false</code> if the <code>{@literal obj.function}</code>
+     * pass <code>true</code> if the <code>{@literal obj->function}</code> syntax is
+     * to be used, or <code>false</code> if the <code>{@literal obj.function}</code>
      * syntax is to be used.
      * <p>
      * the arguments to pass to the function
@@ -546,15 +549,14 @@ public class Function {
     }
 
     /**
-     * Creates a member function call for this function as a member function on
-     * the supplied object, passing the supplied arguments.
+     * Creates a member function call for this function as a member function on the
+     * supplied object, passing the supplied arguments.
      * <p>
      * <p>
      * The object containing the member function
      * <p>
-     * pass <code>true</code> if the
-     * <code>{@literal obj->function}</code> syntax is to be used, or
-     * <code>false</code> if the <code>{@literal obj.function}</code>
+     * pass <code>true</code> if the <code>{@literal obj->function}</code> syntax is
+     * to be used, or <code>false</code> if the <code>{@literal obj.function}</code>
      * syntax is to be used.
      * <p>
      * the arguments to pass to the function
@@ -609,15 +611,35 @@ public class Function {
 
     /**
      * Creates a function pointer type from this function definition, so for a
-     * function declaration like void foo(int,int,std::string) will return its
-     * type; void (*)(int,int,std::string)
+     * function declaration like void foo(int,int,std::string) will return its type;
+     * void (*)(int,int,std::string)
      *
      * @return the function pointer type
      */
     public Type asFunctionPointerType() {
-        final List<TypeUsage> paramTypeList = new ArrayList<TypeUsage>();
+        final List<TypeUsage> paramTypeList = new ArrayList<>();
         for (final Variable currentParamVar : getParameters()) {
             paramTypeList.add(currentParamVar.getType());
+        }
+        final TypeUsage returnType = getReturnType();
+
+        final FunctionPtrType funcPtr = new FunctionPtrType();
+        funcPtr.addReturnType(returnType);
+        funcPtr.addParameterType(paramTypeList);
+        return funcPtr;
+    }
+
+    /**
+     * Creates a function signature type from this function definition for use in std::function, so for a
+     * function declaration like void foo(int,int,const std::string&) will return its type;
+     * void(int,int,std::string)
+     *
+     * @return the function pointer type
+     */
+    public Type asFunctionSignatureType() {
+        final List<TypeUsage> paramTypeList = new ArrayList<>();
+        for (final Variable currentParamVar : getParameters()) {
+            paramTypeList.add(currentParamVar.getType().getNonConstReferenceType());
         }
         final TypeUsage returnType = getReturnType();
 
@@ -696,7 +718,7 @@ public class Function {
     }
 
     public List<Variable> getParameters() {
-        return new ArrayList<Variable>(this.parameters);
+        return new ArrayList<>(this.parameters);
     }
 
     public TypeUsage getReturnType() {
@@ -704,14 +726,14 @@ public class Function {
     }
 
     /**
-     * Inherits this function into one of its parent class's children. This will
-     * not actually add a declaration of the function in the child class, but will
-     * allow calls of the function as if it was declared in the child class.
-     * Typically this is not necesary for most member functions, as no reference
-     * is made to the class containing the declaration, however when calling a
-     * static member function inside a subclass, it is much neater to use this
-     * function to pull the declaration down, rather than using the fully
-     * qualified name of the base class.
+     * Inherits this function into one of its parent class's children. This will not
+     * actually add a declaration of the function in the child class, but will allow
+     * calls of the function as if it was declared in the child class. Typically
+     * this is not necesary for most member functions, as no reference is made to
+     * the class containing the declaration, however when calling a static member
+     * function inside a subclass, it is much neater to use this function to pull
+     * the declaration down, rather than using the fully qualified name of the base
+     * class.
      * <p>
      * For example, given a function <code>static void f()</code> declared in a
      * class <code>Base</code>, and referenced in a class <code>Derived</code>
@@ -766,16 +788,15 @@ public class Function {
      * is not const.
      *
      *
-     * <code>true</code> if this function is to be declared
-     * <code>const</code>
+     * <code>true</code> if this function is to be declared <code>const</code>
      */
     public void setConst(final boolean isConst) {
         this.isConst = isConst;
     }
 
     /**
-     * Changes whether this function is a destructor. By default a function is not
-     * a destructor.
+     * Changes whether this function is a destructor. By default a function is not a
+     * destructor.
      *
      *
      * <code>true</code> if this function is a destructor
@@ -807,12 +828,12 @@ public class Function {
     }
 
     /**
-     * Sets the initial value for a class member in this constructors
-     * initialisation section. The generated code for the constructor will
-     * initialise every member in the order that the members appear in the
-     * declaration (as recommended by Meyers, Effective C++). This function allows
-     * a member variable to be initialised with the supplied value, rather than by
-     * using its default contructor.
+     * Sets the initial value for a class member in this constructors initialisation
+     * section. The generated code for the constructor will initialise every member
+     * in the order that the members appear in the declaration (as recommended by
+     * Meyers, Effective C++). This function allows a member variable to be
+     * initialised with the supplied value, rather than by using its default
+     * contructor.
      * <p>
      * <p>
      * the class member variable to initialise
@@ -826,16 +847,15 @@ public class Function {
     /**
      * Under some special circumstances the inline modifier needs to be added to a
      * functions definition. An example of this is when a template member function
-     * is fully specialised within a source file but the specialisation should
-     * only have internal linkage (prevents multiple symbol definition errors when
+     * is fully specialised within a source file but the specialisation should only
+     * have internal linkage (prevents multiple symbol definition errors when
      * linking against archive files).
      * <p>
      * If you are thinking of using this method, check that
      * <code>declareInClass</code> is not a better fit for your requriements.
      *
      *
-     * <code>true</code> if this function is to be declared
-     * <code>inline</code>
+     * <code>true</code> if this function is to be declared <code>inline</code>
      */
     public void setInlineModifier(final boolean isInLine) {
         this.isInline = isInLine;
@@ -847,8 +867,7 @@ public class Function {
      * function inline).
      *
      *
-     * <code>true</code> if this function is to be declared
-     * <code>inline</code>
+     * <code>true</code> if this function is to be declared <code>inline</code>
      */
     public void declareInClass(final boolean isInClass) {
         this.isDeclaredInClass = isInClass;
@@ -856,13 +875,13 @@ public class Function {
 
     /**
      * Changes whether this function is an declared as a pure virtual function.
-     * Marking a function as pure will also mark it as virtual. Setting a
-     * previously pure function as not pure will leave it as virtual. By default a
-     * function is not pure or virtual.
+     * Marking a function as pure will also mark it as virtual. Setting a previously
+     * pure function as not pure will leave it as virtual. By default a function is
+     * not pure or virtual.
      *
      *
-     * <code>true</code> if this function is to be declared as a pure
-     * virtual function
+     * <code>true</code> if this function is to be declared as a pure virtual
+     * function
      */
     public void setPure(final boolean isPure) {
         this.isPure = isPure;
@@ -872,8 +891,8 @@ public class Function {
     }
 
     /**
-     * Sets the return type for this function. The default return type upon
-     * creation is <void>void</code>
+     * Sets the return type for this function. The default return type upon creation
+     * is <void>void</code>
      * <p>
      * <p>
      * the required return type
@@ -883,12 +902,11 @@ public class Function {
     }
 
     /**
-     * Changes whether this function is an declared static. By default a function
-     * is not static.
+     * Changes whether this function is an declared static. By default a function is
+     * not static.
      *
      *
-     * <code>true</code> if this function is to be declared
-     * <code>static</code>
+     * <code>true</code> if this function is to be declared <code>static</code>
      */
     public void setStatic(final boolean isStatic) {
         this.isStatic = isStatic;
@@ -896,9 +914,9 @@ public class Function {
 
     /**
      * Changes whether this function is declared as an extern "C" function so that
-     * it uses C linkage rather then C++ linkage. If set the symbol name
-     * associated with the function name will not be a C++ mangled name.By default
-     * a function is not declared as extern "C".
+     * it uses C linkage rather then C++ linkage. If set the symbol name associated
+     * with the function name will not be a C++ mangled name.By default a function
+     * is not declared as extern "C".
      *
      *
      * <code>true</code> if this function is to be declared as extern "C"
@@ -922,13 +940,12 @@ public class Function {
     }
 
     /**
-     * Changes whether this function is an declared as a virtual function. Marking
-     * a function as not virtual will also mark it as not pure. By default a
-     * function is not vitual.
+     * Changes whether this function is an declared as a virtual function. Marking a
+     * function as not virtual will also mark it as not pure. By default a function
+     * is not vitual.
      *
      *
-     * <code>true</code> if this function is to be declared as a virtual
-     * function
+     * <code>true</code> if this function is to be declared as a virtual function
      */
     public void setVirtual(final boolean isVirtual) {
         this.isVirtual = isVirtual;
@@ -996,7 +1013,7 @@ public class Function {
     }
 
     String getFullName(final Namespace currentNamespace) {
-        final List<String> args = new ArrayList<String>();
+        final List<String> args = new ArrayList<>();
         for (final TemplateSpecialisation arg : templateSpecialisations) {
             args.add(arg.getValue(currentNamespace));
         }
@@ -1191,24 +1208,24 @@ public class Function {
     private boolean isCast = false;
     private boolean isExternC = false;
 
-    private final Map<Label, String> labelNameLookup = new HashMap<Label, String>();
+    private final Map<Label, String> labelNameLookup = new HashMap<>();
 
     private int labelNo = 0;
 
-    private final Map<Variable, Expression> memberValues = new HashMap<Variable, Expression>();
+    private final Map<Variable, Expression> memberValues = new HashMap<>();
     private final String name;
-    private List<Variable> parameters = new ArrayList<Variable>();
+    private List<Variable> parameters = new ArrayList<>();
     private TypeUsage returnType = TypeUsage.VOID;
-    private final Map<Class, List<Expression>> superclassArgs = new HashMap<Class, List<Expression>>();
+    private final Map<Class, List<Expression>> superclassArgs = new HashMap<>();
 
     private CodeFile specialisationFrom = null;
 
     /**
      * An ordered list of the template parameters of this function.
      */
-    private List<TemplateParameter> templateParameters = new ArrayList<TemplateParameter>();
+    private List<TemplateParameter> templateParameters = new ArrayList<>();
     /**
      * An ordered list of the template parameter specialisations of this function.
      */
-    private List<TemplateSpecialisation> templateSpecialisations = new ArrayList<TemplateSpecialisation>();
+    private List<TemplateSpecialisation> templateSpecialisations = new ArrayList<>();
 }

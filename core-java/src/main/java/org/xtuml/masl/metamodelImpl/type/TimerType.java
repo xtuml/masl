@@ -41,7 +41,7 @@ public class TimerType extends BuiltinType {
 
     @Override
     public TimerType getPrimitiveType() {
-        return this;
+        return ANON;
     }
 
     @Override

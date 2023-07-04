@@ -105,11 +105,11 @@ class MethodImpl extends TypeMemberImpl implements Method, Constructor, Modifier
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+    public void accept(final ASTNodeVisitor v) throws Exception {
         if (getName() == null) {
-            return v.visitConstructor(this, p);
+            v.visitConstructor(this);
         } else {
-            return v.visitMethod(this, p);
+            v.visitMethod(this);
         }
     }
 
@@ -332,21 +332,21 @@ class MethodImpl extends TypeMemberImpl implements Method, Constructor, Modifier
 
     private String name;
 
-    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<ModifiersImpl>(this);
+    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<>(this);
 
-    private final ChildNode<TypeImpl> returnType = new ChildNode<TypeImpl>(this);
+    private final ChildNode<TypeImpl> returnType = new ChildNode<>(this);
 
-    private final ChildNodeList<ParameterImpl> parameters = new ChildNodeList<ParameterImpl>(this);
+    private final ChildNodeList<ParameterImpl> parameters = new ChildNodeList<>(this);
 
-    private final ChildNodeList<TypeImpl> thrown = new ChildNodeList<TypeImpl>(this);
+    private final ChildNodeList<TypeImpl> thrown = new ChildNodeList<>(this);
 
-    private final ChildNodeList<TypeParameterImpl> typeParameters = new ChildNodeList<TypeParameterImpl>(this);
+    private final ChildNodeList<TypeParameterImpl> typeParameters = new ChildNodeList<>(this);
 
     private final Scope scope;
 
     private boolean isVarArgs;
 
-    private final ChildNode<CodeBlockImpl> code = new ChildNode<CodeBlockImpl>(this);
+    private final ChildNode<CodeBlockImpl> code = new ChildNode<>(this);
 
     @Override
     public MethodInvocation call(final Expression... args) {
@@ -360,9 +360,7 @@ class MethodImpl extends TypeMemberImpl implements Method, Constructor, Modifier
 
     public MethodImpl copyForOverride() {
         final MethodImpl result = getAST().createMethod(name);
-        final Map<TypeParameterImpl, TypeParameterImpl>
-                typeParamMap =
-                new HashMap<TypeParameterImpl, TypeParameterImpl>();
+        final Map<TypeParameterImpl, TypeParameterImpl> typeParamMap = new HashMap<>();
         for (final TypeParameterImpl param : getTypeParameters()) {
             typeParamMap.put(param, result.addTypeParameter(param.getName()));
         }

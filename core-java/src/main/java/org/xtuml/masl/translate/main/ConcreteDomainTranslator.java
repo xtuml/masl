@@ -27,16 +27,17 @@ import org.xtuml.masl.metamodel.relationship.AssociativeRelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.NormalRelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.RelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.SubtypeRelationshipDeclaration;
-import org.xtuml.masl.translate.build.FileGroup;
+import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.main.object.ConcreteObjectTranslator;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ConcreteDomainTranslator extends org.xtuml.masl.translate.DomainTranslator {
 
-    private final Map<ObjectDeclaration, ConcreteObjectTranslator>
-            objectTranslators =
-            new HashMap<ObjectDeclaration, ConcreteObjectTranslator>();
+    private final Map<ObjectDeclaration, ConcreteObjectTranslator> objectTranslators = new HashMap<>();
 
     protected ConcreteDomainTranslator(final Domain domain) {
         super(domain);
@@ -51,7 +52,7 @@ public abstract class ConcreteDomainTranslator extends org.xtuml.masl.translate.
      */
     @Override
     public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.DomainTranslator>singletonList(mainDomainTranslator);
+        return Collections.singletonList(mainDomainTranslator);
     }
 
     protected abstract ConcreteObjectTranslator createTranslator(ObjectDeclaration object);

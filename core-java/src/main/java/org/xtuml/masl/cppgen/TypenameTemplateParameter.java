@@ -29,7 +29,7 @@ import java.util.List;
 public class TypenameTemplateParameter extends TemplateParameter {
 
     private final TemplateType type;
-    private final List<TemplateParameter> templateParameters = new ArrayList<TemplateParameter>();
+    private final List<TemplateParameter> templateParameters = new ArrayList<>();
 
     public TypenameTemplateParameter() {
         this.type = null;
@@ -45,7 +45,7 @@ public class TypenameTemplateParameter extends TemplateParameter {
 
     @Override
     public String getName() {
-        final List<String> params = new ArrayList<String>();
+        final List<String> params = new ArrayList<>();
         for (final TemplateParameter param : templateParameters) {
             params.add(param.getName());
         }

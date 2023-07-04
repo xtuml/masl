@@ -22,8 +22,9 @@
 package org.xtuml.masl.cppgen;
 
 import com.google.common.collect.Iterables;
-import org.xtuml.masl.translate.build.BuildSet;
-import org.xtuml.masl.translate.build.FileGroup;
+import org.xtuml.masl.translate.building.BuildSet;
+import org.xtuml.masl.translate.building.FileGroup;
+import org.xtuml.masl.translate.building.ReferencedFile;
 
 import java.io.File;
 
@@ -236,12 +237,12 @@ public class Library extends FileGroup {
         return createCodeFile(new File(path, filename), type);
     }
 
-    public Iterable<CodeFile> getPublicHeaders() {
-        return Iterables.filter(Iterables.filter(getFiles(), CodeFile.class), f -> f.isPublicHeader());
+    public Iterable<ReferencedFile> getPublicHeaders() {
+        return Iterables.filter(getFiles(), ReferencedFile::isPublicHeader);
     }
 
     public Iterable<CodeFile> getBodyFiles() {
-        return Iterables.filter(Iterables.filter(getFiles(), CodeFile.class), f -> f.isBodyFile());
+        return Iterables.filter(Iterables.filter(getFiles(), CodeFile.class), CodeFile::isBodyFile);
     }
 
     private String bodyExtension = "";

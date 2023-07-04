@@ -34,8 +34,8 @@ class ArrayAccessImpl extends ExpressionImpl implements ArrayAccess {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitArrayAccess(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitArrayAccess(this);
     }
 
     @Override
@@ -73,8 +73,8 @@ class ArrayAccessImpl extends ExpressionImpl implements ArrayAccess {
         return 15;
     }
 
-    private final ChildNode<ExpressionImpl> arrayExpression = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> arrayExpression = new ChildNode<>(this);
 
-    private final ChildNode<ExpressionImpl> indexExpression = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> indexExpression = new ChildNode<>(this);
 
 }

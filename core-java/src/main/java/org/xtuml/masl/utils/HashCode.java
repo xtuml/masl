@@ -25,11 +25,11 @@ public class HashCode {
 
     public static int makeHash(final Object... objects) {
         int hash = 0;
-        for (int i = 0; i < objects.length; ++i) {
-            if (objects[i] == null) {
+        for (final Object object : objects) {
+            if (object == null) {
                 hash = combineHash(hash, 0);
             } else {
-                hash = combineHash(hash, objects[i].hashCode());
+                hash = combineHash(hash, object.hashCode());
             }
         }
 
@@ -38,8 +38,8 @@ public class HashCode {
 
     public static int combineHashes(final int... hashes) {
         int hash = 0;
-        for (int i = 0; i < hashes.length; ++i) {
-            hash = combineHash(hash, hashes[i]);
+        for (final int hashe : hashes) {
+            hash = combineHash(hash, hashe);
         }
 
         return hash;

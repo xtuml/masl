@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodel.common;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.code.CodeBlock;
 import org.xtuml.masl.metamodel.code.VariableDefinition;
 import org.xtuml.masl.metamodel.exception.ExceptionReference;
@@ -28,7 +29,7 @@ import org.xtuml.masl.metamodel.type.BasicType;
 
 import java.util.List;
 
-public interface Service {
+public interface Service extends ASTNode {
 
     String getName();
 

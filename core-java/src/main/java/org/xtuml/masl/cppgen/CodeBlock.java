@@ -114,7 +114,7 @@ public class CodeBlock extends Statement {
 
     @Override
     Set<Declaration> getForwardDeclarations() {
-        final Set<Declaration> result = new LinkedHashSet<Declaration>();
+        final Set<Declaration> result = new LinkedHashSet<>();
         for (final Statement statement : statements) {
             result.addAll(statement.getForwardDeclarations());
         }
@@ -123,7 +123,7 @@ public class CodeBlock extends Statement {
 
     @Override
     Set<CodeFile> getIncludes() {
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
         for (final Statement statement : statements) {
             result.addAll(statement.getIncludes());
         }
@@ -132,14 +132,9 @@ public class CodeBlock extends Statement {
 
     @Override
     /**
-     * {@inheritDoc}The curly braces around the block will each appear on their
-     * own line indented by the supplied indent. Each statement in the block will
-     * be indented by and extra indent as supplied by
-     * {@link TextUtils#getIndent()}.
-     *
-     *          {@inheritDoc}
-     *          {@inheritDoc}
-     *          {@inheritDoc}
+     * {@inheritDoc}The curly braces around the block will each appear on their own
+     * line indented by the supplied indent. Each statement in the block will be
+     * indented by and extra indent as supplied by {@link TextUtils#getIndent()}.
      * @throws IOException
      */
     void write(final Writer writer, final String indent, final Namespace currentNamespace) throws IOException {
@@ -149,11 +144,11 @@ public class CodeBlock extends Statement {
     /**
      * Writes the code block to the supplied Writer. The curly braces around the
      * block will each appear on their own line indented by the supplied indent.
-     * Each statement in the block will be indented by and extra indent as
-     * supplied by {@link TextUtils#getIndent()}. If <code>trysameLine</code> is
-     * set, then an attempt will be made to put the entire block on a single line
-     * surrounded by the curly braces, if this is not possible becasue the line is
-     * too long, then the default behaviour will be used.
+     * Each statement in the block will be indented by and extra indent as supplied
+     * by {@link TextUtils#getIndent()}. If <code>trysameLine</code> is set, then an
+     * attempt will be made to put the entire block on a single line surrounded by
+     * the curly braces, if this is not possible becasue the line is too long, then
+     * the default behaviour will be used.
      * <p>
      * <p>
      * the Writer to write the code to
@@ -162,9 +157,8 @@ public class CodeBlock extends Statement {
      * <p>
      * the current namespace in effect for this code block
      * <p>
-     * if set, then an attempt will be made to put the whole code block
-     * on one line. This is typically used for inline functions or very
-     * simple if statements.
+     * if set, then an attempt will be made to put the whole code block on one line.
+     * This is typically used for inline functions or very simple if statements.
      *
      * @throws IOException
      */
@@ -208,7 +202,7 @@ public class CodeBlock extends Statement {
      * The list of statements in this code block
      */
     private final Comment comment;
-    private final LinkedList<Statement> statements = new LinkedList<Statement>();
+    private final LinkedList<Statement> statements = new LinkedList<>();
 
     public void clear() {
         statements.clear();

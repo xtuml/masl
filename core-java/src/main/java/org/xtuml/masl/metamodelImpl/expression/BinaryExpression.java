@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
@@ -29,7 +30,6 @@ import org.xtuml.masl.metamodelImpl.object.AttributeDeclaration;
 import org.xtuml.masl.utils.HashCode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -236,7 +236,7 @@ public abstract class BinaryExpression extends Expression
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(lhs.getFindArguments());
         params.addAll(rhs.getFindArguments());
         return params;
@@ -244,7 +244,7 @@ public abstract class BinaryExpression extends Expression
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(lhs.getConcreteFindParameters());
         params.addAll(rhs.getConcreteFindParameters());
         return params;
@@ -262,7 +262,7 @@ public abstract class BinaryExpression extends Expression
             final List<AttributeDeclaration> lhsAtts = getLhs().getFindEqualAttributes();
             final List<AttributeDeclaration> rhsAtts = getRhs().getFindEqualAttributes();
             if (lhsAtts != null && rhsAtts != null) {
-                final List<AttributeDeclaration> result = new ArrayList<AttributeDeclaration>();
+                final List<AttributeDeclaration> result = new ArrayList<>();
                 result.addAll(lhsAtts);
                 result.addAll(rhsAtts);
                 return result;
@@ -286,13 +286,13 @@ public abstract class BinaryExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitBinaryExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitBinaryExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(lhs, rhs);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs, rhs);
     }
 
 }

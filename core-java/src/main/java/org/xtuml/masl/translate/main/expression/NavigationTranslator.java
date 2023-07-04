@@ -68,14 +68,14 @@ public class NavigationTranslator extends ExpressionTranslator {
             }
         }
 
-        final List<org.xtuml.masl.cppgen.Expression> bindArgs = new ArrayList<org.xtuml.masl.cppgen.Expression>();
+        final List<org.xtuml.masl.cppgen.Expression> bindArgs = new ArrayList<>();
         bindArgs.add(navFunction.asFunctionPointer());
         bindArgs.add(Boost.bind_1);
 
         if (navigation.getSkeleton() != null) {
             final List<? extends org.xtuml.masl.metamodel.expression.Expression> maslParams = navigation.getArguments();
 
-            final List<Expression> findArgs = new ArrayList<Expression>(maslParams.size());
+            final List<Expression> findArgs = new ArrayList<>(maslParams.size());
 
             for (final org.xtuml.masl.metamodel.expression.Expression param : maslParams) {
                 findArgs.add(createTranslator(param, scope).getReadExpression());

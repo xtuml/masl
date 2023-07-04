@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.ParameterDefinition;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -86,7 +87,7 @@ public class GenerateStatement extends Statement implements org.xtuml.masl.metam
             }
         }
 
-        this.arguments = new ArrayList<Expression>();
+        this.arguments = new ArrayList<>();
 
         if (arguments.size() != event.getParameters().size()) {
             throw new SemanticError(SemanticErrorCode.NumberEventArgsIncorrect,
@@ -141,8 +142,13 @@ public class GenerateStatement extends Statement implements org.xtuml.masl.metam
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitGenerateStatement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitGenerateStatement(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(toInstance, arguments);
     }
 
 }

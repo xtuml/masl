@@ -36,25 +36,24 @@ public abstract class MacroArgument {
      * Returns the code representing the expression.
      * <p>
      * <p>
-     * The namespace that the expression is in. This is used to determine
-     * how much scope information is required to uniquely resolve any
-     * names used in the expression.
+     * The namespace that the expression is in. This is used to determine how much
+     * scope information is required to uniquely resolve any names used in the
+     * expression.
      *
      * @return the code for the expression
      */
     abstract String getCode(Namespace currentNamespace);
 
     /**
-     * Calculates the set of forward declarations needed to allow this parameter
-     * to compile.
+     * Calculates the set of forward declarations needed to allow this parameter to
+     * compile.
      *
      * @return forward declarations required
      */
     abstract Set<Declaration> getForwardDeclarations();
 
     /**
-     * Calculates the set of include files needed to allow this argument to
-     * compile.
+     * Calculates the set of include files needed to allow this argument to compile.
      *
      * @return include files required
      */
@@ -62,11 +61,11 @@ public abstract class MacroArgument {
 
     /**
      * Creates a macro argument using the supplied type. Note that the generated
-     * code will have no knowlege of how the type is used within the macro, but
-     * the assumption is made that the type will be instantiated, so include files
-     * and forward declarations needed to use the type will be added to the
-     * resultant code. Any further forward declarations and include files required
-     * will have to be added manually.
+     * code will have no knowlege of how the type is used within the macro, but the
+     * assumption is made that the type will be instantiated, so include files and
+     * forward declarations needed to use the type will be added to the resultant
+     * code. Any further forward declarations and include files required will have
+     * to be added manually.
      * <p>
      * <p>
      * the type to use
@@ -99,9 +98,9 @@ public abstract class MacroArgument {
     /**
      * Creates a macro argument using the supplied expression. Note that the
      * generated code will have no knowlege of how the string is used within the
-     * macro, but the assumption is made that the supplied expression will be
-     * needed as-is somewhere, so include files and forward declarations needed by
-     * the expression will be added to the resultant code. Any further forward
+     * macro, but the assumption is made that the supplied expression will be needed
+     * as-is somewhere, so include files and forward declarations needed by the
+     * expression will be added to the resultant code. Any further forward
      * declarations and include files required will have to be added manually.
      * <p>
      * <p>
@@ -134,9 +133,9 @@ public abstract class MacroArgument {
 
     /**
      * Creates a macro argument using the supplied string. Note that the generated
-     * code will have no knowlege of how the string is used within the macro, and
-     * so any forward declarations and include files required will have to be
-     * added manually.
+     * code will have no knowlege of how the string is used within the macro, and so
+     * any forward declarations and include files required will have to be added
+     * manually.
      * <p>
      * <p>
      * the string to use
@@ -155,12 +154,12 @@ public abstract class MacroArgument {
 
             @Override
             Set<Declaration> getForwardDeclarations() {
-                return new LinkedHashSet<Declaration>();
+                return new LinkedHashSet<>();
             }
 
             @Override
             Set<CodeFile> getIncludes() {
-                return new LinkedHashSet<CodeFile>();
+                return new LinkedHashSet<>();
             }
         };
 

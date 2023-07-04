@@ -113,7 +113,7 @@ public class NewExpression extends Expression {
 
     @Override
     String getCode(final Namespace currentNamespace, final String alignment) {
-        final List<String> argCode = new ArrayList<String>();
+        final List<String> argCode = new ArrayList<>();
         if (args != null) {
             for (final Expression arg : args) {
                 final String code = arg.getCode(currentNamespace, alignment + "\t");
@@ -121,7 +121,7 @@ public class NewExpression extends Expression {
             }
         }
 
-        final List<String> placementCode = new ArrayList<String>();
+        final List<String> placementCode = new ArrayList<>();
         if (placement != null) {
             for (final Expression arg : placement) {
                 final String code = arg.getCode(currentNamespace, alignment);

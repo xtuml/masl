@@ -55,18 +55,14 @@ public class PopulationClass implements GeneratedClass {
     private Function deleterFn;
     private Function constructor;
     private Function initialiseMethod;
-    private final Map<IdentifierDeclaration, Function>
-            identifierFindFns =
-            new HashMap<IdentifierDeclaration, Function>();
-    private final Map<IdentifierDeclaration, Variable>
-            identifierFindAtts =
-            new LinkedHashMap<IdentifierDeclaration, Variable>();
+    private final Map<IdentifierDeclaration, Function> identifierFindFns = new HashMap<>();
+    private final Map<IdentifierDeclaration, Variable> identifierFindAtts = new LinkedHashMap<>();
 
     private CodeFile bodyFile;
     private CodeFile headerFile;
 
     private CodeBlock cacheInitLoopBlock;
-    private final Map<String, Variable> relationshipDataMemberList = new HashMap<String, Variable>();
+    private final Map<String, Variable> relationshipDataMemberList = new HashMap<>();
 
     private Class baseClass;
     private final Class populationClass;
@@ -276,7 +272,7 @@ public class PopulationClass implements GeneratedClass {
                 findFn.setComment("MASL find: " + func.predicate.toString());
                 bodyFile.addFunctionDefinition(findFn);
 
-                final List<Expression> params = new ArrayList<Expression>();
+                final List<Expression> params = new ArrayList<>();
                 for (final Variable param : findFn.getParameters()) {
                     params.add(param.asExpression());
                 }
@@ -341,12 +337,12 @@ public class PopulationClass implements GeneratedClass {
 
         final Iterator<Variable> param = findFunction.function.getParameters().iterator();
 
-        final Map<AttributeDeclaration, Expression> paramLookup = new HashMap<AttributeDeclaration, Expression>();
+        final Map<AttributeDeclaration, Expression> paramLookup = new HashMap<>();
         for (final AttributeDeclaration att : findFunction.predicate.getFindEqualAttributes()) {
             paramLookup.put(att, param.next().asExpression());
         }
 
-        final List<Expression> orderedParams = new ArrayList<Expression>();
+        final List<Expression> orderedParams = new ArrayList<>();
 
         for (final AttributeDeclaration identAttribute : identifier.getAttributes()) {
             orderedParams.add(paramLookup.get(identAttribute));
@@ -367,7 +363,7 @@ public class PopulationClass implements GeneratedClass {
                 new IfStatement(fullCachingCondition, cachingTrueStatements, cachingFalseStatements);
 
         // cachingFalseStatements
-        final List<Expression> mapperFnCallParamList = new ArrayList<Expression>();
+        final List<Expression> mapperFnCallParamList = new ArrayList<>();
         for (final Variable functionImplVar : functionImpl.getParameters()) {
             mapperFnCallParamList.add(functionImplVar.asExpression());
         }
@@ -409,7 +405,7 @@ public class PopulationClass implements GeneratedClass {
             bodyFile.addFunctionDefinition(identifierFindFn);
             identifierFindFns.put(identifier, identifierFindFn);
 
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
             for (final AttributeDeclaration attDec : identifier.getAttributes()) {
                 final Variable
                         param =
@@ -481,7 +477,7 @@ public class PopulationClass implements GeneratedClass {
 
                 // Create cpp line:
                 // mapper->findAll(allObjs);
-                final List<Expression> findArgs = new ArrayList<Expression>();
+                final List<Expression> findArgs = new ArrayList<>();
                 findArgs.add(allObjsVar.asExpression());
                 final Expression
                         findAllFnCall =
@@ -925,7 +921,7 @@ public class PopulationClass implements GeneratedClass {
         if (objectDeclaration == superTypeObjDecl) {
             // The current object is the supertype
             final Variable derived = new Variable("derived");
-            final List<Expression> countFnExprList = new ArrayList<Expression>();
+            final List<Expression> countFnExprList = new ArrayList<>();
             for (final ObjectDeclaration derivedObjDecl : subtypeRelationshipDecl.getSubtypes()) {
                 final Function
                         countLinkFunction =
@@ -1226,7 +1222,9 @@ public class PopulationClass implements GeneratedClass {
         final Expression
                 correlateFnCall =
                 correlateFn.asFunctionCall(relationshipVar.asExpression(),
-                                           false, lhsParamVar.asExpression(), rhsParamVar.asExpression());
+                                           false,
+                                           lhsParamVar.asExpression(),
+                                           rhsParamVar.asExpression());
 
         final Class relationshipType = (Class) relationshipVar.getType().getType();
         final Class correlatedType = relationshipType.referenceNestedType("NavigatedAssType");
@@ -1492,7 +1490,7 @@ public class PopulationClass implements GeneratedClass {
     }
 
     private void addCreateMethodBody() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         for (final Variable param : creatorFn.getParameters()) {
             params.add(param.asExpression());
         }
@@ -1630,9 +1628,7 @@ public class PopulationClass implements GeneratedClass {
         final Function getPopFnCall = new Function("getPopulation").inheritInto(populationClass);
         final Function initFnCall = new Function("initialise").inheritInto(populationClass);
 
-        final Expression
-                BoostBindGetPopFnCall =
-                Boost.bind.asFunctionCall(getPopFnCall.asFunctionPointer());
+        final Expression BoostBindGetPopFnCall = Boost.bind.asFunctionCall(getPopFnCall.asFunctionPointer());
         final Expression
                 BoostBindInitFnCall =
                 Boost.bind.asFunctionCall(initFnCall.asFunctionPointer(), BoostBindGetPopFnCall);

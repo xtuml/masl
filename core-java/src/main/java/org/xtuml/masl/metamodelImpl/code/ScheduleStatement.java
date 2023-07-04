@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -28,6 +29,8 @@ import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.type.DurationType;
 import org.xtuml.masl.metamodelImpl.type.TimerType;
 import org.xtuml.masl.metamodelImpl.type.TimestampType;
+
+import java.util.List;
 
 public class ScheduleStatement extends Statement implements org.xtuml.masl.metamodel.code.ScheduleStatement {
 
@@ -124,8 +127,13 @@ public class ScheduleStatement extends Statement implements org.xtuml.masl.metam
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitScheduleStatement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitScheduleStatement(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(timerId, generate, time, period);
     }
 
 }

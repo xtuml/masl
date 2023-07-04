@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
@@ -32,6 +33,7 @@ import org.xtuml.masl.utils.TextUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class IOStreamStatement extends Statement implements org.xtuml.masl.metamodel.code.IOStreamStatement {
 
@@ -136,8 +138,13 @@ public class IOStreamStatement extends Statement implements org.xtuml.masl.metam
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitIOStreamStatement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitIOStreamStatement(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(streamName, arguments.stream().map(a -> a.expression).collect(Collectors.toList()));
     }
 
 }

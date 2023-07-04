@@ -37,8 +37,8 @@ public abstract class Type {
     }
 
     /**
-     * Gets the code file that this type is declared in. If the type is declared
-     * in more than one file, then an arbitrary one is chosen.
+     * Gets the code file that this type is declared in. If the type is declared in
+     * more than one file, then an arbitrary one is chosen.
      *
      * @return the code file containing a declaration for this type.
      */
@@ -88,15 +88,15 @@ public abstract class Type {
     }
 
     /**
-     * Calculates the set of forward declarations needed to make direct (ie not
-     * via a reference or pointer) use of this type. Typically this will return an
-     * empty set, as direct use would require a full declaration, and hence need
-     * the include file.
+     * Calculates the set of forward declarations needed to make direct (ie not via
+     * a reference or pointer) use of this type. Typically this will return an empty
+     * set, as direct use would require a full declaration, and hence need the
+     * include file.
      *
      * @return the required forward declarations
      */
     Set<Declaration> getDirectUsageForwardDeclarations() {
-        return new LinkedHashSet<Declaration>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class Type {
      * @return the required include files
      */
     Set<CodeFile> getDirectUsageIncludes() {
-        return new LinkedHashSet<CodeFile>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -116,7 +116,7 @@ public abstract class Type {
      * @return the required include files
      */
     Set<CodeFile> getNoRefDirectUsageIncludes() {
-        return new LinkedHashSet<CodeFile>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class Type {
      * @return the required forward declarations
      */
     Set<Declaration> getIndirectUsageForwardDeclarations() {
-        return new LinkedHashSet<Declaration>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -136,7 +136,7 @@ public abstract class Type {
      * @return the required include files
      */
     Set<CodeFile> getIndirectUsageIncludes() {
-        return new LinkedHashSet<CodeFile>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -188,9 +188,9 @@ public abstract class Type {
 
     /**
      * Calculates whether the type should be passed by reference or not. Some C++
-     * types are more efficiently passed by reference, eg Classes, and some are
-     * more efficiently passed by value, eg fundamental types. This method enables
-     * us to discern between the two.
+     * types are more efficiently passed by reference, eg Classes, and some are more
+     * efficiently passed by value, eg fundamental types. This method enables us to
+     * discern between the two.
      *
      * @return whether this type should be passed by reference if possible
      */
@@ -220,9 +220,9 @@ public abstract class Type {
     }
 
     /**
-     * Creates a function call to a constructor on the class. This is normally
-     * used to call constructors on externally defined classes, so that there is
-     * no need to create all the constructors individually.
+     * Creates a function call to a constructor on the class. This is normally used
+     * to call constructors on externally defined classes, so that there is no need
+     * to create all the constructors individually.
      * <p>
      * <p>
      * A list of paramters to pass to the constructor
@@ -234,9 +234,9 @@ public abstract class Type {
     }
 
     /**
-     * Creates a function call to a constructor on the class. This is normally
-     * used to call constructors on externally defined classes, so that there is
-     * no need to create all the constructors individually.
+     * Creates a function call to a constructor on the class. This is normally used
+     * to call constructors on externally defined classes, so that there is no need
+     * to create all the constructors individually.
      * <p>
      * <p>
      * A list of paramters to pass to the constructor
@@ -250,8 +250,8 @@ public abstract class Type {
 
     /**
      * Decides whether this type is a template. For the purposes of this method,
-     * this type is a template if it has any template parameters which have not
-     * been specialised.
+     * this type is a template if it has any template parameters which have not been
+     * specialised.
      * <p>
      * For example, given the following class definition, <code>
      * {@literal template<class T,class U>}

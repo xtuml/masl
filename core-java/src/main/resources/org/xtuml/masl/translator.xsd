@@ -1,68 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-  UK Crown Copyright (c) 2016. All Rights Reserved
--->
+<!--
+  ----------------------------------------------------------------------------
+  (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+  The copyright of this Software is vested in the Crown
+  and the Software is the property of the Crown.
+  ----------------------------------------------------------------------------
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ----------------------------------------------------------------------------
+  Classification: UK OFFICIAL
+  ----------------------------------------------------------------------------
+  -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-    <xs:element name="translator">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="unbounded" ref="cmdline"/>
-                <xs:choice minOccurs="0" maxOccurs="1">
-                    <xs:choice maxOccurs="unbounded">
-                        <xs:element minOccurs="0" maxOccurs="unbounded" name="configure"/>
-                        <xs:choice maxOccurs="unbounded">
-                            <xs:element ref="add"/>
-                            <xs:element ref="skip"/>
-                            <xs:element name="override"/>
-                        </xs:choice>
-                        <xs:element maxOccurs="1" ref="only"/>
-                    </xs:choice>
-                </xs:choice>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="cmdline">
-        <xs:complexType>
-            <xs:attribute name="option" use="required"/>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="add">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
-            </xs:sequence>
-            <xs:attribute name="name" use="required"/>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="configure">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
-            </xs:sequence>
-            <xs:attribute name="name" use="required"/>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="only">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
-            </xs:sequence>
-            <xs:attribute name="name" use="required"/>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="skip">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
-            </xs:sequence>
-            <xs:attribute name="name" use="required"/>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="property">
-        <xs:complexType>
-            <xs:attribute name="name" use="required"/>
-            <xs:attribute name="value" use="required"/>
-        </xs:complexType>
-    </xs:element>
+  <xs:element name="translator">
+    <xs:complexType>
+      <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="cmdline"/>
+      <xs:choice minOccurs="0" maxOccurs="1">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="configure"/>
+            <xs:choice maxOccurs="unbounded">
+               <xs:element ref="add"/>
+               <xs:element ref="skip"/>
+               <xs:element name="override"/>
+            </xs:choice>
+            <xs:element maxOccurs="1" ref="only"/>
+        </xs:choice>
+      </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="cmdline">
+    <xs:complexType>
+      <xs:attribute name="option" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="add">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="configure">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="only">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+     </xs:complexType>
+  </xs:element>
+  <xs:element name="skip">
+    <xs:complexType>
+     <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="property"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+   <xs:element name="property">
+    <xs:complexType>
+      <xs:attribute name="name"  use="required"/>
+      <xs:attribute name="value" use="required"/>
+    </xs:complexType>
+  </xs:element>
 
 </xs:schema>

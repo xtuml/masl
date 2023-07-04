@@ -37,8 +37,8 @@ public class ReturnImpl extends StatementImpl implements Return {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitReturn(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitReturn(this);
     }
 
     @Override
@@ -51,6 +51,6 @@ public class ReturnImpl extends StatementImpl implements Return {
         this.returnValue.set((ExpressionImpl) returnValue);
     }
 
-    private final ChildNode<ExpressionImpl> returnValue = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> returnValue = new ChildNode<>(this);
 
 }

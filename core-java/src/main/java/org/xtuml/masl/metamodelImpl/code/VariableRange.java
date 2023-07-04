@@ -21,11 +21,14 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.type.ArrayType;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.IntegerType;
+
+import java.util.List;
 
 public class VariableRange extends LoopSpec implements org.xtuml.masl.metamodel.code.LoopSpec.VariableRange {
 
@@ -53,8 +56,13 @@ public class VariableRange extends LoopSpec implements org.xtuml.masl.metamodel.
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitLoopVariableRange(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitLoopVariableRange(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(variable);
     }
 
     private final Expression variable;

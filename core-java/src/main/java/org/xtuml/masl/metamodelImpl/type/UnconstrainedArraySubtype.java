@@ -21,9 +21,12 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.expression.RangeExpression;
+
+import java.util.List;
 
 public class UnconstrainedArraySubtype extends BasicType
         implements org.xtuml.masl.metamodel.type.UnconstrainedArraySubtype {
@@ -95,8 +98,13 @@ public class UnconstrainedArraySubtype extends BasicType
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitUnconstrainedArraySubtype(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitUnconstrainedArraySubtype(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(fullType, range);
     }
 
 }

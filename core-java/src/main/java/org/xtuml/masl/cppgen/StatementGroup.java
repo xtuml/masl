@@ -79,8 +79,7 @@ public class StatementGroup extends Statement {
     }
 
     /**
-     * Gets the number of statements in the group, not including the header
-     * comment.
+     * Gets the number of statements in the group, not including the header comment.
      *
      * @return the number of statements in the group
      */
@@ -90,7 +89,7 @@ public class StatementGroup extends Statement {
 
     @Override
     Set<Declaration> getForwardDeclarations() {
-        final Set<Declaration> result = new LinkedHashSet<Declaration>();
+        final Set<Declaration> result = new LinkedHashSet<>();
         for (final Statement statement : statements) {
             result.addAll(statement.getForwardDeclarations());
         }
@@ -99,7 +98,7 @@ public class StatementGroup extends Statement {
 
     @Override
     Set<CodeFile> getIncludes() {
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
         for (final Statement statement : statements) {
             result.addAll(statement.getIncludes());
         }
@@ -123,6 +122,6 @@ public class StatementGroup extends Statement {
     }
 
     private final Comment comment;
-    private final LinkedList<Statement> statements = new LinkedList<Statement>();
+    private final LinkedList<Statement> statements = new LinkedList<>();
 
 }

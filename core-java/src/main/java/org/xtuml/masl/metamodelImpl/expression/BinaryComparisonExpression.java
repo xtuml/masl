@@ -60,7 +60,7 @@ public class BinaryComparisonExpression extends BinaryExpression {
               (opType.getPrimitiveType() instanceof UserDefinedType &&
                opType.getPrimitiveType().getDefinedType() instanceof EnumerateType))) {
             if (opType.getPrimitiveType() instanceof AnonymousStructure struct) {
-              for (final BasicType elt : struct.getElements()) {
+                for (final BasicType elt : struct.getElements()) {
                     checkOperand(elt, position);
                 }
             } else if (opType.getPrimitiveType() instanceof SequenceType) {

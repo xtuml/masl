@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.common.ParameterDefinition;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Service;
@@ -55,7 +56,7 @@ public abstract class ServiceInvocation<ServiceType extends Service> extends Sta
                 final DomainService
                         matchingService =
                         service.getCallable(position, ServiceOverload.ServiceType.Service, args);
-                final List<Expression> newArgs = new ArrayList<Expression>();
+                final List<Expression> newArgs = new ArrayList<>();
                 for (int i = 0; i < args.size(); ++i) {
                     if (args.get(i) != null) {
                         newArgs.add(args.get(i).resolve(matchingService.getParameters().get(i).getType()));
@@ -70,7 +71,7 @@ public abstract class ServiceInvocation<ServiceType extends Service> extends Sta
                 final DomainTerminatorService
                         matchingService =
                         service.getCallable(position, ServiceOverload.ServiceType.Service, args);
-                final List<Expression> newArgs = new ArrayList<Expression>();
+                final List<Expression> newArgs = new ArrayList<>();
                 for (int i = 0; i < args.size(); ++i) {
                     if (args.get(i) != null) {
                         newArgs.add(args.get(i).resolve(matchingService.getParameters().get(i).getType()));
@@ -86,7 +87,7 @@ public abstract class ServiceInvocation<ServiceType extends Service> extends Sta
 
                 final Expression instance = service.getLhs();
 
-                final List<Expression> newArgs = new ArrayList<Expression>();
+                final List<Expression> newArgs = new ArrayList<>();
                 for (int i = 0; i < args.size(); ++i) {
                     if (args.get(i) != null) {
                         newArgs.add(args.get(i).resolve(matchingService.getParameters().get(i).getType()));
@@ -150,6 +151,11 @@ public abstract class ServiceInvocation<ServiceType extends Service> extends Sta
             }
             ++i;
         }
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(arguments);
     }
 
 }

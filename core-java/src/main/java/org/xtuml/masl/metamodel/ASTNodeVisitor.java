@@ -34,279 +34,438 @@ import org.xtuml.masl.metamodel.exception.ExceptionDeclaration;
 import org.xtuml.masl.metamodel.exception.ExceptionReference;
 import org.xtuml.masl.metamodel.expression.*;
 import org.xtuml.masl.metamodel.object.*;
+import org.xtuml.masl.metamodel.project.Project;
+import org.xtuml.masl.metamodel.project.ProjectDomain;
+import org.xtuml.masl.metamodel.project.ProjectTerminator;
+import org.xtuml.masl.metamodel.project.ProjectTerminatorService;
 import org.xtuml.masl.metamodel.relationship.AssociativeRelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.NormalRelationshipDeclaration;
 import org.xtuml.masl.metamodel.relationship.RelationshipSpecification;
 import org.xtuml.masl.metamodel.relationship.SubtypeRelationshipDeclaration;
 import org.xtuml.masl.metamodel.statemodel.*;
 import org.xtuml.masl.metamodel.type.*;
+import org.xtuml.masl.metamodelImpl.expression.StructureOrderingExpression.Component;
 
-public interface ASTNodeVisitor<R, P> {
+import java.util.Collection;
 
-    R visit(ASTNode node, P p) throws Exception;
+public abstract class ASTNodeVisitor {
 
-    R visitAnonymousStructure(AnonymousStructure node, P p) throws Exception;
+    public void visit(final ASTNode node) {
+        if (node != null) {
+            node.accept(this);
+        }
+    }
 
-    R visitAnyExpression(AnyExpression node, P p) throws Exception;
+    public final void visit(final Collection<? extends ASTNode> nodes) {
+        nodes.stream().forEach(this::visit);
+    }
 
-    R visitArrayType(ArrayType node, P p) throws Exception;
+    public void visitAnonymousStructure(final AnonymousStructure node) {
+    }
 
-    R visitAssignmentStatement(AssignmentStatement node, P p) throws Exception;
+    public void visitAnyExpression(final AnyExpression node) {
+    }
 
-    R visitAttributeDeclaration(AttributeDeclaration node, P p) throws Exception;
+    public void visitArrayType(final ArrayType node) {
+    }
 
-    R visitBagType(BagType node, P p) throws Exception;
+    public void visitAssignmentStatement(final AssignmentStatement node) {
+    }
 
-    R visitBinaryExpression(BinaryExpression node, P p) throws Exception;
+    public void visitAttributeDeclaration(final AttributeDeclaration node) {
+    }
 
-    R visitBooleanLiteral(BooleanLiteral node, P p) throws Exception;
+    public void visitBagType(final BagType node) {
+    }
 
-    R visitBuiltinException(BuiltinException node, P p) throws Exception;
+    public void visitBinaryExpression(final BinaryExpression node) {
+    }
 
-    R visitBuiltinType(BuiltinType node, P p) throws Exception;
+    public void visitBooleanLiteral(final BooleanLiteral node) {
+    }
 
-    R visitCancelTimerStatement(CancelTimerStatement node, P p) throws Exception;
+    public void visitBuiltinException(final BuiltinException node) {
+    }
 
-    R visitCaseAlternative(CaseStatement.Alternative node, P p) throws Exception;
+    public void visitBuiltinType(final BuiltinType node) {
+    }
 
-    R visitCaseStatement(CaseStatement node, P p) throws Exception;
+    public void visitCancelTimerStatement(final CancelTimerStatement node) {
+    }
 
-    R visitCastExpression(CastExpression node, P p) throws Exception;
+    public void visitCaseAlternative(final CaseStatement.Alternative node) {
+    }
 
-    R visitCharacteristicExpression(CharacteristicExpression node, P p) throws Exception;
+    public void visitCaseStatement(final CaseStatement node) {
+    }
 
-    R visitCharacteristicRange(CharacteristicRange node, P p) throws Exception;
+    public void visitCastExpression(final CastExpression node) {
+    }
 
-    R visitCharacterLiteral(CharacterLiteral node, P p) throws Exception;
+    public void visitCharacteristicExpression(final CharacteristicExpression node) {
+    }
 
-    R visitCodeBlock(CodeBlock node, P p) throws Exception;
+    public void visitCharacteristicRange(final CharacteristicRange node) {
+    }
 
-    R visitConsoleLiteral(ConsoleLiteral node, P p) throws Exception;
+    public void visitCharacterLiteral(final CharacterLiteral node) {
+    }
 
-    R visitConstrainedType(ConstrainedType node, P p) throws Exception;
+    public void visitCodeBlock(final CodeBlock node) {
+    }
 
-    R visitCorrelatedNavExpression(CorrelatedNavExpression node, P p) throws Exception;
+    public void visitConsoleLiteral(final ConsoleLiteral node) {
+    }
 
-    R visitCreateDurationExpression(CreateDurationExpression node, P p) throws Exception;
+    public void visitConstrainedType(final ConstrainedType node) {
+    }
 
-    R visitCreateExpression(CreateExpression node, P p) throws Exception;
+    public void visitCorrelatedNavExpression(final CorrelatedNavExpression node) {
+    }
 
-    R visitDelayStatement(DelayStatement node, P p) throws Exception;
+    public void visitCreateDurationExpression(final CreateDurationExpression node) {
+    }
 
-    R visitDeleteStatement(DeleteStatement node, P p) throws Exception;
+    public void visitCreateExpression(final CreateExpression node) {
+    }
 
-    R visitDeltaConstraint(DeltaConstraint node, P p) throws Exception;
+    public void visitDelayStatement(final DelayStatement node) {
+    }
 
-    R visitDictionaryAccessExpression(DictionaryAccessExpression node, P p) throws Exception;
+    public void visitDeleteStatement(final DeleteStatement node) {
+    }
 
-    R visitDictionaryContainsExpression(DictionaryContainsExpression node, P p) throws Exception;
+    public void visitDeltaConstraint(final DeltaConstraint node) {
+    }
 
-    R visitDictionaryKeysExpression(DictionaryKeysExpression node, P p) throws Exception;
+    public void visitDictionaryAccessExpression(final DictionaryAccessExpression node) {
+    }
 
-    R visitDictionaryType(DictionaryType node, P p) throws Exception;
+    public void visitDictionaryContainsExpression(final DictionaryContainsExpression node) {
+    }
 
-    R visitDictionaryValuesExpression(DictionaryValuesExpression node, P p) throws Exception;
+    public void visitDictionaryKeysExpression(final DictionaryKeysExpression node) {
+    }
 
-    R visitDigitsConstraint(DigitsConstraint node, P p) throws Exception;
+    public void visitDictionaryType(final DictionaryType node) {
+    }
 
-    R visitDomain(Domain node, P p) throws Exception;
+    public void visitDictionaryValuesExpression(final DictionaryValuesExpression node) {
+    }
 
-    R visitDomainFunctionInvocation(DomainFunctionInvocation node, P p) throws Exception;
+    public void visitDigitsConstraint(final DigitsConstraint node) {
+    }
 
-    R visitDomainService(DomainService node, P p) throws Exception;
+    public void visitDomain(final Domain node) {
+    }
 
-    R visitDomainServiceInvocation(DomainServiceInvocation node, P p) throws Exception;
+    public void visitDomainFunctionInvocation(final DomainFunctionInvocation node) {
+    }
 
-    R visitDomainTerminator(DomainTerminator node, P p) throws Exception;
+    public void visitDomainService(final DomainService node) {
+    }
 
-    R visitDomainTerminatorService(DomainTerminatorService node, P p) throws Exception;
+    public void visitDomainServiceInvocation(final DomainServiceInvocation node) {
+    }
 
-    R visitDurationLiteral(DurationLiteral node, P p) throws Exception;
+    public void visitDomainTerminator(final DomainTerminator node) {
+    }
 
-    R visitElementsExpression(ElementsExpression node, P p) throws Exception;
+    public void visitDomainTerminatorService(final DomainTerminatorService node) {
+    }
 
-    R visitEndlLiteral(EndlLiteral node, P p) throws Exception;
+    public void visitDurationLiteral(final DurationLiteral node) {
+    }
 
-    R visitEnumerateItem(EnumerateItem node, P p) throws Exception;
+    public void visitElementsExpression(final ElementsExpression node) {
+    }
 
-    R visitEnumerateLiteral(EnumerateLiteral node, P p) throws Exception;
+    public void visitEndlLiteral(final EndlLiteral node) {
+    }
 
-    R visitEnumerateType(EnumerateType node, P p) throws Exception;
+    public void visitEnumerateItem(final EnumerateItem node) {
+    }
 
-    R visitEofExpression(EofExpression node, P p) throws Exception;
+    public void visitEnumerateLiteral(final EnumerateLiteral node) {
+    }
 
-    R visitEraseStatement(EraseStatement node, P p) throws Exception;
+    public void visitEnumerateType(final EnumerateType node) {
+    }
 
-    R visitEventDeclaration(EventDeclaration node, P p) throws Exception;
+    public void visitEofExpression(final EofExpression node) {
+    }
 
-    R visitEventExpression(EventExpression node, P p) throws Exception;
+    public void visitEraseStatement(final EraseStatement node) {
+    }
 
-    R visitExceptionDeclaration(ExceptionDeclaration node, P p) throws Exception;
+    public void visitEventDeclaration(final EventDeclaration node) {
+    }
 
-    R visitExceptionHandler(ExceptionHandler node, P p) throws Exception;
+    public void visitEventExpression(final EventExpression node) {
+    }
 
-    R visitExceptionReference(ExceptionReference node, P p) throws Exception;
+    public void visitExceptionDeclaration(final ExceptionDeclaration node) {
+    }
 
-    R visitExitStatement(ExitStatement node, P p) throws Exception;
+    public void visitExceptionHandler(final ExceptionHandler node) {
+    }
 
-    R visitFindAttributeNameExpression(FindAttributeNameExpression node, P p) throws Exception;
+    public void visitExceptionReference(final ExceptionReference node) {
+    }
 
-    R visitFindExpression(FindExpression node, P p) throws Exception;
+    public void visitExitStatement(final ExitStatement node) {
+    }
 
-    R visitFindParameterExpression(FindParameterExpression node, P p) throws Exception;
+    public void visitFindAttributeNameExpression(final FindAttributeNameExpression node) {
+    }
 
-    R visitFlushLiteral(FlushLiteral node, P p) throws Exception;
+    public void visitFindExpression(final FindExpression node) {
+    }
 
-    R visitForStatement(ForStatement node, P p) throws Exception;
+    public void visitFindParameterExpression(final FindParameterExpression node) {
+    }
 
-    R visitGenerateStatement(GenerateStatement node, P p) throws Exception;
+    public void visitFlushLiteral(final FlushLiteral node) {
+    }
 
-    R visitIdentifierDeclaration(IdentifierDeclaration node, P p) throws Exception;
+    public void visitForStatement(final ForStatement node) {
+    }
 
-    R visitIfBranch(IfStatement.Branch node, P p) throws Exception;
+    public void visitGenerateStatement(final GenerateStatement node) {
+    }
 
-    R visitIfStatement(IfStatement node, P p) throws Exception;
+    public void visitIdentifierDeclaration(final IdentifierDeclaration node) {
+    }
 
-    R visitIndexedNameExpression(IndexedNameExpression node, P p) throws Exception;
+    public void visitIfBranch(final IfStatement.Branch node) {
+    }
 
-    R visitInstanceFunctionInvocation(InstanceFunctionInvocation node, P p) throws Exception;
+    public void visitIfStatement(final IfStatement node) {
+    }
 
-    R visitInstanceOrderingExpression(InstanceOrderingExpression node, P p) throws Exception;
+    public void visitIndexedNameExpression(final IndexedNameExpression node) {
+    }
 
-    R visitInstanceServiceInvocation(InstanceServiceInvocation node, P p) throws Exception;
+    public void visitInstanceFunctionInvocation(final InstanceFunctionInvocation node) {
+    }
 
-    R visitInstanceType(InstanceType node, P p) throws Exception;
+    public void visitInstanceOrderingExpression(final InstanceOrderingExpression node) {
+    }
 
-    R visitIntegerLiteral(IntegerLiteral node, P p) throws Exception;
+    public void visitInstanceServiceInvocation(final InstanceServiceInvocation node) {
+    }
 
-    R visitIOStreamStatement(IOStreamStatement node, P p) throws Exception;
+    public void visitInstanceType(final InstanceType node) {
+    }
 
-    R visitLinkUnlinkExpression(LinkUnlinkExpression node, P p) throws Exception;
+    public void visitIntegerLiteral(final IntegerLiteral node) {
+    }
 
-    R visitLinkUnlinkStatement(LinkUnlinkStatement node, P p) throws Exception;
+    public void visitIOStreamStatement(final IOStreamStatement node) {
+    }
 
-    R visitLoopFromToRange(LoopSpec.FromToRange node, P p) throws Exception;
+    public void visitLinkUnlinkExpression(final LinkUnlinkExpression node) {
+    }
 
-    R visitLoopTypeRange(LoopSpec.TypeRange node, P p) throws Exception;
+    public void visitLinkUnlinkStatement(final LinkUnlinkStatement node) {
+    }
 
-    R visitLoopVariableElements(LoopSpec.VariableElements node, P p) throws Exception;
+    public void visitLoopFromToRange(final LoopSpec.FromToRange node) {
+    }
 
-    R visitLoopVariableRange(LoopSpec.VariableRange node, P p) throws Exception;
+    public void visitLoopTypeRange(final LoopSpec.TypeRange node) {
+    }
 
-    R visitMinMaxRange(MinMaxRange node, P p) throws Exception;
+    public void visitLoopVariableElements(final LoopSpec.VariableElements node) {
+    }
 
-    R visitNavigationExpression(NavigationExpression node, P p) throws Exception;
+    public void visitLoopVariableRange(final LoopSpec.VariableRange node) {
+    }
 
-    R visitNull(P p) throws Exception;
+    public void visitMinMaxRange(final MinMaxRange node) {
+    }
 
-    R visitNullLiteral(NullLiteral node, P p) throws Exception;
+    public void visitNavigationExpression(final NavigationExpression node) {
+    }
 
-    R visitObjectDeclaration(ObjectDeclaration node, P p) throws Exception;
+    public void visitNullLiteral(final NullLiteral node) {
+    }
 
-    R visitObjectFunctionInvocation(ObjectFunctionInvocation node, P p) throws Exception;
+    public void visitObjectDeclaration(final ObjectDeclaration node) {
+    }
 
-    R visitObjectNameExpression(ObjectNameExpression node, P p) throws Exception;
+    public void visitObjectFunctionInvocation(final ObjectFunctionInvocation node) {
+    }
 
-    R visitObjectService(ObjectService node, P p) throws Exception;
+    public void visitObjectNameExpression(final ObjectNameExpression node) {
+    }
 
-    R visitObjectServiceInvocation(ObjectServiceInvocation node, P p) throws Exception;
+    public void visitObjectService(final ObjectService node) {
+    }
 
-    R visitParameterDefinition(ParameterDefinition node, P p) throws Exception;
+    public void visitObjectServiceInvocation(final ObjectServiceInvocation node) {
+    }
 
-    R visitParameterNameExpression(ParameterNameExpression node, P p) throws Exception;
+    public void visitParameterDefinition(final ParameterDefinition node) {
+    }
 
-    R visitParseExpression(ParseExpression node, P p) throws Exception;
+    public void visitParameterNameExpression(final ParameterNameExpression node) {
+    }
 
-    R visitPragmaDefinition(PragmaDefinition node, P p) throws Exception;
+    public void visitParseExpression(final ParseExpression node) {
+    }
 
-    R visitPragmaList(PragmaList node, P p) throws Exception;
+    public void visitPragmaDefinition(final PragmaDefinition node) {
+    }
 
-    R visitPragmaStatement(PragmaStatement node, P p) throws Exception;
+    public void visitPragmaList(final PragmaList node) {
+    }
 
-    R visitRaiseStatement(RaiseStatement node, P p) throws Exception;
+    public void visitPragmaStatement(final PragmaStatement node) {
+    }
 
-    R visitRangeConstraint(RangeConstraint node, P p) throws Exception;
+    public void visitRaiseStatement(final RaiseStatement node) {
+    }
 
-    R visitRealLiteral(RealLiteral node, P p) throws Exception;
+    public void visitRangeConstraint(final RangeConstraint node) {
+    }
 
-    R visitReferentialAttributeDefinition(ReferentialAttributeDefinition node, P p) throws Exception;
+    public void visitRealLiteral(final RealLiteral node) {
+    }
 
-    R visitReturnStatement(ReturnStatement node, P p) throws Exception;
+    public void visitReferentialAttributeDefinition(final ReferentialAttributeDefinition node) {
+    }
 
-    R visitScheduleStatement(ScheduleStatement node, P p) throws Exception;
+    public void visitReturnStatement(final ReturnStatement node) {
+    }
 
-    R visitSelectedAttributeExpression(SelectedAttributeExpression node, P p) throws Exception;
+    public void visitScheduleStatement(final ScheduleStatement node) {
+    }
 
-    R visitSelectedComponentExpression(SelectedComponentExpression node, P p) throws Exception;
+    public void visitSelectedAttributeExpression(final SelectedAttributeExpression node) {
+    }
 
-    R visitSequenceType(SequenceType node, P p) throws Exception;
+    public void visitSelectedComponentExpression(final SelectedComponentExpression node) {
+    }
 
-    R visitSetType(SetType node, P p) throws Exception;
+    public void visitSequenceType(final SequenceType node) {
+    }
 
-    R visitSliceExpression(SliceExpression node, P p) throws Exception;
+    public void visitSetType(final SetType node) {
+    }
 
-    R visitSplitExpression(SplitExpression node, P p) throws Exception;
+    public void visitSliceExpression(final SliceExpression node) {
+    }
 
-    R visitState(State node, P p) throws Exception;
+    public void visitSplitExpression(final SplitExpression node) {
+    }
 
-    R visitStringLiteral(StringLiteral node, P p) throws Exception;
+    public void visitState(final State node) {
+    }
 
-    R visitStructureAggregate(StructureAggregate node, P p) throws Exception;
+    public void visitStringLiteral(final StringLiteral node) {
+    }
 
-    R visitStructureElement(StructureElement node, P p) throws Exception;
+    public void visitStructureAggregate(final StructureAggregate node) {
+    }
 
-    R visitStructureOrderingExpression(StructureOrderingExpression node, P p) throws Exception;
+    public void visitStructureElement(final StructureElement node) {
+    }
 
-    R visitStructureType(StructureType node, P p) throws Exception;
+    public void visitStructureOrderingExpression(final StructureOrderingExpression node) {
+    }
 
-    R visitTerminatorFunctionInvocation(TerminatorFunctionInvocation node, P p) throws Exception;
+    public void visitStructureType(final StructureType node) {
+    }
 
-    R visitTerminatorNameExpression(TerminatorNameExpression node, P p) throws Exception;
+    public void visitTerminatorFunctionInvocation(final TerminatorFunctionInvocation node) {
+    }
 
-    R visitTerminatorServiceInvocation(TerminatorServiceInvocation node, P p) throws Exception;
+    public void visitTerminatorNameExpression(final TerminatorNameExpression node) {
+    }
 
-    R visitThisLiteral(ThisLiteral node, P p) throws Exception;
+    public void visitTerminatorServiceInvocation(final TerminatorServiceInvocation node) {
+    }
 
-    R visitTimeFieldExpression(TimeFieldExpression node, P p) throws Exception;
+    public void visitThisLiteral(final ThisLiteral node) {
+    }
 
-    R visitTimerFieldExpression(TimerFieldExpression node, P p) throws Exception;
+    public void visitTimeFieldExpression(final TimeFieldExpression node) {
+    }
 
-    R visitTimestampDeltaExpression(TimestampDeltaExpression node, P p) throws Exception;
+    public void visitTimerFieldExpression(final TimerFieldExpression node) {
+    }
 
-    R visitTimestampLiteral(TimestampLiteral node, P p) throws Exception;
+    public void visitTimestampDeltaExpression(final TimestampDeltaExpression node) {
+    }
 
-    R visitTransitionOption(TransitionOption node, P p) throws Exception;
+    public void visitTimestampLiteral(final TimestampLiteral node) {
+    }
 
-    R visitTransitionRow(TransitionRow node, P p) throws Exception;
+    public void visitTransitionOption(final TransitionOption node) {
+    }
 
-    R visitTransitionTable(TransitionTable node, P p) throws Exception;
+    public void visitTransitionRow(final TransitionRow node) {
+    }
 
-    R visitTypeDeclaration(TypeDeclaration node, P p) throws Exception;
+    public void visitTransitionTable(final TransitionTable node) {
+    }
 
-    R visitTypeNameExpression(TypeNameExpression node, P p) throws Exception;
+    public void visitTypeDeclaration(final TypeDeclaration node) {
+    }
 
-    R visitUnaryExpression(UnaryExpression node, P p) throws Exception;
+    public void visitTypeNameExpression(final TypeNameExpression node) {
+    }
 
-    R visitUnconstrainedArraySubtype(UnconstrainedArraySubtype node, P p) throws Exception;
+    public void visitUnaryExpression(final UnaryExpression node) {
+    }
 
-    R visitUnconstrainedArrayType(UnconstrainedArrayType node, P p) throws Exception;
+    public void visitUnconstrainedArraySubtype(final UnconstrainedArraySubtype node) {
+    }
 
-    R visitUserDefinedType(UserDefinedType node, P p) throws Exception;
+    public void visitUnconstrainedArrayType(final UnconstrainedArrayType node) {
+    }
 
-    R visitVariableDefinition(VariableDefinition node, P p) throws Exception;
+    public void visitUserDefinedType(final UserDefinedType node) {
+    }
 
-    R visitVariableNameExpression(VariableNameExpression node, P p) throws Exception;
+    public void visitVariableDefinition(final VariableDefinition node) {
+    }
 
-    R visitWhileStatement(WhileStatement node, P p) throws Exception;
+    public void visitVariableNameExpression(final VariableNameExpression node) {
+    }
 
-    R vistAssociativeRelationshipDeclaration(AssociativeRelationshipDeclaration node, P p) throws Exception;
+    public void visitWhileStatement(final WhileStatement node) {
+    }
 
-    R vistNormalRelationshipDeclaration(NormalRelationshipDeclaration node, P p) throws Exception;
+    public void vistAssociativeRelationshipDeclaration(final AssociativeRelationshipDeclaration node) {
+    }
 
-    R vistRelationshipSpecification(RelationshipSpecification node, P p) throws Exception;
+    public void vistNormalRelationshipDeclaration(final NormalRelationshipDeclaration node) {
+    }
 
-    R vistSubtypeRelationshipDeclaration(SubtypeRelationshipDeclaration node, P p) throws Exception;
+    public void vistRelationshipSpecification(final RelationshipSpecification node) {
+    }
 
-    R visitCreateAttributeValue(CreateExpression.AttributeValue node, P p) throws Exception;
+    public void vistSubtypeRelationshipDeclaration(final SubtypeRelationshipDeclaration node) {
+    }
+
+    public void visitCreateAttributeValue(final CreateExpression.AttributeValue node) {
+    }
+
+    public void visitProject(final Project node) {
+    }
+
+    public void visitProjectDomain(final ProjectDomain node) {
+    }
+
+    public void visitProjectTerminator(final ProjectTerminator node) {
+    }
+
+    public void visitProjectTerminatorService(final ProjectTerminatorService node) {
+    }
+
+    public void visitStructureOrderingComponent(final Component node) {
+    }
 
 }

@@ -49,11 +49,11 @@ public interface CaseStatement extends Statement {
 
         /**
          * Gets a list of {@link org.xtuml.masl.metamodel.expression.Expression
-         * Expression}s that must match the <code>case</code> statement's
-         * discriminator before the statements are executed. If the list is empty,
-         * then this alternative represents the <code>others</code> option. There
-         * will at most one such alternative per <code>case</code> statement, and it
-         * will always be the last one.
+         * Expression}s that must match the <code>case</code> statement's discriminator
+         * before the statements are executed. If the list is empty, then this
+         * alternative represents the <code>others</code> option. There will at most one
+         * such alternative per <code>case</code> statement, and it will always be the
+         * last one.
          *
          * @return the expressions to check against the discriminator
          */
@@ -61,12 +61,11 @@ public interface CaseStatement extends Statement {
 
         /**
          * Gets a list of {@link org.xtuml.masl.metamodel.expression.Statements
-         * Statement}s that will be executed if the parent <code>case</code>
-         * statement's discriminator matches one of the conditions. If the list of
-         * conditions is empty, then this returns the statements to be executed when
-         * none of the other alternatives match the discriminator. There will at
-         * most one such alternative per <code>case</code> statement, and it will
-         * always be the last one.
+         * Statement}s that will be executed if the parent <code>case</code> statement's
+         * discriminator matches one of the conditions. If the list of conditions is
+         * empty, then this returns the statements to be executed when none of the other
+         * alternatives match the discriminator. There will at most one such alternative
+         * per <code>case</code> statement, and it will always be the last one.
          *
          * @return the statements to be executed
          */
@@ -82,8 +81,8 @@ public interface CaseStatement extends Statement {
     List<? extends Alternative> getAlternatives();
 
     /**
-     * Returns the {@link org.xtuml.masl.metamodel.expression.Expression
-     * Expression} that determines which of the alternatives is to be executed.
+     * Returns the {@link org.xtuml.masl.metamodel.expression.Expression Expression}
+     * that determines which of the alternatives is to be executed.
      *
      * @return the expression that determines the alternative to be executed
      */

@@ -41,8 +41,8 @@ public class BreakImpl extends StatementImpl implements org.xtuml.masl.javagen.a
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitBreak(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitBreak(this);
     }
 
     // Not a child node, just a reference to a node in another tree.

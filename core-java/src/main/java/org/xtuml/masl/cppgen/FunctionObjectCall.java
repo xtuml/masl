@@ -47,7 +47,7 @@ public class FunctionObjectCall extends Expression {
     String getCode(final Namespace currentNamespace, final String alignment) {
         final StringBuffer buf = new StringBuffer();
         buf.append(funObj.getCode(currentNamespace));
-        final List<String> argCode = new ArrayList<String>();
+        final List<String> argCode = new ArrayList<>();
         for (final Expression arg : arguments) {
             String code = arg.getCode(currentNamespace);
             // Need to parenthesise any comma operator to ensure correct parsing

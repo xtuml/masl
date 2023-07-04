@@ -36,7 +36,7 @@ public class ProjectTerminatorServiceTranslator {
 
     private final ProjectTerminatorService service;
     private final Scope scope;
-    private final List<ParameterTranslator> parameters = new ArrayList<ParameterTranslator>();
+    private final List<ParameterTranslator> parameters = new ArrayList<>();
     private CodeTranslator code;
     private final Function function;
     private final ProjectTranslator projectTranslator;

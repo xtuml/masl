@@ -132,9 +132,7 @@ public class TerminatorTranslator {
         return serviceTranslators.get(service);
     }
 
-    private final Map<DomainTerminatorService, TerminatorServiceTranslator>
-            serviceTranslators =
-            new HashMap<DomainTerminatorService, TerminatorServiceTranslator>();
+    private final Map<DomainTerminatorService, TerminatorServiceTranslator> serviceTranslators = new HashMap<>();
     private final DomainTranslator domainTranslator;
     private final DomainTerminator terminator;
 

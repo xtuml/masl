@@ -86,9 +86,9 @@ public class Literal extends Expression {
 
     /**
      * Creates a C++ char literal containing the supplied text. Eg
-     * <code>new createCharLiteral('h')</code> would return a C++ literal
-     * containing the value <code>{@literal 'h'}</code>. Any characters requiring
-     * escaping will be escaped correctly.
+     * <code>new createCharLiteral('h')</code> would return a C++ literal containing
+     * the value <code>{@literal 'h'}</code>. Any characters requiring escaping will
+     * be escaped correctly.
      * <p>
      * <p>
      * the text of the literal

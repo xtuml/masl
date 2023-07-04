@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,58 +20,57 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.expression;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collA;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collB;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collC;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collD;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collE;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collF;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collG;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collH;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r1;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r2;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r3;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r4;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r5;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r6;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r7;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r8;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.refA;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.refB;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleA;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleB;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleC;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleD;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleE;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleF;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleG;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleH;
 
-import junit.framework.TestCase;
 import org.xtuml.masl.error.ErrorCode;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.relationship.RelationshipDeclaration;
 import org.xtuml.masl.metamodelImpl.relationship.RelationshipSpecification;
 import org.xtuml.masl.unittest.ErrorLog;
 
-import static org.xtuml.masl.metamodelImpl.SampleDomain.*;
+import junit.framework.TestCase;
 
 public class TestUnlinkExpression extends TestCase {
 
-    public void checkUnlink(final Expression lhs,
-                            final RelationshipDeclaration.Reference relRef,
-                            final String objOrRole,
-                            final ObjectNameExpression obj,
-                            final Expression rhs,
-                            final Expression assignTo) {
+    public void checkUnlink(final Expression lhs, final RelationshipDeclaration.Reference relRef,
+            final String objOrRole, final ObjectNameExpression obj, final Expression rhs, final Expression assignTo) {
         ErrorLog.getInstance().reset();
-        final LinkUnlinkExpression
-                result =
-                LinkUnlinkExpression.create(null,
-                                            LinkUnlinkExpression.UNLINK,
-                                            lhs,
-                                            RelationshipSpecification.createReference(lhs,
-                                                                                      relRef,
-                                                                                      objOrRole,
-                                                                                      obj,
-                                                                                      false,
-                                                                                      false),
-                                            rhs);
+        final LinkUnlinkExpression result = LinkUnlinkExpression.create(null, LinkUnlinkExpression.UNLINK, lhs,
+                RelationshipSpecification.createReference(lhs, relRef, objOrRole, obj, false, false), rhs);
         ErrorLog.getInstance().checkErrors();
         assertTrue(assignTo.getType().isAssignableFrom(result, false));
     }
 
-    public void checkUnlink(final Expression lhs,
-                            final RelationshipDeclaration.Reference relRef,
-                            final String objOrRole,
-                            final ObjectNameExpression obj,
-                            final Expression rhs,
-                            final ErrorCode... errors) {
+    public void checkUnlink(final Expression lhs, final RelationshipDeclaration.Reference relRef,
+            final String objOrRole, final ObjectNameExpression obj, final Expression rhs, final ErrorCode... errors) {
         ErrorLog.getInstance().reset();
-        LinkUnlinkExpression.create(null,
-                                    LinkUnlinkExpression.UNLINK,
-                                    lhs,
-                                    RelationshipSpecification.createReference(lhs,
-                                                                              relRef,
-                                                                              objOrRole,
-                                                                              obj,
-                                                                              false,
-                                                                              false),
-                                    rhs);
+        LinkUnlinkExpression.create(null, LinkUnlinkExpression.UNLINK, lhs,
+                RelationshipSpecification.createReference(lhs, relRef, objOrRole, obj, false, false), rhs);
         ErrorLog.getInstance().checkErrors(errors);
     }
 

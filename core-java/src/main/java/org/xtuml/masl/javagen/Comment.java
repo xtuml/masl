@@ -54,7 +54,7 @@ public class Comment {
         private final String comment;
     }
 
-    private static final Map<Character, String> ruledLines = new HashMap<Character, String>();
+    private static final Map<Character, String> ruledLines = new HashMap<>();
 
     public static Comment createCStyleComment(final String comment) {
         return new Comment("/*", " * ", comment, " */");
@@ -102,10 +102,10 @@ public class Comment {
             while (line != null) {
                 if (line.length() == 5 && line.startsWith("---", 1) && line.charAt(0) == line.charAt(4)) {
                     final char lineOf = line.charAt(0);
-                    line = ruledLines.get(new Character(lineOf));
+                    line = ruledLines.get(lineOf);
                     if (line == null) {
                         line = TextUtils.filledString(lineOf, TextUtils.getMaxLineLength());
-                        ruledLines.put(new Character(lineOf), line);
+                        ruledLines.put(lineOf, line);
                     }
                     line = line.substring(indent.length() + continueComment.length());
                 }
@@ -129,7 +129,7 @@ public class Comment {
 
     private final StringBuilder comment;
 
-    private final List<JavadocField> javadocFields = new ArrayList<JavadocField>();
+    private final List<JavadocField> javadocFields = new ArrayList<>();
 
     private final String openComment;
 

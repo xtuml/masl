@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.statemodel;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -55,8 +56,8 @@ public class TransitionRow implements org.xtuml.masl.metamodel.statemodel.Transi
     private TransitionRow(final State initialState, final List<TransitionOption> options, final PragmaList pragmas) {
         this.pragmas = pragmas;
         this.initialState = initialState;
-        this.options = new ArrayList<TransitionOption>();
-        this.optionLookup = new HashMap<org.xtuml.masl.metamodel.statemodel.EventDeclaration, TransitionOption>();
+        this.options = new ArrayList<>();
+        this.optionLookup = new HashMap<>();
 
         for (final TransitionOption option : options) {
             if (option != null) {
@@ -140,8 +141,13 @@ public class TransitionRow implements org.xtuml.masl.metamodel.statemodel.Transi
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTransitionRow(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTransitionRow(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(options, pragmas);
     }
 
 }

@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class DomainNamespace {
 
-    static Map<Domain, Namespace> namespaces = new HashMap<Domain, Namespace>();
+    static Map<Domain, Namespace> namespaces = new HashMap<>();
 
     public static Namespace get(final Domain domain) {
         Namespace result = namespaces.get(domain);

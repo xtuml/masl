@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,10 +20,9 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.type;
+import java.util.Arrays;
 
 import org.xtuml.masl.metamodelImpl.expression.TypedExpression;
-
-import java.util.Arrays;
 
 public class TestExpressions {
 
@@ -51,14 +50,14 @@ public class TestExpressions {
      */
     public final TypedExpression namedBDuration;
     /**
-     * Named expression of type
-     * {@link org.xtuml.masl.metamodelImpl.TestTypes#bEvent bEvent}
+     * Named expression of type {@link org.xtuml.masl.metamodelImpl.TestTypes#bEvent
+     * bEvent}
      */
     public final TypedExpression namedBEvent;
 
     /**
-     * Named expression of type
-     * {@link org.xtuml.masl.metamodelImpl.TestTypes#bByte bByte}
+     * Named expression of type {@link org.xtuml.masl.metamodelImpl.TestTypes#bByte
+     * bByte}
      */
     public final TypedExpression namedBByte;
     /**
@@ -67,8 +66,8 @@ public class TestExpressions {
      */
     public final TypedExpression namedBInteger;
     /**
-     * Named expression of type
-     * {@link org.xtuml.masl.metamodelImpl.TestTypes#bReal bReal}
+     * Named expression of type {@link org.xtuml.masl.metamodelImpl.TestTypes#bReal
+     * bReal}
      */
     public final TypedExpression namedBReal;
     /**
@@ -167,8 +166,7 @@ public class TestExpressions {
 
     /**
      * Named expression of type
-     * {@link org.xtuml.masl.metamodelImpl.TestTypes#seqOfCharacter
-     * seqOfWCharacter}
+     * {@link org.xtuml.masl.metamodelImpl.TestTypes#seqOfCharacter seqOfWCharacter}
      */
     public final TypedExpression namedSeqOfWCharacter;
 
@@ -961,29 +959,20 @@ public class TestExpressions {
         anonAnonSimpleStruct = new TypedExpression(types.anonSimpleStruct);
         anonAnonComplexStruct = new TypedExpression(types.anonComplexStruct);
 
-        anonAnonTrivialAnonStruct =
-                new TypedExpression(new AnonymousStructure(Arrays.asList(new BasicType[]{IntegerType.createAnonymous()})));
+        anonAnonTrivialAnonStruct = new TypedExpression(
+                new AnonymousStructure(Arrays.asList(new BasicType[] { IntegerType.createAnonymous() })));
 
-        anonAnonSimpleAnonStruct =
-                new TypedExpression(new AnonymousStructure(Arrays.asList(new BasicType[]{IntegerType.createAnonymous(),
-                                                                                         StringType.createAnonymous(),
-                                                                                         WStringType.createAnonymous(),
-                                                                                         IntegerType.createAnonymous(),
-                                                                                         ByteType.createAnonymous()})));
+        anonAnonSimpleAnonStruct = new TypedExpression(new AnonymousStructure(
+                Arrays.asList(new BasicType[] { IntegerType.createAnonymous(), StringType.createAnonymous(),
+                        WStringType.createAnonymous(), IntegerType.createAnonymous(), ByteType.createAnonymous() })));
 
-        anonAnonSimpleAnonStruct2 =
-                new TypedExpression(new AnonymousStructure(Arrays.asList(IntegerType.createAnonymous(),
-                                                                         StringType.createAnonymous(),
-                                                                         WStringType.createAnonymous(),
-                                                                         types.udIntTypeType,
-                                                                         ByteType.createAnonymous())));
+        anonAnonSimpleAnonStruct2 = new TypedExpression(new AnonymousStructure(
+                Arrays.asList(new BasicType[] { IntegerType.createAnonymous(), StringType.createAnonymous(),
+                        WStringType.createAnonymous(), types.udIntTypeType, ByteType.createAnonymous() })));
 
-        anonAnonComplexAnonStruct =
-                new TypedExpression(new AnonymousStructure(Arrays.asList(types.anonSimpleStruct,
-                                                                         SequenceType.createAnonymous(
-                                                                                 types.bInteger),
-                                                                         SetType.createAnonymous(BagType.createAnonymous(
-                                                                                 IntegerType.createAnonymous())))));
+        anonAnonComplexAnonStruct = new TypedExpression(new AnonymousStructure(
+                Arrays.asList(new BasicType[] { types.anonSimpleStruct, SequenceType.createAnonymous(types.bInteger),
+                        SetType.createAnonymous(BagType.createAnonymous(IntegerType.createAnonymous())) })));
 
         anonUdPrimaryColours = new TypedExpression(types.udPrimaryColoursDecl.getDeclaredType());
         anonUdRainbowColours = new TypedExpression(types.udRainbowColoursDecl.getDeclaredType());

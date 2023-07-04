@@ -1,6 +1,24 @@
-//
-// UK Crown Copyright (c) 2016. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 grammar MaslP;
 
 options
@@ -326,9 +344,9 @@ digitsConstraint              : DIGITS constExpression rangeConstraint          
 
 // Structure Type
 structureTypeDefinition       : STRUCTURE 
-                                  structureComponentDefinition+ 
+                                  structureComponentDefinition*
                                 END STRUCTURE?                                            -> ^( STRUCTURE 
-                                                                                                structureComponentDefinition+)
+                                                                                                structureComponentDefinition*)
                               ;
 
 structureComponentDefinition  : componentName COLON typeReference 
@@ -477,8 +495,9 @@ terminatorItem                : terminatorServiceDeclaration
                               ;
 
 
-terminatorServiceDeclaration  : serviceVisibility SERVICE serviceName 
-                                  parameterList ( RETURN returnType )?
+terminatorServiceDeclaration : serviceVisibility SERVICE serviceName
+                                  parameterList
+                                  (RETURN returnType)?
                                   SEMI pragmaList                                         -> ^( TERMINATOR_SERVICE_DECLARATION[$SERVICE] 
                                                                                                 serviceVisibility 
                                                                                                 serviceName 
@@ -558,15 +577,15 @@ relationshipSpec              : relationshipName
 
 
 objectServiceDeclaration      : serviceVisibility serviceType SERVICE serviceName 
-                                  parameterList ( RETURN returnType )?
+                                  parameterList
+                                  (RETURN returnType)?
                                   SEMI pragmaList                                         -> ^( OBJECT_SERVICE_DECLARATION[$SERVICE] 
                                                                                                 serviceVisibility 
                                                                                                 serviceType? 
-                                                                                                serviceName 
-                                                                                                parameterList? 
+                                                                                                serviceName
+                                                                                                parameterList?
                                                                                                 returnType?
-                                                                                                pragmaList?
-                                                                                                )
+                                                                                                pragmaList?)
                               ;
 
 serviceType                   : (INSTANCE (DEFERRED LPAREN relationshipName RPAREN)?)?  -> (INSTANCE relationshipName?)?
@@ -658,15 +677,17 @@ endState                      : stateName                                       
 // Service Declaration
 //---------------------------------------------------------
 
-domainServiceDeclaration      : serviceVisibility SERVICE serviceName 
-                                  parameterList ( RETURN returnType )? 
-                                  SEMI pragmaList                                         -> ^( DOMAIN_SERVICE_DECLARATION[$SERVICE] 
+
+domainServiceDeclaration      : serviceVisibility SERVICE serviceName
+                                  parameterList
+                                  (RETURN returnType)? SEMI pragmaList                    -> ^( DOMAIN_SERVICE_DECLARATION[$SERVICE]
                                                                                                 serviceVisibility 
                                                                                                 serviceName 
                                                                                                 parameterList?
                                                                                                 returnType?
                                                                                                 pragmaList? )
                               ;
+
 
 parameterList                 : LPAREN
                                   parameterDefinition? ( COMMA parameterDefinition )*                          
@@ -809,7 +830,8 @@ pragmaName                    : identifier                                      
 
 domainServiceDefinition       : serviceVisibility SERVICE 
                                 domainName SCOPE serviceName 
-                                parameterList ( RETURN returnType )? IS 
+                                parameterList
+                                (RETURN returnType)? IS
                                 codeBlock 
                                 SERVICE? SEMI pragmaList                                  -> ^( DOMAIN_SERVICE_DEFINITION 
                                                                                                 serviceVisibility 
@@ -821,9 +843,10 @@ domainServiceDefinition       : serviceVisibility SERVICE
                                                                                                 pragmaList? )                               
                               ;
 
-objectServiceDefinition       : serviceVisibility INSTANCE? SERVICE 
+
+objectServiceDefinition       : serviceVisibility INSTANCE? SERVICE
                                   domainName SCOPE objectName DOT serviceName 
-                                  parameterList ( RETURN returnType )? IS codeBlock 
+                                  parameterList (RETURN returnType)? IS codeBlock
                                 SERVICE? SEMI pragmaList                                  -> ^( OBJECT_SERVICE_DEFINITION 
                                                                                                 serviceVisibility 
                                                                                                 INSTANCE? 
@@ -838,7 +861,7 @@ objectServiceDefinition       : serviceVisibility INSTANCE? SERVICE
 
 terminatorServiceDefinition   : serviceVisibility SERVICE 
                                 domainName SCOPE terminatorName TERMINATOR_SCOPE serviceName 
-                                parameterList ( RETURN returnType )? IS 
+                                parameterList (RETURN returnType)? IS
                                 codeBlock 
                                 SERVICE? SEMI pragmaList                                  -> ^( TERMINATOR_SERVICE_DEFINITION 
                                                                                                 serviceVisibility 
@@ -851,7 +874,9 @@ terminatorServiceDefinition   : serviceVisibility SERVICE
                                                                                                 pragmaList? )                               
                               ;
 
-stateDefinition               : stateType STATE 
+
+
+stateDefinition               : stateType STATE
                                 domainName SCOPE objectName DOT stateName 
                                 parameterList IS codeBlock 
                                 STATE? SEMI pragmaList                                    -> ^( STATE_DEFINITION 
@@ -946,7 +971,7 @@ delayStatement                : DELAY expression                                
                               ;
 
 raiseStatement                : RAISE ( qualifiedExceptionName
-                                        ( LPAREN expression? RPAREN )? )?                  -> ^( RAISE 
+                                        ( LPAREN expression? RPAREN )? )?                  -> ^( RAISE
                                                                                                 qualifiedExceptionName?
                                                                                                 expression? )
                               ;
@@ -1127,14 +1152,14 @@ variableDeclaration           : variableName COLON
 
 
 exceptionHandler              : WHEN qualifiedExceptionName
-                                (WITH variableName)? GOES_TO statementList                -> ^( EXCEPTION_HANDLER 
+                                (WITH variableName)? GOES_TO statementList                -> ^( EXCEPTION_HANDLER
                                                                                                 qualifiedExceptionName 
                                                                                                 variableName?
                                                                                                 statementList)
                               ;
 
 otherHandler                  : WHEN OTHERS
-                                (WITH variableName)? GOES_TO statementList                -> ^( OTHER_HANDLER[$OTHERS] 
+                                (WITH variableName)? GOES_TO statementList                -> ^( OTHER_HANDLER[$OTHERS]
                                                                                                 variableName?
                                                                                                 statementList)
                               ;

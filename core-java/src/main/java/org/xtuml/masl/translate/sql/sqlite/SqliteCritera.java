@@ -55,11 +55,11 @@ public class SqliteCritera implements DatabaseTraits.SqlCritera {
     public SqliteCritera(final ObjectDeclaration objectDecl, final String variableName) {
         sourceObject = objectDecl;
         variable = new Variable(new TypeUsage(criteriaClass), variableName);
-        whereClauseExpression = new ArrayList<org.xtuml.masl.cppgen.Expression>();
-        fromClauseExpression = new LinkedHashMap<String, org.xtuml.masl.cppgen.Expression>();
-        linkTableClauseExpression = new ArrayList<org.xtuml.masl.cppgen.Expression>();
-        objectSqlVars = new LinkedHashMap<ObjectDeclaration, org.xtuml.masl.cppgen.Variable>();
-        relationshipSqlVars = new LinkedHashMap<RelationshipDeclaration, org.xtuml.masl.cppgen.Variable>();
+        whereClauseExpression = new ArrayList<>();
+        fromClauseExpression = new LinkedHashMap<>();
+        linkTableClauseExpression = new ArrayList<>();
+        objectSqlVars = new LinkedHashMap<>();
+        relationshipSqlVars = new LinkedHashMap<>();
     }
 
     @Override
@@ -310,7 +310,7 @@ public class SqliteCritera implements DatabaseTraits.SqlCritera {
     }
 
     private Expression getQualifiedColumnName(final Expression tableNameExpr, final Expression columnName) {
-        final List<Expression> sqlColumnNameElements = new ArrayList<Expression>();
+        final List<Expression> sqlColumnNameElements = new ArrayList<>();
         sqlColumnNameElements.add(tableNameExpr);
         sqlColumnNameElements.add(Literal.createStringLiteral("."));
         sqlColumnNameElements.add(columnName);

@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,10 +20,10 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.expression;
-
-import junit.framework.TestCase;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.unittest.ErrorLog;
+
+import junit.framework.TestCase;
 
 public class TestMultiplicativeExpression extends TestCase {
 
@@ -31,16 +31,11 @@ public class TestMultiplicativeExpression extends TestCase {
     private static final TestExpressions exprB = TestExpressions.expr2;
     private static final TestTypes typesA = TestTypes.data1;
 
-    public void checkResult(final Expression lhs,
-                            final Expression rhs,
-                            final BasicType expected,
-                            final boolean expectedAnon) {
+    public void checkResult(final Expression lhs, final Expression rhs, final BasicType expected,
+            final boolean expectedAnon) {
         ErrorLog.getInstance().reset();
-        final Expression
-                expression =
-                BinaryExpression.create(lhs,
-                                        new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.TIMES),
-                                        rhs);
+        final Expression expression = BinaryExpression.create(lhs,
+                new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.TIMES), rhs);
         assertNotNull(expression);
         final BasicType result = expression.getType();
         assertEquals(expected, result);

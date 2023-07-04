@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.statemodel;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.code.CodeBlock;
 import org.xtuml.masl.metamodelImpl.common.*;
@@ -65,9 +66,9 @@ public class State extends Positioned implements org.xtuml.masl.metamodel.statem
         this.parentObject = object;
         this.type = type;
         this.params =
-                new CheckedLookup<ParameterDefinition>(SemanticErrorCode.ParameterAlreadyDefinedOnState,
-                                                       SemanticErrorCode.ParameterNotFoundOnState,
-                                                       this);
+                new CheckedLookup<>(SemanticErrorCode.ParameterAlreadyDefinedOnState,
+                                    SemanticErrorCode.ParameterNotFoundOnState,
+                                    this);
         for (final ParameterDefinition param : parameters) {
             try {
                 if (param != null) {
@@ -110,7 +111,7 @@ public class State extends Positioned implements org.xtuml.masl.metamodel.statem
 
     @Override
     public String getFileName() {
-        return parentObject.getKeyLetters() + (isAssigner() ? "-A_" : "_") + name + ".al";
+        return parentObject.getName() + (isAssigner() ? "-A_" : "_") + name + ".al";
     }
 
     @Override
@@ -184,8 +185,13 @@ public class State extends Positioned implements org.xtuml.masl.metamodel.statem
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitState(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitState(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(params.asList(), code, declarationPragmas, definitionPragmas);
     }
 
     private final String name;
@@ -202,7 +208,7 @@ public class State extends Positioned implements org.xtuml.masl.metamodel.statem
 
     private final NameLookup nameLookup = new NameLookup();
 
-    private final List<BasicType> signature = new ArrayList<BasicType>();
+    private final List<BasicType> signature = new ArrayList<>();
 
     private final ObjectDeclaration parentObject;
 

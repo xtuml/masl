@@ -54,7 +54,7 @@ public class ObjectTranslator {
 
     }
 
-    private final List<ActionTranslator> serviceTranslators = new ArrayList<ActionTranslator>();
-    private final List<ActionTranslator> stateTranslators = new ArrayList<ActionTranslator>();
+    private final List<ActionTranslator> serviceTranslators = new ArrayList<>();
+    private final List<ActionTranslator> stateTranslators = new ArrayList<>();
 
 }

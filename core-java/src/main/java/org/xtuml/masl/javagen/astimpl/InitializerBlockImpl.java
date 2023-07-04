@@ -44,12 +44,12 @@ public class InitializerBlockImpl extends TypeMemberImpl implements InitializerB
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitInitializerBlock(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitInitializerBlock(this);
     }
 
     private final boolean isStatic;
-    private final ChildNode<CodeBlockImpl> codeBlock = new ChildNode<CodeBlockImpl>(this);
+    private final ChildNode<CodeBlockImpl> codeBlock = new ChildNode<>(this);
 
     @Override
     public CodeBlock setCodeBlock() {

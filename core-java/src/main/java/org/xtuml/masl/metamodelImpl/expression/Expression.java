@@ -29,7 +29,6 @@ import org.xtuml.masl.metamodelImpl.object.AttributeDeclaration;
 import org.xtuml.masl.metamodelImpl.type.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,8 +55,7 @@ public abstract class Expression extends Positioned implements org.xtuml.masl.me
 
     @Override
     public final List<org.xtuml.masl.metamodel.expression.FindParameterExpression> getFindParameters() {
-        return Collections.unmodifiableList(
-                getConcreteFindParameters());
+        return Collections.unmodifiableList(getConcreteFindParameters());
     }
 
     public final List<FindParameterExpression> getConcreteFindParameters() {
@@ -65,7 +63,7 @@ public abstract class Expression extends Positioned implements org.xtuml.masl.me
     }
 
     protected List<FindParameterExpression> getFindParametersInner() {
-        return new ArrayList<FindParameterExpression>();
+        return new ArrayList<>();
     }
 
     public int getFindAttributeCount() {
@@ -152,7 +150,7 @@ public abstract class Expression extends Positioned implements org.xtuml.masl.me
             if (struct.getElements().size() == 1 && struct.getElements().get(0).isAssignableFrom(this)) {
                 resolved =
                         new StructureAggregate(getPosition(),
-                                               Collections.<Expression>singletonList(resolve(struct.getElements().get(0))));
+                                               Collections.singletonList(resolve(struct.getElements().get(0))));
             }
         }
         return resolved.resolveInner(requiredType);
@@ -174,10 +172,4 @@ public abstract class Expression extends Positioned implements org.xtuml.masl.me
     public void checkWriteableInner(final Position position) throws SemanticError {
         throw new SemanticError(SemanticErrorCode.NotWriteable, position);
     }
-
-    @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.emptyList();
-    }
-
 }

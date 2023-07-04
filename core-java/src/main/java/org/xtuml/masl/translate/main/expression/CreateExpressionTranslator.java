@@ -47,14 +47,14 @@ public class CreateExpressionTranslator extends ExpressionTranslator {
         final ObjectTranslator objectTrans = ObjectTranslator.getInstance(object);
         final Function function = objectTrans.getCreateInstance();
 
-        final Map<AttributeDeclaration, Expression> paramLookup = new HashMap<AttributeDeclaration, Expression>();
+        final Map<AttributeDeclaration, Expression> paramLookup = new HashMap<>();
         State state = null;
         for (final CreateExpression.AttributeValue value : createExpression.getAggregate()) {
             paramLookup.put(value.getAttribute(), value.getValue());
         }
         state = createExpression.getState();
 
-        final List<org.xtuml.masl.cppgen.Expression> params = new ArrayList<org.xtuml.masl.cppgen.Expression>();
+        final List<org.xtuml.masl.cppgen.Expression> params = new ArrayList<>();
         for (final AttributeDeclaration att : object.getAttributes()) {
             if (att.isIdentifier() || !att.isReferential()) {
                 if (att.isUnique()) {

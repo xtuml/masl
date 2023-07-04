@@ -21,7 +21,10 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.common.Position;
+
+import java.util.List;
 
 abstract public class CollectionType extends BasicType implements org.xtuml.masl.metamodel.type.CollectionType {
 
@@ -73,6 +76,11 @@ abstract public class CollectionType extends BasicType implements org.xtuml.masl
     @Override
     public void checkCanBePublic() {
         containedType.checkCanBePublic();
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(containedType);
     }
 
 }

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -30,6 +31,8 @@ import org.xtuml.masl.metamodelImpl.expression.CharacteristicRange;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.expression.RangeExpression;
 import org.xtuml.masl.utils.HashCode;
+
+import java.util.List;
 
 public final class ArrayType extends CollectionType implements org.xtuml.masl.metamodel.type.ArrayType {
 
@@ -122,8 +125,13 @@ public final class ArrayType extends CollectionType implements org.xtuml.masl.me
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitArrayType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitArrayType(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(super.children(), range);
     }
 
 }

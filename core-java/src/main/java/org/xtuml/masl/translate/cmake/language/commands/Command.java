@@ -25,10 +25,12 @@ import com.google.common.collect.ImmutableList;
 import org.xtuml.masl.translate.cmake.CMakeListsItem;
 import org.xtuml.masl.translate.cmake.language.arguments.Argument;
 import org.xtuml.masl.translate.cmake.language.arguments.SimpleArgument;
+import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 import org.xtuml.masl.utils.TextUtils;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,8 +40,12 @@ public class Command implements CMakeListsItem {
         this(name, ImmutableList.of());
     }
 
-    public Command(final String name, final Argument arg) {
-        this(name, ImmutableList.of(arg));
+    public Command(final String name, final Argument... arg) {
+        this(name, ImmutableList.copyOf(arg));
+    }
+
+    public Command(final String name, final String... args) {
+        this(name, ImmutableList.copyOf(Arrays.stream(args).map(SingleArgument::new).collect(Collectors.toList())));
     }
 
     public Command(final String name, final Iterable<? extends Argument> args) {

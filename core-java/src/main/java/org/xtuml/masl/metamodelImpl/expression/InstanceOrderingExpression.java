@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -85,7 +86,7 @@ public class InstanceOrderingExpression extends OrderingExpression
                                       final boolean reverse,
                                       final List<OrderComponent> components) {
         super(position, collection, reverse);
-        this.order = new ArrayList<Component>();
+        this.order = new ArrayList<>();
         for (final OrderComponent component : components) {
             try {
                 addComponent(component);
@@ -130,9 +131,7 @@ public class InstanceOrderingExpression extends OrderingExpression
     public void addComponent(final OrderComponent component) throws SemanticError {
         final BasicType basicType = getCollection().getType().getBasicType();
         assert basicType instanceof CollectionType;
-        final TypeDefinition
-                containedType =
-                basicType.getContainedType().getBasicType().getDefinedType();
+        final TypeDefinition containedType = basicType.getContainedType().getBasicType().getDefinedType();
 
         assert containedType instanceof InstanceType;
         final ObjectDeclaration contained = ((InstanceType) containedType).getObjectDeclaration();
@@ -144,8 +143,13 @@ public class InstanceOrderingExpression extends OrderingExpression
     private final List<Component> order;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitInstanceOrderingExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitInstanceOrderingExpression(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(super.children(), order);
     }
 
 }

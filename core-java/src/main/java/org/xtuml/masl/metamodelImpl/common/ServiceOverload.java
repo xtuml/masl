@@ -42,12 +42,12 @@ public abstract class ServiceOverload<T extends Service> extends Name {
         AlreadyDefined getAlreadyDefined(Position position, String name, Position prevPosition);
     }
 
-    private final Map<List<ParameterDefinition>, T> svcParamLookup = new HashMap<List<ParameterDefinition>, T>();
-    private final Map<List<ParameterDefinition>, T> fnParamLookup = new HashMap<List<ParameterDefinition>, T>();
-    private final Map<List<BasicType>, T> svcTypeLookup = new HashMap<List<BasicType>, T>();
-    private final Map<List<BasicType>, T> fnTypeLookup = new HashMap<List<BasicType>, T>();
+    private final Map<List<ParameterDefinition>, T> svcParamLookup = new HashMap<>();
+    private final Map<List<ParameterDefinition>, T> fnParamLookup = new HashMap<>();
+    private final Map<List<BasicType>, T> svcTypeLookup = new HashMap<>();
+    private final Map<List<BasicType>, T> fnTypeLookup = new HashMap<>();
 
-    private final List<T> list = new ArrayList<T>();
+    private final List<T> list = new ArrayList<>();
 
     private final SemanticErrorCode alreadyDefined;
 
@@ -127,9 +127,9 @@ public abstract class ServiceOverload<T extends Service> extends Name {
 
     public T getCallable(final Position position, final ServiceType type, final List<Expression> arguments) throws
                                                                                                             SemanticError {
-        final List<T> matches = new ArrayList<T>();
-        final List<T> exactMatches = new ArrayList<T>();
-        final List<T> nonMatches = new ArrayList<T>();
+        final List<T> matches = new ArrayList<>();
+        final List<T> exactMatches = new ArrayList<>();
+        final List<T> nonMatches = new ArrayList<>();
         for (final T service : list) {
             final List<ParameterDefinition> parameters = service.getParameters();
             boolean

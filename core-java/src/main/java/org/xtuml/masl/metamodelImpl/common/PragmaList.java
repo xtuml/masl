@@ -21,18 +21,18 @@
  */
 package org.xtuml.masl.metamodelImpl.common;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 
 import java.util.*;
 
 public final class PragmaList implements org.xtuml.masl.metamodel.common.PragmaList {
 
-    private final List<PragmaDefinition> pragmas = new ArrayList<PragmaDefinition>();
-    private final Map<String, List<String>> pragmaLookup = new HashMap<String, List<String>>();
+    private final List<PragmaDefinition> pragmas = new ArrayList<>();
+    private final Map<String, List<String>> pragmaLookup = new LinkedHashMap<>();
 
     static public final String EXTERNAL = "external";
     static public final String SCENARIO = "scenario";
-    static public final String KEY_LETTER = "key_letter";
     static public final String FILENAME = "filename";
     static public final String TEST_ONLY = "test_only";
     static public final String BUILD_SET = "build_set";
@@ -58,7 +58,7 @@ public final class PragmaList implements org.xtuml.masl.metamodel.common.PragmaL
             // i.e. soa_pass_parameter("context,attribute,properties")
             // This needs to be flattened out so the returned list contains
             // the individual values.
-            final List<String> flattenedValues = new ArrayList<String>();
+            final List<String> flattenedValues = new ArrayList<>();
             for (final String pragmaValue : pragmaValues) {
                 // split on non-word character
                 final String[] individualValues = pragmaValue.split("\\W");
@@ -112,7 +112,13 @@ public final class PragmaList implements org.xtuml.masl.metamodel.common.PragmaL
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitPragmaList(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitPragmaList(this);
     }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(pragmas);
+    }
+
 }

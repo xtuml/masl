@@ -42,11 +42,9 @@ public class Types {
     private Types() {
     }
 
-    private final Map<TypeDeclaration, TypeUsage> types = new HashMap<TypeDeclaration, TypeUsage>();
-    private final Map<TypeDeclaration, EnumerationTranslator>
-            enums =
-            new HashMap<TypeDeclaration, EnumerationTranslator>();
-    private final Map<TypeDeclaration, Structure> structs = new HashMap<TypeDeclaration, Structure>();
+    private final Map<TypeDeclaration, TypeUsage> types = new HashMap<>();
+    private final Map<TypeDeclaration, EnumerationTranslator> enums = new HashMap<>();
+    private final Map<TypeDeclaration, Structure> structs = new HashMap<>();
 
     TypeUsage defineType(final TypeDeclaration declaration) {
         TypeUsage result = types.get(declaration);
@@ -190,7 +188,7 @@ public class Types {
                 throw new UnsupportedOperationException("Unrecognised CollectionType " + type.getClass().getName());
             }
         } else if (type instanceof AnonymousStructure) {
-            final List<TypeUsage> tupleTypes = new ArrayList<TypeUsage>();
+            final List<TypeUsage> tupleTypes = new ArrayList<>();
 
             for (final BasicType element : ((AnonymousStructure) type).getElements()) {
                 tupleTypes.add(Types.getInstance().getType(element));
@@ -203,7 +201,7 @@ public class Types {
         }
     }
 
-    private static final Map<ActualType, TypeUsage> builtinTypes = new EnumMap<ActualType, TypeUsage>(ActualType.class);
+    private static final Map<ActualType, TypeUsage> builtinTypes = new EnumMap<>(ActualType.class);
 
     static {
         builtinTypes.put(ActualType.STRING, new TypeUsage(Architecture.stringClass));

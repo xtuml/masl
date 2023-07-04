@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -30,7 +31,6 @@ import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.IntegerType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class IndexedNameExpression extends Expression
@@ -67,7 +67,7 @@ public class IndexedNameExpression extends Expression
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(prefix.getFindArguments());
         params.addAll(index.getFindArguments());
         return params;
@@ -75,7 +75,7 @@ public class IndexedNameExpression extends Expression
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(prefix.getConcreteFindParameters());
         params.addAll(index.getConcreteFindParameters());
         return params;
@@ -129,13 +129,13 @@ public class IndexedNameExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitIndexedNameExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitIndexedNameExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(prefix, index);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(prefix, index);
     }
 
 }

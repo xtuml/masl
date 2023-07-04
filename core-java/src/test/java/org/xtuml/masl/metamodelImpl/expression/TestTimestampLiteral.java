@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,27 +20,21 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.expression;
-
-import junit.framework.TestCase;
-import org.xtuml.masl.error.ErrorCode;
-import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
-import org.xtuml.masl.unittest.ErrorLog;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import org.xtuml.masl.error.ErrorCode;
+import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
+import org.xtuml.masl.unittest.ErrorLog;
+
+import junit.framework.TestCase;
+
 public class TestTimestampLiteral extends TestCase {
 
-    public void checkLiteral(final String literal,
-                             final int year,
-                             final int month,
-                             final int day,
-                             final int hour,
-                             final int min,
-                             final int sec,
-                             final int nano) {
+    public void checkLiteral(final String literal, final int year, final int month, final int day, final int hour,
+            final int min, final int sec, final int nano) {
         final Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.clear();
         cal.set(year, month - 1, day, hour, min, sec);

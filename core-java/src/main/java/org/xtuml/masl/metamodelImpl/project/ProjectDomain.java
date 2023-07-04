@@ -21,6 +21,8 @@
  */
 package org.xtuml.masl.metamodelImpl.project;
 
+import org.xtuml.masl.metamodel.ASTNode;
+import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
 import org.xtuml.masl.metamodelImpl.domain.Domain;
@@ -77,6 +79,16 @@ public class ProjectDomain extends Positioned implements org.xtuml.masl.metamode
         terminators.add(terminator);
     }
 
-    private final List<ProjectTerminator> terminators = new ArrayList<ProjectTerminator>();
+    @Override
+    public void accept(final ASTNodeVisitor v) {
+        v.visitProjectDomain(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(terminators, pragmas);
+    }
+
+    private final List<ProjectTerminator> terminators = new ArrayList<>();
 
 }

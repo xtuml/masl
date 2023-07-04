@@ -33,14 +33,14 @@ public class BinaryCollectionExpression extends BinaryExpression {
     public BinaryCollectionExpression(Expression lhs, final OperatorRef operator, Expression rhs) throws SemanticError {
         super(lhs.getPosition(), operator);
 
-        final List<BasicType> lhsTypes = new ArrayList<BasicType>();
+        final List<BasicType> lhsTypes = new ArrayList<>();
         BasicType lhsContained = lhs.getType();
         while (lhsContained.getContainedType() != null) {
             lhsTypes.add(lhsContained.getBasicType());
             lhsContained = lhsContained.getContainedType();
         }
 
-        final List<BasicType> rhsTypes = new ArrayList<BasicType>();
+        final List<BasicType> rhsTypes = new ArrayList<>();
         BasicType rhsContained = rhs.getType();
         while (rhsContained.getContainedType() != null) {
             rhsTypes.add(rhsContained.getBasicType());
@@ -129,8 +129,9 @@ public class BinaryCollectionExpression extends BinaryExpression {
 
         if (lhsAnon && rhsAnon) {
             return isLeftType(lhsType.getContainedType(), rhsType.getContainedType(), leftToRight);
-        } else
+        } else {
             return !lhsAnon;
+        }
 
     }
 

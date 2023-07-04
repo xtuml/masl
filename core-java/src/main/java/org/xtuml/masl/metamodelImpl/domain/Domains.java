@@ -32,7 +32,7 @@ public class Domains {
 
     private static final CheckedLookup<Domain>
             domains =
-            new CheckedLookup<Domain>(SemanticErrorCode.DomainAlreadyDefined, SemanticErrorCode.DomainNotFound);
+            new CheckedLookup<>(SemanticErrorCode.DomainAlreadyDefined, SemanticErrorCode.DomainNotFound);
 
     public static void addDomain(final Domain domain) {
         if (domain == null) {

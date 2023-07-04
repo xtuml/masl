@@ -21,12 +21,15 @@
  */
 package org.xtuml.masl.metamodelImpl.exception;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
 import org.xtuml.masl.metamodelImpl.common.Visibility;
 import org.xtuml.masl.metamodelImpl.domain.Domain;
+
+import java.util.List;
 
 public final class ExceptionDeclaration extends Positioned
         implements org.xtuml.masl.metamodel.exception.ExceptionDeclaration {
@@ -103,8 +106,8 @@ public final class ExceptionDeclaration extends Positioned
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitExceptionDeclaration(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitExceptionDeclaration(this);
     }
 
     private String comment;
@@ -116,4 +119,10 @@ public final class ExceptionDeclaration extends Positioned
     public void setComment(final String comment) {
         this.comment = comment;
     }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(pragmas);
+    }
+
 }

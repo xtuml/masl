@@ -106,7 +106,7 @@ public class ObjectServiceTranslator {
         return service;
     }
 
-    private final List<ParameterTranslator> parameters = new ArrayList<ParameterTranslator>();
+    private final List<ParameterTranslator> parameters = new ArrayList<>();
 
     private final Function function;
 

@@ -153,6 +153,6 @@ abstract class ASTNodeImpl implements ASTNode {
 
     private final ASTImpl ast;
     private ASTNodeImpl parentNode;
-    private final List<ASTNodeImpl> children = new ArrayList<ASTNodeImpl>();
+    private final List<ASTNodeImpl> children = new ArrayList<>();
 
 }

@@ -21,7 +21,10 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
+
+import java.util.List;
 
 public class InternalType extends BasicType {
 
@@ -72,8 +75,12 @@ public class InternalType extends BasicType {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        throw new IllegalStateException("Cannot Visit Internal Type");
+    public void accept(final ASTNodeVisitor v) {
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

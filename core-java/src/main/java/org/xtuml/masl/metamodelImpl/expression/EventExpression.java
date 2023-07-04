@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -28,6 +29,8 @@ import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.statemodel.EventDeclaration;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.EventType;
+
+import java.util.List;
 
 public class EventExpression extends Expression implements org.xtuml.masl.metamodel.expression.EventExpression {
 
@@ -92,8 +95,13 @@ public class EventExpression extends Expression implements org.xtuml.masl.metamo
     private final EventDeclaration event;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitEventExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitEventExpression(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

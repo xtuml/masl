@@ -41,8 +41,8 @@ public class ObjectServiceInvocation extends ServiceInvocation<ObjectService>
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitObjectServiceInvocation(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitObjectServiceInvocation(this);
     }
 
 }

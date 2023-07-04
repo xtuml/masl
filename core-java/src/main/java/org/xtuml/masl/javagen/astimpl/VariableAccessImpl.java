@@ -49,8 +49,8 @@ public class VariableAccessImpl extends ExpressionImpl implements VariableAccess
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitvariableAccess(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitvariableAccess(this);
     }
 
     private Variable variable;

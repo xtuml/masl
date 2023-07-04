@@ -37,8 +37,8 @@ public class SwitchBlockImpl extends ASTNodeImpl implements SwitchBlock {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSwitchBlock(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitSwitchBlock(this);
     }
 
     @Override
@@ -71,8 +71,8 @@ public class SwitchBlockImpl extends ASTNodeImpl implements SwitchBlock {
         this.isDefault = true;
     }
 
-    private final ChildNodeList<ExpressionImpl> caseLabels = new ChildNodeList<ExpressionImpl>(this);
+    private final ChildNodeList<ExpressionImpl> caseLabels = new ChildNodeList<>(this);
 
-    private final ChildNodeList<StatementImpl> statements = new ChildNodeList<StatementImpl>(this);
+    private final ChildNodeList<StatementImpl> statements = new ChildNodeList<>(this);
     private boolean isDefault;
 }

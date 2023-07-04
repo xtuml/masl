@@ -157,8 +157,8 @@ class ModifiersImpl extends ASTNodeImpl implements Modifiers {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitModifiers(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitModifiers(this);
     }
 
     protected final EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);

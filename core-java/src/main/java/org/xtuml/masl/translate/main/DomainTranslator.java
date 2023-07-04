@@ -35,8 +35,8 @@ import org.xtuml.masl.metamodel.relationship.RelationshipDeclaration;
 import org.xtuml.masl.metamodel.type.TypeDeclaration;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
-import org.xtuml.masl.translate.build.BuildSet;
-import org.xtuml.masl.translate.build.FileGroup;
+import org.xtuml.masl.translate.building.BuildSet;
+import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.main.object.ObjectTranslator;
 
 import java.util.HashMap;
@@ -66,23 +66,41 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         super(domain);
         buildSet = BuildSet.getBuildSet(domain);
 
-        interfaceLibrary =
-                new SharedLibrary(domain.getName() + "_interface").withDefaultHeaderPath(domain.getName() +
-                                                                                         "_OOA").withCCDefaultExtensions().inBuildSet(
+        library =
+                new SharedLibrary(domain.getName()).withDefaultHeaderPath(domain.getName() +
+                                                                          "_OOA").withCCDefaultExtensions().inBuildSet(
                         getBuildSet());
+        library.addDependency(Architecture.library);
+
+        bodyFile = library.createBodyFile(Mangler.mangleFile(domain));
+
+        domainHeader = library.createInterfaceHeader(Mangler.mangleFile(domain));
+        terminatorsHeaderFile = library.createInterfaceHeader(Mangler.mangleFile(domain) + "_terminators");
+        privateTypeBodyFile = library.createBodyFile(Mangler.mangleFile(domain) + "_private_types");
+        privateTypeHeaderFile = library.createPrivateHeader(Mangler.mangleFile(domain) + "_private_types");
+
+        if (domain.getPragmas().hasPragma("service_domain")) {
+            interfaceLibrary = library;
+            interfaceBodyFile = null;
+            interfaceDomainHeader = domainHeader;
+        } else {
+            interfaceLibrary =
+                    new SharedLibrary(domain.getName() + "_interface").withDefaultHeaderPath(domain.getName() +
+                                                                                             "_OOA").withCCDefaultExtensions().inBuildSet(
+                            getBuildSet());
+            interfaceBodyFile = interfaceLibrary.createBodyFile(Mangler.mangleFile(domain) + "_interface");
+            interfaceDomainHeader = interfaceLibrary.createInterfaceHeader(Mangler.mangleFile(domain) + "_interface");
+            library.addDependency(interfaceLibrary);
+        }
+
         interfaceLibrary.addDependency(Architecture.library);
         interfaceLibrary.addDependency(ASN1.library);
         publicTypeBodyFile = interfaceLibrary.createBodyFile(Mangler.mangleFile(domain) + "_types");
         publicTypeHeaderFile = interfaceLibrary.createInterfaceHeader(Mangler.mangleFile(domain) + "_types");
 
         publicServicesHeaderFile = interfaceLibrary.createInterfaceHeader(Mangler.mangleFile(domain) + "_services");
-
-        library =
-                new SharedLibrary(domain.getName()).withDefaultHeaderPath(domain.getName() +
-                                                                          "_OOA").withCCDefaultExtensions().inBuildSet(
-                        getBuildSet());
-        library.addDependency(Architecture.library);
-        library.addDependency(interfaceLibrary);
+        privateServicesHeaderFile =
+                interfaceLibrary.createPrivateHeader(Mangler.mangleFile(domain) + "_private_services");
 
         standaloneExecutableSkeleton = new Library(domain.getName() + "_standalone_skeleton").withCCDefaultExtensions();
         standaloneDeps =
@@ -90,16 +108,6 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                         getBuildSet());
         standaloneExecutableSkeleton.addDependency(standaloneDeps);
         standaloneDeps.addDependency(library);
-
-        bodyFile = library.createBodyFile(Mangler.mangleFile(domain));
-        interfaceBodyFile = interfaceLibrary.createBodyFile(Mangler.mangleFile(domain) + "_interface");
-        interfaceDomainHeader = interfaceLibrary.createInterfaceHeader(Mangler.mangleFile(domain) + "_interface");
-
-        domainHeader = library.createInterfaceHeader(Mangler.mangleFile(domain));
-        terminatorsHeaderFile = library.createInterfaceHeader(Mangler.mangleFile(domain) + "_terminators");
-        privateTypeBodyFile = library.createBodyFile(Mangler.mangleFile(domain) + "_private_types");
-        privateTypeHeaderFile = library.createInterfaceHeader(Mangler.mangleFile(domain) + "_private_types");
-        privateServicesHeaderFile = library.createPrivateHeader(Mangler.mangleFile(domain) + "_private_services");
 
         getDomain = new Function("getDomain", DomainNamespace.get(domain));
         interfaceDomainHeader.addFunctionDeclaration(getDomain);
@@ -121,7 +129,6 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     @Override
     public void translate() {
         getDomain.setReturnType(new TypeUsage(Architecture.domainClass, TypeUsage.Reference));
-        interfaceBodyFile.addFunctionDefinition(getDomain);
 
         final Variable
                 domainVar =
@@ -134,17 +141,24 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         getDomain.getCode().appendStatement(new VariableDefinitionStatement(domainVar));
         getDomain.getCode().appendStatement(new ReturnStatement(domainVar.asExpression()));
 
-        initialiseInterface = new Function("initialiseInterface", DomainNamespace.get(domain));
-        initialiseInterface.setReturnType(new TypeUsage(FundamentalType.BOOL));
+        if (interfaceBodyFile == null) {
+            bodyFile.addFunctionDefinition(getDomain);
+            initialiseInterface = null;
+        } else {
+            interfaceBodyFile.addFunctionDefinition(getDomain);
 
-        final Variable
-                interfaceInitialised =
-                new Variable(new TypeUsage(FundamentalType.BOOL, TypeUsage.Const),
-                             "interfaceInitialised",
-                             DomainNamespace.get(domain),
-                             initialiseInterface.asFunctionCall());
-        interfaceBodyFile.addFunctionDefinition(initialiseInterface);
-        interfaceBodyFile.addVariableDefinition(interfaceInitialised);
+            initialiseInterface = new Function("initialiseInterface", DomainNamespace.get(domain));
+            initialiseInterface.setReturnType(new TypeUsage(FundamentalType.BOOL));
+
+            final Variable
+                    interfaceInitialised =
+                    new Variable(new TypeUsage(FundamentalType.BOOL, TypeUsage.Const),
+                                 "interfaceInitialised",
+                                 DomainNamespace.get(domain),
+                                 initialiseInterface.asFunctionCall());
+            interfaceBodyFile.addFunctionDefinition(initialiseInterface);
+            interfaceBodyFile.addVariableDefinition(interfaceInitialised);
+        }
 
         initialiseDomain = new Function("initialiseDomain", DomainNamespace.get(domain));
         initialiseDomain.setReturnType(new TypeUsage(FundamentalType.BOOL));
@@ -217,8 +231,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     }
 
     private void addInitCode() {
-        initialiseInterface.getCode().appendExpression(getDomain.asFunctionCall());
-
+        if (initialiseInterface != null) {
+            initialiseInterface.getCode().appendExpression(getDomain.asFunctionCall());
+            initialiseInterface.getCode().appendStatement(new ReturnStatement(Literal.TRUE));
+        }
         initialiseDomain.getCode().appendExpression(new Function("setInterface").asFunctionCall(getDomain.asFunctionCall(),
                                                                                                 false,
                                                                                                 Literal.FALSE));
@@ -414,9 +430,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         return translator.getExceptionClass();
     }
 
-    private final HashMap<ExceptionDeclaration, ExceptionTranslator>
-            exceptionTranslators =
-            new HashMap<ExceptionDeclaration, ExceptionTranslator>();
+    private final HashMap<ExceptionDeclaration, ExceptionTranslator> exceptionTranslators = new HashMap<>();
 
     private void translateServiceCode() {
         for (final DomainService service : domain.getServices()) {
@@ -432,21 +446,13 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         }
     }
 
-    private final Map<DomainService, DomainServiceTranslator>
-            serviceTranslators =
-            new HashMap<DomainService, DomainServiceTranslator>();
+    private final Map<DomainService, DomainServiceTranslator> serviceTranslators = new HashMap<>();
 
-    private final Map<ObjectDeclaration, ObjectTranslator>
-            objectTranslators =
-            new HashMap<ObjectDeclaration, ObjectTranslator>();
+    private final Map<ObjectDeclaration, ObjectTranslator> objectTranslators = new HashMap<>();
 
-    private final Map<DomainTerminator, TerminatorTranslator>
-            terminatorTranslators =
-            new HashMap<DomainTerminator, TerminatorTranslator>();
+    private final Map<DomainTerminator, TerminatorTranslator> terminatorTranslators = new HashMap<>();
 
-    private final Map<RelationshipDeclaration, RelationshipTranslator>
-            relationshipTranslators =
-            new HashMap<RelationshipDeclaration, RelationshipTranslator>();
+    private final Map<RelationshipDeclaration, RelationshipTranslator> relationshipTranslators = new HashMap<>();
 
     private final Function getDomain;
     private Function initialiseDomain;

@@ -100,7 +100,7 @@ public class CharacteristicTranslator extends ExpressionTranslator {
     }
 
     void translateFirst(final CharacteristicExpression characteristicReference, final Scope scope) {
-        final TypeDefinition defined = characteristicReference.getLhsType().getDefinedType();
+        final TypeDefinition defined = characteristicReference.getLhsType().getBasicType().getDefinedType();
 
         if (defined instanceof SequenceType || defined.isString()) {
             final Expression prefix = characteristicReference.getLhs();
@@ -109,8 +109,7 @@ public class CharacteristicTranslator extends ExpressionTranslator {
         } else if (defined instanceof ArrayType) {
             setReadExpression(createTranslator(defined.getMinValue(), scope).getReadExpression());
         } else if (defined instanceof UnconstrainedArraySubtype) {
-            setReadExpression(createTranslator(defined.getMinValue(),
-                                               scope).getReadExpression());
+            setReadExpression(createTranslator(defined.getMinValue(), scope).getReadExpression());
         } else {
             setReadExpression(createTranslator(defined.getMinValue(), scope).getReadExpression());
         }
@@ -142,7 +141,8 @@ public class CharacteristicTranslator extends ExpressionTranslator {
         final Expression prefix = characteristicReference.getLhs();
         final org.xtuml.masl.cppgen.Expression base = createTranslator(prefix, scope).getReadExpression();
 
-        if (!(characteristicReference.getLhs().getType().getDefinedType().getActualType() == ActualType.STRING)) {
+        if (!(characteristicReference.getLhs().getType().getBasicType().getDefinedType().getActualType() ==
+              ActualType.STRING)) {
             setReadExpression(Architecture.stringClass.callConstructor(Boost.lexicalCast(new TypeUsage(Std.string),
                                                                                          base)));
         } else {
@@ -151,7 +151,7 @@ public class CharacteristicTranslator extends ExpressionTranslator {
     }
 
     void translateLast(final CharacteristicExpression characteristicReference, final Scope scope) {
-        final TypeDefinition defined = characteristicReference.getLhsType().getDefinedType();
+        final TypeDefinition defined = characteristicReference.getLhsType().getBasicType().getDefinedType();
 
         if (defined instanceof SequenceType || defined.isString()) {
             final Expression prefix = characteristicReference.getLhs();
@@ -160,8 +160,7 @@ public class CharacteristicTranslator extends ExpressionTranslator {
         } else if (defined instanceof ArrayType) {
             setReadExpression(createTranslator(defined.getMaxValue(), scope).getReadExpression());
         } else if (defined instanceof UnconstrainedArraySubtype) {
-            setReadExpression(createTranslator(defined.getMaxValue(),
-                                               scope).getReadExpression());
+            setReadExpression(createTranslator(defined.getMaxValue(), scope).getReadExpression());
         } else {
             setReadExpression(createTranslator(defined.getMaxValue(), scope).getReadExpression());
         }
@@ -189,7 +188,7 @@ public class CharacteristicTranslator extends ExpressionTranslator {
         org.xtuml.masl.cppgen.Expression minExp;
         org.xtuml.masl.cppgen.Expression maxExp;
 
-        final TypeDefinition defined = characteristicReference.getLhsType().getDefinedType();
+        final TypeDefinition defined = characteristicReference.getLhsType().getBasicType().getDefinedType();
 
         if (defined instanceof SequenceType || defined.isString()) {
             final Expression prefix = characteristicReference.getLhs();

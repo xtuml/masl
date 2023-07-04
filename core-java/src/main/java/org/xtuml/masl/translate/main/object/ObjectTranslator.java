@@ -48,8 +48,7 @@ public class ObjectTranslator {
 
         @Override
         public boolean equals(final Object rhs) {
-            return type == ((FindKey) rhs).type &&
-                   (Objects.equals(predicate, ((FindKey) rhs).predicate));
+            return type == ((FindKey) rhs).type && (Objects.equals(predicate, ((FindKey) rhs).predicate));
         }
 
         @Override
@@ -84,7 +83,7 @@ public class ObjectTranslator {
         }
     }
 
-    private final List<SubtypeRelationshipDeclaration> polymorphisms = new ArrayList<SubtypeRelationshipDeclaration>();
+    private final List<SubtypeRelationshipDeclaration> polymorphisms = new ArrayList<>();
 
     public void addPolymorphism(final SubtypeRelationshipDeclaration rel) {
         polymorphisms.add(rel);
@@ -94,7 +93,7 @@ public class ObjectTranslator {
         for (final SubtypeRelationshipDeclaration rel : polymorphisms) {
             // recurse all the object supertypes to get all the
             // event declarations for the whole supertype/subtype tree.
-            final List<EventDeclaration> allEvents = new ArrayList<EventDeclaration>();
+            final List<EventDeclaration> allEvents = new ArrayList<>();
             getSuperTypeEvents(objectDeclaration, allEvents);
 
             allEvents.addAll(objectDeclaration.getEvents());
@@ -107,9 +106,7 @@ public class ObjectTranslator {
 
                     Statement result = null;
 
-                    final List<org.xtuml.masl.cppgen.Expression>
-                            args =
-                            new ArrayList<org.xtuml.masl.cppgen.Expression>();
+                    final List<org.xtuml.masl.cppgen.Expression> args = new ArrayList<>();
 
                     for (final Variable arg : processFunction.getParameters()) {
                         args.add(arg.asExpression());
@@ -145,9 +142,7 @@ public class ObjectTranslator {
                 final Function serviceFunction = getService(service);
 
                 if (service.isDeferred() && service.getRelationship() == rel) {
-                    final List<org.xtuml.masl.cppgen.Expression>
-                            args =
-                            new ArrayList<org.xtuml.masl.cppgen.Expression>();
+                    final List<org.xtuml.masl.cppgen.Expression> args = new ArrayList<>();
 
                     for (final Variable arg : serviceFunction.getParameters()) {
                         args.add(arg.asExpression());
@@ -247,7 +242,7 @@ public class ObjectTranslator {
                                                               final List<org.xtuml.masl.cppgen.Expression> findArgs) {
         final Function predicateFn = getFindPredicate(predicate);
 
-        final List<org.xtuml.masl.cppgen.Expression> bindArgs = new ArrayList<org.xtuml.masl.cppgen.Expression>();
+        final List<org.xtuml.masl.cppgen.Expression> bindArgs = new ArrayList<>();
         bindArgs.add(predicateFn.asFunctionPointer());
         // &SWA::ObjectPtr<OBJECT>::get
         final org.xtuml.masl.cppgen.Expression
@@ -284,7 +279,7 @@ public class ObjectTranslator {
         final List<? extends AttributeDeclaration> equalAtts = predicate.getFindEqualAttributes();
 
         if (equalAtts != null) {
-            final Set<AttributeDeclaration> equalAttSet = new HashSet<AttributeDeclaration>(equalAtts);
+            final Set<AttributeDeclaration> equalAttSet = new HashSet<>(equalAtts);
             for (final IdentifierDeclaration identifier : objectDeclaration.getIdentifiers()) {
                 if (equalAttSet.equals(new HashSet<AttributeDeclaration>(identifier.getAttributes()))) {
                     return identifier;
@@ -517,9 +512,7 @@ public class ObjectTranslator {
         addEventGenerators(objectDeclaration, eventsEnum);
     }
 
-    private final Map<EventDeclaration, org.xtuml.masl.cppgen.Expression>
-            eventIds =
-            new HashMap<EventDeclaration, org.xtuml.masl.cppgen.Expression>();
+    private final Map<EventDeclaration, org.xtuml.masl.cppgen.Expression> eventIds = new HashMap<>();
 
     public org.xtuml.masl.cppgen.Expression getEventId(final EventDeclaration event) {
         return eventIds.get(event);
@@ -617,22 +610,22 @@ public class ObjectTranslator {
 
     private EnumerationType statesEnum;
 
-    Map<EventDeclaration, EventTranslator> eventTranslators = new HashMap<EventDeclaration, EventTranslator>();
-    private final Map<State, StateActionTranslator> actionTranslators = new HashMap<State, StateActionTranslator>();
+    Map<EventDeclaration, EventTranslator> eventTranslators = new HashMap<>();
+    private final Map<State, StateActionTranslator> actionTranslators = new HashMap<>();
 
     private StateMachineTranslator assignerFsm = null;
-    private final Map<AttributeDeclaration, Function> attributeGetters = new HashMap<AttributeDeclaration, Function>();
-    private final Map<AttributeDeclaration, Function> attributeSetters = new HashMap<AttributeDeclaration, Function>();
+    private final Map<AttributeDeclaration, Function> attributeGetters = new HashMap<>();
+    private final Map<AttributeDeclaration, Function> attributeSetters = new HashMap<>();
     private Function createInstance;
     private Function deleteInstance;
     private Function getPopulationSize;
 
-    private final Map<FindKey, Function> findFunctions = new HashMap<FindKey, Function>();
-    private final Map<Expression, Function> findPredicates = new HashMap<Expression, Function>();
+    private final Map<FindKey, Function> findFunctions = new HashMap<>();
+    private final Map<Expression, Function> findPredicates = new HashMap<>();
     private Function getId;
     private Function getNextArchId;
-    private final Map<AttributeDeclaration, Function> getUniqueIds = new HashMap<AttributeDeclaration, Function>();
-    private final Map<AttributeDeclaration, Function> useUniqueIds = new HashMap<AttributeDeclaration, Function>();
+    private final Map<AttributeDeclaration, Function> getUniqueIds = new HashMap<>();
+    private final Map<AttributeDeclaration, Function> useUniqueIds = new HashMap<>();
     private Function getInstance;
     private Function generateDelayedEvent;
 
@@ -643,16 +636,12 @@ public class ObjectTranslator {
     private final ObjectDeclaration objectDeclaration;
     private final Map<List<? extends InstanceOrderingExpression.Component>, Function>
             orderByPredicates =
-            new HashMap<List<? extends InstanceOrderingExpression.Component>, Function>();
+            new HashMap<>();
     private final TypeUsage pointerType;
     private Population population;
 
-    private final Map<ObjectService, ObjectServiceTranslator>
-            serviceTranslators =
-            new HashMap<ObjectService, ObjectServiceTranslator>();
-    private final Map<RelationshipSpecification, RelationshipTranslator>
-            relationshipTranslators =
-            new HashMap<RelationshipSpecification, RelationshipTranslator>();
+    private final Map<ObjectService, ObjectServiceTranslator> serviceTranslators = new HashMap<>();
+    private final Map<RelationshipSpecification, RelationshipTranslator> relationshipTranslators = new HashMap<>();
     private final DomainTranslator domainTranslator;
 
     public DomainTranslator getDomainTranslator() {

@@ -21,8 +21,6 @@
  */
 package org.xtuml.masl;
 
-import org.xtuml.masl.utils.CopyrightUtil;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +35,10 @@ public enum CommandLine {
 
     public boolean isProject() {
         return isProject;
+    }
+
+    public boolean isInterface() {
+        return isInterface;
     }
 
     public List<String> getDomainPaths() {
@@ -75,6 +77,10 @@ public enum CommandLine {
         return forTest;
     }
 
+    public String getVersion() {
+        return version;
+    }
+
     public String getOutputDirectory() {
         return outputDirectory;
     }
@@ -83,19 +89,12 @@ public enum CommandLine {
         return customBuildFile;
     }
 
-    public String getCopyrightNotice() {
-        return copyrightNotice;
-    }
-
-    public String getRawCopyrightNotice() {
-        return rawCopyrightNotice;
-    }
-
     public boolean getDisableCustomTranslator() {
         return disableCustomTranslator;
     }
 
     private boolean isProject = false;
+    private boolean isInterface = false;
     private File modelFile = null;
     private String domainParser = null;
     private String buildTranslator = null;
@@ -105,14 +104,12 @@ public enum CommandLine {
     private boolean serialFileWrites = false;
     private boolean forceBuild = false;
     private boolean disableCustomTranslator = false;
-    private final List<String> skiptranslators = new ArrayList<String>();
-    private final List<String> addtranslators = new ArrayList<String>();
+    private final List<String> skiptranslators = new ArrayList<>();
+    private final List<String> addtranslators = new ArrayList<>();
     private boolean overrideTranslators = false;
-    private final List<String> domainPaths = new ArrayList<String>();
-    private String copyrightNotice = null;
-    private String rawCopyrightNotice = null;
+    private final List<String> domainPaths = new ArrayList<>();
+    private String version = "0.0.0";
     private String customBuildFile = null;
-
     /**
      * Display a usage message.
      */
@@ -121,6 +118,7 @@ public enum CommandLine {
         System.err.println("  -help                      print out this message");
         System.err.println("  -domainpath <domainpath>   set the domain path");
         System.err.println("  -mod <model file>          the model file to parse");
+        System.err.println("  -int <interface file>      the interface file to parse");
         System.err.println("  -prj <project file>        the project file to parse");
         System.err.println("  -output                    output directory for generated code");
 
@@ -151,6 +149,9 @@ public enum CommandLine {
                 serialFileWrites = true;
             } else if (args[i].equals("-mod")) {
                 modelFile = new File(args[++i]);
+            } else if (args[i].equals("-int")) {
+                modelFile = new File(args[++i]);
+                isInterface = true;
             } else if (args[i].equals("-prj")) {
                 modelFile = new File(args[++i]);
                 isProject = true;
@@ -170,12 +171,9 @@ public enum CommandLine {
                 forTest = true;
             } else if (args[i].equals("-builder")) {
                 buildTranslator = args[++i];
-            } else if (args[i].equals("-copyright")) {
-                copyrightNotice = CopyrightUtil.getCopyrightNotice(args[++i]);
-                rawCopyrightNotice = CopyrightUtil.getRawCopyrightNotice(args[i]);
             } else if (args[i].equals("-custombuildfile")) {
                 customBuildFile = args[++i];
-            } else if (args[i].equals("-domainpath")) {
+            }else if (args[i].equals("-domainpath")) {
                 // -domainpath <domainpath>
                 // SetVariable the domain path. If -domainpath is not specified, the domain
                 // path is the current directory.
@@ -226,6 +224,8 @@ public enum CommandLine {
                     help();
                     System.exit(1);
                 }
+            } else if (args[i].equals("-version")) {
+                version = args[++i];
             } else {
                 help();
                 System.exit(1);

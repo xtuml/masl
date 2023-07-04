@@ -120,7 +120,7 @@ public class TypedefType extends Type {
 
     @Override
     Set<CodeFile> getDirectUsageIncludes() {
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
         if (declaration.getParentClass() == null) {
             result.addAll(super.getDirectUsageIncludes());
             result.addAll(declaration.getUsageIncludes());
@@ -132,7 +132,7 @@ public class TypedefType extends Type {
 
     @Override
     Set<CodeFile> getNoRefDirectUsageIncludes() {
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
         if (declaration.getParentClass() == null) {
             result.addAll(super.getNoRefDirectUsageIncludes());
             result.addAll(declaration.getUsageIncludes());

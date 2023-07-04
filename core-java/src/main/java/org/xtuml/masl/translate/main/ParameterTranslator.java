@@ -29,8 +29,8 @@ import org.xtuml.masl.metamodel.common.ParameterDefinition;
 public class ParameterTranslator {
 
     /**
-     * This constructor is used during the translation of service parameters as
-     * part of a domain build.
+     * This constructor is used during the translation of service parameters as part
+     * of a domain build.
      * <p>
      * <p>
      * The definition of the terminator service parameter.

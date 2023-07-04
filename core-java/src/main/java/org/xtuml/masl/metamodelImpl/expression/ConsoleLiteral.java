@@ -57,8 +57,8 @@ public class ConsoleLiteral extends LiteralExpression implements org.xtuml.masl.
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitConsoleLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitConsoleLiteral(this);
     }
 
 }

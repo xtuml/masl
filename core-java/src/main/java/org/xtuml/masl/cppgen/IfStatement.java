@@ -53,8 +53,8 @@ public class IfStatement extends Statement {
      * Creates a C++ <code>if</code>-<code>else</code> statement.
      * <p>
      * <p>
-     * The condition that decides whether the 'if' or 'else' statements
-     * should be executed.
+     * The condition that decides whether the 'if' or 'else' statements should be
+     * executed.
      * <p>
      * The statement to execute if the condition is true.
      * <p>
@@ -84,12 +84,11 @@ public class IfStatement extends Statement {
     }
 
     /**
-     * Creates a C++ <code>if</code> statement. An else clause may be added later
-     * by means of the {@link IfStatement#setElse(Statement)}function.
+     * Creates a C++ <code>if</code> statement. An else clause may be added later by
+     * means of the {@link IfStatement#setElse(Statement)}function.
      * <p>
      * <p>
-     * The condition that decides whether the 'if' statement should be
-     * executed.
+     * The condition that decides whether the 'if' statement should be executed.
      * <p>
      * The statement to execute if the condition is true.
      */
@@ -115,10 +114,9 @@ public class IfStatement extends Statement {
     }
 
     /**
-     * Helper function for {@link IfStatement#write(Writer, String, Namespace)},
-     * which takes an extra argument for the indent for the initial if statement.
-     * This is so that cascading <code>else if</code> statements can be formatted
-     * nicely.
+     * Helper function for {@link IfStatement#write(Writer, String, Namespace)}, which
+     * takes an extra argument for the indent for the initial if statement. This is
+     * so that cascading <code>else if</code> statements can be formatted nicely.
      * <p>
      * <p>
      * The writer to write code to

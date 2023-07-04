@@ -49,14 +49,13 @@ public class EventTranslator extends ExpressionTranslator {
     }
 
     /**
-     * The generation of the code required by this translator is dependent on
-     * other parameters that have been passed to the orginal SM_TIMER_Set_Timer
-     * domain service invocation. These details cannot be passed to the
-     * constructor of this class, so they are deffered until the
-     * ArgumentTranslator class detects that an EventTranslator object has been
-     * detected. WHen this happens it assumes that the service being invoked is
-     * SM_TIMER_Set_Timer and sets the timerId and instance parameter on this
-     * object.
+     * The generation of the code required by this translator is dependent on other
+     * parameters that have been passed to the orginal SM_TIMER_Set_Timer domain
+     * service invocation. These details cannot be passed to the constructor of this
+     * class, so they are deffered until the ArgumentTranslator class detects that
+     * an EventTranslator object has been detected. WHen this happens it assumes
+     * that the service being invoked is SM_TIMER_Set_Timer and sets the timerId and
+     * instance parameter on this object.
      */
     public void setParameters(final ParameterDefinition instanceDef,
                               final org.xtuml.masl.metamodel.expression.Expression instanceArg,

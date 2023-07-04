@@ -52,7 +52,7 @@ public class CommandLineBuildPrefs implements TranslatorPreferences {
 
     @Override
     public boolean isOverride() {
-        return CommandLine.INSTANCE.getBuildDisable();
+        return false;
     }
 
     @Override

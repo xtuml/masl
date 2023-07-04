@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.type.TypeDefinition.ActualType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -135,8 +136,13 @@ public class CreateExpression extends Expression implements org.xtuml.masl.metam
         private final Expression value;
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitCreateAttributeValue(this, p);
+        public void accept(final ASTNodeVisitor v) {
+            v.visitCreateAttributeValue(this);
+        }
+
+        @Override
+        public List<ASTNode> children() {
+            return ASTNode.makeChildren(value);
         }
 
     }
@@ -155,9 +161,9 @@ public class CreateExpression extends Expression implements org.xtuml.masl.metam
                              final List<CreateAggregateValue> aggregate) {
         super(position);
         this.object = object;
-        this.aggregate = new ArrayList<NormalAttribute>();
+        this.aggregate = new ArrayList<>();
         State state = null;
-        final Set<AttributeDeclaration> requiredIdentifiers = new HashSet<AttributeDeclaration>();
+        final Set<AttributeDeclaration> requiredIdentifiers = new HashSet<>();
         for (final AttributeDeclaration attribute : object.getAttributes()) {
             if (attribute.isIdentifier() && !attribute.isUnique() && attribute.getDefault() == null) {
                 requiredIdentifiers.add(attribute);
@@ -246,16 +252,13 @@ public class CreateExpression extends Expression implements org.xtuml.masl.metam
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCreateExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitCreateExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        final List<Expression> result = new ArrayList<Expression>();
-        for (final NormalAttribute att : aggregate) {
-            result.add(att.getValue());
-        }
-        return result;
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(aggregate);
     }
+
 }

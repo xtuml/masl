@@ -42,8 +42,8 @@ public class ThrowStatement extends Statement {
 
     /**
      * Creates a throw statement that will throw the specified expression as an
-     * exception. If the exception is null, a throw statement to rethrow the
-     * current exception will be created.
+     * exception. If the exception is null, a throw statement to rethrow the current
+     * exception will be created.
      * <p>
      * <p>
      * the exception to throw

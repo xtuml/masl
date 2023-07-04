@@ -57,8 +57,8 @@ public class EndlLiteral extends LiteralExpression implements org.xtuml.masl.met
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitEndlLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitEndlLiteral(this);
     }
 
 }

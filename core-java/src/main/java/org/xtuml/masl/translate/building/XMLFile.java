@@ -19,7 +19,7 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-package org.xtuml.masl.translate.build;
+package org.xtuml.masl.translate.building;
 
 import org.w3c.dom.Document;
 

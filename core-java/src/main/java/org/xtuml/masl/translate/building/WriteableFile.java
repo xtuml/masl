@@ -19,7 +19,7 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-package org.xtuml.masl.translate.build;
+package org.xtuml.masl.translate.building;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,14 @@ public interface WriteableFile {
         final Writer text = new StringWriter();
         writeCode(text);
         BuildSet.updateFile(new File(directory, getFile().getPath()), text);
+    }
+
+    default boolean isPublicHeader() {
+        return false;
+    }
+
+    default boolean isSourceFile() {
+        return false;
     }
 
 }

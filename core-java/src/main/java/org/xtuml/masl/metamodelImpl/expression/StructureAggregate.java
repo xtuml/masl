@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.type.AnonymousStructure;
@@ -42,14 +43,14 @@ public class StructureAggregate extends Expression implements org.xtuml.masl.met
 
     public StructureAggregate(final Position position, final List<Expression> elements, final BasicType type) {
         super(position);
-        this.elements = new ArrayList<Expression>();
+        this.elements = new ArrayList<>();
         for (final Expression element : elements) {
             if (element != null) {
                 this.elements.add(element);
             }
         }
         if (type == null) {
-            final List<BasicType> eltypes = new ArrayList<BasicType>(elements.size());
+            final List<BasicType> eltypes = new ArrayList<>(elements.size());
             for (final Expression element : elements) {
                 eltypes.add(element.getType());
             }
@@ -63,7 +64,7 @@ public class StructureAggregate extends Expression implements org.xtuml.masl.met
     protected Expression resolveInner(final BasicType requiredType) {
         if (requiredType.getPrimitiveType().getDefinedType() instanceof AnonymousStructure rhs) {
             if (rhs.getElements().size() == elements.size()) {
-                final List<Expression> newElts = new ArrayList<Expression>();
+                final List<Expression> newElts = new ArrayList<>();
 
                 for (int i = 0; i < elements.size(); ++i) {
                     if (rhs.getElements().get(i).isAssignableFrom(elements.get(i), true)) {
@@ -100,7 +101,7 @@ public class StructureAggregate extends Expression implements org.xtuml.masl.met
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         for (final Expression element : elements) {
             params.addAll(element.getFindArguments());
         }
@@ -110,7 +111,7 @@ public class StructureAggregate extends Expression implements org.xtuml.masl.met
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         for (final Expression element : elements) {
             params.addAll(element.getConcreteFindParameters());
         }
@@ -146,13 +147,13 @@ public class StructureAggregate extends Expression implements org.xtuml.masl.met
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitStructureAggregate(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitStructureAggregate(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return new ArrayList<Expression>(elements);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(elements);
     }
 
 }

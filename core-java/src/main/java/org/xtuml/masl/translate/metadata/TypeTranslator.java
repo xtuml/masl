@@ -56,7 +56,7 @@ public class TypeTranslator {
     }
 
     static Expression getTypeMetaData(final BasicType type) {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
 
         final BasicType fundamentalType = getFundamentalType(type);
 
@@ -137,7 +137,7 @@ public class TypeTranslator {
     }
 
     static Expression getLocalVarMetaData(final VariableDefinition variable) {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.add(Literal.createStringLiteral(variable.getName()));
 
         params.add(Literal.createStringLiteral(variable.getType().toString()));
@@ -147,7 +147,7 @@ public class TypeTranslator {
     }
 
     static Expression getParameterMetaData(final ParameterDefinition param) {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.add(Literal.createStringLiteral(param.getName()));
 
         params.add(Literal.createStringLiteral(param.getType().toString()));

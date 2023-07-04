@@ -21,8 +21,9 @@
  */
 package org.xtuml.masl.translate.cmake;
 
-import org.xtuml.masl.translate.build.FileGroup;
-import org.xtuml.masl.translate.build.ReferencedFile;
+import org.xtuml.masl.cppgen.Library;
+import org.xtuml.masl.translate.building.FileGroup;
+import org.xtuml.masl.translate.building.ReferencedFile;
 import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 
 import java.io.File;
@@ -33,27 +34,37 @@ import java.util.stream.StreamSupport;
 public class Utils {
 
     public static List<SingleArgument> getPathArgs(final Iterable<? extends ReferencedFile> files) {
+
         return StreamSupport.stream(files.spliterator(), false).map(Utils::getPathArg).collect(Collectors.toList());
     }
 
     public static List<SingleArgument> getNameArgs(final Iterable<? extends FileGroup> targets) {
+
         return StreamSupport.stream(targets.spliterator(), false).map(Utils::getNameArg).filter(t -> t != null).collect(
                 Collectors.toList());
     }
 
     public static SingleArgument getNameArg(final FileGroup target) {
-        return target.getName() == null ?
-               null :
-               new SingleArgument((target.getParent() != null && target.getParent().getName() != null ?
-                                   target.getParent().getName() + "::" :
-                                   "") + target.getName());
+
+        if (target.getName() == null) {
+            return null;
+        } else if (target.getParent() == null ||
+                   target.getParent().getName() == null ||
+                   (target instanceof Library && !((Library) target).isExport())) {
+            return new SingleArgument(target.getName());
+        } else {
+            return new SingleArgument(target.getParent().getName() + "::" + target.getName());
+        }
+
     }
 
     public static SingleArgument getPathArg(final ReferencedFile file) {
+
         return getPathArg(file.getFile());
     }
 
     public static SingleArgument getPathArg(final File file) {
+
         return new SingleArgument(file.getPath());
     }
 }

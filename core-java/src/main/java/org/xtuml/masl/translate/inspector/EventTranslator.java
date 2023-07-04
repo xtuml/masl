@@ -112,7 +112,7 @@ class EventTranslator {
 
         }
 
-        final List<Expression> createArgs = new ArrayList<Expression>();
+        final List<Expression> createArgs = new ArrayList<>();
 
         for (final ParameterDefinition param : params) {
             final TypeUsage type = Types.getInstance().getType(param.getType());

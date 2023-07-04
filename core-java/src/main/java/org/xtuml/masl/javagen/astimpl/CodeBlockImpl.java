@@ -127,7 +127,7 @@ class CodeBlockImpl extends StatementImpl implements CodeBlock, Scoped {
         }
 
         private List<StatementImpl> getStatements() {
-            final List<StatementImpl> result = new ArrayList<StatementImpl>();
+            final List<StatementImpl> result = new ArrayList<>();
             for (final StatementGroupMember member : groupMembers) {
                 if (member instanceof StatementGroupImpl) {
                     result.addAll(((StatementGroupImpl) member).getStatements());
@@ -138,7 +138,7 @@ class CodeBlockImpl extends StatementImpl implements CodeBlock, Scoped {
             return Collections.unmodifiableList(result);
         }
 
-        private final List<StatementGroupMember> groupMembers = new ArrayList<StatementGroupMember>();
+        private final List<StatementGroupMember> groupMembers = new ArrayList<>();
     }
 
     private final StatementGroupImpl mainGroup = new StatementGroupImpl();
@@ -158,13 +158,13 @@ class CodeBlockImpl extends StatementImpl implements CodeBlock, Scoped {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCodeBlock(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitCodeBlock(this);
     }
 
     private final Scope scope = new CBScope();
 
-    private final List<StatementImpl> statements = new ChildNodeList<StatementImpl>(this);
+    private final List<StatementImpl> statements = new ChildNodeList<>(this);
 
     @Override
     public Scope getScope() {

@@ -62,12 +62,12 @@ public class TypeParameterImpl extends ASTNodeImpl implements TypeParameter {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTypeParameter(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitTypeParameter(this);
     }
 
     private String name;
-    private final ChildNodeList<ReferenceTypeImpl> extendsBounds = new ChildNodeList<ReferenceTypeImpl>(this);
+    private final ChildNodeList<ReferenceTypeImpl> extendsBounds = new ChildNodeList<>(this);
 
     @Override
     public void setName(final String name) {

@@ -23,7 +23,7 @@ package org.xtuml.masl.translate.cmake;
 
 import org.xtuml.masl.cppgen.ArchiveLibrary;
 import org.xtuml.masl.translate.cmake.functions.SimpleAddArchiveLibrary;
-import org.xtuml.masl.translate.cmake.language.arguments.SimpleArgument;
+import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,12 +33,15 @@ public class BuildArchiveLibrary implements CMakeListsItem {
 
     public BuildArchiveLibrary(final ArchiveLibrary library, final File sourcePath) {
         addLib =
-                new SimpleAddArchiveLibrary(Utils.getNameArg(library),
+                new SimpleAddArchiveLibrary(new SingleArgument(library.getName()),
                                             Utils.getPathArgs(library.getBodyFiles()),
                                             Utils.getNameArgs(library.getDependencies()),
-                                            library.isExport() ? exportTarget : null,
+                                            library.isExport() ?
+                                            new SingleArgument(library.getParent().getName()) :
+                                            null,
                                             library.isExport(),
                                             Utils.getPathArgs(library.getPublicHeaders()));
+
     }
 
     @Override
@@ -47,7 +50,5 @@ public class BuildArchiveLibrary implements CMakeListsItem {
     }
 
     private final SimpleAddArchiveLibrary addLib;
-
-    private static final SimpleArgument exportTarget = new Variable("MaslExportTarget").getReference();
 
 }

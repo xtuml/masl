@@ -41,7 +41,7 @@ public class IntegerType extends NumericType {
 
     @Override
     public IntegerType getPrimitiveType() {
-        return IntegerType.createAnonymous();
+        return ANON;
     }
 
     @Override

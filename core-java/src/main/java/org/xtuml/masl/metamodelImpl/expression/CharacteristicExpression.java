@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.type.EnumerateType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -250,7 +251,8 @@ public class CharacteristicExpression extends Expression
             if (characType.getNoArgs() >= 0 && arguments.size() != characType.getNoArgs()) {
                 throw new SemanticError(SemanticErrorCode.CharacteristicArgumentCountMismatch,
                                         position,
-                                        characteristic, String.valueOf(characType.getNoArgs()),
+                                        characteristic,
+                                        String.valueOf(characType.getNoArgs()),
                                         arguments.size());
             }
 
@@ -477,7 +479,7 @@ public class CharacteristicExpression extends Expression
     @Override
     public Expression getFindSkeletonInner() {
         List<Expression> args = null;
-        args = new ArrayList<Expression>();
+        args = new ArrayList<>();
         for (final Expression arg : arguments) {
             args.add(arg.getFindSkeleton());
         }
@@ -516,7 +518,7 @@ public class CharacteristicExpression extends Expression
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         if (lhs != null) {
             params.addAll(lhs.getFindArguments());
         }
@@ -530,7 +532,7 @@ public class CharacteristicExpression extends Expression
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         if (lhs != null) {
             params.addAll(lhs.getConcreteFindParameters());
         }
@@ -543,16 +545,13 @@ public class CharacteristicExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCharacteristicExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitCharacteristicExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        final List<Expression> result = new ArrayList<Expression>();
-        result.add(lhs);
-        result.addAll(arguments);
-        return result;
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs, arguments);
     }
 
     private final Expression lhs;

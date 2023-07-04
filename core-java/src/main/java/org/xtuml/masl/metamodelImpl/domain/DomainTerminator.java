@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.domain;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.CheckedLookup;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -113,17 +114,6 @@ public class DomainTerminator extends Name implements org.xtuml.masl.metamodel.d
 
         this.pragmas = pragmas;
 
-        final List<String> klPragma = pragmas.getPragmaValues(PragmaList.KEY_LETTER);
-        if (klPragma == null || klPragma.size() == 0) {
-            this.keyLetters = getName();
-        } else {
-            this.keyLetters = klPragma.get(0);
-        }
-
-        if (keyLetters.charAt(0) == '\"') {
-            keyLetters = keyLetters.substring(1, keyLetters.length() - 1);
-        }
-
     }
 
     public void addService(final DomainTerminatorService service) throws SemanticError {
@@ -145,11 +135,6 @@ public class DomainTerminator extends Name implements org.xtuml.masl.metamodel.d
         return domain;
     }
 
-    @Override
-    public String getKeyLetters() {
-        return keyLetters;
-    }
-
     public DomainTerminatorService getMatchingService(final ProjectTerminatorService service) throws NotFound {
         final DomainTerminatorService
                 found =
@@ -168,7 +153,7 @@ public class DomainTerminator extends Name implements org.xtuml.masl.metamodel.d
 
     @Override
     public List<DomainTerminatorService> getServices() {
-        final List<DomainTerminatorService> result = new ArrayList<DomainTerminatorService>();
+        final List<DomainTerminatorService> result = new ArrayList<>();
         for (final ServiceOverload overload : services.asList()) {
             result.addAll(overload.asList());
         }
@@ -185,13 +170,11 @@ public class DomainTerminator extends Name implements org.xtuml.masl.metamodel.d
                pragmas;
     }
 
-    private String keyLetters;
-
     private final CheckedLookup<ServiceOverload>
             services =
-            new CheckedLookup<ServiceOverload>(SemanticErrorCode.ServiceAlreadyDefinedOnObject,
-                                               SemanticErrorCode.ServiceNotFoundOnObject,
-                                               this);
+            new CheckedLookup<>(SemanticErrorCode.ServiceAlreadyDefinedOnObject,
+                                SemanticErrorCode.ServiceNotFoundOnObject,
+                                this);
 
     private final PragmaList pragmas;
 
@@ -203,8 +186,13 @@ public class DomainTerminator extends Name implements org.xtuml.masl.metamodel.d
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDomainTerminator(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDomainTerminator(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(services.asList(), pragmas);
     }
 
     private String comment;

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.common.ParameterDefinition;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Service;
@@ -72,7 +73,7 @@ abstract class FunctionInvocation<ServiceType extends Service> extends CallExpre
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
 
         for (final Expression argument : arguments) {
             params.addAll(argument.getFindArguments());
@@ -83,7 +84,7 @@ abstract class FunctionInvocation<ServiceType extends Service> extends CallExpre
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
 
         for (final Expression argument : arguments) {
             params.addAll(argument.getConcreteFindParameters());
@@ -102,7 +103,7 @@ abstract class FunctionInvocation<ServiceType extends Service> extends CallExpre
     }
 
     protected List<Expression> getFindSkeletonArguments() {
-        final List<Expression> newArgs = new ArrayList<Expression>(arguments.size());
+        final List<Expression> newArgs = new ArrayList<>(arguments.size());
         for (int i = 0; i < arguments.size(); ++i) {
             final Expression newArg = arguments.get(i).getFindSkeleton();
             newArgs.add(newArg);
@@ -138,8 +139,8 @@ abstract class FunctionInvocation<ServiceType extends Service> extends CallExpre
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return new ArrayList<Expression>(arguments);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(arguments);
     }
 
 }

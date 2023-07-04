@@ -22,9 +22,9 @@
 package org.xtuml.masl.cppgen;
 
 import org.xtuml.masl.CommandLine;
-import org.xtuml.masl.translate.build.FileGroup;
-import org.xtuml.masl.translate.build.ReferencedFile;
-import org.xtuml.masl.translate.build.WriteableFile;
+import org.xtuml.masl.translate.building.FileGroup;
+import org.xtuml.masl.translate.building.ReferencedFile;
+import org.xtuml.masl.translate.building.WriteableFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,21 +35,14 @@ public class TextFile extends ReferencedFile implements Comparable<TextFile>, Wr
 
     private String commentCharacters;
     private final StringWriter bufferedText;
-    private boolean copyRightEnabled;
 
     public TextFile(final FileGroup parent, final File file) {
         super(parent, file);
-        copyRightEnabled = false;
         bufferedText = new StringWriter();
     }
 
     public TextFile(final FileGroup parent, final String filename) {
         this(parent, new File(filename));
-    }
-
-    public void enableCopyright(final String commentCharacters) {
-        this.commentCharacters = commentCharacters;
-        copyRightEnabled = true;
     }
 
     public StringBuffer getBuffer() {
@@ -72,23 +65,6 @@ public class TextFile extends ReferencedFile implements Comparable<TextFile>, Wr
 
     @Override
     public void writeCode(final Writer writer) throws IOException {
-        if (copyRightEnabled) {
-            String copyrightNotice = CommandLine.INSTANCE.getCopyrightNotice();
-            writer.write(commentCharacters +
-                         " File: " +
-                         getFile().getPath() +
-                         "\n" +
-                         (null == copyrightNotice ?
-                          "" :
-                          commentCharacters +
-                          "\n" +
-                          commentCharacters +
-                          " " +
-                          copyrightNotice.replaceAll("\n", "\n" + commentCharacters + " ") +
-                          "\n") +
-                         commentCharacters +
-                         "\n");
-        }
         writer.write(bufferedText.toString());
     }
 }

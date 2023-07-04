@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2015-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,8 +20,12 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.translate.cmake;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xtuml.masl.translate.cmake.language.arguments.SimpleArgument;
@@ -29,11 +33,7 @@ import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 import org.xtuml.masl.translate.cmake.language.arguments.TaggedArgument;
 import org.xtuml.masl.translate.cmake.language.commands.Command;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.google.common.collect.Lists;
 
 public class TestCommand {
 
@@ -75,25 +75,21 @@ public class TestCommand {
     @Test
     public void testSingleTaggedCommand() throws IOException {
         final StringWriter writer = new StringWriter();
-        final Command
-                command =
-                new Command("some_command", new TaggedArgument(toArg("HELLO"), toArgList("GOODBYE", "CRUEL", "WORLD")));
+        final Command command = new Command("some_command",
+                new TaggedArgument(toArg("HELLO"), toArgList("GOODBYE", "CRUEL", "WORLD")));
         command.writeCode(writer, ">>");
-        Assert.assertEquals(">>some_command (\n>>  HELLO \n>>        GOODBYE\n>>        CRUEL\n>>        WORLD\n>>  )\n",
-                            writer.toString());
+        Assert.assertEquals(
+                ">>some_command (\n>>  HELLO \n>>        GOODBYE\n>>        CRUEL\n>>        WORLD\n>>  )\n",
+                writer.toString());
 
     }
 
     @Test
     public void testMultipleTaggedCommand() throws IOException {
         final StringWriter writer = new StringWriter();
-        final Command
-                command =
-                new Command("some_command",
-                            Lists.newArrayList(new TaggedArgument(toArg("HELLO"),
-                                                                  toArgList("GOODBYE", "CRUEL", "WORLD")),
-                                               new TaggedArgument(toArg("HI"),
-                                                                  toArgList("GOODBYE", "CRUEL", "WORLD"))));
+        final Command command = new Command("some_command",
+                Lists.newArrayList(new TaggedArgument(toArg("HELLO"), toArgList("GOODBYE", "CRUEL", "WORLD")),
+                        new TaggedArgument(toArg("HI"), toArgList("GOODBYE", "CRUEL", "WORLD"))));
         command.writeCode(writer, ">>");
         Assert.assertEquals(
                 ">>some_command (\n>>  HELLO \n>>        GOODBYE\n>>        CRUEL\n>>        WORLD\n>>  HI    \n>>        GOODBYE\n>>        CRUEL\n>>        WORLD\n>>  )\n",

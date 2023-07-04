@@ -47,6 +47,7 @@ public class ASN1 {
         final Function function = new Function("encodeValue", DER_NAMESPACE);
         function.setReturnType(new TypeUsage(DEREncoder));
         function.setSpecialisationFrom(DEREncodeInc);
+        function.setImplicitSpecialization(true);
         return function;
     }
 

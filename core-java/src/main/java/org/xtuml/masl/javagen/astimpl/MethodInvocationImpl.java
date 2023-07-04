@@ -50,8 +50,8 @@ class MethodInvocationImpl extends ExpressionImpl implements MethodInvocation {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitMethodInvocation(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitMethodInvocation(this);
     }
 
     @Override
@@ -168,15 +168,15 @@ class MethodInvocationImpl extends ExpressionImpl implements MethodInvocation {
         this.qualifier.set(qualifier);
     }
 
-    private final ChildNodeList<ExpressionImpl> arguments = new ChildNodeList<ExpressionImpl>(this);
+    private final ChildNodeList<ExpressionImpl> arguments = new ChildNodeList<>(this);
 
     private MethodImpl method;
 
-    private final ChildNode<ExpressionImpl> instance = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> instance = new ChildNode<>(this);
 
-    private final ChildNode<QualifierImpl> qualifier = new ChildNode<QualifierImpl>(this);
+    private final ChildNode<QualifierImpl> qualifier = new ChildNode<>(this);
 
-    private final List<ReferenceTypeImpl> typeArguments = new ChildNodeList<ReferenceTypeImpl>(this);
+    private final List<ReferenceTypeImpl> typeArguments = new ChildNodeList<>(this);
 
     private boolean isSuper = false;
 

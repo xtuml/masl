@@ -75,9 +75,7 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
      * actioned so that only one SQL CREATE TABLE statement is created for each
      * specification.
      */
-    private static final List<SubtypeRelationshipDeclaration>
-            createTableGeneratedList =
-            new ArrayList<SubtypeRelationshipDeclaration>();
+    private static final List<SubtypeRelationshipDeclaration> createTableGeneratedList = new ArrayList<>();
 
     private final ObjectDeclaration derivedObject;
     private final SubtypeRelationshipDeclaration subtypeRelDecl;
@@ -91,13 +89,11 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
      * <p>
      * the main parent mapper class.
      * <p>
-     * define the base MapperSQL class that this generated class must
-     * inherit from .
+     * define the base MapperSQL class that this generated class must inherit from .
      * <p>
      * the specification for the relationship.
      * <p>
-     * a derived object that participates in the relationship
-     * declaration.
+     * a derived object that participates in the relationship declaration.
      * <p>
      * the namespace any generated code needs to be placed in.
      */
@@ -127,8 +123,7 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
     /**
      * the specification for the relationship.
      * <p>
-     * a derived object that participates in the relationship
-     * declaration.
+     * a derived object that participates in the relationship declaration.
      *
      * @return the name of the one-to-one relationship mapper for the current pair
      * of particupating objects.
@@ -149,8 +144,8 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
     }
 
     /**
-     * @return the SQL column name for the object on the left hand side (LHS) of
-     * the relationship.
+     * @return the SQL column name for the object on the left hand side (LHS) of the
+     * relationship.
      */
     @Override
     public String getLeftColumnName() {
@@ -175,8 +170,8 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
 
     /**
      * Override the BinaryRelationshipMapperSqlClass so that a three column link
-     * table can be created, rather than the normal two fielded implementation.
-     * Also make sure the link table is only added to the generated body once.
+     * table can be created, rather than the normal two fielded implementation. Also
+     * make sure the link table is only added to the generated body once.
      */
     @Override
     protected void addDatabaseTable() {
@@ -230,8 +225,8 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
     }
 
     /**
-     * Add a method to access the database to get the current number of rows in
-     * the link table.
+     * Add a method to access the database to get the current number of rows in the
+     * link table.
      */
     @Override
     protected void addExecuteMethods() {
@@ -269,8 +264,8 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
 
     /**
      * Add the loadRhs method defined by the interface. This will access the
-     * database to read the link table information using a where clause based on
-     * the value of a lhs object id.
+     * database to read the link table information using a where clause based on the
+     * value of a lhs object id.
      */
     @Override
     protected void addLoadRhs() {
@@ -294,8 +289,8 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
 
     /**
      * Add the loadLhs method defined by the interface. This will access the
-     * database to read the link table information using a where clause based on
-     * the value of a rhs object id.
+     * database to read the link table information using a where clause based on the
+     * value of a rhs object id.
      */
     @Override
     protected void addLoadLhs() {
@@ -351,8 +346,8 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
      * Override the BinaryRelationshipMapperSqlClass implementation to handle the
      * three columns in the link table.
      *
-     * @return an expression representing the SQL for loading all the data from
-     * the link table
+     * @return an expression representing the SQL for loading all the data from the
+     * link table
      */
     protected Expression generateLoadAllSelectSQL() {
         final Expression
@@ -375,15 +370,15 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
      * Override the BinaryRelationshipMapperSqlClass implementation to handle the
      * three columns in the link table.
      *
-     * @return an expression representing the SQL for loading all the LHS object
-     * ids from the link table
+     * @return an expression representing the SQL for loading all the LHS object ids
+     * from the link table
      */
     protected Expression generateLoadLhsSelectSQL(final Variable queryVar, final Variable identityVar) {
         // Create cpp line:
         // query <<
         // "SELECT R5_lhs FROM R5_LINK_TABLE WHERE R5_type = 1 AND R5_rhs = " <<
         // rhsIdentity << ";";
-        final List<Expression> streamExprList = new ArrayList<Expression>();
+        final List<Expression> streamExprList = new ArrayList<>();
         streamExprList.add(queryVar.asExpression());
         streamExprList.add(Literal.createStringLiteral("SELECT " +
                                                        getLeftColumnName() +
@@ -406,11 +401,11 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
      * Override the BinaryRelationshipMapperSqlClass implementation to handle the
      * three columns in the link table.
      *
-     * @return an expression representing the SQL for loading all the RHS object
-     * ids from the link table
+     * @return an expression representing the SQL for loading all the RHS object ids
+     * from the link table
      */
     protected Expression generateLoadRhsSelectSQL(final Variable queryVar, final Variable identityVar) {
-        final List<Expression> streamExprList = new ArrayList<Expression>();
+        final List<Expression> streamExprList = new ArrayList<>();
         streamExprList.add(queryVar.asExpression());
         streamExprList.add(Literal.createStringLiteral("SELECT " +
                                                        getRightColumnName() +
@@ -431,10 +426,10 @@ public class SubTypeRelationshipMapperSqlClass extends BinaryRelationshipMapperS
 
     /**
      * The additional column of the link table is used to represent the type of
-     * object each inserted row relates to.Rather than adding a text
-     * representation that could prove slow, use the ordering of the dervied
-     * object list to extract a unique type value for each derived object taking
-     * part in the generalisation.
+     * object each inserted row relates to.Rather than adding a text representation
+     * that could prove slow, use the ordering of the dervied object list to extract
+     * a unique type value for each derived object taking part in the
+     * generalisation.
      */
     private void setTypeColumnValue() {
         // Use the order of the dervied objects in the relationship Spec list,

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.type.TypeDefinition.ActualType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -30,7 +31,6 @@ import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.DictionaryType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DictionaryAccessExpression extends Expression
@@ -73,7 +73,7 @@ public class DictionaryAccessExpression extends Expression
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(prefix.getFindArguments());
         params.addAll(key.getFindArguments());
         return params;
@@ -81,7 +81,7 @@ public class DictionaryAccessExpression extends Expression
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(prefix.getConcreteFindParameters());
         params.addAll(key.getConcreteFindParameters());
         return params;
@@ -129,13 +129,13 @@ public class DictionaryAccessExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDictionaryAccessExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDictionaryAccessExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(prefix, key);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(prefix, key);
     }
 
 }

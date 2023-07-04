@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -31,12 +32,15 @@ import org.xtuml.masl.metamodelImpl.type.IntegerType;
 import org.xtuml.masl.metamodelImpl.type.TimestampType;
 import org.xtuml.masl.utils.HashCode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TimeFieldExpression extends Expression implements org.xtuml.masl.metamodel.expression.TimeFieldExpression {
 
-    private final static Map<String, Field> tsFieldLookup = new HashMap<String, Field>();
-    private final static Map<String, Field> durFieldLookup = new HashMap<String, Field>();
+    private final static Map<String, Field> tsFieldLookup = new HashMap<>();
+    private final static Map<String, Field> durFieldLookup = new HashMap<>();
 
     static {
         tsFieldLookup.put("year", Field.CalendarYear);
@@ -160,13 +164,13 @@ public class TimeFieldExpression extends Expression implements org.xtuml.masl.me
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        return new ArrayList<Expression>(lhs.getFindArguments());
+        return new ArrayList<>(lhs.getFindArguments());
 
     }
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        return new ArrayList<FindParameterExpression>(lhs.getConcreteFindParameters());
+        return new ArrayList<>(lhs.getConcreteFindParameters());
 
     }
 
@@ -187,8 +191,8 @@ public class TimeFieldExpression extends Expression implements org.xtuml.masl.me
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTimeFieldExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTimeFieldExpression(this);
     }
 
     private final Expression lhs;
@@ -197,8 +201,8 @@ public class TimeFieldExpression extends Expression implements org.xtuml.masl.me
     private final Field field;
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.<Expression>singletonList(lhs);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs);
     }
 
 }

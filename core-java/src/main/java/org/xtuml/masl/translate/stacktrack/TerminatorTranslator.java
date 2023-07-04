@@ -44,6 +44,6 @@ public class TerminatorTranslator {
         }
     }
 
-    private final List<ActionTranslator> serviceTranslators = new ArrayList<ActionTranslator>();
+    private final List<ActionTranslator> serviceTranslators = new ArrayList<>();
 
 }

@@ -78,9 +78,7 @@ public class OrderingTranslator extends ExpressionTranslator {
         Expression predicateExpression = null;
 
         // Go through backwards to aid setting up the comparison expression
-        final List<StructureOrderingExpression.Component>
-                reverseComponentOrder =
-                new ArrayList<StructureOrderingExpression.Component>(ordering.getOrder());
+        final List<StructureOrderingExpression.Component> reverseComponentOrder = new ArrayList<>(ordering.getOrder());
         Collections.reverse(reverseComponentOrder);
 
         for (final StructureOrderingExpression.Component component : reverseComponentOrder) {

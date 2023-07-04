@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
@@ -74,7 +75,7 @@ public final class ExceptionHandler extends Positioned implements org.xtuml.masl
                             final String messageVariable) throws SemanticError {
         super(position);
         this.exception = exception;
-        this.code = new ArrayList<Statement>();
+        this.code = new ArrayList<>();
         this.messageVariable = messageVariable;
         if (this.messageVariable != null) {
             this.messageVarDef =
@@ -134,8 +135,13 @@ public final class ExceptionHandler extends Positioned implements org.xtuml.masl
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitExceptionHandler(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitExceptionHandler(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(exception, code);
     }
 
 }

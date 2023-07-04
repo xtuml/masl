@@ -57,8 +57,8 @@ public class FlushLiteral extends LiteralExpression implements org.xtuml.masl.me
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitFlushLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitFlushLiteral(this);
     }
 
 }

@@ -47,9 +47,7 @@ class MirroredPackageImpl extends PackageImpl {
         }
     }
 
-    private final Map<Class<?>, MirroredCompilationUnitImpl>
-            compilationUnitLookup =
-            new HashMap<Class<?>, MirroredCompilationUnitImpl>();
+    private final Map<Class<?>, MirroredCompilationUnitImpl> compilationUnitLookup = new HashMap<>();
 
     @Override
     public CompilationUnitImpl addCompilationUnit(final CompilationUnit compilationUnit) {

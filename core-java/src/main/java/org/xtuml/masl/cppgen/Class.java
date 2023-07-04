@@ -19,18 +19,6 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- ----------------------------------------------------------------------------
- Classification: UK OFFICIAL
- ----------------------------------------------------------------------------
- */
 package org.xtuml.masl.cppgen;
 
 import org.xtuml.masl.utils.TextUtils;
@@ -117,7 +105,7 @@ public final class Class extends Type {
                 writer.write(indent + "template<>\n");
             }
 
-            final List<String> templateParamNames = new ArrayList<String>();
+            final List<String> templateParamNames = new ArrayList<>();
             for (final TemplateParameter templateParameter : templateParameters) {
                 templateParamNames.add(templateParameter.getName());
             }
@@ -210,10 +198,9 @@ public final class Class extends Type {
     }
 
     /**
-     * Constructs a class in the global namespace, which is declared in the
-     * supplied include file. This is typically used for classes declared outside
-     * the code currently being generated, where a full class definition is not
-     * needed.
+     * Constructs a class in the global namespace, which is declared in the supplied
+     * include file. This is typically used for classes declared outside the code
+     * currently being generated, where a full class definition is not needed.
      * <p>
      * <p>
      * the name of the class to be created
@@ -341,8 +328,8 @@ public final class Class extends Type {
 
     /**
      * Adds a non-type specialisation to the class. This is used when fully or
-     * partially specialising a class definition, or when declaring an instance of
-     * a templated class.
+     * partially specialising a class definition, or when declaring an instance of a
+     * templated class.
      * <p>
      * <p>
      * The expression to use as the template parameter value
@@ -353,9 +340,9 @@ public final class Class extends Type {
     }
 
     /**
-     * Adds a type specialisation to the class. This is used when fully or
-     * partially specialising a class definition, or when declaring an instance of
-     * a templated class.
+     * Adds a type specialisation to the class. This is used when fully or partially
+     * specialising a class definition, or when declaring an instance of a templated
+     * class.
      * <p>
      * <p>
      * The expression to use as the template parameter value
@@ -402,8 +389,8 @@ public final class Class extends Type {
     }
 
     /**
-     * Convenience wrapper around Class#callStaticFunction(String,List) generating
-     * a function call with one parameter
+     * Convenience wrapper around Class#callStaticFunction(String,List) generating a
+     * function call with one parameter
      * <p>
      * <p>
      * the name of a function to call
@@ -419,8 +406,8 @@ public final class Class extends Type {
     /**
      * Creates a function call to a static function with the given name on the
      * class. Note that this does not actually add a function to the class
-     * definition, but simply returns code to call a function. This is normally
-     * used to call functions on externally defined classes, where a full class
+     * definition, but simply returns code to call a function. This is normally used
+     * to call functions on externally defined classes, where a full class
      * definition is not needed.
      * <p>
      * <p>
@@ -438,9 +425,9 @@ public final class Class extends Type {
     }
 
     /**
-     * Adds an assignment operator to the class with the recommended parameters
-     * for an assignement operator. The resulting function is returned ready for
-     * the client to populate it with appropriate code.
+     * Adds an assignment operator to the class with the recommended parameters for
+     * an assignement operator. The resulting function is returned ready for the
+     * client to populate it with appropriate code.
      * <p>
      * <p>
      * The declaration group to add into
@@ -458,8 +445,8 @@ public final class Class extends Type {
     }
 
     /**
-     * Adds a constructor to the class. The resulting function is returned ready
-     * for the client to populate it with appropriate parameters and code.
+     * Adds a constructor to the class. The resulting function is returned ready for
+     * the client to populate it with appropriate parameters and code.
      * <p>
      * <p>
      * The declaration group to add into
@@ -503,8 +490,8 @@ public final class Class extends Type {
      * Creates a new declaration group to contain declarations within the class.
      * Each group is output in the order that it is added. Note that this grouping
      * is purely cosmetic, and is simply used to aid readability of the resulting
-     * code. It might, for example, be used to group contructors together at the
-     * top of a class, or private members at the bottom.
+     * code. It might, for example, be used to group contructors together at the top
+     * of a class, or private members at the bottom.
      *
      * @return the declaration group created
      */
@@ -534,8 +521,8 @@ public final class Class extends Type {
     }
 
     /**
-     * Adds a destructor to the class. The resulting function is returned ready
-     * for the client to populate it with appropriate code.
+     * Adds a destructor to the class. The resulting function is returned ready for
+     * the client to populate it with appropriate code.
      * <p>
      * <p>
      * The declaration group to add into
@@ -553,8 +540,8 @@ public final class Class extends Type {
     }
 
     /**
-     * Adds a member function into the specified group. The function is returned
-     * to the client ready for population with appropriate code.
+     * Adds a member function into the specified group. The function is returned to
+     * the client ready for population with appropriate code.
      * <p>
      * <p>
      * the key of the required declaration group
@@ -586,9 +573,9 @@ public final class Class extends Type {
     }
 
     /**
-     * Returns a specialised version of a member function. The function is
-     * returned to the client ready for population with appropriate code and
-     * addition to a code file.
+     * Returns a specialised version of a member function. The function is returned
+     * to the client ready for population with appropriate code and addition to a
+     * code file.
      * <p>
      * <p>
      * the key of the required declaration group
@@ -625,7 +612,15 @@ public final class Class extends Type {
                                          final String name,
                                          final TypeUsage type,
                                          final Visibility visibility) {
-        final Variable variable = new Variable(type, name);
+        return createMemberVariable(declarationGroup, name, type, visibility, null);
+    }
+
+    public Variable createMemberVariable(final DeclarationGroup declarationGroup,
+                                         final String name,
+                                         final TypeUsage type,
+                                         final Visibility visibility,
+                                         Expression initialValue) {
+        final Variable variable = new Variable(type, name, initialValue);
         variable.setMember();
         addDeclaration(declarationGroup, variable.getDeclaration(), visibility);
         declarationGroup.addVariable(variable);
@@ -633,8 +628,8 @@ public final class Class extends Type {
     }
 
     /**
-     * Adds a static function into the specified group. The function is returned
-     * to the client ready for population with appropriate code.
+     * Adds a static function into the specified group. The function is returned to
+     * the client ready for population with appropriate code.
      * <p>
      * <p>
      * the key of the required declaration group
@@ -696,8 +691,8 @@ public final class Class extends Type {
      * Returns an expression representing a pointer to a member function of this
      * class. Note that this does not actually add a function to the class
      * definition, but simply returns the function pointer expression. This is
-     * normally used for functions on externally defined classes, where a full
-     * class definition is not needed.
+     * normally used for functions on externally defined classes, where a full class
+     * definition is not needed.
      * <p>
      * <p>
      * the name of the function to return a pointer to
@@ -717,7 +712,7 @@ public final class Class extends Type {
      * @return the superclasses
      */
     List<Class> getSuperclasses() {
-        final List<Class> result = new ArrayList<Class>();
+        final List<Class> result = new ArrayList<>();
         for (final Superclass superclass : superclasses) {
             result.add(superclass.type);
         }
@@ -739,6 +734,7 @@ public final class Class extends Type {
     }
 
     private boolean forceTemplate;
+    private boolean forceSpecialization;
 
     @Override
     public boolean isTemplateType() {
@@ -802,10 +798,10 @@ public final class Class extends Type {
     }
 
     /**
-     * Returns an expression representing a static member this class. Note that
-     * this does not actually add a member to the class definition, but simply
-     * returns type. This is normally used for members on externally defined
-     * classes, where a full class definition is not needed.
+     * Returns an expression representing a static member this class. Note that this
+     * does not actually add a member to the class definition, but simply returns
+     * type. This is normally used for members on externally defined classes, where
+     * a full class definition is not needed.
      * <p>
      * <p>
      * the name of the member
@@ -851,7 +847,7 @@ public final class Class extends Type {
 
     @Override
     Set<Declaration> getDirectUsageForwardDeclarations() {
-        final Set<Declaration> result = new LinkedHashSet<Declaration>();
+        final Set<Declaration> result = new LinkedHashSet<>();
         for (final TemplateSpecialisation spec : templateSpecialisations) {
             result.addAll(spec.getDirectUsageForwardDeclarations());
         }
@@ -860,7 +856,7 @@ public final class Class extends Type {
 
     @Override
     Set<CodeFile> getDirectUsageIncludes() {
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
         for (final TemplateSpecialisation spec : templateSpecialisations) {
             result.addAll(spec.getDirectUsageIncludes());
         }
@@ -876,7 +872,7 @@ public final class Class extends Type {
 
     @Override
     Set<CodeFile> getNoRefDirectUsageIncludes() {
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
         for (final TemplateSpecialisation spec : templateSpecialisations) {
             result.addAll(spec.getNoRefDirectUsageIncludes());
         }
@@ -892,7 +888,7 @@ public final class Class extends Type {
 
     @Override
     Set<Declaration> getIndirectUsageForwardDeclarations() {
-        final Set<Declaration> result = new LinkedHashSet<Declaration>();
+        final Set<Declaration> result = new LinkedHashSet<>();
         for (final TemplateSpecialisation spec : templateSpecialisations) {
             result.addAll(spec.getIndirectUsageForwardDeclarations());
         }
@@ -905,7 +901,7 @@ public final class Class extends Type {
 
     @Override
     Set<CodeFile> getIndirectUsageIncludes() {
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
 
         if (declaration.getParentClass() == null) {
             if (noForwardDec) {
@@ -922,16 +918,15 @@ public final class Class extends Type {
     }
 
     /**
-     * Returns a list of all non-static member variables declared in this class,
-     * in the same order that they appear in the declaration of the class. These
-     * are used by the constructors to initialise the values, the order being
-     * consistent with the class order to comply with Meyers Effective C++ 2nd
-     * Edition Item 13.
+     * Returns a list of all non-static member variables declared in this class, in
+     * the same order that they appear in the declaration of the class. These are
+     * used by the constructors to initialise the values, the order being consistent
+     * with the class order to comply with Meyers Effective C++ 2nd Edition Item 13.
      *
      * @return A list of member variables declared in this class
      */
     List<Variable> getMemberVariables() {
-        final List<Variable> result = new ArrayList<Variable>();
+        final List<Variable> result = new ArrayList<>();
 
         for (final DeclarationGroup group : declarationGroups) {
             result.addAll(group.getVariables());
@@ -958,7 +953,7 @@ public final class Class extends Type {
             typenameQualifier = "typename ";
         }
 
-        final List<String> params = new ArrayList<String>();
+        final List<String> params = new ArrayList<>();
         for (final TemplateSpecialisation param : templateSpecialisations) {
             params.add(param.getValue(currentNamespace));
         }
@@ -970,7 +965,9 @@ public final class Class extends Type {
 
         return typenameQualifier +
                super.getQualifiedName(currentNamespace) +
-               TextUtils.formatList(params, startTemplate, ",", endTemplate);
+               (params.isEmpty() && forceSpecialization ?
+                "<>" :
+                TextUtils.formatList(params, startTemplate, ",", endTemplate));
     }
 
     @Override
@@ -1061,10 +1058,10 @@ public final class Class extends Type {
 
     /**
      * The order in which the {@link DeclarationGroup}s appear in the class
-     * declaration. This is set up by the order in which the declaration groups
-     * are added to the class.
+     * declaration. This is set up by the order in which the declaration groups are
+     * added to the class.
      */
-    private final List<DeclarationGroup> declarationGroups = new ArrayList<DeclarationGroup>();
+    private final List<DeclarationGroup> declarationGroups = new ArrayList<>();
 
     /**
      * Whether this class can be forward declared. Normally classes which we have
@@ -1076,17 +1073,17 @@ public final class Class extends Type {
     /**
      * An ordered list of the superclasses of this class.
      */
-    private final List<Superclass> superclasses = new ArrayList<Superclass>();
+    private final List<Superclass> superclasses = new ArrayList<>();
 
     /**
      * An ordered list of the template parameters of this class.
      */
-    private final List<TemplateParameter> templateParameters = new ArrayList<TemplateParameter>();
+    private final List<TemplateParameter> templateParameters = new ArrayList<>();
 
     /**
      * An ordered list of the template parameter specialisations of this class.
      */
-    private final List<TemplateSpecialisation> templateSpecialisations = new ArrayList<TemplateSpecialisation>();
+    private final List<TemplateSpecialisation> templateSpecialisations = new ArrayList<>();
 
     /**
      * The namespace that is defined by this class
@@ -1110,8 +1107,16 @@ public final class Class extends Type {
         return forceTemplate;
     }
 
-    public void setForceTemplate(boolean forceTemplate) {
+    public void setForceTemplate(final boolean forceTemplate) {
         this.forceTemplate = forceTemplate;
+    }
+
+    public boolean isForceSpecialization() {
+        return forceSpecialization;
+    }
+
+    public void setForceSpecialization(final boolean forceSpecialization) {
+        this.forceSpecialization = forceSpecialization;
     }
 
 }

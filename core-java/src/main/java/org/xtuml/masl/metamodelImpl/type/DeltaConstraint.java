@@ -21,8 +21,11 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
+
+import java.util.List;
 
 public class DeltaConstraint extends TypeConstraint implements org.xtuml.masl.metamodel.type.DeltaConstraint {
 
@@ -63,8 +66,13 @@ public class DeltaConstraint extends TypeConstraint implements org.xtuml.masl.me
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDeltaConstraint(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDeltaConstraint(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(super.children(), delta);
     }
 
 }

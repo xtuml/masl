@@ -126,7 +126,7 @@ public class StateMachineTranslator {
             }
             return result;
         } else {
-            final List<CaseCondition> cases = new ArrayList<CaseCondition>();
+            final List<CaseCondition> cases = new ArrayList<>();
             for (final StateTransition transition : transitions.get(event)) {
                 // Shouldn't be necessary to check this, as there should be no valid
                 // non-creation events from a creation state!
@@ -252,7 +252,7 @@ public class StateMachineTranslator {
                 Collection<StateTransition> stateTransitions = transitions.get(event);
 
                 if (stateTransitions == null) {
-                    stateTransitions = new ArrayList<StateTransition>();
+                    stateTransitions = new ArrayList<>();
                     transitions.put(event, stateTransitions);
                 }
 
@@ -278,12 +278,10 @@ public class StateMachineTranslator {
     private boolean isAssigner = false;
 
     private EnumerationType stateEnum = null;
-    private final Map<State, Enumerator> stateEnums = new HashMap<State, Enumerator>();
+    private final Map<State, Enumerator> stateEnums = new HashMap<>();
 
-    private final List<State> states = new ArrayList<State>();
-    private final Map<EventDeclaration, Collection<StateTransition>>
-            transitions =
-            new HashMap<EventDeclaration, Collection<StateTransition>>();
+    private final List<State> states = new ArrayList<>();
+    private final Map<EventDeclaration, Collection<StateTransition>> transitions = new HashMap<>();
 
     private final ObjectTranslator translator;
 

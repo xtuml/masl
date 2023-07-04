@@ -41,7 +41,7 @@ public class RealType extends NumericType {
 
     @Override
     public RealType getPrimitiveType() {
-        return this;
+        return ANON;
     }
 
     @Override

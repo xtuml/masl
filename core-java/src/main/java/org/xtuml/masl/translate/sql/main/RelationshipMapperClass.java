@@ -54,10 +54,8 @@ public class RelationshipMapperClass {
     CodeFile headerFile;
     Namespace parentNamespace;
 
-    private final Map<String, TypedefType> superToSubRelMapperList = new HashMap<String, TypedefType>();
-    private final Map<String, GeneratedRelationshipClass>
-            superToSubRelMapperSqlList =
-            new HashMap<String, GeneratedRelationshipClass>();
+    private final Map<String, TypedefType> superToSubRelMapperList = new HashMap<>();
+    private final Map<String, GeneratedRelationshipClass> superToSubRelMapperSqlList = new HashMap<>();
 
     private GeneratedRelationshipClass mapperSqlClass;
     private final CodeFile sqlBodyFile;
@@ -76,8 +74,8 @@ public class RelationshipMapperClass {
      * Constructor
      * <p>
      * <p>
-     * the relationship specification that needs generated associated
-     * Mapper and MapperSQL classes
+     * the relationship specification that needs generated associated Mapper and
+     * MapperSQL classes
      * <p>
      * the namespace the generated code should be placed in.
      */
@@ -162,9 +160,9 @@ public class RelationshipMapperClass {
     }
 
     /**
-     * Multiple C++ one-to-one relationship mapper classes are generated for
-     * subtype relationships. Therefore use the specified supertype and subtype
-     * objects to return the required mapper class.
+     * Multiple C++ one-to-one relationship mapper classes are generated for subtype
+     * relationships. Therefore use the specified supertype and subtype objects to
+     * return the required mapper class.
      * <p>
      * <p>
      * the supertype object from he subtype relationship

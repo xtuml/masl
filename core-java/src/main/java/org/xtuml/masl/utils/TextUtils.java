@@ -94,7 +94,7 @@ public final class TextUtils {
 
     private static String indent = "  ";
 
-    private static final Map<Character, String> ruledLines = new HashMap<Character, String>();
+    private static final Map<Character, String> ruledLines = new HashMap<>();
 
     public static String alignTabs(final String text) {
         return alignText(text, '\t');
@@ -118,7 +118,7 @@ public final class TextUtils {
         final StringBuilder buf = new StringBuilder();
 
         // Look for tab-stops
-        final List<Integer> tabOffsets = new ArrayList<Integer>();
+        final List<Integer> tabOffsets = new ArrayList<>();
 
         final String text2 = text + '\n';
 
@@ -139,9 +139,9 @@ public final class TextUtils {
 
                 if (newOffset > oldOffset) {
                     if (tabNo < tabOffsets.size()) {
-                        tabOffsets.set(tabNo, Integer.valueOf(newOffset));
+                        tabOffsets.set(tabNo, newOffset);
                     } else {
-                        tabOffsets.add(Integer.valueOf(newOffset));
+                        tabOffsets.add(newOffset);
                     }
                 }
 
@@ -205,7 +205,7 @@ public final class TextUtils {
                                         final String suffix) {
         return formatList(values,
                           prefix,
-                          new WrapFormatter<T>(valPrefix, new ToStringFormatter<T>(), valSuffix),
+                          new WrapFormatter<>(valPrefix, new ToStringFormatter<T>(), valSuffix),
                           separator,
                           suffix);
     }
@@ -242,7 +242,7 @@ public final class TextUtils {
         formatList(writer,
                    values,
                    prefix,
-                   new WrapFormatter<T>(valPrefix, new ToStringFormatter<T>(), valSuffix),
+                   new WrapFormatter<>(valPrefix, new ToStringFormatter<T>(), valSuffix),
                    separator,
                    suffix);
     }
@@ -307,8 +307,7 @@ public final class TextUtils {
         return writer.toString();
     }
 
-    public static void indentText(final Writer writer, final String indent, final String text) throws
-                                                                                                     IOException {
+    public static void indentText(final Writer writer, final String indent, final String text) throws IOException {
         int start = 0;
         for (int end = text.indexOf('\n', start) + 1; end != 0; start = end, end = text.indexOf('\n', start) + 1) {
             writer.write(indent + text.substring(start, end));
@@ -433,9 +432,7 @@ public final class TextUtils {
         return writer.toString();
     }
 
-    public static String wrapLine(final String firstLinePrefix,
-                                  final String text,
-                                  final String continueLinePrefix) {
+    public static String wrapLine(final String firstLinePrefix, final String text, final String continueLinePrefix) {
         final Writer writer = new StringWriter();
         try {
             wrapLine(writer, firstLinePrefix, text, continueLinePrefix);
@@ -446,7 +443,7 @@ public final class TextUtils {
     }
 
     public static void wrapLine(final Writer writer, final String firstLinePrefix, final String text) throws
-                                                                                                            IOException {
+                                                                                                      IOException {
         wrapLine(writer, firstLinePrefix, text, getPadding(firstLinePrefix));
     }
 

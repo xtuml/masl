@@ -41,8 +41,8 @@ public class ContinueImpl extends StatementImpl implements org.xtuml.masl.javage
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitContinue(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitContinue(this);
     }
 
     // Not a child node, just a reference to a node in another tree.

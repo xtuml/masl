@@ -28,8 +28,8 @@ import java.util.*;
 
 public class CheckedLookup<T extends Positioned> implements Iterable<T> {
 
-    private final Map<String, T> lookup = new HashMap<String, T>();
-    private final List<T> list = new ArrayList<T>();
+    private final Map<String, T> lookup = new HashMap<>();
+    private final List<T> list = new ArrayList<>();
 
     private final Named parent;
     private final SemanticErrorCode alreadyDefined;

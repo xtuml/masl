@@ -21,8 +21,11 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
+
+import java.util.List;
 
 public class UnconstrainedArrayType extends FullTypeDefinition
         implements org.xtuml.masl.metamodel.type.UnconstrainedArrayType {
@@ -84,8 +87,13 @@ public class UnconstrainedArrayType extends FullTypeDefinition
     private final SequenceType primitive;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitUnconstrainedArrayType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitUnconstrainedArrayType(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(indexType, containedType);
     }
 
 }

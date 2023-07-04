@@ -33,8 +33,8 @@ public class AssertImpl extends StatementImpl implements Assert {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitAssert(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitAssert(this);
     }
 
     @Override
@@ -57,6 +57,6 @@ public class AssertImpl extends StatementImpl implements Assert {
         this.message.set((ExpressionImpl) message);
     }
 
-    private final ChildNode<ExpressionImpl> message = new ChildNode<ExpressionImpl>(this);
-    private final ChildNode<ExpressionImpl> condition = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> message = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> condition = new ChildNode<>(this);
 }

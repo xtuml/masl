@@ -19,24 +19,17 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- ----------------------------------------------------------------------------
- Classification: UK OFFICIAL
- ----------------------------------------------------------------------------
- */
 package org.xtuml.masl.cppgen;
 
 /**
  * Provides a series of static variables representing the C++ fundamental types.
  */
 public final class FundamentalType extends Type {
+
+    /**
+     * Represents C++ auto type
+     */
+    public final static FundamentalType AUTO = new FundamentalType("auto");
 
     /**
      * Represents C++ void type
@@ -79,8 +72,8 @@ public final class FundamentalType extends Type {
     public final static FundamentalType LONG = new FundamentalType("long");
 
     /**
-     * Represents C++ long long type. This is not a standard C++ type, but is
-     * often provided as an extension.
+     * Represents C++ long long type. This is not a standard C++ type, but is often
+     * provided as an extension.
      */
     public final static FundamentalType LONGLONG = new FundamentalType("long long");
 
@@ -105,8 +98,8 @@ public final class FundamentalType extends Type {
     public final static FundamentalType ULONG = new FundamentalType("unsigned long");
 
     /**
-     * Represents C++ unsigned long long type. This is not a standard C++ type,
-     * but is often provided as an extension.
+     * Represents C++ unsigned long long type. This is not a standard C++ type, but
+     * is often provided as an extension.
      */
     public final static FundamentalType ULONGLONG = new FundamentalType("unsigned long long");
 

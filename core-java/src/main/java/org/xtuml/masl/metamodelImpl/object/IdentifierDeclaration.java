@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.object;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
@@ -34,7 +35,7 @@ import java.util.List;
 public class IdentifierDeclaration implements org.xtuml.masl.metamodel.object.IdentifierDeclaration {
 
     private final List<AttributeDeclaration> attributes;
-    private final List<String> attributeNames = new ArrayList<String>();
+    private final List<String> attributeNames = new ArrayList<>();
     private final PragmaList pragmas;
     private final boolean preferred;
 
@@ -60,7 +61,7 @@ public class IdentifierDeclaration implements org.xtuml.masl.metamodel.object.Id
     private IdentifierDeclaration(final boolean preferred, final PragmaList pragmas) {
         this.preferred = preferred;
         this.pragmas = pragmas;
-        this.attributes = new ArrayList<AttributeDeclaration>();
+        this.attributes = new ArrayList<>();
     }
 
     private IdentifierDeclaration(final Position position,
@@ -139,13 +140,19 @@ public class IdentifierDeclaration implements org.xtuml.masl.metamodel.object.Id
         final IdentifierDeclaration other = (IdentifierDeclaration) obj;
         if (attributes == null) {
             return other.attributes == null;
-        } else
+        } else {
             return attributes.equals(other.attributes);
+        }
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitIdentifierDeclaration(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitIdentifierDeclaration(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

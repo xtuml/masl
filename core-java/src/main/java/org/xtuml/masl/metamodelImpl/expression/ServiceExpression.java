@@ -21,12 +21,15 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Service;
 import org.xtuml.masl.metamodelImpl.common.ServiceOverload;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.InternalType;
+
+import java.util.List;
 
 public class ServiceExpression<T extends Service> extends Expression {
 
@@ -75,8 +78,12 @@ public class ServiceExpression<T extends Service> extends Expression {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        throw new IllegalStateException("Cannot visit Service Expression");
+    public void accept(final ASTNodeVisitor v) {
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

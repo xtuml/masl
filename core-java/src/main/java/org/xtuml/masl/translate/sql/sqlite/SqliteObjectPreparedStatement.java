@@ -67,10 +67,8 @@ public class SqliteObjectPreparedStatement implements PreparedStatement {
 
         switch (statementType) {
             case DELETE:
-                String
-                        deleteStatement =
+                preparedStatement =
                         "DELETE  FROM " + tableTranslator.getTableName() + " WHERE " + columnList.get(0) + " = :1;";
-                preparedStatement = deleteStatement;
                 break;
 
             case INSERT:
@@ -79,7 +77,7 @@ public class SqliteObjectPreparedStatement implements PreparedStatement {
                         insertStatement =
                         new StringBuilder("INSERT INTO " + tableTranslator.getTableName() + " VALUES(");
                 for (int x = 0; x < columnList.size(); ++x) {
-                    insertStatement.append(":" + Integer.valueOf(x + 1));
+                    insertStatement.append(":" + (x + 1));
                     if (x != columnList.size() - 1) {
                         insertStatement.append(",");
                     }
@@ -94,7 +92,7 @@ public class SqliteObjectPreparedStatement implements PreparedStatement {
                         updateStatement =
                         new StringBuilder("UPDATE " + tableTranslator.getTableName() + " SET ");
                 for (int x = 1; x < columnList.size(); ++x) {
-                    updateStatement.append(columnList.get(x) + " = :" + Integer.valueOf(x + 1) + " ");
+                    updateStatement.append(columnList.get(x) + " = :" + (x + 1) + " ");
                     if (x != columnList.size() - 1) {
                         updateStatement.append(" , ");
                     }

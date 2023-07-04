@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.expression.EnumerateLiteral;
@@ -113,8 +114,8 @@ public class EnumerateItem extends Name implements org.xtuml.masl.metamodel.type
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitEnumerateItem(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitEnumerateItem(this);
     }
 
     @Override
@@ -124,6 +125,11 @@ public class EnumerateItem extends Name implements org.xtuml.masl.metamodel.type
 
     public void setComment(final String comment) {
         this.comment = comment;
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(value);
     }
 
 }

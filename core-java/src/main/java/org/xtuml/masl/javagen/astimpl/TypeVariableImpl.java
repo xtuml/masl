@@ -43,8 +43,8 @@ public class TypeVariableImpl extends ReferenceTypeImpl implements TypeVariable 
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTypeVariable(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitTypeVariable(this);
     }
 
     private final TypeParameter parameter;

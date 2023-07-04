@@ -106,7 +106,7 @@ public class ObjectService extends Service implements org.xtuml.masl.metamodel.o
             getDeclarationPragmas().getPragmaValues(PragmaList.FILENAME).size() > 0) {
             return getDeclarationPragmas().getPragmaValues(PragmaList.FILENAME).get(0);
         } else {
-            return parentObject.getKeyLetters() +
+            return parentObject.getName() +
                    "_" +
                    getName() +
                    (getOverloadNo() > 0 ? "." + getOverloadNo() : "") +
@@ -141,7 +141,7 @@ public class ObjectService extends Service implements org.xtuml.masl.metamodel.o
 
     @Override
     public List<ObjectService> getDeferredTo() {
-        final List<ObjectService> deferredTo = new ArrayList<ObjectService>();
+        final List<ObjectService> deferredTo = new ArrayList<>();
         for (final ObjectDeclaration subObject : relationship.getSubtypes()) {
             try {
                 deferredTo.add(subObject.getPolymorphicService(this));
@@ -164,8 +164,8 @@ public class ObjectService extends Service implements org.xtuml.masl.metamodel.o
     private final ObjectDeclaration parentObject;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitObjectService(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitObjectService(this);
     }
 
 }

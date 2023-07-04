@@ -34,11 +34,12 @@ public class IndexedNameTranslator extends ExpressionTranslator {
         final Expression maslIndex = createTranslator(indexedName.getIndex(), scope).getReadExpression();
 
         setReadExpression(ACCESS.asFunctionCall(prefixTrans.getReadExpression(), false, maslIndex));
-        setWriteableExpression(ACCESS.asFunctionCall(prefixTrans.getWriteableExpression(), false, maslIndex));
+        setWriteableExpression(ACCESS_EXTEND.asFunctionCall(prefixTrans.getWriteableExpression(), false, maslIndex));
 
     }
 
     private final static Function ACCESS = new Function("access");
+    private final static Function ACCESS_EXTEND = new Function("accessExtend");
 
     public Function getGetter() {
         return this.getter;

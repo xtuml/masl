@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodel.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.type.StructureElement;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public interface StructureOrderingExpression extends Expression {
 
     List<? extends Component> getOrder();
 
-    interface Component {
+    interface Component extends ASTNode {
 
         boolean isReverse();
 

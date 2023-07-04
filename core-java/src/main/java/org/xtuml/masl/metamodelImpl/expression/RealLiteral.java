@@ -122,8 +122,8 @@ public class RealLiteral extends NumericLiteral implements org.xtuml.masl.metamo
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitRealLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitRealLiteral(this);
     }
 
 }

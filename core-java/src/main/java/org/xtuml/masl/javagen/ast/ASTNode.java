@@ -25,7 +25,7 @@ import java.util.Collection;
 
 public interface ASTNode {
 
-    <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception;
+    void accept(final ASTNodeVisitor v) throws Exception;
 
     AST getAST();
 

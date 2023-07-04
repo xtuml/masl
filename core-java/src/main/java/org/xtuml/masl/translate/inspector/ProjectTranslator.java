@@ -34,11 +34,8 @@ import org.xtuml.masl.translate.main.Boost;
 import org.xtuml.masl.translate.main.Mangler;
 import org.xtuml.masl.translate.main.TerminatorServiceTranslator;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Alias("Inspector")
 @Default
@@ -71,7 +68,7 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
      */
     @Override
     public Collection<org.xtuml.masl.translate.ProjectTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.ProjectTranslator>singletonList(mainTranslator);
+        return Collections.singletonList(mainTranslator);
     }
 
     @Override
@@ -87,6 +84,7 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
             final org.xtuml.masl.translate.main.DomainTranslator
                     mainDomainTranslator =
                     org.xtuml.masl.translate.main.DomainTranslator.getInstance(domain.getDomain());
+
             for (final ProjectTerminator terminator : domain.getTerminators()) {
                 final Namespace
                         termNamespace =
@@ -124,18 +122,11 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
                 }
             }
 
-            Set<Domain> fullDomains = project.getDomains().stream().map(d -> d.getDomain()).collect(Collectors.toSet());
-            Set<Domain>
-                    interfaceDomains =
-                    project.getDomains().stream().flatMap(d -> d.getDomain().getReferencedInterfaces().stream()).collect(
-                            Collectors.toSet());
-            interfaceDomains.removeAll(fullDomains);
-
-            for (final Domain interfaceDomain : interfaceDomains) {
+            for (final Domain interfaceDomain : mainTranslator.getInterfaceDomains()) {
                 getLibrary().addDependency(DomainTranslator.getInstance(interfaceDomain).getInterfaceLibrary());
             }
 
-            for (final Domain fullDomain : fullDomains) {
+            for (final Domain fullDomain : mainTranslator.getFullDomains()) {
                 getLibrary().addDependency(DomainTranslator.getInstance(fullDomain).getLibrary());
             }
         }

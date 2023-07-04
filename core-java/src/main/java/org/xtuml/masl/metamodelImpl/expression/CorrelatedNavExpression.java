@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -34,7 +35,6 @@ import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.InstanceType;
 import org.xtuml.masl.metamodelImpl.type.SetType;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class CorrelatedNavExpression extends Expression
@@ -148,13 +148,13 @@ public class CorrelatedNavExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCorrelatedNavExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitCorrelatedNavExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(lhs, rhs);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs, rhs);
     }
 
 }

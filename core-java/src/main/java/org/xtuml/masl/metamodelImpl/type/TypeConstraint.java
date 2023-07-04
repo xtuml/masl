@@ -21,8 +21,11 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.expression.RangeExpression;
+
+import java.util.List;
 
 public abstract class TypeConstraint implements org.xtuml.masl.metamodel.type.TypeConstraint {
 
@@ -54,4 +57,10 @@ public abstract class TypeConstraint implements org.xtuml.masl.metamodel.type.Ty
     public int hashCode() {
         return range.hashCode();
     }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(range);
+    }
+
 }
