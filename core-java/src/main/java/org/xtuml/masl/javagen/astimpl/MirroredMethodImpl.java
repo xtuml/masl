@@ -162,6 +162,6 @@ class MirroredMethodImpl extends MethodImpl {
     private boolean mirrorPopulated = false;
     private final Map<java.lang.reflect.TypeVariable<?>, MirroredTypeParameterImpl>
             typeParameterLookup =
-            new HashMap<java.lang.reflect.TypeVariable<?>, MirroredTypeParameterImpl>();
+            new HashMap<>();
 
 }

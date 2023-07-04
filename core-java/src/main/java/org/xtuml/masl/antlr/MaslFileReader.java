@@ -53,5 +53,5 @@ public class MaslFileReader {
 
     private final File file;
     private final BufferedReader fileReader;
-    private final List<String> lines = new ArrayList<String>();
+    private final List<String> lines = new ArrayList<>();
 }

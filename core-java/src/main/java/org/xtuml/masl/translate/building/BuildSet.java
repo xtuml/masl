@@ -19,18 +19,15 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-package org.xtuml.masl.translate.build;
+package org.xtuml.masl.translate.building;
 
 import com.google.common.collect.ImmutableSet;
 import org.xtuml.masl.CommandLine;
 import org.xtuml.masl.cppgen.TextFile;
-import org.xtuml.masl.javagen.JavaFile;
-import org.xtuml.masl.javagen.ast.def.CompilationUnit;
 import org.xtuml.masl.metamodel.domain.Domain;
 import org.xtuml.masl.metamodel.project.Project;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -79,8 +76,13 @@ public class BuildSet {
         }
     }
 
-    public BuildSet(final String name) {
+    public BuildSet(final String name, String pkg) {
         this.name = name;
+        this.pkg = pkg;
+    }
+
+    public BuildSet(final String name) {
+        this(name, name);
     }
 
     public TextFile createTextFile(final String name) {
@@ -105,63 +107,6 @@ public class BuildSet {
         final XMLFile result = createXMLFile(name);
         fileList.addFile(result);
         return result;
-    }
-
-    public void dump(final File directory) {
-        System.out.println("Dumping Files");
-        final long millis = System.currentTimeMillis();
-
-        directory.mkdirs();
-        final List<Thread> activeThreads = new ArrayList<Thread>();
-        for (final WriteableFile writeableFile : writeableFiles) {
-            final Thread writerThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        final File file = new File(directory, writeableFile.getFile().getPath());
-                        final Writer newCode = new StringWriter();
-                        writeableFile.writeCode(newCode);
-                        updateFile(file, newCode);
-                    } catch (final IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }, writeableFile.getFile().getName());
-
-            writerThread.start();
-            if (!serialiseThread(writerThread)) {
-                activeThreads.add(writerThread);
-                waitForThreads(activeThreads, CONDITIONAL_FLUSH);
-            }
-        }
-
-        waitForThreads(activeThreads, FLUSH_ALL_THREADS);
-
-        System.out.println("Dumped (" + (System.currentTimeMillis() - millis) / 1000.0 + "secs)");
-    }
-
-    public JavaFile getJavaFile(final CompilationUnit cu, final FileGroup jarFile) {
-        final JavaFile result = new JavaFile(cu, jarFile);
-        jarFile.addFile(result);
-        writeableFiles.add(result);
-        return result;
-
-    }
-
-    public FileGroup getJarFile(final String name, final boolean installed) {
-        final FileGroup jar = FileGroup.getFileGroup(name);
-        if (installed) {
-            // Force public
-            jars.add(jar);
-            localJars.remove(jar);
-        } else {
-            // Don't make local if already public
-            if (!jars.contains(jar)) {
-                localJars.add(jar);
-            }
-        }
-        return jar;
     }
 
     private final List<FileGroup> fileGroups = new ArrayList<>();
@@ -198,14 +143,6 @@ public class BuildSet {
         return sourceDirs;
     }
 
-    public void removeLibrary(final FileGroup lib) {
-        libraries.remove(lib.getName());
-    }
-
-    public void removeArchive(final FileGroup lib) {
-        archives.remove(lib.getName());
-    }
-
     public void skipExecutable(final String name) {
         skipExecutables.add(name);
     }
@@ -218,47 +155,28 @@ public class BuildSet {
         skipArchives.add(name);
     }
 
-    final Set<CompilationUnit> javaFiles = new LinkedHashSet<CompilationUnit>();
-    final Set<FileGroup> jars = new LinkedHashSet<FileGroup>();
-    final Set<FileGroup> localJars = new LinkedHashSet<FileGroup>();
+    private final Set<String> includes = new LinkedHashSet<>();
 
-    final Map<String, FileGroup> executables = new LinkedHashMap<>();
-    final Map<String, FileGroup> archives = new LinkedHashMap<>();
-    final Map<String, FileGroup> libraries = new LinkedHashMap<>();
-    final Map<String, FileGroup> headerSets = new LinkedHashMap<>();
+    private final Set<String> skipExecutables = new LinkedHashSet<>();
+    private final Set<String> skipLibraries = new LinkedHashSet<>();
+    private final Set<String> skipArchives = new LinkedHashSet<>();
 
-    final Set<String> includes = new LinkedHashSet<String>();
+    private final Set<File> rawIncludes = new LinkedHashSet<>();
 
-    final Set<String> skipExecutables = new LinkedHashSet<>();
-    final Set<String> skipLibraries = new LinkedHashSet<>();
-    final Set<String> skipArchives = new LinkedHashSet<>();
-    final Set<String> skipHeaderSets = new LinkedHashSet<>();
-
-    final Set<File> rawIncludes = new LinkedHashSet<File>();
-
-    final Set<File> sourceDirs = new LinkedHashSet<File>();
+    private final Set<File> sourceDirs = new LinkedHashSet<>();
 
     private final String name;
+    private final String pkg;
 
-    private final Set<WriteableFile> writeableFiles = new HashSet<WriteableFile>();
+    private final Set<WriteableFile> writeableFiles = new HashSet<>();
 
-    final Set<String> publishedExecutables = new LinkedHashSet<String>();
-    final Set<String> publishedArchives = new LinkedHashSet<String>();
-    final Set<String> publishedLibraries = new LinkedHashSet<String>();
-    final Set<String> publishedHeaderSets = new LinkedHashSet<String>();
-
-    private final Set<SubdirFileGroup> publishedEtc = new LinkedHashSet<SubdirFileGroup>();
-    private final Set<SubdirFileGroup> publishedShare = new LinkedHashSet<SubdirFileGroup>();
-    private final Set<SubdirFileGroup> publishedDoc = new LinkedHashSet<SubdirFileGroup>();
-    private final Set<SubdirFileGroup> publishedInclude = new LinkedHashSet<SubdirFileGroup>();
-    private final Set<SubdirFileGroup> publishedTopLevel = new LinkedHashSet<SubdirFileGroup>();
-    private final Set<FileGroup> publishedBin = new LinkedHashSet<FileGroup>();
-    private final Set<FileGroup> publishedLib = new LinkedHashSet<FileGroup>();
-
-    private static final String copyrightNotice = CommandLine.INSTANCE.getRawCopyrightNotice();
-
-    private static Pattern copyrightPattern = null;
-    static private final java.text.SimpleDateFormat yearFormatter = new java.text.SimpleDateFormat("yyyy");
+    private final Set<SubdirFileGroup> publishedEtc = new LinkedHashSet<>();
+    private final Set<SubdirFileGroup> publishedShare = new LinkedHashSet<>();
+    private final Set<SubdirFileGroup> publishedDoc = new LinkedHashSet<>();
+    private final Set<SubdirFileGroup> publishedInclude = new LinkedHashSet<>();
+    private final Set<SubdirFileGroup> publishedTopLevel = new LinkedHashSet<>();
+    private final Set<FileGroup> publishedBin = new LinkedHashSet<>();
+    private final Set<FileGroup> publishedLib = new LinkedHashSet<>();
 
     private final Set<File> fileDependents = new LinkedHashSet<>();
 
@@ -274,32 +192,13 @@ public class BuildSet {
             }
             fileReader.close();
 
-            // Don't replace the file if it's just the copyright date that has
-            // changed. Set the year in the old file to the current year before
-            // comparing the two.
-            String[] noticeChunks = (copyrightNotice == null ? new String[0] : copyrightNotice.split("yyyy"));
-            if (2 == noticeChunks.length) { // only account for one instance of the date in the copyright notice
-                copyrightPattern =
-                        Pattern.compile("(?<=" +
-                                        Pattern.quote(noticeChunks[0]) +
-                                        ")[\\d]{4}(?=" +
-                                        Pattern.quote(noticeChunks[1]) +
-                                        ")");
-                final Matcher copyrightMatcher = copyrightPattern.matcher(oldCode);
-                if (copyrightMatcher.find()) {
-                    oldCode = new StringBuilder(copyrightMatcher.replaceFirst(yearFormatter.format(new Date())));
-                }
-            }
-
             final boolean fileChanged = !newCode.toString().contentEquals(oldCode);
             final boolean forcedBuild = CommandLine.INSTANCE.getForceBuild();
 
             if (fileChanged || forcedBuild) {
                 if (fileChanged) {
-                    System.out.println("Updating " + file.getPath());
                     file.renameTo(new File(file.getPath() + ".old"));
                 } else if (forcedBuild) {
-                    System.out.println("Unchanged " + file.getPath());
                 }
 
                 final Writer
@@ -311,7 +210,6 @@ public class BuildSet {
                 fileWriter.close();
             }
         } else {
-            System.out.println("Creating " + file.getPath());
             file.getParentFile().mkdirs();
             final Writer
                     fileWriter =
@@ -341,12 +239,8 @@ public class BuildSet {
         return name;
     }
 
-    public Set<FileGroup> getLocalJars() {
-        return localJars;
-    }
-
-    public Set<FileGroup> getJars() {
-        return jars;
+    public String getPackage() {
+        return pkg;
     }
 
     public static class SubdirFileGroup {
@@ -422,14 +316,6 @@ public class BuildSet {
 
     public Set<FileGroup> getPublishedLib() {
         return publishedLib;
-    }
-
-    public void addFileDependent(final File file) {
-        fileDependents.add(file);
-    }
-
-    public Set<File> getFileDependents() {
-        return ImmutableSet.copyOf(fileDependents);
     }
 
 }

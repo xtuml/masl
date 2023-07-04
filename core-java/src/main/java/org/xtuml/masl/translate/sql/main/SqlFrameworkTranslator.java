@@ -31,12 +31,8 @@ import java.util.*;
 
 public abstract class SqlFrameworkTranslator extends DomainTranslator {
 
-    private final Map<ObjectDeclaration, ObjectTranslator>
-            objectTranslators =
-            new LinkedHashMap<ObjectDeclaration, ObjectTranslator>();
-    private final Map<RelationshipDeclaration, RelationshipTranslator>
-            relationshipTranslators =
-            new HashMap<RelationshipDeclaration, RelationshipTranslator>();
+    private final Map<ObjectDeclaration, ObjectTranslator> objectTranslators = new LinkedHashMap<>();
+    private final Map<RelationshipDeclaration, RelationshipTranslator> relationshipTranslators = new HashMap<>();
 
     protected SqlFrameworkTranslator(final Domain domain) {
         super(domain);
@@ -55,7 +51,7 @@ public abstract class SqlFrameworkTranslator extends DomainTranslator {
 
     @Override
     public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
-        return Collections.<DomainTranslator>singletonList(mainDomainTranslator);
+        return Collections.singletonList(mainDomainTranslator);
     }
 
     public org.xtuml.masl.translate.main.DomainTranslator getMainDomainTranslator() {

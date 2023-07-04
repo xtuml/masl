@@ -38,8 +38,8 @@ public class ParameterImpl extends VariableImpl implements Parameter {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitParameter(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitParameter(this);
     }
 
 }

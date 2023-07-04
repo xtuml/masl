@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.relationship.MultiplicityType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -143,8 +144,9 @@ public class NavigationExpression extends Expression
         }
         if (relationship == null) {
             return other.relationship == null;
-        } else
+        } else {
             return relationship.equals(other.relationship);
+        }
     }
 
     @Override
@@ -153,8 +155,13 @@ public class NavigationExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitNavigationExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitNavigationExpression(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs, condition);
     }
 
 }

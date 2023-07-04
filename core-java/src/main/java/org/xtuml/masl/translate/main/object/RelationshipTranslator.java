@@ -388,7 +388,7 @@ public class RelationshipTranslator {
 
         condNavigator.setReturnType(resultType);
 
-        final List<Expression> findArgs = new ArrayList<Expression>(condNavigator.getParameters().size());
+        final List<Expression> findArgs = new ArrayList<>(condNavigator.getParameters().size());
         for (final FindParameterExpression maslParam : predicate.getFindParameters()) {
             findArgs.add(condNavigator.createParameter(domainTranslator.getTypes().getType(maslParam.getType()).getOptimalParameterType(),
                                                        maslParam.getName()).asExpression());
@@ -946,7 +946,7 @@ public class RelationshipTranslator {
 
             final Expression rhs = deducedAssocSingleLinker.getParameters().get(0).asExpression();
 
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
 
             for (final AttributeDeclaration att : spec.getAssocSpec().getDestinationObject().getAttributes()) {
                 if (att.isIdentifier() || !att.isReferential()) {
@@ -1060,7 +1060,7 @@ public class RelationshipTranslator {
     private Function navigator;
     private final Map<org.xtuml.masl.metamodel.expression.Expression, Function>
             conditionalNavigators =
-            new LinkedHashMap<org.xtuml.masl.metamodel.expression.Expression, Function>();
+            new LinkedHashMap<>();
     private Function singleCorrelator;
     private Function multipleCorrelator;
 

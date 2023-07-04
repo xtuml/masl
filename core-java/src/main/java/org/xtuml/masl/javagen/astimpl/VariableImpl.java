@@ -68,8 +68,8 @@ abstract class VariableImpl extends ASTNodeImpl implements Variable, ModifiersIm
         this.type.set((TypeImpl) type);
     }
 
-    private final ChildNode<TypeImpl> type = new ChildNode<TypeImpl>(this);
-    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<ModifiersImpl>(this);
+    private final ChildNode<TypeImpl> type = new ChildNode<>(this);
+    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<>(this);
     private String name;
 
     @Override

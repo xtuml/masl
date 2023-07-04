@@ -31,8 +31,8 @@ public class EmptyStatementImpl extends StatementImpl implements EmptyStatement 
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitEmptyStatement(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitEmptyStatement(this);
     }
 
 }

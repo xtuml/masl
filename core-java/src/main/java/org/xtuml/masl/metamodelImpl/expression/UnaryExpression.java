@@ -21,14 +21,13 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.BooleanType;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class UnaryExpression extends Expression implements org.xtuml.masl.metamodel.expression.UnaryExpression {
@@ -257,13 +256,13 @@ public class UnaryExpression extends Expression implements org.xtuml.masl.metamo
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitUnaryExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitUnaryExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.<Expression>singletonList(rhs);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(rhs);
     }
 
 }

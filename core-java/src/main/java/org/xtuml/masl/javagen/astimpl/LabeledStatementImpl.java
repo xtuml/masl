@@ -42,8 +42,8 @@ public class LabeledStatementImpl extends StatementImpl implements org.xtuml.mas
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitLabeledStatement(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitLabeledStatement(this);
     }
 
     @Override
@@ -56,6 +56,6 @@ public class LabeledStatementImpl extends StatementImpl implements org.xtuml.mas
         this.statement.set((StatementImpl) statement);
     }
 
-    private final ChildNode<StatementImpl> statement = new ChildNode<StatementImpl>(this);
+    private final ChildNode<StatementImpl> statement = new ChildNode<>(this);
     private String name;
 }

@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,342 +20,131 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.type;
-
-import junit.framework.TestCase;
-import org.xtuml.masl.metamodelImpl.expression.TypedExpression;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.xtuml.masl.metamodelImpl.expression.TypedExpression;
+
+import junit.framework.TestCase;
+
 public abstract class TestConvertible extends TestCase {
 
-    private static final TestTypes types = TestTypes.data1;
-    private static final TestExpressions expr = TestExpressions.expr1;
+    private static TestTypes types = TestTypes.data1;
+    private static TestExpressions expr = TestExpressions.expr1;
 
-    private static final Set<TypedExpression>
-            charExpressions =
-            new HashSet<TypedExpression>(Arrays.asList(expr.namedBCharacter,
-                                                       expr.anonBCharacter,
-                                                       expr.anonBWCharacter,
-                                                       expr.namedBWCharacter,
-                                                       expr.namedUdCharacterType,
-                                                       expr.namedUdWCharacterType));
+    private static Set<TypedExpression> charExpressions = new HashSet<>(
+            Arrays.asList(new TypedExpression[] { expr.namedBCharacter, expr.anonBCharacter, expr.anonBWCharacter,
+                    expr.namedBWCharacter, expr.namedUdCharacterType, expr.namedUdWCharacterType }));
 
-    private static final Set<TypedExpression>
-            integerExpressions =
-            new HashSet<TypedExpression>(Arrays.asList(expr.anonBByte,
-                                                       expr.anonBInteger,
-                                                       expr.anonBReal,
-                                                       expr.namedBByte,
-                                                       expr.namedBInteger,
-                                                       expr.namedBReal,
-                                                       expr.namedUdIntType,
-                                                       expr.namedUdRealType,
-                                                       expr.namedUdIntTypeType,
-                                                       expr.namedUdIntConstrainedType,
-                                                       expr.namedUdIntTypeConstrainedType,
-                                                       expr.namedUdPrimaryColours,
-                                                       expr.namedUdRainbowColours,
-                                                       expr.anonUdPrimaryColours,
-                                                       expr.anonUdRainbowColours));
+    private static Set<TypedExpression> integerExpressions = new HashSet<>(
+            Arrays.asList(new TypedExpression[] { expr.anonBByte, expr.anonBInteger, expr.anonBReal, expr.namedBByte,
+                    expr.namedBInteger, expr.namedBReal, expr.namedUdIntType, expr.namedUdRealType,
+                    expr.namedUdIntTypeType, expr.namedUdIntConstrainedType, expr.namedUdIntTypeConstrainedType,
+                    expr.namedUdPrimaryColours, expr.namedUdRainbowColours, expr.anonUdPrimaryColours,
+                    expr.anonUdRainbowColours }));
 
-    private static final Set<TypedExpression>
-            realExpressions =
-            new HashSet<TypedExpression>(Arrays.asList(expr.anonBByte,
-                                                       expr.anonBInteger,
-                                                       expr.anonBReal,
-                                                       expr.namedBByte,
-                                                       expr.namedBInteger,
-                                                       expr.namedBReal,
-                                                       expr.namedUdIntType,
-                                                       expr.namedUdRealType,
-                                                       expr.namedUdIntTypeType,
-                                                       expr.namedUdIntConstrainedType,
-                                                       expr.namedUdIntTypeConstrainedType));
+    private static Set<TypedExpression> realExpressions = new HashSet<>(
+            Arrays.asList(new TypedExpression[] { expr.anonBByte, expr.anonBInteger, expr.anonBReal, expr.namedBByte,
+                    expr.namedBInteger, expr.namedBReal, expr.namedUdIntType, expr.namedUdRealType,
+                    expr.namedUdIntTypeType, expr.namedUdIntConstrainedType, expr.namedUdIntTypeConstrainedType, }));
 
-    private static final Set<TypedExpression>
-            seqOfIntegerExpressions =
-            new HashSet<TypedExpression>(Arrays.asList(expr.anonBagOfAnonInt,
-                                                       expr.anonBagOfInt,
-                                                       expr.anonBagOfUdIntType,
-                                                       expr.anonBagOfUdIntTypeType,
-                                                       expr.anonBByte,
-                                                       expr.anonBInteger,
-                                                       expr.anonBReal,
-                                                       expr.anonSeqOfAnonInt,
-                                                       expr.anonSeqOfAnonReal,
-                                                       expr.anonSeqOfInt,
-                                                       expr.anonSeqOfReal,
-                                                       expr.anonSeqOfUdIntType,
-                                                       expr.anonSeqOfUdIntTypeType,
-                                                       expr.anonSetOfAnonInt,
-                                                       expr.anonSetOfInt,
-                                                       expr.anonSetOfUdIntType,
-                                                       expr.anonSetOfUdIntTypeType,
-                                                       expr.namedArray1to10OfInt,
-                                                       expr.namedArray2to11OfInt,
-                                                       expr.namedArrayOfUdIntType,
-                                                       expr.namedArrayOfUdIntTypeType,
-                                                       expr.namedBagOfInt,
-                                                       expr.namedBagOfUdIntType,
-                                                       expr.namedBagOfUdIntTypeType,
-                                                       expr.namedBByte,
-                                                       expr.namedBInteger,
-                                                       expr.namedBReal,
-                                                       expr.namedSeqOfInt,
-                                                       expr.namedSeqOfReal,
-                                                       expr.namedSeqOfUdIntType,
-                                                       expr.namedSeqOfUdIntTypeType,
-                                                       expr.namedSetOfInt,
-                                                       expr.namedSetOfUdIntType,
-                                                       expr.namedSetOfUdIntTypeType,
-                                                       expr.namedUdArray1to10OfIntType,
-                                                       expr.namedUdBagOfIntType,
-                                                       expr.namedUdIntConstrainedType,
-                                                       expr.namedUdRealType,
-                                                       expr.namedUdIntType,
-                                                       expr.namedUdIntTypeConstrainedType,
-                                                       expr.namedUdIntTypeType,
-                                                       expr.namedUdSeqOfIntType,
-                                                       expr.namedUdSetOfIntType,
-                                                       expr.namedUdPrimaryColours,
-                                                       expr.namedUdRainbowColours,
-                                                       expr.anonUdPrimaryColours,
-                                                       expr.anonUdRainbowColours));
+    private static Set<TypedExpression> seqOfIntegerExpressions = new HashSet<>(
+            Arrays.asList(new TypedExpression[] { expr.anonBagOfAnonInt, expr.anonBagOfInt, expr.anonBagOfUdIntType,
+                    expr.anonBagOfUdIntTypeType, expr.anonBByte, expr.anonBInteger, expr.anonBReal,
+                    expr.anonSeqOfAnonInt, expr.anonSeqOfAnonReal, expr.anonSeqOfInt, expr.anonSeqOfReal,
+                    expr.anonSeqOfUdIntType, expr.anonSeqOfUdIntTypeType, expr.anonSetOfAnonInt, expr.anonSetOfInt,
+                    expr.anonSetOfUdIntType, expr.anonSetOfUdIntTypeType, expr.namedArray1to10OfInt,
+                    expr.namedArray2to11OfInt, expr.namedArrayOfUdIntType, expr.namedArrayOfUdIntTypeType,
+                    expr.namedBagOfInt, expr.namedBagOfUdIntType, expr.namedBagOfUdIntTypeType, expr.namedBByte,
+                    expr.namedBInteger, expr.namedBReal, expr.namedSeqOfInt, expr.namedSeqOfReal,
+                    expr.namedSeqOfUdIntType, expr.namedSeqOfUdIntTypeType, expr.namedSetOfInt,
+                    expr.namedSetOfUdIntType, expr.namedSetOfUdIntTypeType, expr.namedUdArray1to10OfIntType,
+                    expr.namedUdBagOfIntType, expr.namedUdIntConstrainedType, expr.namedUdRealType, expr.namedUdIntType,
+                    expr.namedUdIntTypeConstrainedType, expr.namedUdIntTypeType, expr.namedUdSeqOfIntType,
+                    expr.namedUdSetOfIntType, expr.namedUdPrimaryColours, expr.namedUdRainbowColours,
+                    expr.anonUdPrimaryColours, expr.anonUdRainbowColours }));
 
-    private static final Set<TypedExpression>
-            seqOfRealExpressions =
-            new HashSet<TypedExpression>(Arrays.asList(expr.anonBagOfAnonInt,
-                                                       expr.anonBagOfInt,
-                                                       expr.anonBagOfUdIntType,
-                                                       expr.anonBagOfUdIntTypeType,
-                                                       expr.anonBByte,
-                                                       expr.anonBInteger,
-                                                       expr.anonBReal,
-                                                       expr.anonSeqOfAnonInt,
-                                                       expr.anonSeqOfAnonReal,
-                                                       expr.anonSeqOfInt,
-                                                       expr.anonSeqOfReal,
-                                                       expr.anonSeqOfUdIntType,
-                                                       expr.anonSeqOfUdIntTypeType,
-                                                       expr.anonSetOfAnonInt,
-                                                       expr.anonSetOfInt,
-                                                       expr.anonSetOfUdIntType,
-                                                       expr.anonSetOfUdIntTypeType,
-                                                       expr.namedArray1to10OfInt,
-                                                       expr.namedArray2to11OfInt,
-                                                       expr.namedArrayOfUdIntType,
-                                                       expr.namedArrayOfUdIntTypeType,
-                                                       expr.namedBagOfInt,
-                                                       expr.namedBagOfUdIntType,
-                                                       expr.namedBagOfUdIntTypeType,
-                                                       expr.namedBByte,
-                                                       expr.namedBInteger,
-                                                       expr.namedBReal,
-                                                       expr.namedSeqOfInt,
-                                                       expr.namedSeqOfReal,
-                                                       expr.namedSeqOfUdIntType,
-                                                       expr.namedSeqOfUdIntTypeType,
-                                                       expr.namedSetOfInt,
-                                                       expr.namedSetOfUdIntType,
-                                                       expr.namedSetOfUdIntTypeType,
-                                                       expr.namedUdArray1to10OfIntType,
-                                                       expr.namedUdBagOfIntType,
-                                                       expr.namedUdIntConstrainedType,
-                                                       expr.namedUdRealType,
-                                                       expr.namedUdIntType,
-                                                       expr.namedUdIntTypeConstrainedType,
-                                                       expr.namedUdIntTypeType,
-                                                       expr.namedUdSeqOfIntType,
-                                                       expr.namedUdSetOfIntType));
+    private static Set<TypedExpression> seqOfRealExpressions = new HashSet<>(
+            Arrays.asList(new TypedExpression[] { expr.anonBagOfAnonInt, expr.anonBagOfInt, expr.anonBagOfUdIntType,
+                    expr.anonBagOfUdIntTypeType, expr.anonBByte, expr.anonBInteger, expr.anonBReal,
+                    expr.anonSeqOfAnonInt, expr.anonSeqOfAnonReal, expr.anonSeqOfInt, expr.anonSeqOfReal,
+                    expr.anonSeqOfUdIntType, expr.anonSeqOfUdIntTypeType, expr.anonSetOfAnonInt, expr.anonSetOfInt,
+                    expr.anonSetOfUdIntType, expr.anonSetOfUdIntTypeType, expr.namedArray1to10OfInt,
+                    expr.namedArray2to11OfInt, expr.namedArrayOfUdIntType, expr.namedArrayOfUdIntTypeType,
+                    expr.namedBagOfInt, expr.namedBagOfUdIntType, expr.namedBagOfUdIntTypeType, expr.namedBByte,
+                    expr.namedBInteger, expr.namedBReal, expr.namedSeqOfInt, expr.namedSeqOfReal,
+                    expr.namedSeqOfUdIntType, expr.namedSeqOfUdIntTypeType, expr.namedSetOfInt,
+                    expr.namedSetOfUdIntType, expr.namedSetOfUdIntTypeType, expr.namedUdArray1to10OfIntType,
+                    expr.namedUdBagOfIntType, expr.namedUdIntConstrainedType, expr.namedUdRealType, expr.namedUdIntType,
+                    expr.namedUdIntTypeConstrainedType, expr.namedUdIntTypeType, expr.namedUdSeqOfIntType,
+                    expr.namedUdSetOfIntType, }));
 
-    private static final Set<TypedExpression>
-            seqOfCharExpressions =
-            new HashSet<TypedExpression>(Arrays.asList(expr.anonBCharacter,
-                                                       expr.anonBCharacter,
-                                                       expr.anonBString,
-                                                       expr.anonBWCharacter,
-                                                       expr.anonBWString,
-                                                       expr.anonSeqOfAnonCharacter,
-                                                       expr.anonSeqOfAnonWCharacter,
-                                                       expr.anonSeqOfCharacter,
-                                                       expr.anonSeqOfUdCharacterType,
-                                                       expr.anonSeqOfUdWCharacterType,
-                                                       expr.anonSeqOfWCharacter,
-                                                       expr.anonSetOfCharacter,
-                                                       expr.anonSetOfWCharacter,
-                                                       expr.namedBCharacter,
-                                                       expr.namedBString,
-                                                       expr.namedBWCharacter,
-                                                       expr.namedBWString,
-                                                       expr.namedSeqOfCharacter,
-                                                       expr.namedSeqOfUdCharacterType,
-                                                       expr.namedSeqOfUdWCharacterType,
-                                                       expr.namedSeqOfWCharacter,
-                                                       expr.namedSetOfCharacter,
-                                                       expr.namedSetOfWCharacter,
-                                                       expr.namedUdCharacterType,
-                                                       expr.namedUdWCharacterType,
-                                                       expr.namedUdStringType,
-                                                       expr.namedUdWStringType));
+    private static Set<TypedExpression> seqOfCharExpressions = new HashSet<>(
+            Arrays.asList(new TypedExpression[] { expr.anonBCharacter, expr.anonBCharacter, expr.anonBString,
+                    expr.anonBWCharacter, expr.anonBWString, expr.anonSeqOfAnonCharacter, expr.anonSeqOfAnonWCharacter,
+                    expr.anonSeqOfCharacter, expr.anonSeqOfUdCharacterType, expr.anonSeqOfUdWCharacterType,
+                    expr.anonSeqOfWCharacter, expr.anonSetOfCharacter, expr.anonSetOfWCharacter, expr.namedBCharacter,
+                    expr.namedBString, expr.namedBWCharacter, expr.namedBWString, expr.namedSeqOfCharacter,
+                    expr.namedSeqOfUdCharacterType, expr.namedSeqOfUdWCharacterType, expr.namedSeqOfWCharacter,
+                    expr.namedSetOfCharacter, expr.namedSetOfWCharacter, expr.namedUdCharacterType,
+                    expr.namedUdWCharacterType, expr.namedUdStringType, expr.namedUdWStringType, }));
 
-    private static final Set<TypedExpression>
-            seqOfSeqOfIntegerExpressions =
-            new HashSet<TypedExpression>(Arrays.asList(expr.anonBByte,
-                                                       expr.anonBInteger,
-                                                       expr.anonBReal,
-                                                       expr.namedBByte,
-                                                       expr.namedBInteger,
-                                                       expr.namedBReal,
-                                                       expr.namedUdIntType,
-                                                       expr.namedUdRealType,
-                                                       expr.namedUdIntTypeType,
-                                                       expr.namedUdIntConstrainedType,
-                                                       expr.namedUdIntTypeConstrainedType,
-                                                       expr.anonBagOfAnonInt,
-                                                       expr.anonBagOfArrayOfInt,
-                                                       expr.anonBagOfBagOfInt,
-                                                       expr.anonBagOfInt,
-                                                       expr.anonBagOfSeqOfInt,
-                                                       expr.anonBagOfSetOfInt,
-                                                       expr.anonBagOfUdIntType,
-                                                       expr.anonBagOfUdIntTypeType,
-                                                       expr.anonSeqOfAnonInt,
-                                                       expr.anonSeqOfAnonReal,
-                                                       expr.anonSeqOfArrayOfInt,
-                                                       expr.anonSeqOfBagOfInt,
-                                                       expr.anonSeqOfInt,
-                                                       expr.anonSeqOfReal,
-                                                       expr.anonSeqOfSeqOfInt,
-                                                       expr.anonSeqOfSeqOfReal,
-                                                       expr.anonSeqOfSetOfInt,
-                                                       expr.anonSeqOfUdIntType,
-                                                       expr.anonSeqOfUdIntTypeType,
-                                                       expr.anonSetOfAnonInt,
-                                                       expr.anonSetOfArrayOfInt,
-                                                       expr.anonSetOfBagOfInt,
-                                                       expr.anonSetOfInt,
-                                                       expr.anonSetOfSeqOfInt,
-                                                       expr.anonSetOfSetOfInt,
-                                                       expr.anonSetOfUdIntType,
-                                                       expr.anonSetOfUdIntTypeType,
-                                                       expr.namedArray1to10OfInt,
-                                                       expr.namedArray2to11OfInt,
-                                                       expr.namedArrayOfArrayOfInt,
-                                                       expr.namedArrayOfBagOfInt,
-                                                       expr.namedArrayOfSeqOfInt,
-                                                       expr.namedArrayOfSetOfInt,
-                                                       expr.namedArrayOfUdIntType,
-                                                       expr.namedArrayOfUdIntTypeType,
-                                                       expr.namedBagOfArrayOfInt,
-                                                       expr.namedBagOfBagOfInt,
-                                                       expr.namedBagOfInt,
-                                                       expr.namedBagOfSeqOfInt,
-                                                       expr.namedBagOfSetOfInt,
-                                                       expr.namedBagOfUdIntType,
-                                                       expr.namedBagOfUdIntTypeType,
-                                                       expr.namedSeqOfArrayOfInt,
-                                                       expr.namedSeqOfBagOfInt,
-                                                       expr.namedSeqOfInt,
-                                                       expr.namedSeqOfReal,
-                                                       expr.namedSeqOfSeqOfInt,
-                                                       expr.namedSeqOfSeqOfReal,
-                                                       expr.namedSeqOfSetOfInt,
-                                                       expr.namedSeqOfUdIntType,
-                                                       expr.namedSeqOfUdIntTypeType,
-                                                       expr.namedSetOfArrayOfInt,
-                                                       expr.namedSetOfBagOfInt,
-                                                       expr.namedSetOfInt,
-                                                       expr.namedSetOfSeqOfInt,
-                                                       expr.namedSetOfSetOfInt,
-                                                       expr.namedSetOfUdIntType,
-                                                       expr.namedSetOfUdIntTypeType,
-                                                       expr.namedUdArray1to10OfIntType,
-                                                       expr.namedUdBagOfIntType,
-                                                       expr.namedUdSeqOfIntType,
-                                                       expr.namedUdSetOfIntType,
-                                                       expr.namedUdPrimaryColours,
-                                                       expr.namedUdRainbowColours,
-                                                       expr.anonUdPrimaryColours,
-                                                       expr.anonUdRainbowColours));
+    private static Set<TypedExpression> seqOfSeqOfIntegerExpressions = new HashSet<>(
+            Arrays.asList(new TypedExpression[] {
 
-    private static final Set<TypedExpression>
-            seqOfSeqOfRealExpressions =
-            new HashSet<TypedExpression>(Arrays.asList(expr.anonBByte,
-                                                       expr.anonBInteger,
-                                                       expr.anonBReal,
-                                                       expr.namedBByte,
-                                                       expr.namedBInteger,
-                                                       expr.namedBReal,
-                                                       expr.namedUdIntType,
-                                                       expr.namedUdRealType,
-                                                       expr.namedUdIntTypeType,
-                                                       expr.namedUdIntConstrainedType,
-                                                       expr.namedUdIntTypeConstrainedType,
-                                                       expr.anonBagOfAnonInt,
-                                                       expr.anonBagOfArrayOfInt,
-                                                       expr.anonBagOfBagOfInt,
-                                                       expr.anonBagOfInt,
-                                                       expr.anonBagOfSeqOfInt,
-                                                       expr.anonBagOfSetOfInt,
-                                                       expr.anonBagOfUdIntType,
-                                                       expr.anonBagOfUdIntTypeType,
-                                                       expr.anonSeqOfAnonInt,
-                                                       expr.anonSeqOfAnonReal,
-                                                       expr.anonSeqOfArrayOfInt,
-                                                       expr.anonSeqOfBagOfInt,
-                                                       expr.anonSeqOfInt,
-                                                       expr.anonSeqOfReal,
-                                                       expr.anonSeqOfSeqOfInt,
-                                                       expr.anonSeqOfSeqOfReal,
-                                                       expr.anonSeqOfSetOfInt,
-                                                       expr.anonSeqOfUdIntType,
-                                                       expr.anonSeqOfUdIntTypeType,
-                                                       expr.anonSetOfAnonInt,
-                                                       expr.anonSetOfArrayOfInt,
-                                                       expr.anonSetOfBagOfInt,
-                                                       expr.anonSetOfInt,
-                                                       expr.anonSetOfSeqOfInt,
-                                                       expr.anonSetOfSetOfInt,
-                                                       expr.anonSetOfUdIntType,
-                                                       expr.anonSetOfUdIntTypeType,
-                                                       expr.namedArray1to10OfInt,
-                                                       expr.namedArray2to11OfInt,
-                                                       expr.namedArrayOfArrayOfInt,
-                                                       expr.namedArrayOfBagOfInt,
-                                                       expr.namedArrayOfSeqOfInt,
-                                                       expr.namedArrayOfSetOfInt,
-                                                       expr.namedArrayOfUdIntType,
-                                                       expr.namedArrayOfUdIntTypeType,
-                                                       expr.namedBagOfArrayOfInt,
-                                                       expr.namedBagOfBagOfInt,
-                                                       expr.namedBagOfInt,
-                                                       expr.namedBagOfSeqOfInt,
-                                                       expr.namedBagOfSetOfInt,
-                                                       expr.namedBagOfUdIntType,
-                                                       expr.namedBagOfUdIntTypeType,
-                                                       expr.namedSeqOfArrayOfInt,
-                                                       expr.namedSeqOfBagOfInt,
-                                                       expr.namedSeqOfInt,
-                                                       expr.namedSeqOfReal,
-                                                       expr.namedSeqOfSeqOfInt,
-                                                       expr.namedSeqOfSeqOfReal,
-                                                       expr.namedSeqOfSetOfInt,
-                                                       expr.namedSeqOfUdIntType,
-                                                       expr.namedSeqOfUdIntTypeType,
-                                                       expr.namedSetOfArrayOfInt,
-                                                       expr.namedSetOfBagOfInt,
-                                                       expr.namedSetOfInt,
-                                                       expr.namedSetOfSeqOfInt,
-                                                       expr.namedSetOfSetOfInt,
-                                                       expr.namedSetOfUdIntType,
-                                                       expr.namedSetOfUdIntTypeType,
-                                                       expr.namedUdArray1to10OfIntType,
-                                                       expr.namedUdBagOfIntType,
-                                                       expr.namedUdSeqOfIntType,
-                                                       expr.namedUdSetOfIntType));
+                    expr.anonBByte, expr.anonBInteger, expr.anonBReal, expr.namedBByte, expr.namedBInteger,
+                    expr.namedBReal, expr.namedUdIntType, expr.namedUdRealType, expr.namedUdIntTypeType,
+                    expr.namedUdIntConstrainedType, expr.namedUdIntTypeConstrainedType, expr.anonBagOfAnonInt,
+                    expr.anonBagOfArrayOfInt, expr.anonBagOfBagOfInt, expr.anonBagOfInt, expr.anonBagOfSeqOfInt,
+                    expr.anonBagOfSetOfInt, expr.anonBagOfUdIntType, expr.anonBagOfUdIntTypeType, expr.anonSeqOfAnonInt,
+                    expr.anonSeqOfAnonReal, expr.anonSeqOfArrayOfInt, expr.anonSeqOfBagOfInt, expr.anonSeqOfInt,
+                    expr.anonSeqOfReal, expr.anonSeqOfSeqOfInt, expr.anonSeqOfSeqOfReal, expr.anonSeqOfSetOfInt,
+                    expr.anonSeqOfUdIntType, expr.anonSeqOfUdIntTypeType, expr.anonSetOfAnonInt,
+                    expr.anonSetOfArrayOfInt, expr.anonSetOfBagOfInt, expr.anonSetOfInt, expr.anonSetOfSeqOfInt,
+                    expr.anonSetOfSetOfInt, expr.anonSetOfUdIntType, expr.anonSetOfUdIntTypeType,
+                    expr.namedArray1to10OfInt, expr.namedArray2to11OfInt, expr.namedArrayOfArrayOfInt,
+                    expr.namedArrayOfBagOfInt, expr.namedArrayOfSeqOfInt, expr.namedArrayOfSetOfInt,
+                    expr.namedArrayOfUdIntType, expr.namedArrayOfUdIntTypeType, expr.namedBagOfArrayOfInt,
+                    expr.namedBagOfBagOfInt, expr.namedBagOfInt, expr.namedBagOfSeqOfInt, expr.namedBagOfSetOfInt,
+                    expr.namedBagOfUdIntType, expr.namedBagOfUdIntTypeType, expr.namedSeqOfArrayOfInt,
+                    expr.namedSeqOfBagOfInt, expr.namedSeqOfInt, expr.namedSeqOfReal, expr.namedSeqOfSeqOfInt,
+                    expr.namedSeqOfSeqOfReal, expr.namedSeqOfSetOfInt, expr.namedSeqOfUdIntType,
+                    expr.namedSeqOfUdIntTypeType, expr.namedSetOfArrayOfInt, expr.namedSetOfBagOfInt,
+                    expr.namedSetOfInt, expr.namedSetOfSeqOfInt, expr.namedSetOfSetOfInt, expr.namedSetOfUdIntType,
+                    expr.namedSetOfUdIntTypeType, expr.namedUdArray1to10OfIntType, expr.namedUdBagOfIntType,
+                    expr.namedUdSeqOfIntType, expr.namedUdSetOfIntType, expr.namedUdPrimaryColours,
+                    expr.namedUdRainbowColours, expr.anonUdPrimaryColours, expr.anonUdRainbowColours
+
+            }));
+
+    private static Set<TypedExpression> seqOfSeqOfRealExpressions = new HashSet<>(
+            Arrays.asList(new TypedExpression[] {
+
+                    expr.anonBByte, expr.anonBInteger, expr.anonBReal, expr.namedBByte, expr.namedBInteger,
+                    expr.namedBReal, expr.namedUdIntType, expr.namedUdRealType, expr.namedUdIntTypeType,
+                    expr.namedUdIntConstrainedType, expr.namedUdIntTypeConstrainedType, expr.anonBagOfAnonInt,
+                    expr.anonBagOfArrayOfInt, expr.anonBagOfBagOfInt, expr.anonBagOfInt, expr.anonBagOfSeqOfInt,
+                    expr.anonBagOfSetOfInt, expr.anonBagOfUdIntType, expr.anonBagOfUdIntTypeType, expr.anonSeqOfAnonInt,
+                    expr.anonSeqOfAnonReal, expr.anonSeqOfArrayOfInt, expr.anonSeqOfBagOfInt, expr.anonSeqOfInt,
+                    expr.anonSeqOfReal, expr.anonSeqOfSeqOfInt, expr.anonSeqOfSeqOfReal, expr.anonSeqOfSetOfInt,
+                    expr.anonSeqOfUdIntType, expr.anonSeqOfUdIntTypeType, expr.anonSetOfAnonInt,
+                    expr.anonSetOfArrayOfInt, expr.anonSetOfBagOfInt, expr.anonSetOfInt, expr.anonSetOfSeqOfInt,
+                    expr.anonSetOfSetOfInt, expr.anonSetOfUdIntType, expr.anonSetOfUdIntTypeType,
+                    expr.namedArray1to10OfInt, expr.namedArray2to11OfInt, expr.namedArrayOfArrayOfInt,
+                    expr.namedArrayOfBagOfInt, expr.namedArrayOfSeqOfInt, expr.namedArrayOfSetOfInt,
+                    expr.namedArrayOfUdIntType, expr.namedArrayOfUdIntTypeType, expr.namedBagOfArrayOfInt,
+                    expr.namedBagOfBagOfInt, expr.namedBagOfInt, expr.namedBagOfSeqOfInt, expr.namedBagOfSetOfInt,
+                    expr.namedBagOfUdIntType, expr.namedBagOfUdIntTypeType, expr.namedSeqOfArrayOfInt,
+                    expr.namedSeqOfBagOfInt, expr.namedSeqOfInt, expr.namedSeqOfReal, expr.namedSeqOfSeqOfInt,
+                    expr.namedSeqOfSeqOfReal, expr.namedSeqOfSetOfInt, expr.namedSeqOfUdIntType,
+                    expr.namedSeqOfUdIntTypeType, expr.namedSetOfArrayOfInt, expr.namedSetOfBagOfInt,
+                    expr.namedSetOfInt, expr.namedSetOfSeqOfInt, expr.namedSetOfSetOfInt, expr.namedSetOfUdIntType,
+                    expr.namedSetOfUdIntTypeType, expr.namedUdArray1to10OfIntType, expr.namedUdBagOfIntType,
+                    expr.namedUdSeqOfIntType, expr.namedUdSetOfIntType,
+
+            }));
 
     public static class BBooleanConvertible extends TestConvertible {
 
@@ -766,46 +555,28 @@ public abstract class TestConvertible extends TestCase {
     public static class UdTrivialStructConvertible extends TestConvertible {
 
         public UdTrivialStructConvertible() {
-            super(types.udTrivialStructType,
-                  expr.namedUdTrivialStructType,
-                  expr.anonAnonTrivialStruct,
-                  expr.anonAnonTrivialAnonStruct,
-                  expr.anonBByte,
-                  expr.anonBInteger,
-                  expr.anonBReal,
-                  expr.namedBByte,
-                  expr.namedBInteger,
-                  expr.namedBReal,
-                  expr.namedUdRealType,
-                  expr.namedUdIntType,
-                  expr.namedUdIntTypeType,
-                  expr.namedUdIntConstrainedType,
-                  expr.namedUdIntTypeConstrainedType,
-                  expr.namedUdPrimaryColours,
-                  expr.namedUdRainbowColours,
-                  expr.anonUdPrimaryColours,
-                  expr.anonUdRainbowColours);
+            super(types.udTrivialStructType, expr.namedUdTrivialStructType, expr.anonAnonTrivialStruct,
+                    expr.anonAnonTrivialAnonStruct, expr.anonBByte, expr.anonBInteger, expr.anonBReal, expr.namedBByte,
+                    expr.namedBInteger, expr.namedBReal, expr.namedUdRealType, expr.namedUdIntType,
+                    expr.namedUdIntTypeType, expr.namedUdIntConstrainedType, expr.namedUdIntTypeConstrainedType,
+                    expr.namedUdPrimaryColours, expr.namedUdRainbowColours, expr.anonUdPrimaryColours,
+                    expr.anonUdRainbowColours);
         }
     }
 
     public static class UdSimpleStructConvertible extends TestConvertible {
 
         public UdSimpleStructConvertible() {
-            super(types.udSimpleStructType,
-                  expr.namedUdSimpleStructType,
-                  expr.anonAnonSimpleStruct,
-                  expr.anonAnonSimpleAnonStruct,
-                  expr.anonAnonSimpleAnonStruct2);
+            super(types.udSimpleStructType, expr.namedUdSimpleStructType, expr.anonAnonSimpleStruct,
+                    expr.anonAnonSimpleAnonStruct, expr.anonAnonSimpleAnonStruct2);
         }
     }
 
     public static class UdComplexStructConvertible extends TestConvertible {
 
         public UdComplexStructConvertible() {
-            super(types.udComplexStructType,
-                  expr.namedUdComplexStructType,
-                  expr.anonAnonComplexStruct,
-                  expr.anonAnonComplexAnonStruct);
+            super(types.udComplexStructType, expr.namedUdComplexStructType, expr.anonAnonComplexStruct,
+                    expr.anonAnonComplexAnonStruct);
         }
     }
 
@@ -819,47 +590,26 @@ public abstract class TestConvertible extends TestCase {
     public static class AnyInstanceConvertible extends TestConvertible {
 
         public AnyInstanceConvertible() {
-            super(types.anyInstance,
-                  expr.namedInstance1,
-                  expr.anonInstance1,
-                  expr.anonInstance2,
-                  expr.namedInstance2,
-                  expr.anonAnyInstance,
-                  expr.namedAnyInstance);
+            super(types.anyInstance, expr.namedInstance1, expr.anonInstance1, expr.anonInstance2, expr.namedInstance2,
+                    expr.anonAnyInstance, expr.namedAnyInstance);
         }
     }
 
     public static class PrimaryColoursConvertible extends TestConvertible {
 
         public PrimaryColoursConvertible() {
-            super(types.udPrimaryColours,
-                  expr.anonBByte,
-                  expr.anonBInteger,
-                  expr.namedBByte,
-                  expr.namedBInteger,
-                  expr.namedUdIntType,
-                  expr.namedUdIntTypeType,
-                  expr.namedUdIntConstrainedType,
-                  expr.namedUdIntTypeConstrainedType,
-                  expr.namedUdPrimaryColours,
-                  expr.anonUdPrimaryColours);
+            super(types.udPrimaryColours, expr.anonBByte, expr.anonBInteger, expr.namedBByte, expr.namedBInteger,
+                    expr.namedUdIntType, expr.namedUdIntTypeType, expr.namedUdIntConstrainedType,
+                    expr.namedUdIntTypeConstrainedType, expr.namedUdPrimaryColours, expr.anonUdPrimaryColours);
         }
     }
 
     public static class RainbowColoursConvertible extends TestConvertible {
 
         public RainbowColoursConvertible() {
-            super(types.udRainbowColours,
-                  expr.anonBByte,
-                  expr.anonBInteger,
-                  expr.namedBByte,
-                  expr.namedBInteger,
-                  expr.namedUdIntType,
-                  expr.namedUdIntTypeType,
-                  expr.namedUdIntConstrainedType,
-                  expr.namedUdIntTypeConstrainedType,
-                  expr.namedUdRainbowColours,
-                  expr.anonUdRainbowColours);
+            super(types.udRainbowColours, expr.anonBByte, expr.anonBInteger, expr.namedBByte, expr.namedBInteger,
+                    expr.namedUdIntType, expr.namedUdIntTypeType, expr.namedUdIntConstrainedType,
+                    expr.namedUdIntTypeConstrainedType, expr.namedUdRainbowColours, expr.anonUdRainbowColours);
         }
     }
 
@@ -868,7 +618,7 @@ public abstract class TestConvertible extends TestCase {
 
     protected TestConvertible(final BasicType targetType, final TypedExpression... convertibles) {
         this.targetType = targetType;
-        this.convertibleExpressions = new HashSet<TypedExpression>(Arrays.asList(convertibles));
+        this.convertibleExpressions = new HashSet<>(Arrays.asList(convertibles));
     }
 
     protected TestConvertible(final BasicType targetType, final Set<TypedExpression> convertibles) {
@@ -877,13 +627,8 @@ public abstract class TestConvertible extends TestCase {
     }
 
     private void checkResult(final TypedExpression convertible) {
-        final String
-                message =
-                targetType +
-                " ( " +
-                (convertible.getType().isAnonymousType() ? "anon " : "") +
-                convertible.getType() +
-                " )";
+        final String message = targetType + " ( " + (convertible.getType().isAnonymousType() ? "anon " : "")
+                + convertible.getType() + " )";
         if (convertibleExpressions.contains(convertible)) {
             assertTrue(message + " should be convertible", targetType.isConvertibleFrom(convertible.getType()));
         } else {

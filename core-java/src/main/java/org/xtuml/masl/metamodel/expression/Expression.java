@@ -36,14 +36,14 @@ public interface Expression extends ASTNode {
     /**
      * Returns a list of all the attributes that are checked for equality with a
      * find parameter in the given expression. They must all be linked with 'and'.
-     * If there are attributes which are checked for anything other than equality
-     * or if they are not linked with 'and', then null is returned. This function
-     * is called recursively on subexpressions until the bottom of the tree is
-     * reached, or a null is returned by a subexpression.
+     * If there are attributes which are checked for anything other than equality or
+     * if they are not linked with 'and', then null is returned. This function is
+     * called recursively on subexpressions until the bottom of the tree is reached,
+     * or a null is returned by a subexpression.
      * <p>
-     * This function is used to check whether a find expression is finding an
-     * exact match on a unique identifier. If it is, then a number of
-     * optimisations may be possible.
+     * This function is used to check whether a find expression is finding an exact
+     * match on a unique identifier. If it is, then a number of optimisations may be
+     * possible.
      *
      * @return a set of attribute names, or null if this is not a compatible
      * expression
@@ -54,7 +54,5 @@ public interface Expression extends ASTNode {
      * @return For a complex expresion return the literal result.
      */
     LiteralExpression evaluate();
-
-    List<? extends Expression> getChildExpressions();
 
 }

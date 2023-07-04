@@ -31,12 +31,14 @@ import org.xtuml.masl.metamodel.project.ProjectTerminator;
 import org.xtuml.masl.metamodel.project.ProjectTerminatorService;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
-import org.xtuml.masl.translate.build.FileGroup;
+import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.main.Mangler;
 import org.xtuml.masl.translate.main.TerminatorServiceTranslator;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.xtuml.masl.translate.metadata.Architecture.*;
 
@@ -66,25 +68,18 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
      */
     @Override
     public Collection<org.xtuml.masl.translate.ProjectTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.ProjectTranslator>singletonList(mainProjectTranslator);
+        return Collections.singletonList(mainProjectTranslator);
     }
 
     @Override
     public void translate() {
         addRegistration();
 
-        Set<Domain> fullDomains = project.getDomains().stream().map(d -> d.getDomain()).collect(Collectors.toSet());
-        Set<Domain>
-                interfaceDomains =
-                project.getDomains().stream().flatMap(d -> d.getDomain().getReferencedInterfaces().stream()).collect(
-                        Collectors.toSet());
-        interfaceDomains.removeAll(fullDomains);
-
-        for (final Domain interfaceDomain : interfaceDomains) {
+        for (final Domain interfaceDomain : mainProjectTranslator.getInterfaceDomains()) {
             getLibrary().addDependency(DomainTranslator.getInstance(interfaceDomain).getInterfaceLibrary());
         }
 
-        for (final Domain fullDomain : fullDomains) {
+        for (final Domain fullDomain : mainProjectTranslator.getFullDomains()) {
             getLibrary().addDependency(DomainTranslator.getInstance(fullDomain).getLibrary());
         }
     }
@@ -173,7 +168,7 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
                 mainTranslator =
                 TerminatorServiceTranslator.getInstance(service.getDomainTerminatorService());
 
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.add(mainTranslator.getServiceId());
         params.add(projectTerminatorServiceFlag);
         params.add(Literal.createStringLiteral(service.getName()));
@@ -182,7 +177,7 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
             params.add(TypeTranslator.getTypeMetaData(service.getReturnType()));
         }
 
-        final List<Expression> lines = new ArrayList<Expression>();
+        final List<Expression> lines = new ArrayList<>();
         findCodeLines(lines, service.getCode());
         final Variable
                 linesVar =

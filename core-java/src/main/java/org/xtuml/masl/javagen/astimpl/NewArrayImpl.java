@@ -49,8 +49,8 @@ class NewArrayImpl extends ExpressionImpl implements NewArray {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitNewArray(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitNewArray(this);
     }
 
     @Override
@@ -101,11 +101,11 @@ class NewArrayImpl extends ExpressionImpl implements NewArray {
         return 13;
     }
 
-    private final ChildNodeList<ExpressionImpl> dimensionSizes = new ChildNodeList<ExpressionImpl>(this);
+    private final ChildNodeList<ExpressionImpl> dimensionSizes = new ChildNodeList<>(this);
 
     private int noDimensions;
 
-    private final ChildNode<ArrayInitializerImpl> initialValue = new ChildNode<ArrayInitializerImpl>(this);
+    private final ChildNode<ArrayInitializerImpl> initialValue = new ChildNode<>(this);
 
-    private final ChildNode<TypeImpl> type = new ChildNode<TypeImpl>(this);
+    private final ChildNode<TypeImpl> type = new ChildNode<>(this);
 }

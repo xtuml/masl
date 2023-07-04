@@ -67,8 +67,8 @@ public class ForStatement extends Statement {
     }
 
     /**
-     * Creates a C++ <code>for</code> statement using a variable declaration as
-     * the start condition.
+     * Creates a C++ <code>for</code> statement using a variable declaration as the
+     * start condition.
      * <p>
      * Creates code of the form: <code>
      * for ( startVariable; endCondition; increment ) statement;</code>

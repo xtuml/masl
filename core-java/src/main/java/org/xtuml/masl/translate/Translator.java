@@ -27,17 +27,15 @@ import java.util.*;
 @Alias(stripPrefix = "org.xtuml.masl.translate.", stripSuffix = ".Translator", value = "")
 public abstract class Translator<ItemType> {
 
-    private static final Map<String, Properties> properties = new HashMap<String, Properties>();
-    private static final Map<Class<? extends Translator<?>>, Map<Object, Translator<?>>>
-            instances =
-            new HashMap<Class<? extends Translator<?>>, Map<Object, Translator<?>>>();
+    private static final Map<String, Properties> properties = new HashMap<>();
+    private static final Map<Class<? extends Translator<?>>, Map<Object, Translator<?>>> instances = new HashMap<>();
 
     public static <T extends Translator<ItemType>, ItemType> T getInstance(final Class<T> translatorClass,
                                                                            final Class<? extends ItemType> itemClass,
                                                                            final ItemType item) throws Exception {
         Map<Object, Translator<?>> lookup = instances.get(translatorClass);
         if (lookup == null) {
-            lookup = new IdentityHashMap<Object, Translator<?>>();
+            lookup = new IdentityHashMap<>();
             instances.put(translatorClass, lookup);
         }
         T translator = translatorClass.cast(lookup.get(item));
@@ -75,13 +73,6 @@ public abstract class Translator<ItemType> {
         final long millis = System.currentTimeMillis();
 
         translate();
-
-        System.out.println("Translated  " +
-                           getName() +
-                           " (" +
-                           (System.currentTimeMillis() - millis) / 1000.0 +
-                           "secs)");
-
     }
 
     public abstract void translate();

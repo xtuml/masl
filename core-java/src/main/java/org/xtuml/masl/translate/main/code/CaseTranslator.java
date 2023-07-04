@@ -39,7 +39,7 @@ public class CaseTranslator extends CodeTranslator {
                              final CodeTranslator parentTranslator) {
         super(maslCase, parentScope, parentTranslator);
 
-        final List<SwitchStatement.CaseCondition> alternatives = new ArrayList<SwitchStatement.CaseCondition>();
+        final List<SwitchStatement.CaseCondition> alternatives = new ArrayList<>();
 
         Statement
                 defaultStatement =

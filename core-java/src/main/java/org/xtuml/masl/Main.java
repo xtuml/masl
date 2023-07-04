@@ -25,7 +25,7 @@ import org.xtuml.masl.antlr.Masl;
 import org.xtuml.masl.metamodel.domain.Domain;
 import org.xtuml.masl.metamodel.project.Project;
 import org.xtuml.masl.translate.*;
-import org.xtuml.masl.translate.build.BuildSet;
+import org.xtuml.masl.translate.building.BuildSet;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,23 +39,17 @@ import java.util.prefs.Preferences;
 
 public class Main {
 
-    private static final Map<String, Class<? extends DomainTranslator>>
-            allDomainTranslators =
-            new HashMap<String, Class<? extends DomainTranslator>>();
-    private static final Map<String, Class<? extends ProjectTranslator>>
-            allProjectTranslators =
-            new HashMap<String, Class<? extends ProjectTranslator>>();
-    private static final Map<String, Class<? extends BuildTranslator>>
-            allBuildTranslators =
-            new HashMap<String, Class<? extends BuildTranslator>>();
+    private static final Map<String, Class<? extends DomainTranslator>> allDomainTranslators = new HashMap<>();
+    private static final Map<String, Class<? extends ProjectTranslator>> allProjectTranslators = new HashMap<>();
+    private static final Map<String, Class<? extends BuildTranslator>> allBuildTranslators = new HashMap<>();
 
     private static void populateTranslatorLookups() {
         try {
             final String resourceName = "META-INF/translators";
             ClassLoader loader = Main.class.getClassLoader();
-          if (loader == null) {
-            loader = ClassLoader.getSystemClassLoader();
-          }
+            if (loader == null) {
+                loader = ClassLoader.getSystemClassLoader();
+            }
 
             final Enumeration<URL> configFiles = loader.getResources(resourceName);
 
@@ -71,13 +65,10 @@ public class Main {
                             final Class<?> translatorClass = Class.forName(className);
                             final String alias = Alias.Util.getAlias(translatorClass);
                             if (DomainTranslator.class.isAssignableFrom(translatorClass)) {
-                                System.out.println("Found Domain Translator " + alias);
                                 allDomainTranslators.put(alias, translatorClass.asSubclass(DomainTranslator.class));
                             } else if (ProjectTranslator.class.isAssignableFrom(translatorClass)) {
-                                System.out.println("Found Project Translator " + alias);
                                 allProjectTranslators.put(alias, translatorClass.asSubclass(ProjectTranslator.class));
                             } else if (BuildTranslator.class.isAssignableFrom(translatorClass)) {
-                                System.out.println("Found Build Translator " + alias);
                                 allBuildTranslators.put(alias, translatorClass.asSubclass(BuildTranslator.class));
                             } else {
                                 System.err.println("Class " +
@@ -126,8 +117,11 @@ public class Main {
             }
 
             if (modelFile.canRead()) {
+                System.out.println("Masling " + modelFile.getPath());
                 if (CommandLine.INSTANCE.isProject()) {
                     return parseProject(modelFile);
+                } else if (CommandLine.INSTANCE.isInterface()) {
+                    return parseInterface(modelFile);
                 } else {
                     return parseDomain(modelFile);
                 }
@@ -151,8 +145,7 @@ public class Main {
             topLevelPreferences = new TranslatorParser();
         }
 
-        return getBuildTranslators(Arrays.asList(new DefaultTranslatorPrefs<BuildTranslator>(
-                allBuildTranslators),
+        return getBuildTranslators(Arrays.asList(new DefaultTranslatorPrefs<>(allBuildTranslators),
                                                  new JavaPreferences(Preferences.systemRoot().node(
                                                          "/masl/buildTranslators")),
                                                  new XMLPreferences(topLevelPreferences),
@@ -162,11 +155,10 @@ public class Main {
     }
 
     static private Set<BuildTranslator> getBuildTranslators(final List<TranslatorPreferences> preferences) {
-        final Set<Class<? extends BuildTranslator>> translators = new LinkedHashSet<Class<? extends BuildTranslator>>();
+        final Set<Class<? extends BuildTranslator>> translators = new LinkedHashSet<>();
 
         for (final TranslatorPreferences pref : preferences) {
             if (pref.isOverride()) {
-                System.out.println("Build Translators overridden by " + pref.getName() + ".");
                 translators.clear();
             }
 
@@ -219,7 +211,7 @@ public class Main {
             }
         }
 
-        final Set<BuildTranslator> result = new LinkedHashSet<BuildTranslator>();
+        final Set<BuildTranslator> result = new LinkedHashSet<>();
         for (final Class<? extends BuildTranslator> transClass : translators) {
             try {
                 result.add(transClass.newInstance());
@@ -244,13 +236,10 @@ public class Main {
 
         final List<TranslatorPreferences>
                 prefList =
-                Arrays.asList(new DefaultTranslatorPrefs<DomainTranslator>(
-                        allDomainTranslators),
-                              new JavaPreferences(Preferences.systemRoot().node(
-                                      "/masl/domainTranslators")),
+                Arrays.asList(new DefaultTranslatorPrefs<>(allDomainTranslators),
+                              new JavaPreferences(Preferences.systemRoot().node("/masl/domainTranslators")),
                               new XMLPreferences(topLevelPreferences),
-                              new JavaPreferences(Preferences.userRoot().node(
-                                      "/masl/domainTranslators")),
+                              new JavaPreferences(Preferences.userRoot().node("/masl/domainTranslators")),
                               new PragmaPrefs(domain.getPragmas()),
                               new XMLPreferences(customTranslatorXML),
                               new CommandLinePrefs());
@@ -298,7 +287,7 @@ public class Main {
             return false;
         }
 
-        private final List<String> runTranslators = new ArrayList<String>();
+        private final List<String> runTranslators = new ArrayList<>();
     }
 
     static public Set<ProjectTranslator> getProjectTranslators(final Project project) {
@@ -312,13 +301,10 @@ public class Main {
 
         final List<TranslatorPreferences>
                 prefList =
-                Arrays.asList(new DefaultTranslatorPrefs<ProjectTranslator>(
-                        allProjectTranslators),
-                              new JavaPreferences(Preferences.systemRoot().node(
-                                      "/masl/projectTranslators")),
+                Arrays.asList(new DefaultTranslatorPrefs<>(allProjectTranslators),
+                              new JavaPreferences(Preferences.systemRoot().node("/masl/projectTranslators")),
                               new XMLPreferences(topLevelPreferences),
-                              new JavaPreferences(Preferences.userRoot().node(
-                                      "/masl/projectTranslators")),
+                              new JavaPreferences(Preferences.userRoot().node("/masl/projectTranslators")),
                               new PragmaPrefs(project.getPragmas()),
                               new XMLPreferences(customTranslatorXML),
                               new CommandLinePrefs());
@@ -337,7 +323,7 @@ public class Main {
                                                                                                               final Class<? extends TranslatorType> translatorClass,
                                                                                                               final Map<String, Class<? extends TranslatorType>> translatorLookup) {
 
-        final Set<Class<? extends TranslatorType>> translators = new LinkedHashSet<Class<? extends TranslatorType>>();
+        final Set<Class<? extends TranslatorType>> translators = new LinkedHashSet<>();
 
         for (final TranslatorPreferences pref : preferences) {
             if (pref.isOverride()) {
@@ -394,12 +380,10 @@ public class Main {
             }
         }
 
-        final List<Class<? extends TranslatorType>>
-                optionalTranslators =
-                new ArrayList<Class<? extends TranslatorType>>();
-        final Set<String> activeTranslators = new HashSet<String>();
+        final List<Class<? extends TranslatorType>> optionalTranslators = new ArrayList<>();
+        final Set<String> activeTranslators = new HashSet<>();
 
-        final LinkedHashSet<TranslatorType> result = new LinkedHashSet<TranslatorType>();
+        final LinkedHashSet<TranslatorType> result = new LinkedHashSet<>();
         for (final Class<? extends TranslatorType> transClass : translators) {
             if (transClass.getAnnotation(Requires.class) == null) {
                 try {
@@ -456,12 +440,11 @@ public class Main {
         requiredTranslators.add(translator.getName());
     }
 
-    static private int parseDomain(final File modFile) throws Exception {
+    static private int parseInterface(final File modFile) throws Exception {
         final long millis = System.currentTimeMillis();
 
         final Masl masl = new Masl(CommandLine.INSTANCE.getDomainPaths());
-        final Domain domain = masl.parseDomain(modFile);
-        BuildSet.addBuildSet(domain, masl.getBuildSet());
+        final Domain domain = masl.parseInterface(modFile);
 
         if (masl.warningCount() > 0) {
             System.err.println("***" + masl.warningCount() + " Warnings");
@@ -474,21 +457,54 @@ public class Main {
 
             final File dumpDir = new File(CommandLine.INSTANCE.getOutputDirectory());
 
-            if (CommandLine.INSTANCE.getBuildDisable()) {
-                masl.getBuildSet().dump(dumpDir);
-            } else {
-                for (final BuildTranslator buildTranslator : getBuildTranslators()) {
-                    buildTranslator.translate(masl.getBuildSet(), modFile.getParentFile());
+            for (final BuildTranslator buildTranslator : getBuildTranslators()) {
+                buildTranslator.setBuildSet(BuildSet.getBuildSet(domain));
+                if (!CommandLine.INSTANCE.getBuildDisable()) {
+                    buildTranslator.translate(modFile.getParentFile());
                     for (final DomainTranslator translator : translators) {
                         buildTranslator.translateBuild(translator, modFile.getParentFile());
                     }
-                    buildTranslator.dump(dumpDir);
                 }
+                buildTranslator.dump(dumpDir);
             }
         } else {
             System.err.println("***" + masl.errorCount() + " Errors");
         }
-        System.out.println("Total Time: " + (System.currentTimeMillis() - millis) / 1000.0);
+        // System.out.println("Total Time: " + (System.currentTimeMillis() - millis) /
+        // 1000.0);
+        return masl.errorCount();
+    }
+
+    static private int parseDomain(final File modFile) throws Exception {
+        final long millis = System.currentTimeMillis();
+
+        final Masl masl = new Masl(CommandLine.INSTANCE.getDomainPaths());
+        final Domain domain = masl.parseDomain(modFile);
+
+        if (masl.warningCount() > 0) {
+            System.err.println("***" + masl.warningCount() + " Warnings");
+        }
+        if (masl.errorCount() == 0) {
+            final Set<DomainTranslator> translators = getDomainTranslators(domain);
+            for (final DomainTranslator translator : translators) {
+                translator.doTranslation();
+            }
+
+            final File dumpDir = new File(CommandLine.INSTANCE.getOutputDirectory());
+
+            for (final BuildTranslator buildTranslator : getBuildTranslators()) {
+                buildTranslator.setBuildSet(BuildSet.getBuildSet(domain));
+                if (!CommandLine.INSTANCE.getBuildDisable()) {
+                    buildTranslator.translate(modFile.getParentFile());
+                    for (final DomainTranslator translator : translators) {
+                        buildTranslator.translateBuild(translator, modFile.getParentFile());
+                    }
+                }
+                buildTranslator.dump(dumpDir);
+            }
+        } else {
+            System.err.println("***" + masl.errorCount() + " Errors");
+        }
         return masl.errorCount();
     }
 
@@ -497,7 +513,6 @@ public class Main {
 
         final Masl masl = new Masl(CommandLine.INSTANCE.getDomainPaths());
         final Project project = masl.parseProject(prjFile);
-        BuildSet.addBuildSet(project, masl.getBuildSet());
 
         if (masl.warningCount() > 0) {
             System.err.println("***" + masl.warningCount() + " Warnings");
@@ -509,23 +524,19 @@ public class Main {
                 translator.doTranslation();
             }
             final File dumpDir = new File(CommandLine.INSTANCE.getOutputDirectory());
-            if (CommandLine.INSTANCE.getBuildDisable()) {
-                masl.getBuildSet().dump(dumpDir);
-            } else {
-
-                for (final BuildTranslator buildTranslator : getBuildTranslators()) {
-                    buildTranslator.translate(masl.getBuildSet(), prjFile.getParentFile());
+            for (final BuildTranslator buildTranslator : getBuildTranslators()) {
+                buildTranslator.setBuildSet(BuildSet.getBuildSet(project));
+                if (!CommandLine.INSTANCE.getBuildDisable()) {
+                    buildTranslator.translate(prjFile.getParentFile());
                     for (final ProjectTranslator translator : translators) {
                         buildTranslator.translateBuild(translator, prjFile.getParentFile());
                     }
-                    buildTranslator.dump(dumpDir);
                 }
+                buildTranslator.dump(dumpDir);
             }
         } else {
             System.err.println("***" + masl.errorCount() + " Errors");
         }
-
-        System.out.println("Total Time: " + (System.currentTimeMillis() - millis) / 1000.0);
 
         return masl.errorCount();
     }

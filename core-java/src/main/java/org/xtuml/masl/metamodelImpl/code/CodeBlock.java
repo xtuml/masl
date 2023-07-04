@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -36,9 +37,9 @@ public final class CodeBlock extends Statement implements org.xtuml.masl.metamod
     public CodeBlock(final Position position, final boolean topLevel) {
         super(position);
         this.topLevel = topLevel;
-        this.variables = new ArrayList<VariableDefinition>();
-        this.statements = new ArrayList<Statement>();
-        this.exceptionHandlers = new ArrayList<ExceptionHandler>();
+        this.variables = new ArrayList<>();
+        this.statements = new ArrayList<>();
+        this.exceptionHandlers = new ArrayList<>();
     }
 
     public void addExceptionHandler(final ExceptionHandler handler) {
@@ -78,7 +79,7 @@ public final class CodeBlock extends Statement implements org.xtuml.masl.metamod
 
     @Override
     public List<Statement> getChildStatements() {
-        final List<Statement> result = new ArrayList<Statement>();
+        final List<Statement> result = new ArrayList<>();
         result.addAll(statements);
         for (final ExceptionHandler handler : exceptionHandlers) {
             result.addAll(handler.getCode());
@@ -115,8 +116,13 @@ public final class CodeBlock extends Statement implements org.xtuml.masl.metamod
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCodeBlock(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitCodeBlock(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(variables, statements, exceptionHandlers);
     }
 
     private final NameLookup nameLookup = new NameLookup();

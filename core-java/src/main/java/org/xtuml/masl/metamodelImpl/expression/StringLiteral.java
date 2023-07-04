@@ -179,8 +179,8 @@ public class StringLiteral extends LiteralExpression implements org.xtuml.masl.m
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitStringLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitStringLiteral(this);
     }
 
     final private String value;

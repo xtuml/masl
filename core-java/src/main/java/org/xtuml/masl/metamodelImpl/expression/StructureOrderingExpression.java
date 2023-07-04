@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -74,6 +75,16 @@ public class StructureOrderingExpression extends OrderingExpression
             return (isReverse() ? "reverse " : " ") + element.toString();
         }
 
+        @Override
+        public void accept(final ASTNodeVisitor v) {
+            v.visitStructureOrderingComponent(this);
+        }
+
+        @Override
+        public List<ASTNode> children() {
+            return ASTNode.makeChildren();
+        }
+
     }
 
     public StructureOrderingExpression(final Position position,
@@ -81,7 +92,7 @@ public class StructureOrderingExpression extends OrderingExpression
                                        final boolean reverse,
                                        final List<OrderComponent> components) {
         super(position, collection, reverse);
-        this.order = new ArrayList<Component>();
+        this.order = new ArrayList<>();
         for (final OrderComponent component : components) {
             try {
                 addComponent(component);
@@ -129,9 +140,7 @@ public class StructureOrderingExpression extends OrderingExpression
 
         assert basicType instanceof CollectionType;
 
-        final TypeDefinition
-                containedType =
-                basicType.getContainedType().getBasicType().getDefinedType();
+        final TypeDefinition containedType = basicType.getContainedType().getBasicType().getDefinedType();
 
         if (containedType instanceof StructureType contained) {
             final StructureElement elt = contained.getElement(component.getName());
@@ -145,8 +154,13 @@ public class StructureOrderingExpression extends OrderingExpression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitStructureOrderingExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitStructureOrderingExpression(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(super.children(), order);
     }
 
     private final List<Component> order;

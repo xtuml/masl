@@ -36,8 +36,8 @@ import java.util.List;
 public class StructureAggregateTranslator extends ExpressionTranslator {
 
     StructureAggregateTranslator(final StructureAggregate aggregate, final Scope scope, final BasicType requiredType) {
-        final List<org.xtuml.masl.cppgen.Expression> readParams = new ArrayList<org.xtuml.masl.cppgen.Expression>();
-        final List<org.xtuml.masl.cppgen.Expression> writeParams = new ArrayList<org.xtuml.masl.cppgen.Expression>();
+        final List<org.xtuml.masl.cppgen.Expression> readParams = new ArrayList<>();
+        final List<org.xtuml.masl.cppgen.Expression> writeParams = new ArrayList<>();
 
         for (final Expression element : aggregate.getElements()) {
             readParams.add(createTranslator(element, scope).getReadExpression());

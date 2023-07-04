@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -28,6 +29,8 @@ import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.type.AnyInstanceType;
 import org.xtuml.masl.metamodelImpl.type.SequenceType;
+
+import java.util.List;
 
 public class DeleteStatement extends Statement implements org.xtuml.masl.metamodel.code.DeleteStatement {
 
@@ -68,8 +71,13 @@ public class DeleteStatement extends Statement implements org.xtuml.masl.metamod
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDeleteStatement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDeleteStatement(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(instance);
     }
 
 }

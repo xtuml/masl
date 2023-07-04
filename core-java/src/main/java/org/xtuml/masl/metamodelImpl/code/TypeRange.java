@@ -21,8 +21,11 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
+
+import java.util.List;
 
 public class TypeRange extends LoopSpec implements org.xtuml.masl.metamodel.code.LoopSpec.TypeRange {
 
@@ -42,10 +45,15 @@ public class TypeRange extends LoopSpec implements org.xtuml.masl.metamodel.code
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitLoopTypeRange(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitLoopTypeRange(this);
     }
 
     private final BasicType type;
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(type);
+    }
 
 }

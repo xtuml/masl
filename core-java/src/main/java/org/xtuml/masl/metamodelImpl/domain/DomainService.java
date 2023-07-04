@@ -143,8 +143,8 @@ public class DomainService extends Service implements org.xtuml.masl.metamodel.d
     private final Domain domain;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDomainService(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDomainService(this);
     }
 
     private String comment;
@@ -157,4 +157,5 @@ public class DomainService extends Service implements org.xtuml.masl.metamodel.d
     public void setComment(final String comment) {
         this.comment = comment;
     }
+
 }

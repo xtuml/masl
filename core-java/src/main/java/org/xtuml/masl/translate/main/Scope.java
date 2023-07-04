@@ -98,11 +98,9 @@ public final class Scope {
         return par;
     }
 
-    private final Map<VariableDefinition, Expression> variables = new HashMap<VariableDefinition, Expression>();
-    private final Map<ParameterDefinition, Expression> parameters = new HashMap<ParameterDefinition, Expression>();
-    private final Map<FindParameterExpression, Expression>
-            findParameters =
-            new HashMap<FindParameterExpression, Expression>();
+    private final Map<VariableDefinition, Expression> variables = new HashMap<>();
+    private final Map<ParameterDefinition, Expression> parameters = new HashMap<>();
+    private final Map<FindParameterExpression, Expression> findParameters = new HashMap<>();
 
     public void setObjectService(final ObjectService service) {
         objectService = service;

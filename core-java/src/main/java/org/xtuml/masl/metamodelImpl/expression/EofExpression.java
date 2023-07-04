@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -30,8 +31,6 @@ import org.xtuml.masl.metamodelImpl.type.BooleanType;
 import org.xtuml.masl.metamodelImpl.type.DeviceType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class EofExpression extends Expression implements org.xtuml.masl.metamodel.expression.EofExpression {
@@ -91,7 +90,7 @@ public class EofExpression extends Expression implements org.xtuml.masl.metamode
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(device.getFindArguments());
         return params;
 
@@ -99,7 +98,7 @@ public class EofExpression extends Expression implements org.xtuml.masl.metamode
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(device.getConcreteFindParameters());
         return params;
     }
@@ -117,13 +116,13 @@ public class EofExpression extends Expression implements org.xtuml.masl.metamode
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitEofExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitEofExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.singletonList(device);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(device);
     }
 
 }

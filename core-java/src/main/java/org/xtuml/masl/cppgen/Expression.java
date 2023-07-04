@@ -30,15 +30,15 @@ import java.util.Set;
  */
 public abstract class Expression {
 
-    private final Set<CodeFile> dependentHeaders = new HashSet<CodeFile>();
+    private final Set<CodeFile> dependentHeaders = new HashSet<>();
 
     /**
      * Calculates the precedence of the expression. The precedence is used when
-     * determining how to parenthesise a compound expression to maintain
-     * semantics. Precedence is determined according to the table in C++
-     * Programming Language (Third Edition) Stroustrup, Section 6.2, sumarised
-     * below. Expressions which do not appear in the original table, eg constants
-     * and variable references should be allocated precedence 0.
+     * determining how to parenthesise a compound expression to maintain semantics.
+     * Precedence is determined according to the table in C++ Programming Language
+     * (Third Edition) Stroustrup, Section 6.2, sumarised below. Expressions which
+     * do not appear in the original table, eg constants and variable references
+     * should be allocated precedence 0.
      *
      * <p>
      * <table border=1 cellspacing=0 align=center width=75%>
@@ -144,9 +144,9 @@ public abstract class Expression {
      * alignment may be specified to allow correct indentation of the code.
      * <p>
      * <p>
-     * The namespace that the expression is in. This is used to determine
-     * how much scope information is required to uniquely resolve any
-     * names used in the expression.
+     * The namespace that the expression is in. This is used to determine how much
+     * scope information is required to uniquely resolve any names used in the
+     * expression.
      * <p>
      * any tabs or leading space needed for aesthetics
      *
@@ -158,9 +158,9 @@ public abstract class Expression {
      * Returns code representing the expression.
      * <p>
      * <p>
-     * The namespace that the expression is in. This is used to determine
-     * how much scope information is required to uniquely resolve any
-     * names used in the expression.
+     * The namespace that the expression is in. This is used to determine how much
+     * scope information is required to uniquely resolve any names used in the
+     * expression.
      *
      * @return the code for the expression
      */
@@ -169,20 +169,20 @@ public abstract class Expression {
     }
 
     /**
-     * Calculates the set of forward declarations needed to allow this expression
-     * to compile.
+     * Calculates the set of forward declarations needed to allow this expression to
+     * compile.
      *
      * @return forward declarations required
      */
     Set<Declaration> getForwardDeclarations() {
-        return new LinkedHashSet<Declaration>();
+        return new LinkedHashSet<>();
     }
 
     /**
-     * When creating expressions involving templates, additional header files
-     * might be required to resolve the types required by the template
-     * instatiation mechansim. Therefore all additional header files to be
-     * associated with the expression
+     * When creating expressions involving templates, additional header files might
+     * be required to resolve the types required by the template instatiation
+     * mechansim. Therefore all additional header files to be associated with the
+     * expression
      * <p>
      * <p>
      * The header that the expression depends upon

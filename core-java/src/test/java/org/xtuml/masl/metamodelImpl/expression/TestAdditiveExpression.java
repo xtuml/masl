@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,12 +20,12 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.expression;
-
-import junit.framework.TestCase;
 import org.xtuml.masl.error.ErrorCode;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.unittest.ErrorLog;
+
+import junit.framework.TestCase;
 
 public class TestAdditiveExpression extends TestCase {
 
@@ -33,16 +33,11 @@ public class TestAdditiveExpression extends TestCase {
     private static final TestExpressions exprB = TestExpressions.expr2;
     private static final TestTypes typesA = TestTypes.data1;
 
-    public void checkResultType(final Expression lhs,
-                                final Expression rhs,
-                                final BasicType expected,
-                                final boolean expectedAnon) {
+    public void checkResultType(final Expression lhs, final Expression rhs, final BasicType expected,
+            final boolean expectedAnon) {
         ErrorLog.getInstance().reset();
-        final Expression
-                expression =
-                BinaryExpression.create(lhs,
-                                        new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.PLUS),
-                                        rhs);
+        final Expression expression = BinaryExpression.create(lhs,
+                new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.PLUS), rhs);
         assertNotNull(expression);
         final BasicType result = expression.getType();
         assertEquals(expected, result);
@@ -59,8 +54,7 @@ public class TestAdditiveExpression extends TestCase {
     public void checkError(final Expression lhs, final Expression rhs, final ErrorCode... errors) {
         ErrorLog.getInstance().reset();
         assertNull(BinaryExpression.create(lhs,
-                                           new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.PLUS),
-                                           rhs));
+                new BinaryExpression.OperatorRef(null, BinaryExpression.ImplOperator.PLUS), rhs));
 
         ErrorLog.getInstance().checkErrors(errors);
     }

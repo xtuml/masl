@@ -21,12 +21,13 @@
  */
 package org.xtuml.masl.metamodel.project;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.common.PragmaList;
 import org.xtuml.masl.metamodel.domain.Domain;
 
 import java.util.List;
 
-public interface ProjectDomain {
+public interface ProjectDomain extends ASTNode {
 
     String getName();
 

@@ -56,11 +56,11 @@ public class TranslatorParser {
     private final static String OPTION_ATTRIBUTE = "option";
     private final static String VALUE_ATTRIBUTE = "value";
 
-    private final List<String> addList = new ArrayList<String>();
-    private final List<String> skipList = new ArrayList<String>();
-    private final List<String> cmdlineList = new ArrayList<String>();
+    private final List<String> addList = new ArrayList<>();
+    private final List<String> skipList = new ArrayList<>();
+    private final List<String> cmdlineList = new ArrayList<>();
 
-    private final Map<String, Properties> translatorProperties = new HashMap<String, Properties>();
+    private final Map<String, Properties> translatorProperties = new HashMap<>();
 
     private boolean isOverride = false;
     private InputStream xmlStream = null;
@@ -89,7 +89,7 @@ public class TranslatorParser {
     }
 
     public String[] getCmdLineArgs() {
-        final ArrayList<String> cmdLineArgs = new ArrayList<String>();
+        final ArrayList<String> cmdLineArgs = new ArrayList<>();
         for (final String cmdLine : cmdlineList) {
             final StringTokenizer tokeniser = new StringTokenizer(cmdLine);
             while (tokeniser.hasMoreTokens()) {
@@ -275,14 +275,14 @@ public class TranslatorParser {
                 for (int i = 0; i < document.getChildNodes().getLength(); ++i) {
                     final Node curNode = document.getChildNodes().item(i);
                     if (curNode instanceof Element curElem) {
-                      for (int j = 0; j < curElem.getChildNodes().getLength(); ++j) {
+                        for (int j = 0; j < curElem.getChildNodes().getLength(); ++j) {
                             final Node childNode = curElem.getChildNodes().item(j);
                             if (childNode instanceof Element element) {
-                              TranslatorNodeNames.decodeTag(this, element);
+                                TranslatorNodeNames.decodeTag(this, element);
                                 for (int k = 0; k < element.getChildNodes().getLength(); ++k) {
                                     final Node minorNode = element.getChildNodes().item(k);
                                     if (minorNode instanceof Element childElement) {
-                                      TranslatorNodeNames.decodeTag(this, childElement);
+                                        TranslatorNodeNames.decodeTag(this, childElement);
                                     }
                                 }
                             }

@@ -21,7 +21,9 @@
  */
 package org.xtuml.masl.translate.cmake;
 
-public class BuildInterfaceLibrary implements CMakeListsItem {
+import org.xtuml.masl.cppgen.InterfaceLibrary;
+import org.xtuml.masl.translate.cmake.functions.SimpleAddInterfaceLibrary;
+import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,11 +34,11 @@ public class BuildInterfaceLibrary implements CMakeListsItem {
 
     public BuildInterfaceLibrary(final InterfaceLibrary library, final File sourcePath) {
         addLib =
-                new SimpleAddInterfaceLibrary(Utils.getNameArg(library),
+                new SimpleAddInterfaceLibrary(new SingleArgument(library.getName()),
                                               Utils.getPathArgs(Collections.emptyList()),
                                               Utils.getNameArgs(library.getDependencies()),
-                                              library instanceof Library && library.isExport() ?
-                                              exportTarget :
+                                              library.isExport() ?
+                                              new SingleArgument(library.getParent().getName()) :
                                               null,
                                               library.isExport(),
                                               Utils.getPathArgs(library.getPublicHeaders()));
@@ -49,5 +51,4 @@ public class BuildInterfaceLibrary implements CMakeListsItem {
 
     private final SimpleAddInterfaceLibrary addLib;
 
-    private static final SimpleArgument exportTarget = new Variable("MaslExportTarget").getReference();
 }

@@ -79,7 +79,7 @@ public class FunctionInvocationTranslator extends ExpressionTranslator {
 
     private List<Expression> translateArguments(final List<? extends org.xtuml.masl.metamodel.expression.Expression> maslArguments,
                                                 final Scope scope) {
-        final List<Expression> arguments = new ArrayList<Expression>(maslArguments.size());
+        final List<Expression> arguments = new ArrayList<>(maslArguments.size());
 
         for (final org.xtuml.masl.metamodel.expression.Expression maslArgument : maslArguments) {
             arguments.add(createTranslator(maslArgument, scope).getReadExpression());

@@ -21,15 +21,15 @@
  */
 package org.xtuml.masl.metamodelImpl.common;
 
-import org.xtuml.masl.metamodel.DoNothingASTNodeVisitor;
+import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.code.*;
 
-class ReturnCheckVisitor extends DoNothingASTNodeVisitor<Void, Void> {
+class ReturnCheckVisitor extends ASTNodeVisitor {
 
     private boolean hasReturn = false;
 
     @Override
-    public Void visitCaseStatement(final CaseStatement statement, final Void p) throws Exception {
+    public void visitCaseStatement(final CaseStatement statement) {
         // Need to check that all alternatives return a value, and that at least
         // one of the alternatives will be used (in other words, there is an
         // 'others' clause.
@@ -47,11 +47,10 @@ class ReturnCheckVisitor extends DoNothingASTNodeVisitor<Void, Void> {
         }
 
         hasReturn = allAltsReturn && hasOther;
-        return null;
     }
 
     @Override
-    public Void visitCodeBlock(final CodeBlock statement, final Void p) throws Exception {
+    public void visitCodeBlock(final CodeBlock statement) {
         // Check that at least one of the statements is a return
         for (final Statement child : statement.getStatements()) {
             visit(child);
@@ -65,17 +64,16 @@ class ReturnCheckVisitor extends DoNothingASTNodeVisitor<Void, Void> {
         for (final ExceptionHandler handler : statement.getExceptionHandlers()) {
             final ReturnCheckVisitor handlerCheck = new ReturnCheckVisitor();
             for (final Statement child : handler.getCode()) {
-                handlerCheck.visit(child, p);
+                handlerCheck.visit(child);
             }
             allHandlersReturn = allHandlersReturn && handlerCheck.hasReturn;
         }
 
         hasReturn &= allHandlersReturn;
-        return null;
     }
 
     @Override
-    public Void visitIfStatement(final IfStatement statement, final Void p) throws Exception {
+    public void visitIfStatement(final IfStatement statement) {
         boolean allBranchesReturn = true;
         boolean hasElse = false;
 
@@ -91,22 +89,19 @@ class ReturnCheckVisitor extends DoNothingASTNodeVisitor<Void, Void> {
         }
 
         hasReturn = allBranchesReturn && hasElse;
-        return null;
     }
 
     @Override
-    public Void visitReturnStatement(final ReturnStatement statement, final Void p) throws Exception {
+    public void visitReturnStatement(final ReturnStatement statement) {
         hasReturn = true;
-        return null;
     }
 
     @Override
-    public Void visitRaiseStatement(final RaiseStatement statement, final Void p) throws Exception {
+    public void visitRaiseStatement(final RaiseStatement statement) {
         // An exception is as good as a return, as all exception handlers are
         // checked for returns, and if the exeception is propagated all the way
         // out, the return is irrelevant.
         hasReturn = true;
-        return null;
     }
 
     public boolean hasReturn() {

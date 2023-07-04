@@ -33,8 +33,8 @@ public class ThrowImpl extends StatementImpl implements Throw {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitThrow(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitThrow(this);
     }
 
     @Override
@@ -47,6 +47,6 @@ public class ThrowImpl extends StatementImpl implements Throw {
         this.thrownExpression.set((ExpressionImpl) thrownExpression);
     }
 
-    private final ChildNode<ExpressionImpl> thrownExpression = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> thrownExpression = new ChildNode<>(this);
 
 }

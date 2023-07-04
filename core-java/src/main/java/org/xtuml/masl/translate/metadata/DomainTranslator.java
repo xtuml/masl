@@ -22,6 +22,8 @@
 package org.xtuml.masl.translate.metadata;
 
 import org.xtuml.masl.cppgen.*;
+import org.xtuml.masl.metamodel.PreOrderASTNodeVisitor;
+import org.xtuml.masl.metamodel.code.DomainServiceInvocation;
 import org.xtuml.masl.metamodel.code.VariableDefinition;
 import org.xtuml.masl.metamodel.common.ParameterDefinition;
 import org.xtuml.masl.metamodel.common.Service;
@@ -29,6 +31,7 @@ import org.xtuml.masl.metamodel.domain.Domain;
 import org.xtuml.masl.metamodel.domain.DomainService;
 import org.xtuml.masl.metamodel.domain.DomainTerminator;
 import org.xtuml.masl.metamodel.domain.DomainTerminatorService;
+import org.xtuml.masl.metamodel.expression.DomainFunctionInvocation;
 import org.xtuml.masl.metamodel.object.AttributeDeclaration;
 import org.xtuml.masl.metamodel.object.ObjectDeclaration;
 import org.xtuml.masl.metamodel.object.ObjectService;
@@ -39,7 +42,7 @@ import org.xtuml.masl.metamodel.statemodel.State;
 import org.xtuml.masl.metamodel.type.*;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
-import org.xtuml.masl.translate.build.FileGroup;
+import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.main.*;
 import org.xtuml.masl.translate.main.expression.ExpressionTranslator;
 import org.xtuml.masl.translate.main.object.ObjectServiceTranslator;
@@ -48,13 +51,9 @@ import org.xtuml.masl.translate.main.object.StateActionTranslator;
 
 import java.util.*;
 
-import static org.xtuml.masl.translate.metadata.Architecture.*;
-
 @Alias("MetaData")
 @Default
 public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator {
-
-    private final Library commonHeaders;
 
     public static DomainTranslator getInstance(final Domain domain) {
         return getInstance(DomainTranslator.class, domain);
@@ -76,16 +75,20 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                                      "_common_metadata").withCCDefaultExtensions().withDefaultHeaderPath(domain.getName() +
                                                                                                          "_OOA").inBuildSet(
                         mainDomainTranslator.getBuildSet());
-
-        interfaceLibrary =
-                new SharedLibrary(mainDomainTranslator.getLibrary().getName() +
-                                  "_if_metadata").withCCDefaultExtensions().withDefaultHeaderPath(domain.getName() +
-                                                                                                  "_OOA").inBuildSet(
-                        mainDomainTranslator.getBuildSet());
-        interfaceCodeFile = interfaceLibrary.createBodyFile("MetaData__if" + Mangler.mangleFile(domain));
-
         library.addDependency(Architecture.metaDataLib);
-        interfaceLibrary.addDependency(Architecture.metaDataLib);
+
+        if (domain.getPragmas().hasPragma("service_domain")) {
+            interfaceLibrary = library;
+            interfaceCodeFile = null;
+        } else {
+            interfaceLibrary =
+                    new SharedLibrary(mainDomainTranslator.getLibrary().getName() +
+                                      "_if_metadata").withCCDefaultExtensions().withDefaultHeaderPath(domain.getName() +
+                                                                                                      "_OOA").inBuildSet(
+                            mainDomainTranslator.getBuildSet());
+            interfaceCodeFile = interfaceLibrary.createBodyFile("MetaData__if" + Mangler.mangleFile(domain));
+            interfaceLibrary.addDependency(Architecture.metaDataLib);
+        }
 
         headerFile = commonHeaders.createInterfaceHeader("MetaData" + Mangler.mangleFile(domain));
 
@@ -104,7 +107,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     }
 
     private final EnumerationType typeIds;
-    private final Map<TypeDeclaration, Expression> typeIdLookup = new HashMap<TypeDeclaration, Expression>();
+    private final Map<TypeDeclaration, Expression> typeIdLookup = new HashMap<>();
 
     public CodeFile getCodeFile() {
         return codeFile;
@@ -128,13 +131,35 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
     @Override
     public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.DomainTranslator>singletonList(mainDomainTranslator);
+        return Collections.singletonList(mainDomainTranslator);
+    }
+
+    class DomainServiceFinder extends PreOrderASTNodeVisitor {
+        @Override
+        public void visitDomainServiceInvocation(final DomainServiceInvocation node) {
+            final Domain depDomain = node.getService().getDomain();
+            if (depDomain != domain) {
+                library.addDependency(getInstance(node.getService().getDomain()).interfaceLibrary);
+            }
+        }
+
+        @Override
+        public void visitDomainFunctionInvocation(final DomainFunctionInvocation node) {
+            final Domain depDomain = node.getService().getDomain();
+            if (depDomain != domain) {
+                library.addDependency(getInstance(node.getService().getDomain()).interfaceLibrary);
+            }
+        }
+
     }
 
     @Override
     public void translate() {
         addRegistration();
-        translateInterface();
+        if (interfaceCodeFile != null) {
+            translateInterface();
+        }
+        new DomainServiceFinder().visit(domain);
     }
 
     private Expression getEnumMetaData(final TypeDeclaration enumDeclaration,
@@ -143,7 +168,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final Function
                 initMetaData =
                 new Function("get_" + Mangler.mangleName(enumDeclaration) + "_MetaData", namespace);
-        initMetaData.setReturnType(new TypeUsage(enumMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.enumMetaData));
 
         codeFile.addFunctionDeclaration(initMetaData);
         codeFile.addFunctionDefinition(initMetaData);
@@ -154,7 +179,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         final Variable
                 enumTemp =
-                new Variable(new TypeUsage(enumMetaData),
+                new Variable(new TypeUsage(Architecture.enumMetaData),
                              "enumeration",
                              getTypeId(enumerate.getTypeDeclaration()),
                              Literal.createStringLiteral(enumDeclaration.getName()));
@@ -165,10 +190,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                 mainDomainTranslator.getTypes().getEnumerateTranslator(enumerate.getTypeDeclaration());
 
         for (final EnumerateItem element : enumerate.getItems()) {
-            objectBlock.appendStatement(addValue.asFunctionCall(enumTemp.asExpression(),
-                                                                false,
-                                                                getEnumeratorMetaData(element,
-                                                                                      enumTranslator)).asStatement());
+            objectBlock.appendStatement(Architecture.addValue.asFunctionCall(enumTemp.asExpression(),
+                                                                             false,
+                                                                             getEnumeratorMetaData(element,
+                                                                                                   enumTranslator)).asStatement());
         }
         objectBlock.appendStatement(new ReturnStatement(enumTemp.asExpression()));
 
@@ -181,7 +206,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final Function
                 initMetaData =
                 new Function("get_" + Mangler.mangleName(structDeclaration) + "_MetaData", namespace);
-        initMetaData.setReturnType(new TypeUsage(structMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.structMetaData));
 
         codeFile.addFunctionDeclaration(initMetaData);
         codeFile.addFunctionDefinition(initMetaData);
@@ -192,16 +217,16 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         final Variable
                 structTemp =
-                new Variable(new TypeUsage(structMetaData),
+                new Variable(new TypeUsage(Architecture.structMetaData),
                              "structure",
                              getTypeId(struct.getTypeDeclaration()),
                              Literal.createStringLiteral(structDeclaration.getName()));
         objectBlock.appendStatement(structTemp.asStatement());
 
         for (final StructureElement element : struct.getElements()) {
-            objectBlock.appendStatement(addAttribute.asFunctionCall(structTemp.asExpression(),
-                                                                    false,
-                                                                    getElementMetaData(element)).asStatement());
+            objectBlock.appendStatement(Architecture.addAttribute.asFunctionCall(structTemp.asExpression(),
+                                                                                 false,
+                                                                                 getElementMetaData(element)).asStatement());
         }
 
         objectBlock.appendStatement(new ReturnStatement(structTemp.asExpression()));
@@ -217,10 +242,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final Expression getId = mainDomainTranslator.getDomainId();
 
         final Function initMetaData = new Function("initDomainMetaData", namespace);
-        initMetaData.setReturnType(new TypeUsage(domainMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.domainMetaData));
         final Variable
                 interfaceVar =
-                new Variable(new TypeUsage(domainMetaData),
+                new Variable(new TypeUsage(Architecture.domainMetaData),
                              "domain",
                              getId,
                              Literal.createStringLiteral(domain.getName()),
@@ -236,8 +261,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         interfaceCodeFile.addFunctionDefinition(initMetaData);
 
         final Function getMetaData = new Function("getDomainMetaData", namespace);
-        getMetaData.setReturnType(new TypeUsage(domainMetaData, TypeUsage.Reference));
-        final Variable instance = new Variable(new TypeUsage(domainMetaData), "domain", initMetaData.asFunctionCall());
+        getMetaData.setReturnType(new TypeUsage(Architecture.domainMetaData, TypeUsage.Reference));
+        final Variable
+                instance =
+                new Variable(new TypeUsage(Architecture.domainMetaData), "domain", initMetaData.asFunctionCall());
         instance.setStatic(true);
         getMetaData.getCode().appendStatement(instance.asStatement());
         getMetaData.getCode().appendStatement(new ReturnStatement(instance.asExpression()));
@@ -246,7 +273,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         final Expression
                 addDomain =
-                new Function("addDomain").asFunctionCall(processInstance,
+                new Function("addDomain").asFunctionCall(Architecture.processInstance,
                                                          false,
                                                          getId,
                                                          getMetaData.asFunctionPointer());
@@ -259,15 +286,16 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         for (final TypeDeclaration type : domain.getTypes()) {
             if (type.getVisibility() == org.xtuml.masl.metamodel.common.Visibility.PUBLIC) {
                 if (type.getTypeDefinition() instanceof EnumerateType) {
-                    initialisationCode.appendStatement(addEnumerate.asFunctionCall(interfaceInstance,
-                                                                                   false,
-                                                                                   getEnumMetaData(type,
-                                                                                                   interfaceCodeFile,
-                                                                                                   namespace)).asStatement());
+                    initialisationCode.appendStatement(Architecture.addEnumerate.asFunctionCall(interfaceInstance,
+                                                                                                false,
+                                                                                                getEnumMetaData(type,
+                                                                                                                interfaceCodeFile,
+                                                                                                                namespace)).asStatement());
                 } else if (type.getTypeDefinition() instanceof StructureType) {
-                    initialisationCode.appendStatement(addStructure.asFunctionCall(interfaceInstance,
-                                                                                   false,
-                                                                                   getStructureMetaData(type,
+                    initialisationCode.appendStatement(Architecture.addStructure.asFunctionCall(interfaceInstance,
+                                                                                                false,
+                                                                                                getStructureMetaData(
+                                                                                                        type,
                                                                                                         interfaceCodeFile,
                                                                                                         namespace)).asStatement());
                 }
@@ -281,10 +309,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final Expression getId = mainDomainTranslator.getDomainId();
 
         final Function initMetaData = new Function("initDomainMetaData", namespace);
-        initMetaData.setReturnType(new TypeUsage(domainMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.domainMetaData));
         final Variable
                 domainVar =
-                new Variable(new TypeUsage(domainMetaData),
+                new Variable(new TypeUsage(Architecture.domainMetaData),
                              "domain",
                              getId,
                              Literal.createStringLiteral(domain.getName()),
@@ -298,10 +326,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         codeFile.addFunctionDefinition(initMetaData);
 
         final Function getMetaData = new Function("getDomainMetaData", namespace);
-        getMetaData.setReturnType(new TypeUsage(domainMetaData, TypeUsage.Reference));
+        getMetaData.setReturnType(new TypeUsage(Architecture.domainMetaData, TypeUsage.Reference));
         final Variable
                 instanceRef =
-                new Variable(new TypeUsage(domainMetaData), "domain", initMetaData.asFunctionCall());
+                new Variable(new TypeUsage(Architecture.domainMetaData), "domain", initMetaData.asFunctionCall());
         instanceRef.setStatic(true);
         getMetaData.getCode().appendStatement(instanceRef.asStatement());
         getMetaData.getCode().appendStatement(new ReturnStatement(instanceRef.asExpression()));
@@ -310,7 +338,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         final Expression
                 addDomain =
-                new Function("addDomain").asFunctionCall(processInstance,
+                new Function("addDomain").asFunctionCall(Architecture.processInstance,
                                                          false,
                                                          getId,
                                                          getMetaData.asFunctionPointer());
@@ -323,82 +351,85 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         for (final TypeDeclaration type : domain.getTypes()) {
             if (type.getTypeDefinition() instanceof EnumerateType) {
-                initialisationCode.appendStatement(addEnumerate.asFunctionCall(domainInstance,
-                                                                               false,
-                                                                               getEnumMetaData(type,
-                                                                                               codeFile,
-                                                                                               namespace)).asStatement());
+                initialisationCode.appendStatement(Architecture.addEnumerate.asFunctionCall(domainInstance,
+                                                                                            false,
+                                                                                            getEnumMetaData(type,
+                                                                                                            codeFile,
+                                                                                                            namespace)).asStatement());
 
             } else if (type.getTypeDefinition() instanceof StructureType) {
-                initialisationCode.appendStatement(addStructure.asFunctionCall(domainInstance,
-                                                                               false,
-                                                                               getStructureMetaData(type,
-                                                                                                    codeFile,
-                                                                                                    namespace)).asStatement());
+                initialisationCode.appendStatement(Architecture.addStructure.asFunctionCall(domainInstance,
+                                                                                            false,
+                                                                                            getStructureMetaData(type,
+                                                                                                                 codeFile,
+                                                                                                                 namespace)).asStatement());
             }
         }
 
         for (final DomainService service : domain.getServices()) {
-            initialisationCode.appendStatement(addService.asFunctionCall(domainInstance,
-                                                                         false,
-                                                                         getDomainServiceMetaData(service,
-                                                                                                  namespace)).asStatement());
+            initialisationCode.appendStatement(Architecture.addService.asFunctionCall(domainInstance,
+                                                                                      false,
+                                                                                      getDomainServiceMetaData(service,
+                                                                                                               namespace)).asStatement());
         }
 
         for (final RelationshipDeclaration rel : domain.getRelationships()) {
             if (rel instanceof SubtypeRelationshipDeclaration) {
 
-                initialisationCode.appendStatement(addSuperSubtype.asFunctionCall(domainInstance,
-                                                                                  false,
-                                                                                  getDomainRelationshipMetaData(rel,
-                                                                                                                namespace)).asStatement());
+                initialisationCode.appendStatement(Architecture.addSuperSubtype.asFunctionCall(domainInstance,
+                                                                                               false,
+                                                                                               getDomainRelationshipMetaData(
+                                                                                                       rel,
+                                                                                                       namespace)).asStatement());
             } else {
-                initialisationCode.appendStatement(addRelationship.asFunctionCall(domainInstance,
-                                                                                  false,
-                                                                                  getDomainRelationshipMetaData(rel,
-                                                                                                                namespace)).asStatement());
+                initialisationCode.appendStatement(Architecture.addRelationship.asFunctionCall(domainInstance,
+                                                                                               false,
+                                                                                               getDomainRelationshipMetaData(
+                                                                                                       rel,
+                                                                                                       namespace)).asStatement());
 
             }
         }
 
         for (final DomainTerminator terminator : domain.getTerminators()) {
-            initialisationCode.appendStatement(addTerminator.asFunctionCall(domainInstance,
-                                                                            false,
-                                                                            getTerminatorMetaData(terminator,
-                                                                                                  namespace)).asStatement());
+            initialisationCode.appendStatement(Architecture.addTerminator.asFunctionCall(domainInstance,
+                                                                                         false,
+                                                                                         getTerminatorMetaData(
+                                                                                                 terminator,
+                                                                                                 namespace)).asStatement());
 
         }
 
         for (final ObjectDeclaration object : domain.getObjects()) {
-            initialisationCode.appendStatement(addObject.asFunctionCall(domainInstance,
-                                                                        false,
-                                                                        getObjectMetaData(object,
-                                                                                          namespace)).asStatement());
+            initialisationCode.appendStatement(Architecture.addObject.asFunctionCall(domainInstance,
+                                                                                     false,
+                                                                                     getObjectMetaData(object,
+                                                                                                       namespace)).asStatement());
         }
 
     }
 
     private Expression getAddObjRelationship(final RelationshipSpecification spec, final Namespace namespace) {
         if (spec.getRelationship() instanceof SubtypeRelationshipDeclaration) {
-            return objRelMetaData.callConstructor(Literal.createStringLiteral(spec.getRelationship().getName()),
-                                                  spec.getConditional() ? Literal.TRUE : Literal.FALSE,
-                                                  mainDomainTranslator.getObjectTranslator(spec.getDestinationObject()).getObjectId());
+            return Architecture.objRelMetaData.callConstructor(Literal.createStringLiteral(spec.getRelationship().getName()),
+                                                               spec.getConditional() ? Literal.TRUE : Literal.FALSE,
+                                                               mainDomainTranslator.getObjectTranslator(spec.getDestinationObject()).getObjectId());
 
         } else {
-            return objRelMetaData.callConstructor(Literal.createStringLiteral(spec.getRelationship().getName()),
-                                                  Literal.createStringLiteral(spec.getRole()),
-                                                  spec.getCardinality() == MultiplicityType.MANY ?
-                                                  Literal.TRUE :
-                                                  Literal.FALSE,
-                                                  spec.getConditional() ? Literal.TRUE : Literal.FALSE,
-                                                  mainDomainTranslator.getObjectTranslator(spec.getDestinationObject()).getObjectId());
+            return Architecture.objRelMetaData.callConstructor(Literal.createStringLiteral(spec.getRelationship().getName()),
+                                                               Literal.createStringLiteral(spec.getRole()),
+                                                               spec.getCardinality() == MultiplicityType.MANY ?
+                                                               Literal.TRUE :
+                                                               Literal.FALSE,
+                                                               spec.getConditional() ? Literal.TRUE : Literal.FALSE,
+                                                               mainDomainTranslator.getObjectTranslator(spec.getDestinationObject()).getObjectId());
         }
     }
 
     private Expression getAttributeMetaData(final AttributeDeclaration att,
                                             final ObjectTranslator objectTranslator,
                                             final Namespace namespace) {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.add(Literal.createStringLiteral(att.getName()));
         params.add(att.isIdentifier() ? Literal.TRUE : Literal.FALSE);
 
@@ -411,20 +442,22 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         if (att.isReferential()) {
             final Function initMetaData = new Function("get" + Mangler.mangleName(att) + "MetaData", namespace);
-            initMetaData.setReturnType(new TypeUsage(attributeMetaData));
+            initMetaData.setReturnType(new TypeUsage(Architecture.attributeMetaData));
 
             codeFile.addFunctionDeclaration(initMetaData);
             codeFile.addFunctionDefinition(initMetaData);
 
             final CodeBlock block = initMetaData.getCode();
 
-            final Variable attributeTemp = new Variable(new TypeUsage(attributeMetaData), "attribute", params);
+            final Variable
+                    attributeTemp =
+                    new Variable(new TypeUsage(Architecture.attributeMetaData), "attribute", params);
             block.appendStatement(attributeTemp.asStatement());
 
             for (final ReferentialAttributeDefinition refAtt : att.getRefAttDefs()) {
-                block.appendStatement(addReferential.asFunctionCall(attributeTemp.asExpression(),
-                                                                    false,
-                                                                    getRefAttMetaData(refAtt)).asStatement());
+                block.appendStatement(Architecture.addReferential.asFunctionCall(attributeTemp.asExpression(),
+                                                                                 false,
+                                                                                 getRefAttMetaData(refAtt)).asStatement());
 
             }
 
@@ -437,7 +470,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                 final ExpressionTranslator exp = ExpressionTranslator.createTranslator(att.getDefault(), null);
                 params.add(Boost.lexicalCast(new TypeUsage(Std.string), exp.getReadExpression()));
             }
-            final Expression metaData = attributeMetaData.callConstructor(params);
+            final Expression metaData = Architecture.attributeMetaData.callConstructor(params);
             return metaData;
         }
     }
@@ -447,7 +480,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final Expression id = RelationshipTranslator.getInstance(relationship).getRelationshipId();
         if (relationship instanceof NormalRelationshipDeclaration) {
             final NormalRelationshipDeclaration rel = (NormalRelationshipDeclaration) relationship;
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
 
             params.add(id);
             params.add(Literal.createStringLiteral(rel.getName()));
@@ -462,10 +495,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
             params.add(rel.getLeftMult() == MultiplicityType.MANY ? Literal.TRUE : Literal.FALSE);
             params.add(rel.getLeftConditional() ? Literal.TRUE : Literal.FALSE);
 
-            return relationshipMetaData.callConstructor(params);
+            return Architecture.relationshipMetaData.callConstructor(params);
         } else if (relationship instanceof AssociativeRelationshipDeclaration) {
             final AssociativeRelationshipDeclaration rel = (AssociativeRelationshipDeclaration) relationship;
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
 
             params.add(id);
             params.add(Literal.createStringLiteral(rel.getName()));
@@ -482,12 +515,12 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
             params.add(mainDomainTranslator.getObjectTranslator(rel.getAssocObject()).getObjectId());
 
-            return relationshipMetaData.callConstructor(params);
+            return Architecture.relationshipMetaData.callConstructor(params);
         } else {
             final SubtypeRelationshipDeclaration rel = (SubtypeRelationshipDeclaration) relationship;
 
             final Function initMetaData = new Function("get_" + relationship.getName() + "_MetaData", namespace);
-            initMetaData.setReturnType(new TypeUsage(superSubtypeMetaData));
+            initMetaData.setReturnType(new TypeUsage(Architecture.superSubtypeMetaData));
 
             codeFile.addFunctionDeclaration(initMetaData);
             codeFile.addFunctionDefinition(initMetaData);
@@ -496,7 +529,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
             final Variable
                     ssRel =
-                    new Variable(new TypeUsage(superSubtypeMetaData),
+                    new Variable(new TypeUsage(Architecture.superSubtypeMetaData),
                                  "supersub",
                                  id,
                                  Literal.createStringLiteral(rel.getName()),
@@ -504,9 +537,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
             code.appendStatement(ssRel.asStatement());
 
             for (final ObjectDeclaration subtype : rel.getSubtypes()) {
-                code.appendExpression(addSubObject.asFunctionCall(ssRel.asExpression(),
-                                                                  false,
-                                                                  mainDomainTranslator.getObjectTranslator(subtype).getObjectId()));
+                code.appendExpression(Architecture.addSubObject.asFunctionCall(ssRel.asExpression(),
+                                                                               false,
+                                                                               mainDomainTranslator.getObjectTranslator(
+                                                                                       subtype).getObjectId()));
             }
 
             code.appendStatement(new ReturnStatement(ssRel.asExpression()));
@@ -519,13 +553,13 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         return getServiceMetaData(service,
                                   mainDomainTranslator.getServiceTranslator(service).getServiceId(),
                                   service.isExternal() ?
-                                  externalFlag :
-                                  (service.isScenario() ? scenarioFlag : domainServiceFlag),
+                                  Architecture.externalFlag :
+                                  (service.isScenario() ? Architecture.scenarioFlag : Architecture.domainServiceFlag),
                                   namespace);
     }
 
     private Expression getElementMetaData(final StructureElement att) {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.add(Literal.createStringLiteral(att.getName()));
         params.add(Literal.FALSE);
 
@@ -537,12 +571,12 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
             params.add(Boost.lexicalCast(new TypeUsage(Std.string), exp.getReadExpression()));
         }
 
-        return attributeMetaData.callConstructor(params);
+        return Architecture.attributeMetaData.callConstructor(params);
     }
 
     private List<Expression> getEnumeratorMetaData(final EnumerateItem enumerator,
                                                    final EnumerationTranslator enumTranslator) {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.add(new Function("getValue").asFunctionCall(enumTranslator.getEnumerator(enumerator), false));
         params.add(Literal.createStringLiteral(enumerator.getName()));
 
@@ -554,7 +588,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                                         final Namespace namespace) {
 
         final Function initMetaData = new Function("get_" + Mangler.mangleName(event) + "_MetaData", namespace);
-        initMetaData.setReturnType(new TypeUsage(eventMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.eventMetaData));
 
         codeFile.addFunctionDeclaration(initMetaData);
         codeFile.addFunctionDefinition(initMetaData);
@@ -564,13 +598,13 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         Expression type;
         switch (event.getType()) {
             case ASSIGNER:
-                type = assignerEventFlag;
+                type = Architecture.assignerEventFlag;
                 break;
             case NORMAL:
-                type = normalEventFlag;
+                type = Architecture.normalEventFlag;
                 break;
             case CREATION:
-                type = creationEventFlag;
+                type = Architecture.creationEventFlag;
                 break;
             default:
                 type = null;
@@ -580,7 +614,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         final Variable
                 eventTemp =
-                new Variable(new TypeUsage(eventMetaData),
+                new Variable(new TypeUsage(Architecture.eventMetaData),
                              "event",
                              objectTranslator.getEventId(event),
                              parentObjectId,
@@ -589,9 +623,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         eventBlock.appendStatement(eventTemp.asStatement());
 
         for (final ParameterDefinition param : event.getParameters()) {
-            eventBlock.appendStatement(addParameter.asFunctionCall(eventTemp.asExpression(),
-                                                                   false,
-                                                                   TypeTranslator.getParameterMetaData(param)).asStatement());
+            eventBlock.appendStatement(Architecture.addParameter.asFunctionCall(eventTemp.asExpression(),
+                                                                                false,
+                                                                                TypeTranslator.getParameterMetaData(
+                                                                                        param)).asStatement());
         }
 
         eventBlock.appendStatement(new ReturnStatement(eventTemp.asExpression()));
@@ -605,7 +640,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         final Function initMetaData = new Function("getMetaData", objNamespace);
 
-        initMetaData.setReturnType(new TypeUsage(objectMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.objectMetaData));
 
         codeFile.addFunctionDeclaration(initMetaData);
         codeFile.addFunctionDefinition(initMetaData);
@@ -615,51 +650,51 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final ObjectTranslator objectTranslator = mainDomainTranslator.getObjectTranslator(object);
         final Variable
                 objectTemp =
-                new Variable(new TypeUsage(objectMetaData),
+                new Variable(new TypeUsage(Architecture.objectMetaData),
                              "object",
                              objectTranslator.getObjectId(),
                              Literal.createStringLiteral(object.getName()),
-                             Literal.createStringLiteral(object.getKeyLetters()));
+                             Literal.createStringLiteral(object.getName()));
         objectBlock.appendStatement(objectTemp.asStatement());
 
         for (final AttributeDeclaration att : object.getAttributes()) {
-            objectBlock.appendStatement(addAttribute.asFunctionCall(objectTemp.asExpression(),
-                                                                    false,
-                                                                    getAttributeMetaData(att,
-                                                                                         objectTranslator,
-                                                                                         objNamespace)).asStatement());
+            objectBlock.appendStatement(Architecture.addAttribute.asFunctionCall(objectTemp.asExpression(),
+                                                                                 false,
+                                                                                 getAttributeMetaData(att,
+                                                                                                      objectTranslator,
+                                                                                                      objNamespace)).asStatement());
 
         }
 
         for (final RelationshipSpecification rel : object.getRelationships()) {
-            objectBlock.appendStatement(addRelationship.asFunctionCall(objectTemp.asExpression(),
-                                                                       false,
-                                                                       getAddObjRelationship(rel,
-                                                                                             objNamespace)).asStatement());
+            objectBlock.appendStatement(Architecture.addRelationship.asFunctionCall(objectTemp.asExpression(),
+                                                                                    false,
+                                                                                    getAddObjRelationship(rel,
+                                                                                                          objNamespace)).asStatement());
         }
 
         for (final ObjectService service : object.getServices()) {
-            objectBlock.appendStatement(addService.asFunctionCall(objectTemp.asExpression(),
-                                                                  false,
-                                                                  getObjectServiceMetaData(service,
-                                                                                           objNamespace)).asStatement());
+            objectBlock.appendStatement(Architecture.addService.asFunctionCall(objectTemp.asExpression(),
+                                                                               false,
+                                                                               getObjectServiceMetaData(service,
+                                                                                                        objNamespace)).asStatement());
         }
 
         for (final State state : object.getStates()) {
-            objectBlock.appendStatement(addState.asFunctionCall(objectTemp.asExpression(),
-                                                                false,
-                                                                getStateMetaData(state,
-                                                                                 objectTranslator,
-                                                                                 objNamespace)).asStatement());
+            objectBlock.appendStatement(Architecture.addState.asFunctionCall(objectTemp.asExpression(),
+                                                                             false,
+                                                                             getStateMetaData(state,
+                                                                                              objectTranslator,
+                                                                                              objNamespace)).asStatement());
 
         }
 
         for (final EventDeclaration event : object.getAllEvents()) {
-            objectBlock.appendStatement(addEvent.asFunctionCall(objectTemp.asExpression(),
-                                                                false,
-                                                                getEventMetaData(event,
-                                                                                 objectTranslator,
-                                                                                 objNamespace)).asStatement());
+            objectBlock.appendStatement(Architecture.addEvent.asFunctionCall(objectTemp.asExpression(),
+                                                                             false,
+                                                                             getEventMetaData(event,
+                                                                                              objectTranslator,
+                                                                                              objNamespace)).asStatement());
         }
 
         objectBlock.appendStatement(new ReturnStatement(objectTemp.asExpression()));
@@ -671,7 +706,9 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     private Expression getObjectServiceMetaData(final ObjectService service, final Namespace namespace) {
         return getServiceMetaData(service,
                                   ObjectServiceTranslator.getInstance(service).getServiceId(),
-                                  service.isInstance() ? instanceServiceFlag : objectServiceFlag,
+                                  service.isInstance() ?
+                                  Architecture.instanceServiceFlag :
+                                  Architecture.objectServiceFlag,
                                   namespace);
     }
 
@@ -697,14 +734,14 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                                           final Expression serviceType,
                                           final Namespace namespace) {
         final Function initMetaData = new Function("get_" + Mangler.mangleName(service) + "_MetaData", namespace);
-        initMetaData.setReturnType(new TypeUsage(serviceMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.serviceMetaData));
 
         codeFile.addFunctionDeclaration(initMetaData);
         codeFile.addFunctionDefinition(initMetaData);
 
         final CodeBlock serviceBlock = initMetaData.getCode();
 
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.add(serviceId);
         params.add(serviceType);
         params.add(Literal.createStringLiteral(service.getName()));
@@ -713,7 +750,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
             params.add(TypeTranslator.getTypeMetaData(service.getReturnType()));
         }
 
-        final List<Expression> lines = new ArrayList<Expression>();
+        final List<Expression> lines = new ArrayList<>();
         findCodeLines(lines, service.getCode());
         final Variable
                 linesVar =
@@ -728,20 +765,22 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         params.add(Literal.createStringLiteral(service.getFileName() == null ? "" : service.getFileName()));
         params.add(Literal.createStringLiteral(service.getFileHash() == null ? "" : service.getFileHash()));
 
-        final Variable serviceTemp = new Variable(new TypeUsage(serviceMetaData), "service", params);
+        final Variable serviceTemp = new Variable(new TypeUsage(Architecture.serviceMetaData), "service", params);
 
         serviceBlock.appendStatement(serviceTemp.asStatement());
 
         for (final ParameterDefinition param : service.getParameters()) {
-            serviceBlock.appendStatement(addParameter.asFunctionCall(serviceTemp.asExpression(),
-                                                                     false,
-                                                                     TypeTranslator.getParameterMetaData(param)).asStatement());
+            serviceBlock.appendStatement(Architecture.addParameter.asFunctionCall(serviceTemp.asExpression(),
+                                                                                  false,
+                                                                                  TypeTranslator.getParameterMetaData(
+                                                                                          param)).asStatement());
         }
 
         for (final VariableDefinition variable : service.getLocalVariables()) {
-            serviceBlock.appendStatement(addLocalVar.asFunctionCall(serviceTemp.asExpression(),
-                                                                    false,
-                                                                    TypeTranslator.getLocalVarMetaData(variable)).asStatement());
+            serviceBlock.appendStatement(Architecture.addLocalVar.asFunctionCall(serviceTemp.asExpression(),
+                                                                                 false,
+                                                                                 TypeTranslator.getLocalVarMetaData(
+                                                                                         variable)).asStatement());
         }
 
         serviceBlock.appendStatement(new ReturnStatement(serviceTemp.asExpression()));
@@ -754,7 +793,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                                         final Namespace namespace) {
 
         final Function initMetaData = new Function("get_" + Mangler.mangleName(state) + "_MetaData", namespace);
-        initMetaData.setReturnType(new TypeUsage(stateMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.stateMetaData));
 
         codeFile.addFunctionDeclaration(initMetaData);
         codeFile.addFunctionDefinition(initMetaData);
@@ -766,30 +805,30 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         Expression type;
         switch (state.getType()) {
             case ASSIGNER:
-                type = assignerStateFlag;
+                type = Architecture.assignerStateFlag;
                 break;
             case ASSIGNER_START:
-                type = startStateFlag;
+                type = Architecture.startStateFlag;
                 break;
             case NORMAL:
-                type = normalStateFlag;
+                type = Architecture.normalStateFlag;
                 break;
             case CREATION:
-                type = creationStateFlag;
+                type = Architecture.creationStateFlag;
                 break;
             case TERMINAL:
-                type = terminalStateFlag;
+                type = Architecture.terminalStateFlag;
                 break;
             default:
                 type = null;
         }
 
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.add(mainActionTranslator.getStateId());
         params.add(type);
         params.add(Literal.createStringLiteral(state.getName()));
 
-        final List<Expression> lines = new ArrayList<Expression>();
+        final List<Expression> lines = new ArrayList<>();
         findCodeLines(lines, state.getCode());
         final Variable
                 linesVar =
@@ -805,19 +844,21 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
         params.add(Literal.createStringLiteral(state.getFileHash() == null ? "" : state.getFileHash()));
 
-        final Variable stateTemp = new Variable(new TypeUsage(stateMetaData), "state", params);
+        final Variable stateTemp = new Variable(new TypeUsage(Architecture.stateMetaData), "state", params);
         stateBlock.appendStatement(stateTemp.asStatement());
 
         for (final ParameterDefinition param : state.getParameters()) {
-            stateBlock.appendStatement(addParameter.asFunctionCall(stateTemp.asExpression(),
-                                                                   false,
-                                                                   TypeTranslator.getParameterMetaData(param)).asStatement());
+            stateBlock.appendStatement(Architecture.addParameter.asFunctionCall(stateTemp.asExpression(),
+                                                                                false,
+                                                                                TypeTranslator.getParameterMetaData(
+                                                                                        param)).asStatement());
         }
 
         for (final VariableDefinition variable : state.getLocalVariables()) {
-            stateBlock.appendStatement(addLocalVar.asFunctionCall(stateTemp.asExpression(),
-                                                                  false,
-                                                                  TypeTranslator.getLocalVarMetaData(variable)).asStatement());
+            stateBlock.appendStatement(Architecture.addLocalVar.asFunctionCall(stateTemp.asExpression(),
+                                                                               false,
+                                                                               TypeTranslator.getLocalVarMetaData(
+                                                                                       variable)).asStatement());
         }
 
         stateBlock.appendStatement(new ReturnStatement(stateTemp.asExpression()));
@@ -830,7 +871,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final Namespace termNamespace = new Namespace(Mangler.mangleName(terminator), namespace);
 
         final Function initMetaData = new Function("getMetaData", termNamespace);
-        initMetaData.setReturnType(new TypeUsage(terminatorMetaData));
+        initMetaData.setReturnType(new TypeUsage(Architecture.terminatorMetaData));
 
         codeFile.addFunctionDeclaration(initMetaData);
         codeFile.addFunctionDefinition(initMetaData);
@@ -840,18 +881,18 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final TerminatorTranslator termTranslator = mainDomainTranslator.getTerminatorTranslator(terminator);
         final Variable
                 termTemp =
-                new Variable(new TypeUsage(terminatorMetaData),
+                new Variable(new TypeUsage(Architecture.terminatorMetaData),
                              "terminator",
                              termTranslator.getTerminatorId(),
                              Literal.createStringLiteral(terminator.getName()),
-                             Literal.createStringLiteral(terminator.getKeyLetters()));
+                             Literal.createStringLiteral(terminator.getName()));
         termBlock.appendStatement(termTemp.asStatement());
 
         for (final DomainTerminatorService service : terminator.getServices()) {
-            termBlock.appendStatement(addService.asFunctionCall(termTemp.asExpression(),
-                                                                false,
-                                                                getTerminatorServiceMetaData(service,
-                                                                                             termNamespace)).asStatement());
+            termBlock.appendStatement(Architecture.addService.asFunctionCall(termTemp.asExpression(),
+                                                                             false,
+                                                                             getTerminatorServiceMetaData(service,
+                                                                                                          termNamespace)).asStatement());
 
         }
 
@@ -864,7 +905,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     private Expression getTerminatorServiceMetaData(final DomainTerminatorService service, final Namespace namespace) {
         return getServiceMetaData(service,
                                   TerminatorServiceTranslator.getInstance(service).getServiceId(),
-                                  terminatorServiceFlag,
+                                  Architecture.terminatorServiceFlag,
                                   namespace);
     }
 
@@ -873,6 +914,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     private final Library library;
 
     private final Library interfaceLibrary;
+    private final Library commonHeaders;
 
     private final CodeFile codeFile;
 

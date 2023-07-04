@@ -72,8 +72,8 @@ public class NullLiteral extends LiteralExpression implements org.xtuml.masl.met
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitNullLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitNullLiteral(this);
     }
 
     private final BasicType type;

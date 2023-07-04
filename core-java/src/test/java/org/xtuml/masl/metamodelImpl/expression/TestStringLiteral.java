@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,11 +20,11 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.expression;
-
-import junit.framework.TestCase;
 import org.xtuml.masl.error.ErrorCode;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.unittest.ErrorLog;
+
+import junit.framework.TestCase;
 
 public class TestStringLiteral extends TestCase {
 

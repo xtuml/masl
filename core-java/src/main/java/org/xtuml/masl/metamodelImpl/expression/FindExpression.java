@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -31,7 +32,6 @@ import org.xtuml.masl.metamodelImpl.type.CollectionType;
 import org.xtuml.masl.metamodelImpl.type.InstanceType;
 import org.xtuml.masl.metamodelImpl.type.SetType;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -192,13 +192,13 @@ public class FindExpression extends Expression implements org.xtuml.masl.metamod
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitFindExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitFindExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(collection, condition);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(collection, condition);
     }
 
 }

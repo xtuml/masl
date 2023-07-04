@@ -317,8 +317,8 @@ public class SqliteTenaryRelationshipToTableTranslator implements TenaryRelation
 
     /**
      * When generating the code to insert into the cached set of containers data
-     * extracted from a row in the database, the code is always the same.
-     * Therefore encapsulate this block of generated code into this helper method.
+     * extracted from a row in the database, the code is always the same. Therefore
+     * encapsulate this block of generated code into this helper method.
      * <p>
      * <p>
      * insert all generated code into this codeBlock
@@ -431,7 +431,7 @@ public class SqliteTenaryRelationshipToTableTranslator implements TenaryRelation
                                            final String selectColumn2,
                                            final String whereColumnName,
                                            final Variable whereColumnVar) {
-        final List<Expression> streamQueryExprList = new ArrayList<Expression>();
+        final List<Expression> streamQueryExprList = new ArrayList<>();
         streamQueryExprList.add(queryVar.asExpression());
         streamQueryExprList.add(Literal.createStringLiteral("SELECT " +
                                                             selectColumn1 +

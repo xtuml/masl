@@ -24,23 +24,30 @@ package org.xtuml.masl.translate.cmake;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.xtuml.masl.CommandLine;
-import org.xtuml.masl.cppgen.*;
+import org.xtuml.masl.cppgen.ArchiveLibrary;
+import org.xtuml.masl.cppgen.Executable;
+import org.xtuml.masl.cppgen.InterfaceLibrary;
+import org.xtuml.masl.cppgen.SharedLibrary;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.BuildTranslator;
 import org.xtuml.masl.translate.Default;
-import org.xtuml.masl.translate.build.BuildSet;
-import org.xtuml.masl.translate.build.WriteableFile;
+import org.xtuml.masl.translate.building.BuildSet;
+import org.xtuml.masl.translate.building.FileGroup;
+import org.xtuml.masl.translate.building.WriteableFile;
+import org.xtuml.masl.translate.cmake.language.TemplateSubtitutionPlaceholder;
+import org.xtuml.masl.translate.cmake.language.arguments.CompoundArgument;
 import org.xtuml.masl.translate.cmake.language.arguments.QuotedArgument;
 import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 import org.xtuml.masl.translate.cmake.language.commands.Command;
+import org.xtuml.masl.translate.cmake.language.commands.SetVariable;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.lang.Class;
 
 @Alias("cmake")
 @Default
@@ -50,61 +57,68 @@ public class Translator extends BuildTranslator {
     }
 
     @Override
-    public void translate(final BuildSet buildSet, final File sourceDirectory) {
-        this.buildSet = buildSet;
-
-        for (final File dependency : buildSet.getFileDependents()) {
-            try {
-                depstxt.getBuffer().append(dependency.getCanonicalPath() + "\n");
-            } catch (IOException e) {
-                depstxt.getBuffer().append(dependency.getAbsolutePath() + "\n");
-            }
-        }
+    public void translate(final File sourceDirectory) {
+        final Section projectSetup = new Section();
+        final Section exports = new Section("Export", '-');
 
         final Section archives = new Section("Archives", '-');
         final Section libraries = new Section("Libraries", '-');
         final Section executables = new Section("Executables", '-');
+        final Section dependencies = new Section();
 
-        // Turn off compiler warnings... this is generated code, we know what we're doing. Honest.
-        cmakelists.add(new Command("add_compile_options", new QuotedArgument("-w")));
-
-        // Newer compilers are picky about template function specialization order - allow the old style until we can fix it properly
-        cmakelists.add(new Command("add_compile_options", new QuotedArgument("-fpermissive")));
-        cmakelists.add(new Command("set",
-                                   Lists.newArrayList(new SingleArgument("CMAKE_SHARED_LINKER_FLAGS"),
-                                                      new QuotedArgument("-Wl,--no-as-needed"))));
-        cmakelists.add(new Command("set",
-                                   Lists.newArrayList(new SingleArgument("CMAKE_EXE_LINKER_FLAGS"),
-                                                      new QuotedArgument("-Wl,--no-as-needed"))));
-        // Assume we need boost...
-        cmakelists.add(new Command("find_package",
-                                   Lists.newArrayList(new SingleArgument("Boost"),
-                                                      new SingleArgument("REQUIRED"),
-                                                      new SingleArgument("QUIET")
-                                                      // workaround for cmake Issue #0016057 need to specify at least one component for Boost::boost target to be set up - should be fixed in cmake 3.6
-                                           ,
-                                                      new SingleArgument("COMPONENTS"),
-                                                      new SingleArgument("system"))));
-
+        cmakelists.add(projectSetup);
         cmakelists.add(archives);
         cmakelists.add(libraries);
         cmakelists.add(executables);
+        cmakelists.add(exports);
 
-        for (final ArchiveLibrary lib : Iterables.filter(buildSet.getFileGroups(), ArchiveLibrary.class)) {
+        projectSetup.add(new Command("cmake_minimum_required", new CompoundArgument("VERSION", "3.9")));
+        final String name = getBuildSet().getName();
+        projectSetup.add(new Command("project", name));
+
+        projectSetup.add(new SetVariable("PROJECT_VERSION", "${CONAN_PACKAGE_VERSION}"));
+        projectSetup.add(new SetVariable(name + "_VERSION", "${PROJECT_VERSION}"));
+        projectSetup.add(new Command("find_package", "SimpleAdd"));
+
+        // Turn off compiler warnings... this is generated code, we know what we're
+        // doing. Honest.
+        projectSetup.add(new Command("add_compile_options", new QuotedArgument("-w")));
+
+        // Newer compilers are picky about template function specialization order -
+        // allow the old style until we can fix it properly
+        projectSetup.add(new Command("add_compile_options", new QuotedArgument("-fpermissive")));
+
+        projectSetup.add(dependencies);
+
+        final Set<BuildSet> buildSets = new LinkedHashSet<>();
+
+        for (final ArchiveLibrary lib : Iterables.filter(getBuildSet().getFileGroups(), ArchiveLibrary.class)) {
             archives.add(new BuildArchiveLibrary(lib, srcPath));
+            buildSets.addAll(lib.getDependencies().stream().map(fg -> fg.getParent()).collect(Collectors.toSet()));
         }
 
-        for (final SharedLibrary lib : Iterables.filter(buildSet.getFileGroups(), SharedLibrary.class)) {
+        for (final SharedLibrary lib : Iterables.filter(getBuildSet().getFileGroups(), SharedLibrary.class)) {
             libraries.add(new BuildSharedLibrary(lib, srcPath));
+            buildSets.addAll(lib.getDependencies().stream().map(fg -> fg.getParent()).collect(Collectors.toSet()));
         }
 
-        for (final InterfaceLibrary lib : Iterables.filter(buildSet.getFileGroups(), InterfaceLibrary.class)) {
+        for (final InterfaceLibrary lib : Iterables.filter(getBuildSet().getFileGroups(), InterfaceLibrary.class)) {
             libraries.add(new BuildInterfaceLibrary(lib, srcPath));
+            buildSets.addAll(lib.getDependencies().stream().map(fg -> fg.getParent()).collect(Collectors.toSet()));
         }
 
-        for (final Executable exe : Iterables.filter(buildSet.getFileGroups(), Executable.class)) {
+        for (final Executable exe : Iterables.filter(getBuildSet().getFileGroups(), Executable.class)) {
             executables.add(new BuildExecutable(exe, srcPath));
+            buildSets.addAll(exe.getDependencies().stream().map(fg -> fg.getParent()).collect(Collectors.toSet()));
         }
+
+        buildSets.stream().filter(bs -> bs != null &&
+                                        bs != getBuildSet() &&
+                                        bs.getName() != null).map(BuildSet::getPackage).distinct().forEach(pkg -> {
+            dependencies.add(new Command("if", new CompoundArgument("NOT", pkg + "_FOUND")));
+            dependencies.add(new Command("find_package", new CompoundArgument(pkg, "CONFIG", "QUIET")));
+            dependencies.add(new Command("endif"));
+        });
 
         final File customInclude = new File(sourceDirectory, "custom/custom.cmake");
 
@@ -119,6 +133,20 @@ public class Translator extends BuildTranslator {
                                        Lists.newArrayList(Utils.getPathArg(customIncludeGenFolder.getAbsoluteFile()),
                                                           new SingleArgument("OPTIONAL"))));
         }
+        exports.add(new Command("simple_package_config"));
+
+        final FileGroup buildFiles = FileGroup.getFileGroup("cmakeBuildFiles");
+        buildFiles.addFile(cmakelists);
+
+        final CMakeLists template = new CMakeLists("cmake/" + name + "Config.cmake.in");
+        template.add(new TemplateSubtitutionPlaceholder("PACKAGE_INIT"));
+        template.add(dependencies);
+        template.add(new Command("include", "${CMAKE_CURRENT_LIST_DIR}/" + name + "Extras.cmake", "OPTIONAL"));
+        template.add(new Command("include", "${CMAKE_CURRENT_LIST_DIR}/" + name + "Targets.cmake"));
+
+        buildFiles.addFile(template);
+
+        getBuildSet().addFileGroup(buildFiles);
 
     }
 
@@ -130,20 +158,12 @@ public class Translator extends BuildTranslator {
                     buildTransClass =
                     Class.forName(parentClass.getPackage().getName() + ".cmake." + parentClass.getSimpleName());
 
-            System.out.println("Translating cmake " + parent.getName() + ".");
             final long millis = System.currentTimeMillis();
 
             buildTransClass.getConstructor(parentClass, CMakeLists.class).newInstance(parent, cmakelists);
 
-            System.out.println("Translated  cmake " +
-                               parent.getName() +
-                               " (" +
-                               (System.currentTimeMillis() - millis) / 1000.0 +
-                               "secs)");
-
         } catch (final ClassNotFoundException e) {
-            // System.out.println("Warning : imake translator not found for " +
-            // parentClass);
+            // ignore
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -153,25 +173,21 @@ public class Translator extends BuildTranslator {
     @Override
     public void dump(final File directory) {
         try {
-            cmakelists.writeToFile(directory);
-            depstxt.writeToFile(directory);
-
             final File srcDir = new File(directory, srcPath.getPath());
             final File includeDir = new File(directory, includePath.getPath());
 
             final Set<WriteableFile>
                     files =
-                    buildSet.getFileGroups().stream().flatMap(g -> g.getFiles().stream()).filter(f -> f instanceof WriteableFile).map(
+                    getBuildSet().getFileGroups().stream().flatMap(g -> g.getFiles().stream()).filter(f -> f instanceof WriteableFile).map(
                             f -> (WriteableFile) f).collect(Collectors.toSet());
 
             for (final WriteableFile codeFile : files) {
                 final Writer newFileCode = new StringWriter();
                 codeFile.writeCode(newFileCode);
                 final File
-                        outFile =
-                        new File((codeFile instanceof CodeFile && ((CodeFile) codeFile).isPublicHeader()) ?
-                                 includeDir :
-                                 srcDir, codeFile.getFile().getPath());
+                        dumpDir =
+                        codeFile.isPublicHeader() ? includeDir : (codeFile.isSourceFile() ? srcDir : directory);
+                final File outFile = new File(dumpDir, codeFile.getFile().getPath());
                 BuildSet.updateFile(outFile, newFileCode);
 
             }
@@ -182,9 +198,7 @@ public class Translator extends BuildTranslator {
     }
 
     private final CMakeLists cmakelists = new CMakeLists();
-    private final TextFile depstxt = new TextFile(null, "dependencies.txt");
 
-    private BuildSet buildSet;
     private final File srcPath = new File("src");
     private final File includePath = new File("include");
 

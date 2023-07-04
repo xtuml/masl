@@ -58,7 +58,7 @@ public abstract class CallExpression extends Expression {
                 final DomainService
                         matchingService =
                         service.getCallable(position, ServiceOverload.ServiceType.Function, args);
-                final List<Expression> newArgs = new ArrayList<Expression>();
+                final List<Expression> newArgs = new ArrayList<>();
                 for (int i = 0; i < args.size(); ++i) {
                     if (args.get(i) != null) {
                         newArgs.add(args.get(i).resolve(matchingService.getParameters().get(i).getType()));
@@ -73,7 +73,7 @@ public abstract class CallExpression extends Expression {
                 final DomainTerminatorService
                         matchingService =
                         service.getCallable(position, ServiceOverload.ServiceType.Function, args);
-                final List<Expression> newArgs = new ArrayList<Expression>();
+                final List<Expression> newArgs = new ArrayList<>();
                 for (int i = 0; i < args.size(); ++i) {
                     if (args.get(i) != null) {
                         newArgs.add(args.get(i).resolve(matchingService.getParameters().get(i).getType()));
@@ -89,7 +89,7 @@ public abstract class CallExpression extends Expression {
 
                 final Expression instance = service.getLhs();
 
-                final List<Expression> newArgs = new ArrayList<Expression>();
+                final List<Expression> newArgs = new ArrayList<>();
                 for (int i = 0; i < args.size(); ++i) {
                     if (args.get(i) != null) {
                         newArgs.add(args.get(i).resolve(matchingService.getParameters().get(i).getType()));

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.common;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class PragmaDefinition implements org.xtuml.masl.metamodel.common.PragmaD
 
     @Override
     public List<String> getValues() {
-        return new ArrayList<String>(values);
+        return new ArrayList<>(values);
     }
 
     @Override
@@ -52,8 +53,13 @@ public class PragmaDefinition implements org.xtuml.masl.metamodel.common.PragmaD
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitPragmaDefinition(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitPragmaDefinition(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

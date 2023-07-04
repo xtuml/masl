@@ -63,8 +63,8 @@ public class RelationshipTranslator {
 
     /**
      * The actual C++ class that is generated to implement the relationship Mapper
-     * Class needs to be accessed so that the MASL Object code generation
-     * component can utilise it during its operation.
+     * Class needs to be accessed so that the MASL Object code generation component
+     * can utilise it during its operation.
      *
      * @return the actual C++ relationship Mapper class
      */
@@ -74,8 +74,8 @@ public class RelationshipTranslator {
 
     /**
      * The actual C++ class that is generated to implement the relationship
-     * MapperSQL Class needs to be accessed so that the MASL Object code
-     * generation component can utilise it during its operation.
+     * MapperSQL Class needs to be accessed so that the MASL Object code generation
+     * component can utilise it during its operation.
      *
      * @return the actual C++ relationship MapperSQL class
      */
@@ -87,9 +87,9 @@ public class RelationshipTranslator {
      * For subtypeRelationship declarations multiple C++ Mapper classes are
      * generated, one for each supertype/subtype pair (@see
      * SubTypeRelationshipMapperSqlClass). The actual C++ class generated needs to
-     * be accessed so that the MASL Object code generation component can utilise
-     * it during its operation. Therefore return this class for the parameter
-     * values specified.
+     * be accessed so that the MASL Object code generation component can utilise it
+     * during its operation. Therefore return this class for the parameter values
+     * specified.
      * <p>
      * <p>
      * the supertype object for the required relationship
@@ -107,17 +107,16 @@ public class RelationshipTranslator {
      * For subtypeRelationship declarations multiple C++ MapperSQL classes are
      * generated, one for each supertype/subtype pair (@see
      * SubTypeRelationshipMapperSqlClass). The actual C++ class generated needs to
-     * be accessed so that the MASL Object code generation component can utilise
-     * it during its operation. Therefore return this class for the parameter
-     * values specified.
+     * be accessed so that the MASL Object code generation component can utilise it
+     * during its operation. Therefore return this class for the parameter values
+     * specified.
      * <p>
      * <p>
      * the supertype object for the required relationship
      * <p>
      * the derived object for the required relationship
      *
-     * @return the C++ MapperSQL Class corresponding to the pair of supplied
-     * objects
+     * @return the C++ MapperSQL Class corresponding to the pair of supplied objects
      */
     Class getSuperToSubtypeRelationshipMapperSqlClass(final ObjectDeclaration supertypeObjDecl,
                                                       final ObjectDeclaration subtypeObjDecl) {

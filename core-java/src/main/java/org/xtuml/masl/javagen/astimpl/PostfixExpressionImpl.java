@@ -34,8 +34,8 @@ class PostfixExpressionImpl extends ExpressionImpl implements PostfixExpression 
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitPostfixExpression(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitPostfixExpression(this);
     }
 
     @Override
@@ -68,7 +68,7 @@ class PostfixExpressionImpl extends ExpressionImpl implements PostfixExpression 
         return 15; // Java in a Nutshell Operator Summary Table
     }
 
-    private final ChildNode<ExpressionImpl> expression = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> expression = new ChildNode<>(this);
 
     Operator operator;
 }

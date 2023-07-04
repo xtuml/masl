@@ -55,8 +55,7 @@ abstract class Definition {
     }
 
     /**
-     * Calculates the set of forward declarations needed to compile this
-     * definition
+     * Calculates the set of forward declarations needed to compile this definition
      *
      * @return the required forward declarations
      */
@@ -70,7 +69,7 @@ abstract class Definition {
         if (declaration.getUsageIncludes().size() == 0) {
             return declaration.getForwardDeclarations();
         } else {
-            return new LinkedHashSet<Declaration>();
+            return new LinkedHashSet<>();
         }
     }
 
@@ -86,7 +85,7 @@ abstract class Definition {
         // this
         // case we need to have the same include files as the declaration
         // would have needed.
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
         if (declaration.getUsageIncludes().size() == 0) {
             result.addAll(declaration.getIncludes());
         } else {

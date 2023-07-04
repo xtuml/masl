@@ -22,9 +22,9 @@
 package org.xtuml.masl.javagen;
 
 import org.xtuml.masl.javagen.ast.def.CompilationUnit;
-import org.xtuml.masl.translate.build.FileGroup;
-import org.xtuml.masl.translate.build.ReferencedFile;
-import org.xtuml.masl.translate.build.WriteableFile;
+import org.xtuml.masl.translate.building.FileGroup;
+import org.xtuml.masl.translate.building.ReferencedFile;
+import org.xtuml.masl.translate.building.WriteableFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.io.Writer;
 public class JavaFile extends ReferencedFile implements WriteableFile {
 
     public JavaFile(final CompilationUnit cu, final FileGroup jarFile) {
-        super(jarFile, new File("javasource" + "/" + jarFile.getName() + "/" + cu.getFileName()));
+        super(jarFile, new File("/src/main/java/" + cu.getFileName()));
         this.cu = cu;
     }
 

@@ -21,11 +21,14 @@
  */
 package org.xtuml.masl.metamodelImpl.common;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.expression.ParameterNameExpression;
 import org.xtuml.masl.metamodelImpl.name.Name;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.utils.HashCode;
+
+import java.util.List;
 
 public class ParameterDefinition extends Name implements org.xtuml.masl.metamodel.common.ParameterDefinition {
 
@@ -87,8 +90,13 @@ public class ParameterDefinition extends Name implements org.xtuml.masl.metamode
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitParameterDefinition(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitParameterDefinition(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

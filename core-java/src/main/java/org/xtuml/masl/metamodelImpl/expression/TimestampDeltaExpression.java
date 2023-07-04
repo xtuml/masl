@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -28,12 +29,15 @@ import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.IntegerType;
 import org.xtuml.masl.utils.HashCode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TimestampDeltaExpression extends Expression
         implements org.xtuml.masl.metamodel.expression.TimestampDeltaExpression {
 
-    private final static Map<String, Type> typeLookup = new HashMap<String, Type>();
+    private final static Map<String, Type> typeLookup = new HashMap<>();
 
     static {
         typeLookup.put("add_years", Type.YEARS);
@@ -131,7 +135,7 @@ public class TimestampDeltaExpression extends Expression
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(lhs.getFindArguments());
         params.addAll(argument.getFindArguments());
         return params;
@@ -140,7 +144,7 @@ public class TimestampDeltaExpression extends Expression
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(lhs.getConcreteFindParameters());
         params.addAll(argument.getConcreteFindParameters());
 
@@ -149,8 +153,8 @@ public class TimestampDeltaExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTimestampDeltaExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTimestampDeltaExpression(this);
     }
 
     private final Expression lhs;
@@ -159,8 +163,8 @@ public class TimestampDeltaExpression extends Expression
     private final String characteristic;
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(lhs, argument);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs, argument);
     }
 
 }

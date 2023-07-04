@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,7 +20,6 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.expression;
-
 import org.xtuml.masl.metamodelImpl.type.CharacterType;
 import org.xtuml.masl.metamodelImpl.type.IntegerType;
 import org.xtuml.masl.metamodelImpl.type.RealType;

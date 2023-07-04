@@ -21,13 +21,12 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.type.*;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class OrderingExpression extends Expression {
@@ -59,9 +58,7 @@ public abstract class OrderingExpression extends Expression {
             OrderingExpression result = null;
             final BasicType basicType = expression.getType().getBasicType();
             if (basicType instanceof CollectionType) {
-                final TypeDefinition
-                        containedType =
-                        basicType.getContainedType().getBasicType().getDefinedType();
+                final TypeDefinition containedType = basicType.getContainedType().getBasicType().getDefinedType();
 
                 if (containedType instanceof InstanceType) {
                     result = new InstanceOrderingExpression(position, expression, reverse, components);
@@ -128,8 +125,7 @@ public abstract class OrderingExpression extends Expression {
     private final boolean reverse;
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.<Expression>singletonList(collection);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(collection);
     }
-
 }

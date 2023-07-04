@@ -29,7 +29,10 @@ import org.xtuml.masl.metamodel.project.ProjectTerminatorService;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Alias("StackTrack")
 @Default
@@ -50,7 +53,7 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
      */
     @Override
     public Collection<org.xtuml.masl.translate.ProjectTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.ProjectTranslator>singletonList(mainProjectTranslator);
+        return Collections.singletonList(mainProjectTranslator);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
         return objectTranslators.get(object);
     }
 
-    Map<ObjectDeclaration, ObjectTranslator> objectTranslators = new HashMap<ObjectDeclaration, ObjectTranslator>();
+    Map<ObjectDeclaration, ObjectTranslator> objectTranslators = new HashMap<>();
 
     private final org.xtuml.masl.translate.main.ProjectTranslator mainProjectTranslator;
 

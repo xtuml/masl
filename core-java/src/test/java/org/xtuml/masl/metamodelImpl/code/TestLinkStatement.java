@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,8 +20,24 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.code;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collA;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collB;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collC;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collD;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.collE;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r1;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r2;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r3;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r4;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.r5;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.refA;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.refB;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleA;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleB;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleC;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleD;
+import static org.xtuml.masl.metamodelImpl.SampleDomain.singleE;
 
-import junit.framework.TestCase;
 import org.xtuml.masl.error.ErrorCode;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
@@ -30,40 +46,23 @@ import org.xtuml.masl.metamodelImpl.relationship.RelationshipDeclaration;
 import org.xtuml.masl.metamodelImpl.relationship.RelationshipSpecification;
 import org.xtuml.masl.unittest.ErrorLog;
 
-import static org.xtuml.masl.metamodelImpl.SampleDomain.*;
+import junit.framework.TestCase;
 
 public class TestLinkStatement extends TestCase {
 
-    public void checkLink(final Expression lhs,
-                          final RelationshipDeclaration.Reference relRef,
-                          final String objOrRole,
-                          final ObjectNameExpression obj,
-                          final Expression rhs,
-                          final Expression assoc) {
+    public void checkLink(final Expression lhs, final RelationshipDeclaration.Reference relRef, final String objOrRole,
+            final ObjectNameExpression obj, final Expression rhs, final Expression assoc) {
         ErrorLog.getInstance().reset();
-        LinkUnlinkStatement.create(null,
-                                   LinkUnlinkStatement.LINK,
-                                   lhs,
-                                   RelationshipSpecification.createReference(lhs, relRef, objOrRole, obj, false, false),
-                                   rhs,
-                                   assoc);
+        LinkUnlinkStatement.create(null, LinkUnlinkStatement.LINK, lhs,
+                RelationshipSpecification.createReference(lhs, relRef, objOrRole, obj, false, false), rhs, assoc);
         ErrorLog.getInstance().checkErrors();
     }
 
-    public void checkLink(final Expression lhs,
-                          final RelationshipDeclaration.Reference relRef,
-                          final String objOrRole,
-                          final ObjectNameExpression obj,
-                          final Expression rhs,
-                          final Expression assoc,
-                          final ErrorCode... errors) {
+    public void checkLink(final Expression lhs, final RelationshipDeclaration.Reference relRef, final String objOrRole,
+            final ObjectNameExpression obj, final Expression rhs, final Expression assoc, final ErrorCode... errors) {
         ErrorLog.getInstance().reset();
-        LinkUnlinkStatement.create(null,
-                                   LinkUnlinkStatement.LINK,
-                                   lhs,
-                                   RelationshipSpecification.createReference(lhs, relRef, objOrRole, obj, false, false),
-                                   rhs,
-                                   assoc);
+        LinkUnlinkStatement.create(null, LinkUnlinkStatement.LINK, lhs,
+                RelationshipSpecification.createReference(lhs, relRef, objOrRole, obj, false, false), rhs, assoc);
         ErrorLog.getInstance().checkErrors(errors);
     }
 

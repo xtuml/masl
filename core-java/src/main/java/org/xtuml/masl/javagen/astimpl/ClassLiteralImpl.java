@@ -34,8 +34,8 @@ public class ClassLiteralImpl extends ExpressionImpl implements ClassLiteral {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitClassLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitClassLiteral(this);
     }
 
     @Override
@@ -54,6 +54,6 @@ public class ClassLiteralImpl extends ExpressionImpl implements ClassLiteral {
         return Integer.MAX_VALUE;
     }
 
-    private final ChildNode<TypeImpl> type = new ChildNode<TypeImpl>(this);
+    private final ChildNode<TypeImpl> type = new ChildNode<>(this);
 
 }

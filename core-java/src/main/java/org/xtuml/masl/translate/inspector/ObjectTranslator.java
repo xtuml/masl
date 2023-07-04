@@ -52,13 +52,9 @@ class ObjectTranslator {
     private final CodeFile headerFile;
     private final Class handlerClass;
 
-    private final Map<ObjectService, ActionTranslator>
-            serviceTranslators =
-            new HashMap<ObjectService, ActionTranslator>();
-    private final Map<State, ActionTranslator> stateTranslators = new HashMap<State, ActionTranslator>();
-    private final Map<EventDeclaration, EventTranslator>
-            eventTranslators =
-            new HashMap<EventDeclaration, EventTranslator>();
+    private final Map<ObjectService, ActionTranslator> serviceTranslators = new HashMap<>();
+    private final Map<State, ActionTranslator> stateTranslators = new HashMap<>();
+    private final Map<EventDeclaration, EventTranslator> eventTranslators = new HashMap<>();
     private final DomainTranslator domainTranslator;
     private final DeclarationGroup relationshipNavigators;
     private final Namespace namespace;
@@ -211,7 +207,7 @@ class ObjectTranslator {
                 creator.createParameter(new TypeUsage(Inspector.commChannel, TypeUsage.Reference),
                                         "channel").asExpression();
 
-        final List<Expression> createParams = new ArrayList<Expression>();
+        final List<Expression> createParams = new ArrayList<>();
         Expression reader = channel;
 
         for (final AttributeDeclaration att : object.getAttributes()) {
@@ -378,7 +374,7 @@ class ObjectTranslator {
         final Expression instance = write.createParameter(objTrans.getPointerType(), "instance").asExpression();
         final Expression relId = write.createParameter(new TypeUsage(FundamentalType.INT), "relId").asExpression();
 
-        final List<CaseCondition> relChoices = new ArrayList<CaseCondition>();
+        final List<CaseCondition> relChoices = new ArrayList<>();
 
         int relIdNo = 0;
         for (final RelationshipSpecification rel : object.getRelationships()) {

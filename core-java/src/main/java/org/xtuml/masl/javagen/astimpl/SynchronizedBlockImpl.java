@@ -55,10 +55,10 @@ public class SynchronizedBlockImpl extends StatementImpl implements Synchronized
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSynchronizedBlock(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitSynchronizedBlock(this);
     }
 
-    private final ChildNode<ExpressionImpl> lockExpression = new ChildNode<ExpressionImpl>(this);
-    private final ChildNode<CodeBlockImpl> codeBlock = new ChildNode<CodeBlockImpl>(this);
+    private final ChildNode<ExpressionImpl> lockExpression = new ChildNode<>(this);
+    private final ChildNode<CodeBlockImpl> codeBlock = new ChildNode<>(this);
 }

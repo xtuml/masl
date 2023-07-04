@@ -29,9 +29,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
-import org.xtuml.masl.translate.build.BuildSet;
-import org.xtuml.masl.translate.build.FileGroup;
-import org.xtuml.masl.translate.build.ReferencedFile;
+import org.xtuml.masl.translate.building.BuildSet;
+import org.xtuml.masl.translate.building.FileGroup;
+import org.xtuml.masl.translate.building.ReferencedFile;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;

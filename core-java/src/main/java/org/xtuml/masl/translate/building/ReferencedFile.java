@@ -19,7 +19,7 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-package org.xtuml.masl.translate.build;
+package org.xtuml.masl.translate.building;
 
 import java.io.File;
 import java.util.Collections;
@@ -51,4 +51,7 @@ public class ReferencedFile {
         return Collections.emptySet();
     }
 
+    public boolean isPublicHeader() {
+        return false;
+    }
 }

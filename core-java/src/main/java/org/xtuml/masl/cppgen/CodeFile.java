@@ -23,12 +23,11 @@ package org.xtuml.masl.cppgen;
 
 import com.google.common.collect.Sets;
 import org.xtuml.masl.CommandLine;
-import org.xtuml.masl.translate.build.FileGroup;
-import org.xtuml.masl.translate.build.ReferencedFile;
-import org.xtuml.masl.translate.build.WriteableFile;
+import org.xtuml.masl.translate.building.FileGroup;
+import org.xtuml.masl.translate.building.ReferencedFile;
+import org.xtuml.masl.translate.building.WriteableFile;
 import org.xtuml.masl.utils.Filter;
 import org.xtuml.masl.utils.TextUtils;
-import org.xtuml.masl.utils.TextUtils.Formatter;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,10 +84,9 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     }
 
     /**
-     * Adds the specified declaration to the set of forward declarations required
-     * by this file. These files are in addition to the set of forward
-     * declarations needed by the declarations and definitions, which are
-     * calculated separately.
+     * Adds the specified declaration to the set of forward declarations required by
+     * this file. These files are in addition to the set of forward declarations
+     * needed by the declarations and definitions, which are calculated separately.
      * <p>
      * <p>
      * the declaration to add
@@ -108,9 +106,9 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     }
 
     /**
-     * Adds a function definition to the file. Definitions are output into the
-     * file after any declarations, and in the order that they are added using
-     * this method.
+     * Adds a function definition to the file. Definitions are output into the file
+     * after any declarations, and in the order that they are added using this
+     * method.
      */
     public void addFunctionDefinition(final Function function) {
         definitions.add(function.getDefinition());
@@ -119,11 +117,11 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
 
     /**
      * Adds the specified file to the set of include files required by this file.
-     * These files are in addition to the set of includes needed by the
-     * declarations and definitions, which are calculated separately. There would
-     * normally be no need to add to these explicitly, unless creating a composite
-     * header file which includes lots of others for the sole purpose of
-     * simplifiying the include list of clients.
+     * These files are in addition to the set of includes needed by the declarations
+     * and definitions, which are calculated separately. There would normally be no
+     * need to add to these explicitly, unless creating a composite header file
+     * which includes lots of others for the sole purpose of simplifiying the
+     * include list of clients.
      * <p>
      * <p>
      * - the include file to add
@@ -143,12 +141,12 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     }
 
     /**
-     * Designates the supplied include file as being required before this one in
-     * any list of include files. This effectively says that this include file
-     * depends on definitions within the prerequisite. When code is generated that
-     * needs this file, the prerequisite will be included first. This should not
-     * generally be needed for generated headers, but some third party libraries
-     * may require it.
+     * Designates the supplied include file as being required before this one in any
+     * list of include files. This effectively says that this include file depends
+     * on definitions within the prerequisite. When code is generated that needs
+     * this file, the prerequisite will be included first. This should not generally
+     * be needed for generated headers, but some third party libraries may require
+     * it.
      * <p>
      * <p>
      * the file that this one needs to be included first.
@@ -158,12 +156,11 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     }
 
     /**
-     * Forces the supplied include file to be included at the top of this code
-     * file, irrespective of any definitions within the file. Multiple calls to
-     * this function will result in the files being included in the order that
-     * they are added, possibly multiple times. This should not generally be
-     * needed for generated headers, but some third party libraries may require
-     * it.
+     * Forces the supplied include file to be included at the top of this code file,
+     * irrespective of any definitions within the file. Multiple calls to this
+     * function will result in the files being included in the order that they are
+     * added, possibly multiple times. This should not generally be needed for
+     * generated headers, but some third party libraries may require it.
      * <p>
      * <p>
      * the file to include
@@ -183,9 +180,9 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     }
 
     /**
-     * Adds a variable definition to the file. Definitions are output into the
-     * file after any declarations, and in the order that they are added using
-     * this method.
+     * Adds a variable definition to the file. Definitions are output into the file
+     * after any declarations, and in the order that they are added using this
+     * method.
      * <p>
      * <p>
      * the variable whose definition should be added
@@ -238,7 +235,7 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
 
     /**
      * Writes the code for this code file to the supplied Writer. The code
-     * consists of a copyright header, any required include files, any forward
+     * consists of any required include files, any forward
      * declarations, followed by the declarations and definitions added to the
      * file.
      *
@@ -246,15 +243,6 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
      */
     @Override
     public void writeCode(final Writer writer) throws IOException {
-        // Output the copyright notice.
-        String copyrightNotice = CommandLine.INSTANCE.getCopyrightNotice();
-        writer.write("//\n" +
-                     "// File: " +
-                     getFile().getName() +
-                     "\n" +
-                     (null == copyrightNotice ? "" : "//\n// " + copyrightNotice.replaceAll("\n", "\n// ") + "\n") +
-                     "//\n");
-
         final String guardName = headerGuardConverter.convert(getFile().getPath());
 
         // If this is a header file, then output the include guard
@@ -267,13 +255,12 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
 
         final File parentDir = getFile().getParentFile();
 
-        TextUtils.formatList(writer, includes, "", new Formatter<CodeFile>() {
-            @Override
-            public String format(final CodeFile value) {
-                return "#include " + value.getFileSpec(parentDir) + "\n";
-            }
-
-        }, "", "\n");
+        TextUtils.formatList(writer,
+                             includes,
+                             "",
+                             value -> "#include " + value.getFileSpec(parentDir) + "\n",
+                             "",
+                             "\n");
 
         // Output the list of forward declarations required by the declarations and
         // definitions
@@ -361,8 +348,8 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     /**
      * Get the filename in a form suitable for use in a <code>#include</code>
      * statement. Returns a string containing the filename of the current file
-     * contained in the correct delimiters, depending on whether or not it has
-     * been flagged as a system file. If the supplied directory is the same as the
+     * contained in the correct delimiters, depending on whether or not it has been
+     * flagged as a system file. If the supplied directory is the same as the
      * directory of the file, then just the name is returned, otherwise the full
      * path is returned.
      * <p>
@@ -392,7 +379,7 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
      * @return a set of {@link org.xtuml.masl.cppgen.Declaration}s
      */
     Set<Declaration> getForwardDeclarations() {
-        final Set<Declaration> result = new LinkedHashSet<Declaration>(forwardDeclarations);
+        final Set<Declaration> result = new LinkedHashSet<>(forwardDeclarations);
 
         for (final Declaration dec : declarations) {
             result.addAll(dec.getForwardDeclarations());
@@ -406,13 +393,13 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     }
 
     /**
-     * Gets the set of include files that the declarations and definitions
-     * included in the file depend on.
+     * Gets the set of include files that the declarations and definitions included
+     * in the file depend on.
      *
      * @return a set of {@link org.xtuml.masl.cppgen.CodeFile}s
      */
     List<CodeFile> getIncludes() {
-        final Set<CodeFile> includeSet = new TreeSet<CodeFile>(includes);
+        final Set<CodeFile> includeSet = new TreeSet<>(includes);
 
         for (final Declaration dec : declarations) {
             includeSet.addAll(dec.getIncludes());
@@ -427,7 +414,7 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
 
         final List<CodeFile> result = getTopIncludes();
 
-        final Set<CodeFile> alreadyIncluded = new LinkedHashSet<CodeFile>(result);
+        final Set<CodeFile> alreadyIncluded = new LinkedHashSet<>(result);
 
         for (final CodeFile include : includeSet) {
             if (!alreadyIncluded.contains(include)) {
@@ -451,8 +438,8 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
      * @return a list of files that must be included before this one
      */
     List<CodeFile> getPrerequisiteIncludes() {
-        final List<CodeFile> result = new ArrayList<CodeFile>();
-        final Set<CodeFile> alreadyIncluded = new LinkedHashSet<CodeFile>();
+        final List<CodeFile> result = new ArrayList<>();
+        final Set<CodeFile> alreadyIncluded = new LinkedHashSet<>();
 
         for (final CodeFile include : prerequisiteIncludes) {
             if (!alreadyIncluded.contains(include)) {
@@ -474,12 +461,11 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     /**
      * Gets a list of include files that must be included at the top of this file.
      *
-     * @return a list of include files that must be included at the top of this
-     * file
+     * @return a list of include files that must be included at the top of this file
      */
     List<CodeFile> getTopIncludes() {
-        final List<CodeFile> result = new ArrayList<CodeFile>();
-        final Set<CodeFile> alreadyIncluded = new LinkedHashSet<CodeFile>();
+        final List<CodeFile> result = new ArrayList<>();
+        final Set<CodeFile> alreadyIncluded = new LinkedHashSet<>();
 
         for (final CodeFile include : topIncludes) {
             if (!alreadyIncluded.contains(include)) {
@@ -501,38 +487,38 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
     /**
      * List of declarations contained in this file
      */
-    private final List<Declaration> declarations = new ArrayList<Declaration>();
+    private final List<Declaration> declarations = new ArrayList<>();
     /**
      * List of definitions contained in this file
      */
-    private final List<Definition> definitions = new ArrayList<Definition>();
+    private final List<Definition> definitions = new ArrayList<>();
 
     /**
      * Forward declarations contained in the file.
      */
-    private final Set<Declaration> forwardDeclarations = new LinkedHashSet<Declaration>();
+    private final Set<Declaration> forwardDeclarations = new LinkedHashSet<>();
 
     /**
-     * A set of include files required by this file. These files are in addition
-     * to the set of includes needed by the declarations and definitions, which
-     * are calculated separately. There would normally be no need to add to these
+     * A set of include files required by this file. These files are in addition to
+     * the set of includes needed by the declarations and definitions, which are
+     * calculated separately. There would normally be no need to add to these
      * explicitly, unless creating a composite header file which includes lots of
      * others for the sole purpose of simplifiying the include list of clients.
      */
-    private final Set<CodeFile> includes = new LinkedHashSet<CodeFile>();
+    private final Set<CodeFile> includes = new LinkedHashSet<>();
 
     final private Type type;
 
     /**
      * List of include files that must be included before this one
      */
-    private final List<CodeFile> prerequisiteIncludes = new ArrayList<CodeFile>();
+    private final List<CodeFile> prerequisiteIncludes = new ArrayList<>();
 
     /**
      * List of include files that must be included before any others at the top of
      * this file.
      */
-    private final List<CodeFile> topIncludes = new ArrayList<CodeFile>();
+    private final List<CodeFile> topIncludes = new ArrayList<>();
 
     @Override
     public Set<FileGroup> getDependencies() {
@@ -548,10 +534,14 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
         dependencies.add(dependent);
     }
 
-    private final Set<FileGroup> dependencies = new LinkedHashSet<FileGroup>();
+    private final Set<FileGroup> dependencies = new LinkedHashSet<>();
 
     public boolean isPublicHeader() {
         return type == Type.PUBLIC_HEADER || type == Type.INTERFACE_HEADER;
+    }
+
+    public boolean isSourceFile() {
+        return true;
     }
 
     public boolean isBodyFile() {

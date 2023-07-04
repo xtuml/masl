@@ -24,7 +24,7 @@ package org.xtuml.masl.translate.customcode;
 import org.xtuml.masl.metamodel.domain.Domain;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
-import org.xtuml.masl.translate.build.BuildSet;
+import org.xtuml.masl.translate.building.BuildSet;
 
 import java.io.File;
 

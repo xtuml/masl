@@ -23,7 +23,7 @@ package org.xtuml.masl.translate.main;
 
 import org.xtuml.masl.cppgen.Class;
 import org.xtuml.masl.cppgen.*;
-import org.xtuml.masl.translate.build.BuildSet;
+import org.xtuml.masl.translate.building.BuildSet;
 
 import java.util.List;
 
@@ -53,13 +53,13 @@ public final class Boost {
 
     public final static Function lambda_bind = new Function("bind", LAMBDA, lambdaBindInc);
 
-    public final static CodeFile bindInc = core.createInterfaceHeader("boost/bind.hpp");
+    public final static CodeFile bindInc = core.createInterfaceHeader("boost/bind/bind.hpp");
 
-    public final static Expression bind_1 = new Variable("_1", null, bindInc).asExpression();
-    public final static Expression bind_2 = new Variable("_2", null, bindInc).asExpression();
-    public final static Expression bind_3 = new Variable("_3", null, bindInc).asExpression();
-    public final static Expression bind_4 = new Variable("_4", null, bindInc).asExpression();
-    public final static Expression bind_5 = new Variable("_5", null, bindInc).asExpression();
+    public final static Expression bind_1 = new Variable("boost::placeholders::_1", null, bindInc).asExpression();
+    public final static Expression bind_2 = new Variable("boost::placeholders::_2", null, bindInc).asExpression();
+    public final static Expression bind_3 = new Variable("boost::placeholders::_3", null, bindInc).asExpression();
+    public final static Expression bind_4 = new Variable("boost::placeholders::_4", null, bindInc).asExpression();
+    public final static Expression bind_5 = new Variable("boost::placeholders::_5", null, bindInc).asExpression();
 
     public static final int MAX_BIND_PARAMS = 9;
 
@@ -130,6 +130,7 @@ public final class Boost {
 
     public static Class getTupleType(final List<TypeUsage> types) {
         final Class tuple = new Class("tuple", NAMESPACE, tupleInc);
+        tuple.setForceSpecialization(true);
         tuple.addDeclaredIn(tupleHashInc);
 
         for (final TypeUsage type : types) {

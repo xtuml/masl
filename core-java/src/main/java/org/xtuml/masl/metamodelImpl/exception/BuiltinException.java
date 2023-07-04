@@ -21,12 +21,14 @@
  */
 package org.xtuml.masl.metamodelImpl.exception;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.NotFoundGlobal;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BuiltinException extends ExceptionReference
@@ -66,7 +68,7 @@ public class BuiltinException extends ExceptionReference
         private final Type type;
     }
 
-    static Map<String, ImplType> lookup = new HashMap<String, ImplType>();
+    static Map<String, ImplType> lookup = new HashMap<>();
 
     static {
         for (final ImplType type : ImplType.values()) {
@@ -104,5 +106,10 @@ public class BuiltinException extends ExceptionReference
     }
 
     ImplType type;
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
+    }
 
 }

@@ -184,7 +184,7 @@ class TypeBodyImpl extends ASTNodeImpl implements TypeBody, Scoped {
         }
 
         private List<TypeMemberImpl> getMembers() {
-            final List<TypeMemberImpl> result = new ArrayList<TypeMemberImpl>();
+            final List<TypeMemberImpl> result = new ArrayList<>();
             for (final TypeMemberGroupMember member : groupMembers) {
                 if (member instanceof MemberGroupImpl) {
                     result.addAll(((MemberGroupImpl) member).getMembers());
@@ -195,7 +195,7 @@ class TypeBodyImpl extends ASTNodeImpl implements TypeBody, Scoped {
             return Collections.unmodifiableList(result);
         }
 
-        private final List<TypeMemberGroupMember> groupMembers = new ArrayList<TypeMemberGroupMember>();
+        private final List<TypeMemberGroupMember> groupMembers = new ArrayList<>();
 
         private MemberGroupImpl propertyGetters = null;
         private MemberGroupImpl propertySetters = null;
@@ -406,8 +406,8 @@ class TypeBodyImpl extends ASTNodeImpl implements TypeBody, Scoped {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTypeBody(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitTypeBody(this);
     }
 
     @Override
@@ -518,10 +518,10 @@ class TypeBodyImpl extends ASTNodeImpl implements TypeBody, Scoped {
 
     }
 
-    private final ArrayList<TypeDeclarationImpl> typeDeclarations = new ArrayList<TypeDeclarationImpl>();
-    private final ArrayList<FieldImpl> fieldDeclarations = new ArrayList<FieldImpl>();
-    private final ArrayList<MethodImpl> methodDeclarations = new ArrayList<MethodImpl>();
-    private final ChildNodeList<TypeMemberImpl> allMembers = new ChildNodeList<TypeMemberImpl>(this);
+    private final ArrayList<TypeDeclarationImpl> typeDeclarations = new ArrayList<>();
+    private final ArrayList<FieldImpl> fieldDeclarations = new ArrayList<>();
+    private final ArrayList<MethodImpl> methodDeclarations = new ArrayList<>();
+    private final ChildNodeList<TypeMemberImpl> allMembers = new ChildNodeList<>(this);
 
     private final TBScope scope;
 
@@ -530,7 +530,7 @@ class TypeBodyImpl extends ASTNodeImpl implements TypeBody, Scoped {
         return getAST().createThis(this);
     }
 
-    private final ChildNodeList<EnumConstantImpl> enumConstants = new ChildNodeList<EnumConstantImpl>(this);
+    private final ChildNodeList<EnumConstantImpl> enumConstants = new ChildNodeList<>(this);
 
     @Override
     public EnumConstantImpl addEnumConstant(final EnumConstant enumConstant) {

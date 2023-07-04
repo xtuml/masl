@@ -23,35 +23,21 @@ package org.xtuml.masl.javagen.ast;
 
 import java.util.Collection;
 
-public abstract class AbstractASTNodeVisitor<R, P> implements ASTNodeVisitor<R, P> {
-
-    public final R visit(final ASTNode node) throws Exception {
-        return visit(node, null);
-    }
+public abstract class AbstractASTNodeVisitor implements ASTNodeVisitor {
 
     @Override
-    public final R visit(final ASTNode node, final P p) throws Exception {
+    public final void visit(final ASTNode node) throws Exception {
         if (node == null) {
-            return visitNull(p);
+            visitNull();
         } else {
-            return node.accept(this, p);
+            node.accept(this);
         }
     }
 
-    public final R visit(final Collection<? extends ASTNode> nodes) throws Exception {
-        return visit(nodes, null);
-    }
-
-    public final R visit(final Collection<? extends ASTNode> nodes, final P p) throws Exception {
-        R r = null;
+    public final void visit(final Collection<? extends ASTNode> nodes) throws Exception {
         for (final ASTNode node : nodes) {
-            r = visit(node);
+            visit(node);
         }
-        return r;
     }
 
-    @Override
-    public R visitNull(final P p) throws Exception {
-        throw new NullPointerException();
-    }
 }

@@ -159,7 +159,8 @@ public class Database {
         final Class assignerStateMapper = new Class("AssignerStateMapper", namespace, assignerStateMapperInc);
         final Expression singletonFnCall = assignerStateMapper.callStaticFunction("singleton");
         return new Function("isAssignerSet").asFunctionCall(singletonFnCall,
-                                                            false, Literal.createStringLiteral(assignerKey));
+                                                            false,
+                                                            Literal.createStringLiteral(assignerKey));
     }
 
     public Expression setAssignerStateFnCall(final String assignerKey, final Expression stateValue) {
@@ -178,8 +179,7 @@ public class Database {
         final Function getAssignerStateFn = new Function("getAssignerState");
         getAssignerStateFn.addTemplateSpecialisation(enumType);
 
-        return getAssignerStateFn.asFunctionCall(singletonFnCall,
-                                                 false, Literal.createStringLiteral(assignerKey));
+        return getAssignerStateFn.asFunctionCall(singletonFnCall, false, Literal.createStringLiteral(assignerKey));
     }
 
 }

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -29,7 +30,6 @@ import org.xtuml.masl.metamodelImpl.type.*;
 import org.xtuml.masl.utils.HashCode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ParseExpression extends Expression implements org.xtuml.masl.metamodel.expression.ParseExpression {
@@ -146,7 +146,7 @@ public class ParseExpression extends Expression implements org.xtuml.masl.metamo
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(argument.getFindArguments());
         if (base != null) {
             params.addAll(base.getFindArguments());
@@ -157,7 +157,7 @@ public class ParseExpression extends Expression implements org.xtuml.masl.metamo
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(argument.getConcreteFindParameters());
         if (base != null) {
             params.addAll(base.getConcreteFindParameters());
@@ -167,8 +167,8 @@ public class ParseExpression extends Expression implements org.xtuml.masl.metamo
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitParseExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitParseExpression(this);
     }
 
     private final BasicType type;
@@ -176,8 +176,8 @@ public class ParseExpression extends Expression implements org.xtuml.masl.metamo
     private final Expression base;
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(argument, base);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(argument, base);
     }
 
 }

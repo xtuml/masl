@@ -45,16 +45,14 @@ public @interface Alias {
     String value();
 
     /**
-     * Defines the prefix to strip from the class name if value is the empty
-     * string
+     * Defines the prefix to strip from the class name if value is the empty string
      *
      * @return the prefix
      */
     String stripPrefix() default "";
 
     /**
-     * Defines the suffix to strip from the class name if value is the empty
-     * string
+     * Defines the suffix to strip from the class name if value is the empty string
      *
      * @return the suffix
      */

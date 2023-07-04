@@ -55,10 +55,10 @@ public class ConditionalExpression extends Expression {
     /**
      * {@inheritDoc}
      *
-     * If the sub expressions are also condition
-     * expressions (as determined by the precedence) then parenthesise them
-     * anyway, even though it may not be strictly necessary, as the resulting code
-     * is virtually impossible for a human to parse otherwise!
+     * If the sub expressions are also condition expressions (as determined by the
+     * precedence) then parenthesise them anyway, even though it may not be strictly
+     * necessary, as the resulting code is virtually impossible for a human to parse
+     * otherwise!
      */
     String getCode(final Namespace currentNamespace, final String alignment) {
         return (getPrecedence() <= conditionExpression.getPrecedence() ? "(" : "") +

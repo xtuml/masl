@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,6 +20,7 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.type;
+import java.util.Arrays;
 
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
 import org.xtuml.masl.metamodelImpl.common.Visibility;
@@ -29,11 +30,9 @@ import org.xtuml.masl.metamodelImpl.expression.MinMaxRange;
 import org.xtuml.masl.metamodelImpl.expression.RangeExpression;
 import org.xtuml.masl.metamodelImpl.object.ObjectDeclaration;
 
-import java.util.Arrays;
-
 public final class TestTypes {
 
-    static private final Domain domain = new Domain(null, "TestTypes");
+    static public final Domain domain = new Domain(null, "TestTypes");
 
     static private final PragmaList pragmas = new PragmaList();
 
@@ -55,65 +54,45 @@ public final class TestTypes {
         bWCharacter = WCharacterType.create(null, false);
         bWString = WStringType.create(null, false);
 
-        udIntTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udIntType", Visibility.PUBLIC, bInteger, pragmas);
+        udIntTypeDecl = TypeDeclaration.create(null, domain, prefix + "udIntType", Visibility.PUBLIC, bInteger,
+                pragmas);
         udIntType = UserDefinedType.create(domain.getReference(null), prefix + "udIntType");
 
         udRealTypeDecl = TypeDeclaration.create(null, domain, prefix + "udRealType", Visibility.PUBLIC, bReal, pragmas);
         udRealType = UserDefinedType.create(domain.getReference(null), prefix + "udRealType");
 
-        udCharacterTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udCharacterType",
-                                       Visibility.PUBLIC,
-                                       bCharacter,
-                                       pragmas);
+        udCharacterTypeDecl = TypeDeclaration.create(null, domain, prefix + "udCharacterType", Visibility.PUBLIC,
+                bCharacter, pragmas);
         udCharacterType = UserDefinedType.create(domain.getReference(null), prefix + "udCharacterType");
 
-        udWCharacterTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udWCharacterType",
-                                       Visibility.PUBLIC,
-                                       bWCharacter,
-                                       pragmas);
+        udWCharacterTypeDecl = TypeDeclaration.create(null, domain, prefix + "udWCharacterType", Visibility.PUBLIC,
+                bWCharacter, pragmas);
         udWCharacterType = UserDefinedType.create(domain.getReference(null), prefix + "udWCharacterType");
 
-        udStringTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udStringType", Visibility.PUBLIC, bString, pragmas);
+        udStringTypeDecl = TypeDeclaration.create(null, domain, prefix + "udStringType", Visibility.PUBLIC, bString,
+                pragmas);
         udStringType = UserDefinedType.create(domain.getReference(null), prefix + "udStringType");
 
-        udWStringTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udWStringType", Visibility.PUBLIC, bWString, pragmas);
+        udWStringTypeDecl = TypeDeclaration.create(null, domain, prefix + "udWStringType", Visibility.PUBLIC, bWString,
+                pragmas);
         udWStringType = UserDefinedType.create(domain.getReference(null), prefix + "udWStringType");
 
-        udIntTypeTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udIntTypeType", Visibility.PUBLIC, udIntType, pragmas);
+        udIntTypeTypeDecl = TypeDeclaration.create(null, domain, prefix + "udIntTypeType", Visibility.PUBLIC, udIntType,
+                pragmas);
         udIntTypeType = UserDefinedType.create(domain.getReference(null), prefix + "udIntTypeType");
 
-        oneToTen = new MinMaxRange(new IntegerLiteral(1L), new IntegerLiteral(10L));
-        twoToEleven = new MinMaxRange(new IntegerLiteral(2L), new IntegerLiteral(11L));
-        threeToThree = new MinMaxRange(new IntegerLiteral(3L), new IntegerLiteral(3L));
+        oneToTen = new MinMaxRange(new IntegerLiteral(1l), new IntegerLiteral(10l));
+        twoToEleven = new MinMaxRange(new IntegerLiteral(2l), new IntegerLiteral(11l));
+        threeToThree = new MinMaxRange(new IntegerLiteral(3l), new IntegerLiteral(3l));
 
-        udIntConstrainedTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udIntConstrainedType",
-                                       Visibility.PUBLIC,
-                                       new ConstrainedType(bInteger, new RangeConstraint(oneToTen)),
-                                       pragmas);
+        udIntConstrainedTypeDecl = TypeDeclaration.create(null, domain, prefix + "udIntConstrainedType",
+                Visibility.PUBLIC, new ConstrainedType(bInteger, new RangeConstraint(oneToTen)), pragmas);
         udIntConstrainedType = UserDefinedType.create(domain.getReference(null), prefix + "udIntConstrainedType");
 
-        udIntTypeConstrainedTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udIntTypeConstrainedType",
-                                       Visibility.PUBLIC,
-                                       new ConstrainedType(udIntType, new RangeConstraint(oneToTen)),
-                                       pragmas);
-        udIntTypeConstrainedType =
-                UserDefinedType.create(domain.getReference(null), prefix + "udIntTypeConstrainedType");
+        udIntTypeConstrainedTypeDecl = TypeDeclaration.create(null, domain, prefix + "udIntTypeConstrainedType",
+                Visibility.PUBLIC, new ConstrainedType(udIntType, new RangeConstraint(oneToTen)), pragmas);
+        udIntTypeConstrainedType = UserDefinedType.create(domain.getReference(null),
+                prefix + "udIntTypeConstrainedType");
 
         seqOfReal = SequenceType.create(null, bReal, null, false);
 
@@ -188,161 +167,84 @@ public final class TestTypes {
 
         arrayOfUdIntTypeType = ArrayType.create(null, udIntTypeType, oneToTen, false);
 
-        udSeqOfIntTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udSeqOfIntType", Visibility.PUBLIC, seqOfInt, pragmas);
+        udSeqOfIntTypeDecl = TypeDeclaration.create(null, domain, prefix + "udSeqOfIntType", Visibility.PUBLIC,
+                seqOfInt, pragmas);
         udSeqOfIntType = UserDefinedType.create(domain.getReference(null), prefix + "udSeqOfIntType");
 
-        udSetOfIntTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udSetOfIntType", Visibility.PUBLIC, setOfInt, pragmas);
+        udSetOfIntTypeDecl = TypeDeclaration.create(null, domain, prefix + "udSetOfIntType", Visibility.PUBLIC,
+                setOfInt, pragmas);
         udSetOfIntType = UserDefinedType.create(domain.getReference(null), prefix + "udSetOfIntType");
 
-        udBagOfIntTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udBagOfIntType", Visibility.PUBLIC, bagOfInt, pragmas);
+        udBagOfIntTypeDecl = TypeDeclaration.create(null, domain, prefix + "udBagOfIntType", Visibility.PUBLIC,
+                bagOfInt, pragmas);
         udBagOfIntType = UserDefinedType.create(domain.getReference(null), prefix + "udBagOfIntType");
 
-        udArray3to3OfIntTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udArray3to3OfIntType",
-                                       Visibility.PUBLIC,
-                                       array3to3OfInt,
-                                       pragmas);
+        udArray3to3OfIntTypeDecl = TypeDeclaration.create(null, domain, prefix + "udArray3to3OfIntType",
+                Visibility.PUBLIC, array3to3OfInt, pragmas);
         udArray3to3OfIntType = UserDefinedType.create(domain.getReference(null), prefix + "udArray3to3OfIntType");
 
-        udArray1to10OfIntTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udArray1to10OfIntType",
-                                       Visibility.PUBLIC,
-                                       array1to10OfInt,
-                                       pragmas);
+        udArray1to10OfIntTypeDecl = TypeDeclaration.create(null, domain, prefix + "udArray1to10OfIntType",
+                Visibility.PUBLIC, array1to10OfInt, pragmas);
         udArray1to10OfIntType = UserDefinedType.create(domain.getReference(null), prefix + "udArray1to10OfIntType");
 
-        udArray2to11OfIntTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udArray2to11OfIntType",
-                                       Visibility.PUBLIC,
-                                       array1to10OfInt,
-                                       pragmas);
+        udArray2to11OfIntTypeDecl = TypeDeclaration.create(null, domain, prefix + "udArray2to11OfIntType",
+                Visibility.PUBLIC, array1to10OfInt, pragmas);
         udArray2to11OfIntType = UserDefinedType.create(domain.getReference(null), prefix + "udArray2to11OfIntType");
 
-        trivialStruct =
-                StructureType.create(null,
-                                     Arrays.asList(StructureElement.create("elt",
-                                                                           udIntType,
-                                                                           null,
-                                                                           pragmas)));
+        trivialStruct = StructureType.create(null,
+                Arrays.asList(new StructureElement[] { StructureElement.create("elt", udIntType, null, pragmas) }));
 
-        udTrivialStructTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udTrivialStructType",
-                                       Visibility.PUBLIC,
-                                       trivialStruct,
-                                       pragmas);
+        udTrivialStructTypeDecl = TypeDeclaration.create(null, domain, prefix + "udTrivialStructType",
+                Visibility.PUBLIC, trivialStruct, pragmas);
 
         udTrivialStructType = UserDefinedType.create(domain.getReference(null), prefix + "udTrivialStructType");
 
-        anonTrivialStruct = new AnonymousStructure(Arrays.asList(new BasicType[]{udIntType}));
+        anonTrivialStruct = new AnonymousStructure(Arrays.asList(new BasicType[] { udIntType }));
 
-        simpleStruct =
-                StructureType.create(null,
-                                     Arrays.asList(StructureElement.create("elt1",
-                                                                           bInteger,
-                                                                           null,
-                                                                           pragmas),
-                                                   StructureElement.create("elt2",
-                                                                           bString,
-                                                                           null,
-                                                                           pragmas),
-                                                   StructureElement.create("elt3",
-                                                                           bWString,
-                                                                           null,
-                                                                           pragmas),
-                                                   StructureElement.create("elt4",
-                                                                           udIntType,
-                                                                           null,
-                                                                           pragmas),
-                                                   StructureElement.create("elt5",
-                                                                           udIntTypeType,
-                                                                           null,
-                                                                           pragmas)));
+        simpleStruct = StructureType.create(null,
+                Arrays.asList(new StructureElement[] { StructureElement.create("elt1", bInteger, null, pragmas),
+                        StructureElement.create("elt2", bString, null, pragmas),
+                        StructureElement.create("elt3", bWString, null, pragmas),
+                        StructureElement.create("elt4", udIntType, null, pragmas),
+                        StructureElement.create("elt5", udIntTypeType, null, pragmas), }));
 
-        udSimpleStructTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udSimpleStructType",
-                                       Visibility.PUBLIC,
-                                       simpleStruct,
-                                       pragmas);
+        udSimpleStructTypeDecl = TypeDeclaration.create(null, domain, prefix + "udSimpleStructType", Visibility.PUBLIC,
+                simpleStruct, pragmas);
 
         udSimpleStructType = UserDefinedType.create(domain.getReference(null), prefix + "udSimpleStructType");
 
-        anonSimpleStruct =
-                new AnonymousStructure(Arrays.asList(bInteger, bString, bWString, udIntType, udIntTypeType));
+        anonSimpleStruct = new AnonymousStructure(
+                Arrays.asList(new BasicType[] { bInteger, bString, bWString, udIntType, udIntTypeType, }));
 
-        complexStruct =
-                StructureType.create(null,
-                                     Arrays.asList(StructureElement.create("elt1",
-                                                                           udSimpleStructType,
-                                                                           null,
-                                                                           pragmas),
-                                                   StructureElement.create("elt2",
-                                                                           seqOfInt,
-                                                                           null,
-                                                                           pragmas),
-                                                   StructureElement.create("elt3",
-                                                                           seqOfSeqOfInt,
-                                                                           null,
-                                                                           pragmas)));
+        complexStruct = StructureType.create(null,
+                Arrays.asList(
+                        new StructureElement[] { StructureElement.create("elt1", udSimpleStructType, null, pragmas),
+                                StructureElement.create("elt2", seqOfInt, null, pragmas),
+                                StructureElement.create("elt3", seqOfSeqOfInt, null, pragmas) }));
 
-        udComplexStructTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udComplexStructType",
-                                       Visibility.PUBLIC,
-                                       complexStruct,
-                                       pragmas);
+        udComplexStructTypeDecl = TypeDeclaration.create(null, domain, prefix + "udComplexStructType",
+                Visibility.PUBLIC, complexStruct, pragmas);
 
         udComplexStructType = UserDefinedType.create(domain.getReference(null), prefix + "udComplexStructType");
 
-        anonComplexStruct =
-                new AnonymousStructure(Arrays.asList(udSimpleStructType, seqOfInt, seqOfSeqOfInt));
+        anonComplexStruct = new AnonymousStructure(
+                Arrays.asList(new BasicType[] { udSimpleStructType, seqOfInt, seqOfSeqOfInt }));
 
-        primaryColours =
-                EnumerateType.create(null,
-                                     Arrays.asList(new EnumerateItem("red"),
-                                                   new EnumerateItem("green"),
-                                                   new EnumerateItem("blue")));
+        primaryColours = EnumerateType.create(null, Arrays.asList(new EnumerateItem[] { new EnumerateItem("red"),
+                new EnumerateItem("green"), new EnumerateItem("blue"), }));
 
-        udPrimaryColoursDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udPrimaryColoursType",
-                                       Visibility.PUBLIC,
-                                       primaryColours,
-                                       pragmas);
+        udPrimaryColoursDecl = TypeDeclaration.create(null, domain, prefix + "udPrimaryColoursType", Visibility.PUBLIC,
+                primaryColours, pragmas);
 
         udPrimaryColours = UserDefinedType.create(domain.getReference(null), prefix + "udPrimaryColoursType");
 
-        rainbowColours =
-                EnumerateType.create(null,
-                                     Arrays.asList(new EnumerateItem("red"),
-                                                   new EnumerateItem("orange"),
-                                                   new EnumerateItem("yellow"),
-                                                   new EnumerateItem("green"),
-                                                   new EnumerateItem("blue"),
-                                                   new EnumerateItem("indigo"),
-                                                   new EnumerateItem("violet")));
+        rainbowColours = EnumerateType.create(null,
+                Arrays.asList(new EnumerateItem[] { new EnumerateItem("red"), new EnumerateItem("orange"),
+                        new EnumerateItem("yellow"), new EnumerateItem("green"), new EnumerateItem("blue"),
+                        new EnumerateItem("indigo"), new EnumerateItem("violet"), }));
 
-        udRainbowColoursDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udRainbowColoursType",
-                                       Visibility.PUBLIC,
-                                       rainbowColours,
-                                       pragmas);
+        udRainbowColoursDecl = TypeDeclaration.create(null, domain, prefix + "udRainbowColoursType", Visibility.PUBLIC,
+                rainbowColours, pragmas);
 
         udRainbowColours = UserDefinedType.create(domain.getReference(null), prefix + "udRainbowColoursType");
 
@@ -675,6 +577,7 @@ public final class TestTypes {
      *     elt : {@link #udIntType};
      *   end structure;
      * </pre>
+     *
      */
     public final StructureType trivialStruct;
 
@@ -684,6 +587,7 @@ public final class TestTypes {
      *     elt : {@link #udIntType};
      *   end structure;
      * </pre>
+     *
      */
     public final UserDefinedType udTrivialStructType;
     public final TypeDeclaration udTrivialStructTypeDecl;
@@ -707,6 +611,7 @@ public final class TestTypes {
      *     elt5 : {@link #udIntTypeType};
      *   end structure;
      * </pre>
+     *
      */
     public final StructureType simpleStruct;
 
@@ -720,6 +625,7 @@ public final class TestTypes {
      *     elt5 : {@link #udIntTypeType};
      *   end structure;
      * </pre>
+     *
      */
     public final UserDefinedType udSimpleStructType;
     public final TypeDeclaration udSimpleStructTypeDecl;

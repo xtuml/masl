@@ -21,12 +21,13 @@
  */
 package org.xtuml.masl.metamodel.project;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.common.PragmaList;
 import org.xtuml.masl.metamodel.domain.DomainTerminator;
 
 import java.util.List;
 
-public interface ProjectTerminator {
+public interface ProjectTerminator extends ASTNode {
 
     String getName();
 

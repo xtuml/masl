@@ -24,9 +24,9 @@ package org.xtuml.masl.translate.main;
 import org.xtuml.masl.cppgen.Class;
 import org.xtuml.masl.cppgen.*;
 import org.xtuml.masl.metamodel.domain.Domain;
-import org.xtuml.masl.metamodel.type.StructureElement;
-import org.xtuml.masl.metamodel.type.StructureType;
-import org.xtuml.masl.metamodel.type.TypeDeclaration;
+import org.xtuml.masl.metamodel.expression.IntegerLiteral;
+import org.xtuml.masl.metamodel.expression.LiteralExpression;
+import org.xtuml.masl.metamodel.type.*;
 import org.xtuml.masl.translate.main.expression.ExpressionTranslator;
 
 import java.util.*;
@@ -74,6 +74,7 @@ public class Structure {
         addEquality();
         addHashFunction();
         addASN1Codecs();
+        addJsonCodecs();
 
         clazz.addSuperclass(Boost.lessThanComparable(new TypeUsage(clazz),
                                                      Boost.equalityComparable(new TypeUsage(clazz))),
@@ -139,8 +140,7 @@ public class Structure {
 
         final Variable
                 encoder =
-                new Variable(new TypeUsage(ASN1.DEREncoder), "encoder",
-                             Collections.<Expression>singletonList(ASN1.sequenceTag));
+                new Variable(new TypeUsage(ASN1.DEREncoder), "encoder", Collections.singletonList(ASN1.sequenceTag));
         encode.getCode().appendStatement(encoder.asStatement());
 
         encode.getCode().appendStatement(new Function("reserve").asFunctionCall(encoder.asExpression(),
@@ -182,6 +182,83 @@ public class Structure {
         headerFile.addFunctionDefinition(decode);
     }
 
+    private void addJsonCodecs() {
+        addToJson();
+        addFromJson();
+    }
+
+    // Interpret "sequence (1) of X" as optional
+    private boolean isOptional(BasicType t) {
+        if (t.getBasicType() instanceof SequenceType seq && seq.getBound() != null) {
+            LiteralExpression bound = seq.getBound().evaluate();
+            if (bound instanceof IntegerLiteral ibound) {
+                return ibound.getValue().equals(1L);
+            }
+        }
+        return false;
+    }
+
+    private void addToJson() {
+        final Function function = new Function("to_json", namespace);
+        headerFile.addFunctionDeclaration(function);
+        bodyFile.addFunctionDefinition(function);
+        Expression
+                j =
+                function.createParameter(new TypeUsage(NlohmannJson.json, TypeUsage.Reference), "j").asExpression();
+        Expression v = function.createParameter(new TypeUsage(clazz, TypeUsage.ConstReference), "v").asExpression();
+        for (final StructureElement att : structure.getElements()) {
+            String
+                    name =
+                    att.getPragmas().hasPragma("json_name") ? att.getPragmas().getValue("json_name") : att.getName();
+            Expression ev = getGetter(att).asFunctionCall(v, false);
+            Expression jv = new ArrayAccess(j, Literal.createStringLiteral(name));
+            if (isOptional(att.getType())) {
+                CodeBlock block = new CodeBlock();
+                block.appendExpression(new BinaryExpression(jv,
+                                                            BinaryOperator.ASSIGN,
+                                                            new ArrayAccess(ev, Literal.ONE)));
+                function.getCode().appendStatement(new IfStatement(new UnaryExpression(UnaryOperator.NOT,
+                                                                                       new Function("empty").asFunctionCall(
+                                                                                               ev,
+                                                                                               false)), block));
+            } else {
+                function.getCode().appendExpression(new BinaryExpression(jv, BinaryOperator.ASSIGN, ev));
+            }
+
+        }
+    }
+
+    private void addFromJson() {
+        final Function function = new Function("from_json", namespace);
+        headerFile.addFunctionDeclaration(function);
+        bodyFile.addFunctionDefinition(function);
+        Expression
+                j =
+                function.createParameter(new TypeUsage(NlohmannJson.json, TypeUsage.ConstReference),
+                                         "j").asExpression();
+        Expression v = function.createParameter(new TypeUsage(clazz, TypeUsage.Reference), "v").asExpression();
+        function.getCode().appendExpression(new BinaryExpression(v, BinaryOperator.ASSIGN, clazz.callConstructor()));
+        for (final StructureElement att : structure.getElements()) {
+            String
+                    name =
+                    att.getPragmas().hasPragma("json_name") ? att.getPragmas().getValue("json_name") : att.getName();
+            Expression ev = getSetter(att).asFunctionCall(v, false);
+            Expression n = Literal.createStringLiteral(name);
+            Expression jv = new ArrayAccess(j, Literal.createStringLiteral(name));
+
+            CodeBlock block = new CodeBlock();
+            function.getCode().appendStatement(new IfStatement(new Function("contains").asFunctionCall(j, false, n),
+                                                               block));
+
+            if (isOptional(att.getType())) {
+                TypeUsage et = domainTranslator.getTypes().getType(((SequenceType) att.getType()).getContainedType());
+                block.appendExpression(new Function("push_back").asFunctionCall(ev, false, NlohmannJson.get(jv, et)));
+            } else {
+                block.appendExpression(NlohmannJson.get_to(jv, ev));
+            }
+        }
+    }
+
     Function addDefaultConstructor() {
         final Function defaultConstructor = clazz.createConstructor(constructors, Visibility.PUBLIC);
         bodyFile.addFunctionDefinition(defaultConstructor);
@@ -198,22 +275,25 @@ public class Structure {
     }
 
     Function addElementConstructor() {
-        final Function elementConstructor = clazz.createConstructor(constructors, Visibility.PUBLIC);
-        for (final StructureElement att : structure.getElements()) {
-            final TypeUsage type = domainTranslator.getTypes().getType(att.getType()).getOptimalParameterType();
-            final Variable member = memberVariables.get(att);
-            final String attName = Mangler.mangleName(att);
-            elementConstructor.setInitialValue(member,
-                                               elementConstructor.createParameter(type, attName).asExpression());
+        if (structure.getElements().size() > 0) {
+            final Function elementConstructor = clazz.createConstructor(constructors, Visibility.PUBLIC);
+            for (final StructureElement att : structure.getElements()) {
+                final TypeUsage type = domainTranslator.getTypes().getType(att.getType()).getOptimalParameterType();
+                final Variable member = memberVariables.get(att);
+                final String attName = Mangler.mangleName(att);
+                elementConstructor.setInitialValue(member,
+                                                   elementConstructor.createParameter(type, attName).asExpression());
+            }
+
+            bodyFile.addFunctionDefinition(elementConstructor);
+            return elementConstructor;
+        } else {
+            return null;
         }
-
-        bodyFile.addFunctionDefinition(elementConstructor);
-        return elementConstructor;
-
     }
 
     private BigTuple getTupleType() {
-        final List<TypeUsage> tupleTypes = new ArrayList<TypeUsage>();
+        final List<TypeUsage> tupleTypes = new ArrayList<>();
 
         for (final StructureElement element : structure.getElements()) {
             tupleTypes.add(Types.getInstance().getType(element.getType()));
@@ -270,7 +350,7 @@ public class Structure {
         final Function tupleConstructor = clazz.createConstructor(constructors, Visibility.PUBLIC);
         tupleConstructor.declareInClass(true);
 
-        final List<TypeUsage> tupleTypes = new ArrayList<TypeUsage>();
+        final List<TypeUsage> tupleTypes = new ArrayList<>();
         for (int i = 1; i <= structure.getElements().size(); ++i) {
             final TemplateType tt = new TemplateType("T" + i);
             tupleConstructor.addTemplateParameter(new TypenameTemplateParameter(tt));
@@ -297,7 +377,7 @@ public class Structure {
         tupleAssignment.setReturnType(new TypeUsage(clazz, TypeUsage.Reference));
         tupleAssignment.declareInClass(true);
 
-        final List<TypeUsage> tupleTypes = new ArrayList<TypeUsage>();
+        final List<TypeUsage> tupleTypes = new ArrayList<>();
         for (int i = 1; i <= structure.getElements().size(); ++i) {
             final TemplateType tt = new TemplateType("T" + i);
             tupleAssignment.addTemplateParameter(new TypenameTemplateParameter(tt));
@@ -354,7 +434,7 @@ public class Structure {
     }
 
     private void addToTuple() {
-        final List<Expression> tupleArgs = new ArrayList<Expression>();
+        final List<Expression> tupleArgs = new ArrayList<>();
         for (final StructureElement element : structure.getElements()) {
             tupleArgs.add(memberVariables.get(element).asExpression());
         }
@@ -417,29 +497,30 @@ public class Structure {
         final Variable rhs = comparator.createParameter(new TypeUsage(clazz, TypeUsage.ConstReference), "rhs");
 
         Expression predicate = null;
+        if (structure.getElements().isEmpty()) {
+            predicate = Literal.FALSE;
+        } else {
+            final List<StructureElement> reverseElements = new ArrayList<>(structure.getElements());
+            Collections.reverse(reverseElements);
 
-        final List<StructureElement> reverseElements = new ArrayList<StructureElement>(structure.getElements());
-        Collections.reverse(reverseElements);
+            for (final StructureElement att : reverseElements) {
+                final Expression lhsElt = memberVariables.get(att).asExpression();
+                final Expression rhsElt = memberVariables.get(att).asMemberReference(rhs.asExpression(), false);
 
-        for (final StructureElement att : reverseElements) {
-            final Expression lhsElt = memberVariables.get(att).asExpression();
-            final Expression rhsElt = memberVariables.get(att).asMemberReference(rhs.asExpression(), false);
-
-            predicate = buildComparator(predicate, lhsElt, rhsElt, false);
+                predicate = buildComparator(predicate, lhsElt, rhsElt, false);
+            }
         }
-
         comparator.getCode().appendStatement(new ReturnStatement(predicate));
         bodyFile.addFunctionDefinition(comparator);
         return comparator;
     }
 
     /**
-     * Builds up a comparison predicate. This function should be call repeatedly
-     * for each element that needs to take part in the comparison,
-     * <em>starting with the least significant element</em>, and passing in the
-     * result from the previous time as the predicate parameter. Note that
-     * starting with the least significant element probably means iterating in
-     * reverse order.
+     * Builds up a comparison predicate. This function should be call repeatedly for
+     * each element that needs to take part in the comparison, <em>starting with the
+     * least significant element</em>, and passing in the result from the previous
+     * time as the predicate parameter. Note that starting with the least
+     * significant element probably means iterating in reverse order.
      * <p>
      * <p>
      * the comparison predicate for the less significant elements
@@ -448,8 +529,7 @@ public class Structure {
      * <p>
      * the rhs expression to compare
      * <p>
-     * if true then use greater than instead of less than for the
-     * comparison
+     * if true then use greater than instead of less than for the comparison
      *
      * @return
      */
@@ -478,20 +558,22 @@ public class Structure {
         final Variable rhs = comparator.createParameter(new TypeUsage(clazz, TypeUsage.ConstReference), "rhs");
 
         Expression result = null;
+        if (structure.getElements().isEmpty()) {
+            result = Literal.TRUE;
+        } else {
+            for (final StructureElement att : structure.getElements()) {
+                final Expression lhsElt = memberVariables.get(att).asExpression();
+                final Expression rhsElt = memberVariables.get(att).asMemberReference(rhs.asExpression(), false);
 
-        for (final StructureElement att : structure.getElements()) {
-            final Expression lhsElt = memberVariables.get(att).asExpression();
-            final Expression rhsElt = memberVariables.get(att).asMemberReference(rhs.asExpression(), false);
+                final Expression eltCompare = new BinaryExpression(lhsElt, BinaryOperator.EQUAL, rhsElt);
 
-            final Expression eltCompare = new BinaryExpression(lhsElt, BinaryOperator.EQUAL, rhsElt);
-
-            if (result == null) {
-                result = eltCompare;
-            } else {
-                result = new BinaryExpression(result, BinaryOperator.AND, eltCompare);
+                if (result == null) {
+                    result = eltCompare;
+                } else {
+                    result = new BinaryExpression(result, BinaryOperator.AND, eltCompare);
+                }
             }
         }
-
         comparator.getCode().appendStatement(new ReturnStatement(result));
         bodyFile.addFunctionDefinition(comparator);
         return comparator;
@@ -530,15 +612,15 @@ public class Structure {
     private final CodeFile bodyFile;
     private final Class clazz;
     private final DeclarationGroup constructors;
-    private final Map<StructureElement, Function> getterFunctions = new HashMap<StructureElement, Function>();
+    private final Map<StructureElement, Function> getterFunctions = new HashMap<>();
     private final DeclarationGroup getters;
     private final CodeFile headerFile;
     private final DeclarationGroup members;
 
-    private final Map<StructureElement, Variable> memberVariables = new HashMap<StructureElement, Variable>();
+    private final Map<StructureElement, Variable> memberVariables = new HashMap<>();
     private final String name;
 
-    private final Map<StructureElement, Function> setterFunctions = new HashMap<StructureElement, Function>();
+    private final Map<StructureElement, Function> setterFunctions = new HashMap<>();
     private final DeclarationGroup setters;
     private final StructureType structure;
     private final TypeUsage type;

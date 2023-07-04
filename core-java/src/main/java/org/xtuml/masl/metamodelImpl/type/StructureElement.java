@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
@@ -28,6 +29,7 @@ import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.utils.TextUtils;
 
+import java.util.List;
 import java.util.Objects;
 
 public class StructureElement extends Positioned implements org.xtuml.masl.metamodel.type.StructureElement {
@@ -133,7 +135,13 @@ public class StructureElement extends Positioned implements org.xtuml.masl.metam
     private String comment;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitStructureElement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitStructureElement(this);
     }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(type, defaultValue);
+    }
+
 }

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
@@ -108,8 +109,13 @@ public class IfStatement extends Statement implements org.xtuml.masl.metamodel.c
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-            return v.visitIfBranch(this, p);
+        public void accept(final ASTNodeVisitor v) {
+            v.visitIfBranch(this);
+        }
+
+        @Override
+        public List<ASTNode> children() {
+            return ASTNode.makeChildren(condition, statements);
         }
 
     }
@@ -133,7 +139,7 @@ public class IfStatement extends Statement implements org.xtuml.masl.metamodel.c
 
     @Override
     public List<Statement> getChildStatements() {
-        final List<Statement> result = new ArrayList<Statement>();
+        final List<Statement> result = new ArrayList<>();
         for (final Branch branch : branches) {
             result.addAll(branch.getStatements());
         }
@@ -147,7 +153,7 @@ public class IfStatement extends Statement implements org.xtuml.masl.metamodel.c
 
     @Override
     public String toAbbreviatedString() {
-        final List<String> branchAbbrev = new ArrayList<String>();
+        final List<String> branchAbbrev = new ArrayList<>();
         for (final Branch branch : branches) {
             branchAbbrev.add(branch.toAbbreviatedString());
         }
@@ -155,8 +161,13 @@ public class IfStatement extends Statement implements org.xtuml.masl.metamodel.c
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitIfStatement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitIfStatement(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(branches);
     }
 
 }

@@ -47,7 +47,7 @@ public class ScheduleStatementTranslator extends CodeTranslator {
         final ExpressionTranslator
                 timerIdTranslator =
                 ExpressionTranslator.createTranslator(schedule.getTimerId(), getScope());
-        final List<org.xtuml.masl.cppgen.Expression> paramExprs = new ArrayList<org.xtuml.masl.cppgen.Expression>();
+        final List<org.xtuml.masl.cppgen.Expression> paramExprs = new ArrayList<>();
 
         for (final Expression parameter : schedule.getGenerate().getArguments()) {
             final ExpressionTranslator paramTranslator = ExpressionTranslator.createTranslator(parameter, getScope());

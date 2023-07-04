@@ -44,7 +44,7 @@ public abstract class Position {
         positionLookup.put(key, position);
     }
 
-    private static final IdentityHashMap<String, Position> positionLookup = new IdentityHashMap<String, Position>();
+    private static final IdentityHashMap<String, Position> positionLookup = new IdentityHashMap<>();
 
     public static Position NO_POSITION = null;
 }

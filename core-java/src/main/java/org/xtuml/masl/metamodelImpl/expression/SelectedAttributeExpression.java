@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.type.TypeDefinition.ActualType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -30,8 +31,6 @@ import org.xtuml.masl.metamodelImpl.object.AttributeDeclaration;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class SelectedAttributeExpression extends Expression
@@ -70,14 +69,14 @@ public class SelectedAttributeExpression extends Expression
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(prefix.getFindArguments());
         return params;
     }
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(prefix.getConcreteFindParameters());
         return params;
     }
@@ -133,13 +132,13 @@ public class SelectedAttributeExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSelectedAttributeExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitSelectedAttributeExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.<Expression>singletonList(prefix);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(prefix);
     }
 
 }

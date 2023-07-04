@@ -41,7 +41,8 @@ public class Comment extends Statement {
     /**
      * Creates a C++ style single line comment of the form
      *
-     * <br>{@code // comment}
+     * <br>
+     * {@code // comment}
      * <p>
      * <p>
      * the text of the comment
@@ -55,7 +56,9 @@ public class Comment extends Statement {
     /**
      * Creates a C++ Style comment. This will be of the form
      * <p>
-     * <br/>{@code // comment line 1} <br/>{@code // comment line 2}
+     * <br/>
+     * {@code // comment line 1} <br/>
+     * {@code // comment line 2}
      * <p>
      * <p>
      * the text of the comment
@@ -71,7 +74,8 @@ public class Comment extends Statement {
     /**
      * Creates a C Style comment. This will be of the form
      * <p>
-     * <br/>{@code /*} <br/>
+     * <br/>
+     * {@code /*} <br/>
      * <code>&nbsp;* comment line 1</code> <br/>
      * <code>&nbsp;* comment line 2</code> <br/>
      * <code>&nbsp;*<code>{@code /}
@@ -88,7 +92,8 @@ public class Comment extends Statement {
     /**
      * Creates a JavaDoc or DOxygen Style comment. This will be of the form
      * <p>
-     * <br/>{@code /**} <br/>
+     * <br/>
+     * {@code /**} <br/>
      * <code>&nbsp;* comment line 1</code> <br/>
      * <code>&nbsp;* comment line 2</code> <br/>
      * <code>&nbsp;*<code>{@code /}
@@ -105,7 +110,8 @@ public class Comment extends Statement {
     /**
      * Creates an inline comment. This will be of the form
      * <p>
-     * <br/>{@code /* comment *}{@code /}
+     * <br/>
+     * {@code /* comment *}{@code /}
      * <p>
      * <p>
      * the text of the comment
@@ -120,17 +126,17 @@ public class Comment extends Statement {
      * Constructs a comment
      * <p>
      * <p>
-     * The characters used to start the comment. These characters will be
-     * written on a line of their own at the start of the comment block.
-     * No start line will be written if null.
+     * The characters used to start the comment. These characters will be written on
+     * a line of their own at the start of the comment block. No start line will be
+     * written if null.
      * <p>
      * The characters used to start each line of the comment text.
      * <p>
-     * The text contained in the comment. This will be wrapped at the max
-     * line length, and the continueComment used to start the next line.
-     * Any newlines in the text are preserved. Lines of the format X---X,
-     * where X is any character will be written as a whole line of 'X's.
-     * Eg. "line1\n*---*\nline2" would produce the following:
+     * The text contained in the comment. This will be wrapped at the max line
+     * length, and the continueComment used to start the next line. Any newlines in
+     * the text are preserved. Lines of the format X---X, where X is any character
+     * will be written as a whole line of 'X's. Eg. "line1\n*---*\nline2" would
+     * produce the following:
      *
      * <pre>
      *
@@ -144,9 +150,9 @@ public class Comment extends Statement {
      * </pre>
      * <p>
      * <p>
-     * The characters used to close the comment. These characters will be
-     * written on a line of their own at the end of the comment block. No
-     * finishing line will be written if null.
+     * The characters used to close the comment. These characters will be written on
+     * a line of their own at the end of the comment block. No finishing line will
+     * be written if null.
      * <p>
      * whether or not to wrap the comment at the maximum line length
      */
@@ -202,16 +208,16 @@ public class Comment extends Statement {
     }
 
     /**
-     * The characters used to close the comment. These characters will be written
-     * on a line of their own at the end of the comment block. No finishing line
-     * will be written if null.
+     * The characters used to close the comment. These characters will be written on
+     * a line of their own at the end of the comment block. No finishing line will
+     * be written if null.
      */
     private final String closeComment;
 
     /**
-     * The characters used to start the comment. These characters will be written
-     * on a line of their own at the start of the comment block. No start line
-     * will be written if null.
+     * The characters used to start the comment. These characters will be written on
+     * a line of their own at the start of the comment block. No start line will be
+     * written if null.
      */
     private final String openComment;
 
@@ -222,10 +228,10 @@ public class Comment extends Statement {
 
     /**
      * The text contained in the comment. This will be wrapped at the max line
-     * length, and the continueComment used to start the next line. Any newlines
-     * in the text are preserved. Lines of the format X---X, where X is any
-     * character will be written as a whole line of 'X's. Eg.
-     * "line1\n*---*\nline2" would produce the following:
+     * length, and the continueComment used to start the next line. Any newlines in
+     * the text are preserved. Lines of the format X---X, where X is any character
+     * will be written as a whole line of 'X's. Eg. "line1\n*---*\nline2" would
+     * produce the following:
      *
      * <pre>
      *

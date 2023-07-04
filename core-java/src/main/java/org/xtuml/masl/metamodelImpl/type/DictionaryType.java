@@ -21,8 +21,11 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
+
+import java.util.List;
 
 public class DictionaryType extends BasicType implements org.xtuml.masl.metamodel.type.DictionaryType {
 
@@ -81,8 +84,9 @@ public class DictionaryType extends BasicType implements org.xtuml.masl.metamode
         }
         if (valueType == null) {
             return other.valueType == null;
-        } else
+        } else {
             return valueType.equals(other.valueType);
+        }
     }
 
     @Override
@@ -128,8 +132,13 @@ public class DictionaryType extends BasicType implements org.xtuml.masl.metamode
     private final BasicType valueType;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDictionaryType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDictionaryType(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(keyType, valueType);
     }
 
 }

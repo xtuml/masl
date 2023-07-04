@@ -69,8 +69,7 @@ public final class RangeType extends CollectionType {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        throw new IllegalStateException("Cannot visit RangeType");
+    public void accept(final ASTNodeVisitor v) {
     }
 
 }

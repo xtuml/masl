@@ -35,7 +35,7 @@ public class ArgumentTranslator {
     public ArgumentTranslator(final List<? extends ParameterDefinition> parameters,
                               final List<? extends org.xtuml.masl.metamodel.expression.Expression> maslArguments,
                               final Scope scope) {
-        arguments = new ArrayList<Expression>(parameters.size());
+        arguments = new ArrayList<>(parameters.size());
         tempVariableDefinitions = new StatementGroup();
         outParameterAssignments = new StatementGroup();
 

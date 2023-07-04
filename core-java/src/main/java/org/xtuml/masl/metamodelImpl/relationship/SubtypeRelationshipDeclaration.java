@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.relationship;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
@@ -48,7 +49,7 @@ public class SubtypeRelationshipDeclaration extends RelationshipDeclaration
             return;
         }
 
-        final List<ObjectDeclaration> subtypeObjs = new ArrayList<ObjectDeclaration>();
+        final List<ObjectDeclaration> subtypeObjs = new ArrayList<>();
         for (final ObjectNameExpression subtype : subtypes) {
             if (subtype != null) {
                 subtypeObjs.add(subtype.getObject());
@@ -100,10 +101,10 @@ public class SubtypeRelationshipDeclaration extends RelationshipDeclaration
 
     private final Map<org.xtuml.masl.metamodel.object.ObjectDeclaration, RelationshipSpecification>
             subToSuperSpecs =
-            new HashMap<org.xtuml.masl.metamodel.object.ObjectDeclaration, RelationshipSpecification>();
+            new HashMap<>();
     private final Map<org.xtuml.masl.metamodel.object.ObjectDeclaration, RelationshipSpecification>
             superToSubSpecs =
-            new HashMap<org.xtuml.masl.metamodel.object.ObjectDeclaration, RelationshipSpecification>();
+            new HashMap<>();
 
     @Override
     public RelationshipSpecification getSubToSuperSpec(final org.xtuml.masl.metamodel.object.ObjectDeclaration subtype) {
@@ -122,7 +123,7 @@ public class SubtypeRelationshipDeclaration extends RelationshipDeclaration
 
     @Override
     public List<ObjectDeclaration> getSubtypes() {
-        final List<ObjectDeclaration> result = new ArrayList<ObjectDeclaration>(subtypes.size());
+        final List<ObjectDeclaration> result = new ArrayList<>(subtypes.size());
         for (final ObjectDeclaration subtype : subtypes) {
             result.add(subtype);
         }
@@ -131,7 +132,7 @@ public class SubtypeRelationshipDeclaration extends RelationshipDeclaration
 
     @Override
     public String toString() {
-        final List<String> subNames = new ArrayList<String>();
+        final List<String> subNames = new ArrayList<>();
         for (final ObjectDeclaration subtype : subtypes) {
             subNames.add(subtype.getName());
         }
@@ -144,8 +145,13 @@ public class SubtypeRelationshipDeclaration extends RelationshipDeclaration
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.vistSubtypeRelationshipDeclaration(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.vistSubtypeRelationshipDeclaration(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(super.children(), subToSuperSpecs.values(), superToSubSpecs.values());
     }
 
 }

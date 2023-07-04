@@ -61,5 +61,5 @@ public class ChildNodeList<C extends ASTNodeImpl> extends AbstractList<C> {
     }
 
     private final ASTNodeImpl parent;
-    private final List<C> nodes = new ArrayList<C>();
+    private final List<C> nodes = new ArrayList<>();
 }

@@ -41,8 +41,8 @@ public class TypeQualifierImpl extends QualifierImpl implements TypeQualifier {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTypeQualifier(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitTypeQualifier(this);
     }
 
     private final TypeDeclarationImpl type;
@@ -64,5 +64,5 @@ public class TypeQualifierImpl extends QualifierImpl implements TypeQualifier {
         return qualifier.get();
     }
 
-    private final ChildNode<QualifierImpl> qualifier = new ChildNode<QualifierImpl>(this);
+    private final ChildNode<QualifierImpl> qualifier = new ChildNode<>(this);
 }

@@ -21,16 +21,26 @@
  */
 package org.xtuml.masl.translate;
 
-import org.xtuml.masl.translate.build.BuildSet;
+import org.xtuml.masl.translate.building.BuildSet;
 
 import java.io.File;
 
 @Alias(stripPrefix = "org.xtuml.masl.translate.", stripSuffix = ".Translator", value = "")
 public abstract class BuildTranslator {
 
-    public abstract void translate(BuildSet buildSet, File sourceDirectory);
+    public abstract void translate(File sourceDirectory);
 
     public abstract void translateBuild(Translator<?> parent, File sourceDirectory);
 
     public abstract void dump(File directory);
+
+    private BuildSet buildSet;
+
+    public void setBuildSet(final BuildSet buildSet) {
+        this.buildSet = buildSet;
+    }
+
+    public BuildSet getBuildSet() {
+        return buildSet;
+    }
 }

@@ -76,8 +76,7 @@ public class MaslTreeParser extends TreeParser {
 
     @Override
     public void reportError(final RecognitionException e) {
-        if (e instanceof MismatchedTreeNodeException &&
-            e.node instanceof CommonErrorNode) {
+        if (e instanceof MismatchedTreeNodeException && e.node instanceof CommonErrorNode) {
             return;
         }
         super.reportError(e);

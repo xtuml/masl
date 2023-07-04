@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.project;
 
+import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.*;
 import org.xtuml.masl.metamodelImpl.domain.DomainTerminatorService;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -89,7 +90,7 @@ public class ProjectTerminatorService extends Service
         } else {
             return terminator.getDomainTerminator().getDomain().getName() +
                    "_" +
-                   terminator.getDomainTerminator().getKeyLetters() +
+                   terminator.getDomainTerminator().getName() +
                    "_" +
                    domainTerminatorService.getName() +
                    (getOverloadNo() > 0 ? "." + getOverloadNo() : "") +
@@ -114,6 +115,11 @@ public class ProjectTerminatorService extends Service
     @Override
     public ProjectTerminator getTerminator() {
         return terminator;
+    }
+
+    @Override
+    public void accept(final ASTNodeVisitor v) {
+        v.visitProjectTerminatorService(this);
     }
 
     private final ProjectTerminator terminator;

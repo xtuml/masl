@@ -81,8 +81,8 @@ public class ImportImpl extends ASTNodeImpl implements Import {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitImport(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitImport(this);
     }
 
     @Override

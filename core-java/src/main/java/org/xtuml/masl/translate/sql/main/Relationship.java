@@ -41,12 +41,8 @@ public class Relationship {
         assocOneToOneMapperClass.addTemplateSpecialisation(new TypeUsage(leftClass));
         assocOneToOneMapperClass.addTemplateSpecialisation(new TypeUsage(rightClass));
         assocOneToOneMapperClass.addTemplateSpecialisation(new TypeUsage(assocClass));
-        assocOneToOneMapperClass.addTemplateSpecialisation(leftCondition ?
-                                                           new Literal("true") :
-                                                           new Literal("false"));
-        assocOneToOneMapperClass.addTemplateSpecialisation(rightCondition ?
-                                                           new Literal("true") :
-                                                           new Literal("false"));
+        assocOneToOneMapperClass.addTemplateSpecialisation(leftCondition ? new Literal("true") : new Literal("false"));
+        assocOneToOneMapperClass.addTemplateSpecialisation(rightCondition ? new Literal("true") : new Literal("false"));
 
         final Class mapperTypedef = assocOneToOneMapperClass.referenceNestedType("mapper_type");
         final TypedefType requiredTypedef = new TypedefType(className, namespace, new TypeUsage(mapperTypedef));
@@ -68,9 +64,7 @@ public class Relationship {
         assocOneToManyMapperClass.addTemplateSpecialisation(new TypeUsage(leftClass));
         assocOneToManyMapperClass.addTemplateSpecialisation(new TypeUsage(rightClass));
         assocOneToManyMapperClass.addTemplateSpecialisation(new TypeUsage(assocClass));
-        assocOneToManyMapperClass.addTemplateSpecialisation(leftCondition ?
-                                                            new Literal("true") :
-                                                            new Literal("false"));
+        assocOneToManyMapperClass.addTemplateSpecialisation(leftCondition ? new Literal("true") : new Literal("false"));
         assocOneToManyMapperClass.addTemplateSpecialisation(rightCondition ?
                                                             new Literal("true") :
                                                             new Literal("false"));
@@ -95,9 +89,7 @@ public class Relationship {
         assocManyToOneMapperClass.addTemplateSpecialisation(new TypeUsage(leftClass));
         assocManyToOneMapperClass.addTemplateSpecialisation(new TypeUsage(rightClass));
         assocManyToOneMapperClass.addTemplateSpecialisation(new TypeUsage(assocClass));
-        assocManyToOneMapperClass.addTemplateSpecialisation(leftCondition ?
-                                                            new Literal("true") :
-                                                            new Literal("false"));
+        assocManyToOneMapperClass.addTemplateSpecialisation(leftCondition ? new Literal("true") : new Literal("false"));
         assocManyToOneMapperClass.addTemplateSpecialisation(rightCondition ?
                                                             new Literal("true") :
                                                             new Literal("false"));
@@ -147,12 +139,8 @@ public class Relationship {
         oneToOneMapperClass.addTemplateSpecialisation(new Literal(relationshipNumber));
         oneToOneMapperClass.addTemplateSpecialisation(new TypeUsage(leftClass));
         oneToOneMapperClass.addTemplateSpecialisation(new TypeUsage(rightClass));
-        oneToOneMapperClass.addTemplateSpecialisation(leftCondition ?
-                                                      new Literal("true") :
-                                                      new Literal("false"));
-        oneToOneMapperClass.addTemplateSpecialisation(rightCondition ?
-                                                      new Literal("true") :
-                                                      new Literal("false"));
+        oneToOneMapperClass.addTemplateSpecialisation(leftCondition ? new Literal("true") : new Literal("false"));
+        oneToOneMapperClass.addTemplateSpecialisation(rightCondition ? new Literal("true") : new Literal("false"));
 
         final Class mapperTypedef = oneToOneMapperClass.referenceNestedType("mapper_type");
         final TypedefType requiredTypedef = new TypedefType(className, namespace, new TypeUsage(mapperTypedef));
@@ -172,12 +160,8 @@ public class Relationship {
         oneToManyMapperClass.addTemplateSpecialisation(new Literal(relationshipNumber));
         oneToManyMapperClass.addTemplateSpecialisation(new TypeUsage(leftClass));
         oneToManyMapperClass.addTemplateSpecialisation(new TypeUsage(rightClass));
-        oneToManyMapperClass.addTemplateSpecialisation(leftCondition ?
-                                                       new Literal("true") :
-                                                       new Literal("false"));
-        oneToManyMapperClass.addTemplateSpecialisation(rightCondition ?
-                                                       new Literal("true") :
-                                                       new Literal("false"));
+        oneToManyMapperClass.addTemplateSpecialisation(leftCondition ? new Literal("true") : new Literal("false"));
+        oneToManyMapperClass.addTemplateSpecialisation(rightCondition ? new Literal("true") : new Literal("false"));
 
         final Class mapperTypedef = oneToManyMapperClass.referenceNestedType("mapper_type");
         final TypedefType requiredTypedef = new TypedefType(className, namespace, new TypeUsage(mapperTypedef));
@@ -197,12 +181,8 @@ public class Relationship {
         manyToOneMapperClass.addTemplateSpecialisation(new Literal(relationshipNumber));
         manyToOneMapperClass.addTemplateSpecialisation(new TypeUsage(leftClass));
         manyToOneMapperClass.addTemplateSpecialisation(new TypeUsage(rightClass));
-        manyToOneMapperClass.addTemplateSpecialisation(leftCondition ?
-                                                       new Literal("true") :
-                                                       new Literal("false"));
-        manyToOneMapperClass.addTemplateSpecialisation(rightCondition ?
-                                                       new Literal("true") :
-                                                       new Literal("false"));
+        manyToOneMapperClass.addTemplateSpecialisation(leftCondition ? new Literal("true") : new Literal("false"));
+        manyToOneMapperClass.addTemplateSpecialisation(rightCondition ? new Literal("true") : new Literal("false"));
 
         final Class mapperTypedef = manyToOneMapperClass.referenceNestedType("mapper_type");
         final TypedefType requiredTypedef = new TypedefType(className, namespace, new TypeUsage(mapperTypedef));

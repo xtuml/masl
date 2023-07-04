@@ -295,7 +295,7 @@ public class SqliteSubTypeRelationshipToTableTranslator implements SubTypeRelati
         // query <<
         // "SELECT R5_lhs FROM R5_LINK_TABLE WHERE R5_type = 1 AND R5_rhs = " <<
         // rhsIdentity << ";";
-        final List<Expression> streamExprList = new ArrayList<Expression>();
+        final List<Expression> streamExprList = new ArrayList<>();
         streamExprList.add(queryVar.asExpression());
         streamExprList.add(Literal.createStringLiteral("SELECT " +
                                                        getLeftColumnName() +
@@ -315,7 +315,7 @@ public class SqliteSubTypeRelationshipToTableTranslator implements SubTypeRelati
     }
 
     protected Expression generateLoadRhsSelectSQL(final Variable queryVar, final Variable identityVar) {
-        final List<Expression> streamExprList = new ArrayList<Expression>();
+        final List<Expression> streamExprList = new ArrayList<>();
         streamExprList.add(queryVar.asExpression());
         streamExprList.add(Literal.createStringLiteral("SELECT " +
                                                        getRightColumnName() +

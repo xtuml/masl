@@ -171,9 +171,7 @@ public class ObjectTranslator extends ConcreteObjectTranslator {
 
     }
 
-    private final Map<IdentifierDeclaration, IdentifierLookupTranslator>
-            identifierLookupTranslators =
-            new HashMap<IdentifierDeclaration, IdentifierLookupTranslator>();
+    private final Map<IdentifierDeclaration, IdentifierLookupTranslator> identifierLookupTranslators = new HashMap<>();
 
     IdentifierLookupTranslator getIdentifierLookupTranslator(final IdentifierDeclaration identifier) {
         IdentifierLookupTranslator lookupTranslator = identifierLookupTranslators.get(identifier);
@@ -234,12 +232,12 @@ public class ObjectTranslator extends ConcreteObjectTranslator {
 
         final Iterator<Variable> param = function.getParameters().iterator();
 
-        final Map<AttributeDeclaration, Expression> paramLookup = new HashMap<AttributeDeclaration, Expression>();
+        final Map<AttributeDeclaration, Expression> paramLookup = new HashMap<>();
         for (final AttributeDeclaration att : attributes) {
             paramLookup.put(att, param.next().asExpression());
         }
 
-        final List<Expression> orderedParams = new ArrayList<Expression>(attributes.size());
+        final List<Expression> orderedParams = new ArrayList<>(attributes.size());
 
         for (final AttributeDeclaration identAttribute : identifier.getAttributes()) {
             orderedParams.add(paramLookup.get(identAttribute));
@@ -257,7 +255,7 @@ public class ObjectTranslator extends ConcreteObjectTranslator {
     protected void createPredicateFind(final org.xtuml.masl.metamodel.expression.Expression predicate,
                                        final Function function,
                                        final FindExpression.Type type) {
-        final List<Expression> findArgs = new ArrayList<Expression>(function.getParameters().size());
+        final List<Expression> findArgs = new ArrayList<>(function.getParameters().size());
         for (final Variable param : function.getParameters()) {
             findArgs.add(param.asExpression());
         }
@@ -386,6 +384,6 @@ public class ObjectTranslator extends ConcreteObjectTranslator {
 
     @Override
     public List<Expression> getPopulationConstructorSuperclassParams() {
-        return new ArrayList<Expression>();
+        return new ArrayList<>();
     }
 }

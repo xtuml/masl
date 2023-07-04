@@ -46,8 +46,8 @@ public class SuperQualifierImpl extends QualifierImpl implements SuperQualifier 
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSuperQualifier(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitSuperQualifier(this);
     }
 
     private TypeBodyImpl typeBody;
@@ -64,7 +64,7 @@ public class SuperQualifierImpl extends QualifierImpl implements SuperQualifier 
         this.qualifier.set((TypeQualifierImpl) qualifier);
     }
 
-    private final ChildNode<TypeQualifierImpl> qualifier = new ChildNode<TypeQualifierImpl>(this);
+    private final ChildNode<TypeQualifierImpl> qualifier = new ChildNode<>(this);
 
     @Override
     public void forceQualifier() {

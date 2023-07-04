@@ -76,8 +76,8 @@ public final class BagType extends CollectionType implements org.xtuml.masl.meta
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitBagType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitBagType(this);
     }
 
 }

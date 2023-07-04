@@ -35,8 +35,8 @@ class CastImpl extends ExpressionImpl implements Cast {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCast(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitCast(this);
     }
 
     @Override
@@ -70,6 +70,6 @@ class CastImpl extends ExpressionImpl implements Cast {
         return 13;
     }
 
-    private final ChildNode<TypeImpl> type = new ChildNode<TypeImpl>(this);
-    private final ChildNode<ExpressionImpl> expression = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<TypeImpl> type = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> expression = new ChildNode<>(this);
 }

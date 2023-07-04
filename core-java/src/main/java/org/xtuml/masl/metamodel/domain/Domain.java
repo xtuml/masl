@@ -103,9 +103,8 @@ public interface Domain extends ASTNode {
     /**
      * Returns the list of all interfaces referenced directly by this domain or
      * interface. If this is an interface then only those interfaces referenced in
-     * the interface file will be returned. If this is a domain, then all
-     * interfaces references in the the domain definition and masl code will be
-     * returned.
+     * the interface file will be returned. If this is a domain, then all interfaces
+     * references in the the domain definition and masl code will be returned.
      *
      * @return the list of interfaces
      */

@@ -21,11 +21,14 @@
  */
 package org.xtuml.masl.metamodelImpl.statemodel;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.expression.EventExpression;
 import org.xtuml.masl.metamodelImpl.object.ObjectDeclaration;
+
+import java.util.List;
 
 public class TransitionOption extends Positioned implements org.xtuml.masl.metamodel.statemodel.TransitionOption {
 
@@ -83,8 +86,13 @@ public class TransitionOption extends Positioned implements org.xtuml.masl.metam
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTransitionOption(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTransitionOption(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

@@ -35,8 +35,8 @@ public class BinaryExpression extends Expression {
     /**
      * Takes a number of expressions and produces a single compound C++ expression
      * using the supplied operator. So for example parameters of
-     * BinaryOperator.PLUS, { ExprA, ExprB, ExprC, ExprD } would result in a
-     * single compound expression of the form ExprA + ExprB + ExprC + ExprD
+     * BinaryOperator.PLUS, { ExprA, ExprB, ExprC, ExprD } would result in a single
+     * compound expression of the form ExprA + ExprB + ExprC + ExprD
      * <p>
      * <p>
      * The operator to be applied to the specified expressions
@@ -53,8 +53,8 @@ public class BinaryExpression extends Expression {
     /**
      * Takes a number of expressions and produces a single compound C++ expression
      * using the supplied operator. So for example parameters of
-     * BinaryOperator.PLUS, { ExprA, ExprB, ExprC, ExprD } would result in a
-     * single compound expression of the form ExprA + ExprB + ExprC + ExprD
+     * BinaryOperator.PLUS, { ExprA, ExprB, ExprC, ExprD } would result in a single
+     * compound expression of the form ExprA + ExprB + ExprC + ExprD
      * <p>
      * <p>
      * The operator to be applied to the specified expressions
@@ -109,16 +109,15 @@ public class BinaryExpression extends Expression {
     /**
      * {@inheritDoc}
      * <p>
-     * The code output will take account of the relative precedence of the
-     * operator compared to the precedence of the expression on each side, and
-     * also the associativity of the operator when determining whether parentheses
-     * are needed. The minimum number of parenthesis necessary to preserve the
-     * semantics of the expression will be used in the generated code. Assignment
-     * expressions are right associative, that is {@code a=b=c}is equivalent to
-     * {@code a=(b=c)}. All other binary expressions are left-associative, that
-     * is {@code a+b+c}is equivalent to {@code (a+b)+c}. Precedence is
-     * determined according to the table in C++ Programming Language (Third
-     * Edition) Stroustrup, Section 6.2.
+     * The code output will take account of the relative precedence of the operator
+     * compared to the precedence of the expression on each side, and also the
+     * associativity of the operator when determining whether parentheses are
+     * needed. The minimum number of parenthesis necessary to preserve the semantics
+     * of the expression will be used in the generated code. Assignment expressions
+     * are right associative, that is {@code a=b=c}is equivalent to {@code a=(b=c)}.
+     * All other binary expressions are left-associative, that is {@code a+b+c}is
+     * equivalent to {@code (a+b)+c}. Precedence is determined according to the
+     * table in C++ Programming Language (Third Edition) Stroustrup, Section 6.2.
      */
     String getCode(final Namespace currentNamespace, final String alignment) {
         String lhs = lhsExpression.getCode(currentNamespace, alignment);

@@ -28,7 +28,10 @@ import org.xtuml.masl.metamodel.object.ObjectDeclaration;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Alias("StackTrack")
 @Default
@@ -49,7 +52,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
      */
     @Override
     public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.DomainTranslator>singletonList(mainDomainTranslator);
+        return Collections.singletonList(mainDomainTranslator);
     }
 
     @Override
@@ -83,8 +86,8 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         return objectTranslators.get(object);
     }
 
-    Map<ObjectDeclaration, ObjectTranslator> objectTranslators = new HashMap<ObjectDeclaration, ObjectTranslator>();
-    Map<DomainTerminator, TerminatorTranslator> termTranslators = new HashMap<DomainTerminator, TerminatorTranslator>();
+    Map<ObjectDeclaration, ObjectTranslator> objectTranslators = new HashMap<>();
+    Map<DomainTerminator, TerminatorTranslator> termTranslators = new HashMap<>();
 
     private final org.xtuml.masl.translate.main.DomainTranslator mainDomainTranslator;
 

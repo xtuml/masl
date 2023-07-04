@@ -48,7 +48,7 @@ public class MacroCall extends Expression {
     String getCode(final Namespace currentNamespace, final String alignment) {
         final StringBuilder buf = new StringBuilder();
         buf.append(macro.getName());
-        final List<String> argCode = new ArrayList<String>();
+        final List<String> argCode = new ArrayList<>();
         for (final MacroArgument arg : arguments) {
             argCode.add(arg.getCode(currentNamespace));
         }
@@ -60,8 +60,8 @@ public class MacroCall extends Expression {
 
     /**
      * Macros are starnge in that they can appear anywhere in a code file. This
-     * makes the call look like a declaration so it can be added outside a
-     * function definition.
+     * makes the call look like a declaration so it can be added outside a function
+     * definition.
      *
      * @return a pseudo-declaration containing the macro call.
      */

@@ -52,8 +52,8 @@ public class ConstructorInvocationImpl extends StatementImpl implements Construc
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitConstructorInvocation(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitConstructorInvocation(this);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ConstructorInvocationImpl extends StatementImpl implements Construc
 
     private boolean isSuper;
 
-    private final ChildNodeList<ExpressionImpl> arguments = new ChildNodeList<ExpressionImpl>(this);
+    private final ChildNodeList<ExpressionImpl> arguments = new ChildNodeList<>(this);
 
     @Override
     public ReferenceTypeImpl addTypeArgument(final ReferenceType argument) {
@@ -87,7 +87,7 @@ public class ConstructorInvocationImpl extends StatementImpl implements Construc
         return (ReferenceTypeImpl) argument;
     }
 
-    private final List<ReferenceTypeImpl> typeArguments = new ChildNodeList<ReferenceTypeImpl>(this);
+    private final List<ReferenceTypeImpl> typeArguments = new ChildNodeList<>(this);
 
     @Override
     public ExpressionImpl getEnclosingInstance() {
@@ -105,6 +105,6 @@ public class ConstructorInvocationImpl extends StatementImpl implements Construc
         return (ExpressionImpl) instance;
     }
 
-    private final ChildNode<ExpressionImpl> enclosingInstance = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> enclosingInstance = new ChildNode<>(this);
 
 }

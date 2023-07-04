@@ -41,16 +41,10 @@ public class ObjectTranslator {
     private final ObjectDeclaration objectDecl;
     private final SqlFrameworkTranslator framework;
 
-    private final List<GeneratedClass> classList = new ArrayList<GeneratedClass>();
-    private final List<NormalRelationshipDeclaration>
-            normalRelationshipDeclList =
-            new ArrayList<NormalRelationshipDeclaration>();
-    private final List<SubtypeRelationshipDeclaration>
-            subtypeRelationshipDeclList =
-            new ArrayList<SubtypeRelationshipDeclaration>();
-    private final List<AssociativeRelationshipDeclaration>
-            assocRelationshipDeclList =
-            new ArrayList<AssociativeRelationshipDeclaration>();
+    private final List<GeneratedClass> classList = new ArrayList<>();
+    private final List<NormalRelationshipDeclaration> normalRelationshipDeclList = new ArrayList<>();
+    private final List<SubtypeRelationshipDeclaration> subtypeRelationshipDeclList = new ArrayList<>();
+    private final List<AssociativeRelationshipDeclaration> assocRelationshipDeclList = new ArrayList<>();
 
     private final Namespace namespace;
     private final ImplementationClass implClass;

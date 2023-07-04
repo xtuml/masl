@@ -72,7 +72,7 @@ public class EventTranslator {
     private void addProcessFunction() {
         processFunction = objectTranslator.getMain().createProcessFunction(event);
 
-        final List<Expression> stateArgs = new ArrayList<Expression>();
+        final List<Expression> stateArgs = new ArrayList<>();
         for (final ParameterDefinition param : event.getParameters()) {
             final TypeUsage type = domainTranslator.getTypes().getType(param.getType());
             final Variable
@@ -108,8 +108,8 @@ public class EventTranslator {
         eventInvoker = eventClass.redefineFunction(group, Architecture.event.getInvoke(), Visibility.PUBLIC);
         objectTranslator.getMain().getBodyFile().addFunctionDefinition(eventInvoker);
 
-        final List<Expression> processArgs = new ArrayList<Expression>();
-        final List<Expression> consumeArgs = new ArrayList<Expression>();
+        final List<Expression> processArgs = new ArrayList<>();
+        final List<Expression> consumeArgs = new ArrayList<>();
 
         if (event.getType() == EventDeclaration.Type.NORMAL) {
             final Variable consumeParam = consumeFunction.createParameter(new TypeUsage(Architecture.ID_TYPE), "id");
@@ -187,7 +187,7 @@ public class EventTranslator {
     private Function consumeFunction;
     private Function eventInvoker;
     private Function eventConstructor;
-    private final Map<ParameterDefinition, Function> getters = new HashMap<ParameterDefinition, Function>();
+    private final Map<ParameterDefinition, Function> getters = new HashMap<>();
 
     public Function getParamGetter(final ParameterDefinition param) {
         return getters.get(param);
@@ -216,7 +216,7 @@ public class EventTranslator {
 
         addEventClass();
 
-        final List<Expression> eventParams = new ArrayList<Expression>();
+        final List<Expression> eventParams = new ArrayList<>();
         for (final ParameterDefinition param : event.getParameters()) {
             final TypeUsage type = domainTranslator.getTypes().getType(param.getType());
             final Variable

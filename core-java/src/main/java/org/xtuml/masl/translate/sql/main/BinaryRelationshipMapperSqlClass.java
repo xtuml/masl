@@ -76,15 +76,13 @@ public class BinaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
     private BinaryRelationshipToTableTranslator tableTranslator;
 
     /**
-     * Constructor - To be used when directly constructing an object of this
-     * class.
+     * Constructor - To be used when directly constructing an object of this class.
      * <p>
      * <p>
-     * the relationship Mapper class that this MapperSQL class has been
-     * constructed to support.
+     * the relationship Mapper class that this MapperSQL class has been constructed
+     * to support.
      * <p>
-     * the C++ MapperSQL interface class of the supported relationship
-     * Mapper Class
+     * the C++ MapperSQL interface class of the supported relationship Mapper Class
      * <p>
      * the actual relationship declaration
      * <p>
@@ -114,11 +112,10 @@ public class BinaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
      * SubTypeRelationshipMapperSqlClass).
      * <p>
      * <p>
-     * the relationship Mapper class that this MapperSQL class has been
-     * constructed to support.
+     * the relationship Mapper class that this MapperSQL class has been constructed
+     * to support.
      * <p>
-     * the C++ MapperSQL interface class of the supported relationship
-     * Mapper Class
+     * the C++ MapperSQL interface class of the supported relationship Mapper Class
      * <p>
      * the name to be used for the generated C++ MapperSQL class
      * <p>
@@ -164,8 +161,8 @@ public class BinaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
     }
 
     /**
-     * @return the SQL column name for the object on the left hand side (LHS) of
-     * the relationship.
+     * @return the SQL column name for the object on the left hand side (LHS) of the
+     * relationship.
      */
     public String getLeftColumnName() {
         return tableTranslator.getLeftColumnName();
@@ -341,8 +338,8 @@ public class BinaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
     }
 
     /**
-     * Add a method to access the database to get the current number of rows in
-     * the link table.
+     * Add a method to access the database to get the current number of rows in the
+     * link table.
      */
     protected void addExecuteMethods() {
         final Function
@@ -448,8 +445,8 @@ public class BinaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
 
     /**
      * Add the loadRhs method defined by the interface. This will access the
-     * database to read the link table information using a where clause based on
-     * the value of a lhs object id.
+     * database to read the link table information using a where clause based on the
+     * value of a lhs object id.
      */
     protected void addLoadRhs() {
         final Function loadRhsFn = mapperSqlClass.createMemberFunction(loadGroup, "loadRhs", Visibility.PUBLIC);
@@ -472,8 +469,8 @@ public class BinaryRelationshipMapperSqlClass implements GeneratedRelationshipCl
 
     /**
      * Add the loadLhs method defined by the interface. This will access the
-     * database to read the link table information using a where clause based on
-     * the value of a rhs object id.
+     * database to read the link table information using a where clause based on the
+     * value of a rhs object id.
      */
     protected void addLoadLhs() {
         final Function loadLhsFn = mapperSqlClass.createMemberFunction(loadGroup, "loadLhs", Visibility.PUBLIC);

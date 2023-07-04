@@ -144,8 +144,8 @@ public class DurationLiteral extends LiteralExpression implements org.xtuml.masl
     final private String original;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDurationLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDurationLiteral(this);
     }
 
 }

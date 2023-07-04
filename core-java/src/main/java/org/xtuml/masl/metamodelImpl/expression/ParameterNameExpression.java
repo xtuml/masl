@@ -21,12 +21,15 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.ParameterDefinition;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
+
+import java.util.List;
 
 public class ParameterNameExpression extends Expression
         implements org.xtuml.masl.metamodel.expression.ParameterNameExpression {
@@ -80,8 +83,13 @@ public class ParameterNameExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitParameterNameExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitParameterNameExpression(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

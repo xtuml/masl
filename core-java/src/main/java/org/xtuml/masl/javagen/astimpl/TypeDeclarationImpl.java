@@ -133,8 +133,8 @@ class TypeDeclarationImpl extends TypeMemberImpl implements TypeDeclaration, Mod
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTypeDeclaration(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitTypeDeclaration(this);
     }
 
     @Override
@@ -472,7 +472,7 @@ class TypeDeclarationImpl extends TypeMemberImpl implements TypeDeclaration, Mod
     }
 
     private Collection<TypeDeclarationImpl> getExtendedTypes() {
-        final Set<TypeDeclarationImpl> result = new HashSet<TypeDeclarationImpl>();
+        final Set<TypeDeclarationImpl> result = new HashSet<>();
         if (getSupertype() != null) {
             result.add((getSupertype()).getTypeDeclaration());
             result.addAll((getSupertype()).getTypeDeclaration().getExtendedTypes());
@@ -490,13 +490,13 @@ class TypeDeclarationImpl extends TypeMemberImpl implements TypeDeclaration, Mod
 
     private String name;
 
-    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<ModifiersImpl>(this);
+    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<>(this);
 
-    private final ChildNode<DeclaredTypeImpl> supertype = new ChildNode<DeclaredTypeImpl>(this);
+    private final ChildNode<DeclaredTypeImpl> supertype = new ChildNode<>(this);
 
-    private final List<DeclaredTypeImpl> interfaces = new ChildNodeList<DeclaredTypeImpl>(this);
+    private final List<DeclaredTypeImpl> interfaces = new ChildNodeList<>(this);
 
-    private final ChildNodeList<TypeParameterImpl> typeParameters = new ChildNodeList<TypeParameterImpl>(this);
+    private final ChildNodeList<TypeParameterImpl> typeParameters = new ChildNodeList<>(this);
 
     private boolean isInterface = false;
 
@@ -506,6 +506,6 @@ class TypeDeclarationImpl extends TypeMemberImpl implements TypeDeclaration, Mod
 
     private final TDScope scope;
 
-    private final ChildNode<TypeBodyImpl> typeBody = new ChildNode<TypeBodyImpl>(this);
+    private final ChildNode<TypeBodyImpl> typeBody = new ChildNode<>(this);
 
 }

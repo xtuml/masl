@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,7 +20,9 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.expression;
+import java.util.List;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 
@@ -49,8 +51,17 @@ public class TypedExpression extends Expression {
     private final BasicType type;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return null;
+    public void accept(final ASTNodeVisitor v) {
+    }
+
+    @Override
+    public String toString() {
+        return type.toString();
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

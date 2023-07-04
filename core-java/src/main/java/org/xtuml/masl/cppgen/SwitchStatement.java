@@ -43,15 +43,15 @@ public class SwitchStatement extends Statement {
          * Creates a case condition
          * <p>
          * <p>
-         * the discriminator for this condition. If the containing switch
-         * statement's condition variable is equal to this value, execution
-         * continues with the statements in this condition
+         * the discriminator for this condition. If the containing switch statement's
+         * condition variable is equal to this value, execution continues with the
+         * statements in this condition
          * <p>
-         * the statement to execute if the discriminator matches. If more
-         * than one statement is required, then either a {@link CodeBlock}
-         * or {@link StatementGroup} may be used. Note that there is no
-         * implicit <code>break</code> statement, and if one is required it
-         * must be explicitly added to the group or block.
+         * the statement to execute if the discriminator matches. If more than one
+         * statement is required, then either a {@link CodeBlock} or
+         * {@link StatementGroup} may be used. Note that there is no implicit
+         * <code>break</code> statement, and if one is required it must be explicitly
+         * added to the group or block.
          */
         public CaseCondition(final Expression expression, final Statement statement) {
             this.expression = expression;
@@ -111,8 +111,8 @@ public class SwitchStatement extends Statement {
      * Creates a C++ switch statement.
      * <p>
      * <p>
-     * the expression that determines which of the case conditions should
-     * be executed
+     * the expression that determines which of the case conditions should be
+     * executed
      * <p>
      * a list of case conditions
      * <p>
@@ -136,8 +136,8 @@ public class SwitchStatement extends Statement {
      * Creates a C++ switch statement.
      * <p>
      * <p>
-     * the expression that determines which of the case conditions should
-     * be executed
+     * the expression that determines which of the case conditions should be
+     * executed
      * <p>
      * a list of case conditions
      */

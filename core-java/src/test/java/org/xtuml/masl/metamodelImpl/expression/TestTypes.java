@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,11 +20,16 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.expression;
-
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
 import org.xtuml.masl.metamodelImpl.common.Visibility;
 import org.xtuml.masl.metamodelImpl.domain.Domain;
-import org.xtuml.masl.metamodelImpl.type.*;
+import org.xtuml.masl.metamodelImpl.type.CharacterType;
+import org.xtuml.masl.metamodelImpl.type.IntegerType;
+import org.xtuml.masl.metamodelImpl.type.RealType;
+import org.xtuml.masl.metamodelImpl.type.SequenceType;
+import org.xtuml.masl.metamodelImpl.type.StringType;
+import org.xtuml.masl.metamodelImpl.type.TypeDeclaration;
+import org.xtuml.masl.metamodelImpl.type.UserDefinedType;
 
 public final class TestTypes {
 
@@ -42,24 +47,19 @@ public final class TestTypes {
         bReal = RealType.create(null, false);
         bString = StringType.create(null, false);
 
-        udIntTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udIntType", Visibility.PUBLIC, bInteger, pragmas);
+        udIntTypeDecl = TypeDeclaration.create(null, domain, prefix + "udIntType", Visibility.PUBLIC, bInteger,
+                pragmas);
         udIntType = UserDefinedType.create(domain.getReference(null), prefix + "udIntType");
 
         udRealTypeDecl = TypeDeclaration.create(null, domain, prefix + "udRealType", Visibility.PUBLIC, bReal, pragmas);
         udRealType = UserDefinedType.create(domain.getReference(null), prefix + "udRealType");
 
-        udCharacterTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udCharacterType",
-                                       Visibility.PUBLIC,
-                                       bCharacter,
-                                       pragmas);
+        udCharacterTypeDecl = TypeDeclaration.create(null, domain, prefix + "udCharacterType", Visibility.PUBLIC,
+                bCharacter, pragmas);
         udCharacterType = UserDefinedType.create(domain.getReference(null), prefix + "udCharacterType");
 
-        udStringTypeDecl =
-                TypeDeclaration.create(null, domain, prefix + "udStringType", Visibility.PUBLIC, bString, pragmas);
+        udStringTypeDecl = TypeDeclaration.create(null, domain, prefix + "udStringType", Visibility.PUBLIC, bString,
+                pragmas);
         udStringType = UserDefinedType.create(domain.getReference(null), prefix + "udStringType");
 
         seqOfCharacter = SequenceType.create(null, bCharacter, null, false);
@@ -67,14 +67,13 @@ public final class TestTypes {
 
         seqOfUdStringType = SequenceType.create(null, udStringType, null, false);
 
-        udSeqOfUdStringTypeDecl =
-                TypeDeclaration.create(null,
-                                       domain,
-                                       prefix + "udSeqOfUdStringType",
-                                       Visibility.PUBLIC,
-                                       seqOfUdStringType,
-                                       pragmas);
+        udSeqOfUdStringTypeDecl = TypeDeclaration.create(null, domain, prefix + "udSeqOfUdStringType",
+                Visibility.PUBLIC, seqOfUdStringType, pragmas);
         udSeqOfUdStringType = UserDefinedType.create(domain.getReference(null), prefix + "udSeqOfUdStringType");
+
+        udUdSeqOfUdStringTypeDecl = TypeDeclaration.create(null, domain, prefix + "udUdSeqOfUdStringType",
+                Visibility.PUBLIC, udSeqOfUdStringType, pragmas);
+        udUdSeqOfUdStringType = UserDefinedType.create(domain.getReference(null), prefix + "udUdSeqOfUdStringType");
 
     }
 
@@ -124,5 +123,8 @@ public final class TestTypes {
 
     public final UserDefinedType udSeqOfUdStringType;
     public final TypeDeclaration udSeqOfUdStringTypeDecl;
+
+    public final UserDefinedType udUdSeqOfUdStringType;
+    public final TypeDeclaration udUdSeqOfUdStringTypeDecl;
 
 }

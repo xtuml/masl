@@ -53,8 +53,8 @@ public class SqliteObjectToTableTranslator implements ObjectToTableTranslator {
     public SqliteObjectToTableTranslator(final ObjectTranslator objectTran, final ObjectDeclaration objectDecl) {
         objectDeclaration = objectDecl;
         objectTranslator = objectTran;
-        columnNameList = new ArrayList<String>();
-        attributeNameList = new ArrayList<String>();
+        columnNameList = new ArrayList<>();
+        attributeNameList = new ArrayList<>();
         formCreateTableStatement();
     }
 
@@ -266,7 +266,7 @@ public class SqliteObjectToTableTranslator implements ObjectToTableTranslator {
 
             // Create cpp line:
             // PsObjectPtr object(new maslo_Find_Test_Object_A(column0));
-            final List<Expression> constructorArgs = new ArrayList<Expression>();
+            final List<Expression> constructorArgs = new ArrayList<>();
             constructorArgs.add(column0Var.asExpression());
             final Expression
                     newObjectExpr =
@@ -305,7 +305,7 @@ public class SqliteObjectToTableTranslator implements ObjectToTableTranslator {
 
             // Create cpp line:
             // PsObjectPtr object(new maslo_Find_Test_Object_A(column0));
-            final List<Expression> constructorArgs = new ArrayList<Expression>();
+            final List<Expression> constructorArgs = new ArrayList<>();
             constructorArgs.add(column0Var.asExpression());
             final Expression
                     newObjectExpr =

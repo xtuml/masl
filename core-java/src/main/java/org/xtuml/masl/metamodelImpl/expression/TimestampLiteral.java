@@ -104,31 +104,9 @@ public class TimestampLiteral extends LiteralExpression
     // (?|T) alternative makes other alternatives optional if not followed by a
     // time component. The standard specifies that for combined date & time
     // representations, the date shall not be represented with reduced accurracy.
-    private static final String
-            basic_mday =
-            month + mday;
-            // day
-    // not
-    // optional
-    // in
-    // basic
-    // format
-    // (actually,
-    // standard
-    // says
-    // that
-    // YYYY-MM
-    // is
-    // the
-    // basic
-    // format,
-    // but
-    // it
-    // amounts
-    // to
-    // the
-    // same
-    // thing)
+    // day not optional in basic format (actually, standard says that YYYY-MM is the basic format,
+    // but it amounts to the same thing)
+    private static final String basic_mday = month + mday;
     private static final String basic_wday = week + "(?:(?!T)|" + wday + ")";
     private static final String basic_yday = yday;
     private static final String
@@ -180,7 +158,7 @@ public class TimestampLiteral extends LiteralExpression
             return false;
         } else {
 
-          return datetime == obj2.datetime && nanos == obj2.nanos;
+            return datetime == obj2.datetime && nanos == obj2.nanos;
         }
     }
 
@@ -362,8 +340,8 @@ public class TimestampLiteral extends LiteralExpression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTimestampLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTimestampLiteral(this);
     }
 
     private final MatchResult rawResult;

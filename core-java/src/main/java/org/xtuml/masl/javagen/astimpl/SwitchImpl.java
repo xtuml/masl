@@ -106,8 +106,8 @@ public class SwitchImpl extends StatementImpl implements org.xtuml.masl.javagen.
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSwitch(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitSwitch(this);
     }
 
     @Override
@@ -120,8 +120,8 @@ public class SwitchImpl extends StatementImpl implements org.xtuml.masl.javagen.
         this.discriminator.set((ExpressionImpl) discriminator);
     }
 
-    private final ChildNode<ExpressionImpl> discriminator = new ChildNode<ExpressionImpl>(this);
-    private final ChildNodeList<SwitchBlockImpl> switchBlocks = new ChildNodeList<SwitchBlockImpl>(this);
+    private final ChildNode<ExpressionImpl> discriminator = new ChildNode<>(this);
+    private final ChildNodeList<SwitchBlockImpl> switchBlocks = new ChildNodeList<>(this);
     private final Scope scope = new SScope();
 
     @Override

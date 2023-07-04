@@ -47,7 +47,7 @@ public abstract class Statement {
      * @return the necessary declarations
      */
     Set<Declaration> getForwardDeclarations() {
-        return new LinkedHashSet<Declaration>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -56,7 +56,7 @@ public abstract class Statement {
      * @return the necessary include files
      */
     Set<CodeFile> getIncludes() {
-        return new LinkedHashSet<CodeFile>();
+        return new LinkedHashSet<>();
     }
 
     void setParent(final Statement parent) {

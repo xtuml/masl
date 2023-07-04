@@ -36,8 +36,8 @@ class PackageImpl extends ASTNodeImpl implements org.xtuml.masl.javagen.ast.def.
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitPackage(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitPackage(this);
     }
 
     @Override
@@ -93,7 +93,7 @@ class PackageImpl extends ASTNodeImpl implements org.xtuml.masl.javagen.ast.def.
         return addCompilationUnit(getAST().createCompilationUnit(name));
     }
 
-    private final List<CompilationUnitImpl> compilationUnits = new ChildNodeList<CompilationUnitImpl>(this);
+    private final List<CompilationUnitImpl> compilationUnits = new ChildNodeList<>(this);
 
     private final String name;
 

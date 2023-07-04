@@ -19,39 +19,22 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-package org.xtuml.masl.metamodel;
+package org.xtuml.masl.javagen;
 
-import java.util.Collection;
+import org.xtuml.masl.javagen.ast.def.CompilationUnit;
+import org.xtuml.masl.translate.building.FileGroup;
 
-public abstract class AbstractASTNodeVisitor<R, P> implements ASTNodeVisitor<R, P> {
+public class JarFile extends FileGroup {
 
-    public final R visit(final ASTNode node) throws Exception {
-        return visit(node, null);
+    public JarFile(final String name) {
+        super(name);
+
     }
 
-    @Override
-    public final R visit(final ASTNode node, final P p) throws Exception {
-        if (node == null) {
-            return visitNull(p);
-        } else {
-            return node.accept(this, p);
-        }
+    public JavaFile addJavaFile(final CompilationUnit cu) {
+        final JavaFile result = new JavaFile(cu, this);
+        addFile(result);
+        return result;
     }
 
-    public final R visit(final Collection<? extends ASTNode> nodes) throws Exception {
-        return visit(nodes, null);
-    }
-
-    public final R visit(final Collection<? extends ASTNode> nodes, final P p) throws Exception {
-        R r = null;
-        for (final ASTNode node : nodes) {
-            r = visit(node);
-        }
-        return r;
-    }
-
-    @Override
-    public R visitNull(final P p) throws Exception {
-        throw new NullPointerException();
-    }
 }

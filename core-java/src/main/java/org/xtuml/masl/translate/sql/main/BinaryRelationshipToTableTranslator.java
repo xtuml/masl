@@ -32,13 +32,7 @@ public interface BinaryRelationshipToTableTranslator extends RelationshipToTable
 
     void addLoadAllBody(Function loadAllFn, Variable lhsToRhsLinkSet, Variable rhsToLhsLinkSet);
 
-    void addLoadLhsBody(Function loadLhsFn,
-                               Variable identityVar,
-                               Variable lhsToRhsLinkSet,
-                               Variable rhsToLhsLinkSet);
+    void addLoadLhsBody(Function loadLhsFn, Variable identityVar, Variable lhsToRhsLinkSet, Variable rhsToLhsLinkSet);
 
-    void addLoadRhsBody(Function loadRhsFn,
-                               Variable identityVar,
-                               Variable lhsToRhsLinkSet,
-                               Variable rhsToLhsLinkSet);
+    void addLoadRhsBody(Function loadRhsFn, Variable identityVar, Variable lhsToRhsLinkSet, Variable rhsToLhsLinkSet);
 }

@@ -34,8 +34,8 @@ class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpression {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitUnaryExpression(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitUnaryExpression(this);
     }
 
     @Override
@@ -67,7 +67,7 @@ class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpression {
         return 14; // Java in a Nutshell Operator Summary Table
     }
 
-    private final ChildNode<ExpressionImpl> expression = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> expression = new ChildNode<>(this);
 
     Operator operator;
 }

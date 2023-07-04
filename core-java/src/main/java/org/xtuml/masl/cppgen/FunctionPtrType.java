@@ -75,7 +75,7 @@ public class FunctionPtrType extends Type {
                                                                                                           IOException {
             final StringBuilder definition = new StringBuilder();
 
-            final List<String> strings = new ArrayList<String>(FunctionPtrType.this.parameterList.size());
+            final List<String> strings = new ArrayList<>(FunctionPtrType.this.parameterList.size());
             for (final TypeUsage param : parameterList) {
                 strings.add(param.getQualifiedName(currentNamespace));
             }
@@ -202,6 +202,6 @@ public class FunctionPtrType extends Type {
     private final Declaration declaration = new FunctionPtrDeclaration();
 
     private TypeUsage returnType = new TypeUsage(FundamentalType.VOID);
-    private final List<TypeUsage> parameterList = new ArrayList<TypeUsage>();
+    private final List<TypeUsage> parameterList = new ArrayList<>();
 
 }

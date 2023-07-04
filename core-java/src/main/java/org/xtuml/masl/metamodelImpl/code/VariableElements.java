@@ -21,8 +21,11 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
+
+import java.util.List;
 
 public class VariableElements extends LoopSpec implements org.xtuml.masl.metamodel.code.LoopSpec.VariableElements {
 
@@ -44,8 +47,13 @@ public class VariableElements extends LoopSpec implements org.xtuml.masl.metamod
     private final Expression variable;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitLoopVariableElements(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitLoopVariableElements(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(variable);
     }
 
 }

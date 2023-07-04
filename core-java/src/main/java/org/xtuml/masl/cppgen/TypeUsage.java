@@ -142,6 +142,10 @@ public final class TypeUsage {
         return new TypeUsage(true, type, pointerConsts, true);
     }
 
+    public TypeUsage getNonConstReferenceType() {
+        return new TypeUsage(false, type, pointerConsts, isReference && !isConst);
+    }
+
     public TypeUsage getModifiedType(final boolean constant, final boolean reference) {
         return new TypeUsage(constant, type, pointerConsts, reference);
     }

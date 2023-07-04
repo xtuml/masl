@@ -64,7 +64,7 @@ public class TerminatorServiceTranslator {
         function = mainClass.createStaticFunction(terminatorServices, name, Visibility.PUBLIC);
         domainFunction = mainClass.createStaticFunction(domainServices, "domain_" + name, Visibility.PRIVATE);
 
-        final List<Expression> forwardArgs = new ArrayList<Expression>();
+        final List<Expression> forwardArgs = new ArrayList<>();
 
         for (final ParameterDefinition param : service.getParameters()) {
             final ParameterTranslator paramTrans = new ParameterTranslator(param, function);
@@ -175,7 +175,7 @@ public class TerminatorServiceTranslator {
 
     private final Scope scope;
 
-    private final List<ParameterTranslator> parameters = new ArrayList<ParameterTranslator>();
+    private final List<ParameterTranslator> parameters = new ArrayList<>();
 
     private final Function function;
 

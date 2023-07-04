@@ -32,8 +32,8 @@ public class PrimitiveTypeImpl extends TypeImpl implements PrimitiveType {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitPrimitiveType(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitPrimitiveType(this);
     }
 
     @Override

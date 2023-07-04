@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.domain;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.common.Visibility;
 import org.xtuml.masl.metamodelImpl.common.CheckedLookup;
@@ -57,8 +58,8 @@ public class Domain extends Positioned implements org.xtuml.masl.metamodel.domai
         }
 
         /**
-         * Renumber overloads so that public ones are numbered first. This ensures
-         * that numbering is consistent between .int and .mod files.
+         * Renumber overloads so that public ones are numbered first. This ensures that
+         * numbering is consistent between .int and .mod files.
          */
         void renumberOverloads() {
             int overloadNo = 0;
@@ -157,7 +158,7 @@ public class Domain extends Positioned implements org.xtuml.masl.metamodel.domai
 
     }
 
-    private final Map<String, List<EnumerateItem>> enumLookup = new HashMap<String, List<EnumerateItem>>();
+    private final Map<String, List<EnumerateItem>> enumLookup = new HashMap<>();
 
     public void addTypeForwardDeclaration(final TypeDeclaration type) throws SemanticError {
         if (type == null) {
@@ -182,7 +183,7 @@ public class Domain extends Positioned implements org.xtuml.masl.metamodel.domai
         for (final EnumerateItem item : enumerate.getItems()) {
             List<EnumerateItem> items = enumLookup.get(item.getName());
             if (items == null) {
-                items = new ArrayList<EnumerateItem>();
+                items = new ArrayList<>();
                 enumLookup.put(item.getName(), items);
             }
             items.add(item);
@@ -250,7 +251,7 @@ public class Domain extends Positioned implements org.xtuml.masl.metamodel.domai
 
     @Override
     public List<DomainService> getServices() {
-        final List<DomainService> result = new ArrayList<DomainService>();
+        final List<DomainService> result = new ArrayList<>();
         for (final ServiceOverload overload : services.asList()) {
             result.addAll(overload.asList());
         }
@@ -298,7 +299,7 @@ public class Domain extends Positioned implements org.xtuml.masl.metamodel.domai
 
     @Override
     public String toString() {
-        final List<String> objectNames = new ArrayList<String>();
+        final List<String> objectNames = new ArrayList<>();
         for (final ObjectDeclaration obj : objects.asList()) {
             objectNames.add(obj.getName());
         }
@@ -396,48 +397,59 @@ public class Domain extends Positioned implements org.xtuml.masl.metamodel.domai
     private final NameLookup nameLookup = new DomainNameLookup();
     private final CheckedLookup<ServiceOverload>
             services =
-            new CheckedLookup<ServiceOverload>(SemanticErrorCode.ServiceAlreadyDefinedInDomain,
-                                               SemanticErrorCode.ServiceNotFoundInDomain,
-                                               this);
+            new CheckedLookup<>(SemanticErrorCode.ServiceAlreadyDefinedInDomain,
+                                SemanticErrorCode.ServiceNotFoundInDomain,
+                                this);
     private final CheckedLookup<TypeDeclaration>
             typeForwardDeclarations =
-            new CheckedLookup<TypeDeclaration>(SemanticErrorCode.TypeAlreadyDefinedInDomain,
-                                               SemanticErrorCode.TypeNotFoundInDomain,
-                                               this);
+            new CheckedLookup<>(SemanticErrorCode.TypeAlreadyDefinedInDomain,
+                                SemanticErrorCode.TypeNotFoundInDomain,
+                                this);
 
     private final CheckedLookup<TypeDeclaration>
             types =
-            new CheckedLookup<TypeDeclaration>(SemanticErrorCode.TypeAlreadyDefinedInDomain,
-                                               SemanticErrorCode.TypeNotFoundInDomain,
-                                               this);
+            new CheckedLookup<>(SemanticErrorCode.TypeAlreadyDefinedInDomain,
+                                SemanticErrorCode.TypeNotFoundInDomain,
+                                this);
 
     private final CheckedLookup<ExceptionDeclaration>
             exceptions =
-            new CheckedLookup<ExceptionDeclaration>(SemanticErrorCode.ExceptionAlreadyDefinedInDomain,
-                                                    SemanticErrorCode.ExceptionNotFoundInDomain,
-                                                    this);
+            new CheckedLookup<>(SemanticErrorCode.ExceptionAlreadyDefinedInDomain,
+                                SemanticErrorCode.ExceptionNotFoundInDomain,
+                                this);
 
     private final CheckedLookup<ObjectDeclaration>
             objects =
-            new CheckedLookup<ObjectDeclaration>(SemanticErrorCode.ObjectAlreadyDefinedInDomain,
-                                                 SemanticErrorCode.ObjectNotFoundInDomain,
-                                                 this);
+            new CheckedLookup<>(SemanticErrorCode.ObjectAlreadyDefinedInDomain,
+                                SemanticErrorCode.ObjectNotFoundInDomain,
+                                this);
     private final CheckedLookup<DomainTerminator>
             terminators =
-            new CheckedLookup<DomainTerminator>(SemanticErrorCode.TerminatorAlreadyDefinedInDomain,
-                                                SemanticErrorCode.TerminatorNotFoundInDomain,
-                                                this);
+            new CheckedLookup<>(SemanticErrorCode.TerminatorAlreadyDefinedInDomain,
+                                SemanticErrorCode.TerminatorNotFoundInDomain,
+                                this);
 
     private final CheckedLookup<RelationshipDeclaration>
             relationships =
-            new CheckedLookup<RelationshipDeclaration>(SemanticErrorCode.RelationshipAlreadyDefinedInDomain,
-                                                       SemanticErrorCode.RelationshipNotFoundInDomain,
-                                                       this);
-    private final Set<Domain> referencedInterfaces = new LinkedHashSet<Domain>();
+            new CheckedLookup<>(SemanticErrorCode.RelationshipAlreadyDefinedInDomain,
+                                SemanticErrorCode.RelationshipNotFoundInDomain,
+                                this);
+    private final Set<Domain> referencedInterfaces = new LinkedHashSet<>();
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDomain(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDomain(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(getServices(),
+                                    getTypes(),
+                                    getExceptions(),
+                                    getObjects(),
+                                    getTerminators(),
+                                    getRelationships(),
+                                    getPragmas());
     }
 
 }

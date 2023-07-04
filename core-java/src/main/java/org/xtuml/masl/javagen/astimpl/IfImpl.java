@@ -69,7 +69,7 @@ public class IfImpl extends StatementImpl implements If {
 
     @Override
     public Map<ExpressionImpl, StatementImpl> getIfElseChainStatements() {
-        final Map<ExpressionImpl, StatementImpl> blocks = new HashMap<ExpressionImpl, StatementImpl>();
+        final Map<ExpressionImpl, StatementImpl> blocks = new HashMap<>();
         blocks.put(getCondition(), getThen());
         IfImpl curIf = this;
         while (curIf.getElse() instanceof If) {
@@ -83,12 +83,12 @@ public class IfImpl extends StatementImpl implements If {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitIf(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitIf(this);
     }
 
-    private final ChildNode<ExpressionImpl> condition = new ChildNode<ExpressionImpl>(this);
-    private final ChildNode<StatementImpl> thenStatement = new ChildNode<StatementImpl>(this);
-    private final ChildNode<StatementImpl> elseStatement = new ChildNode<StatementImpl>(this);
+    private final ChildNode<ExpressionImpl> condition = new ChildNode<>(this);
+    private final ChildNode<StatementImpl> thenStatement = new ChildNode<>(this);
+    private final ChildNode<StatementImpl> elseStatement = new ChildNode<>(this);
 
 }

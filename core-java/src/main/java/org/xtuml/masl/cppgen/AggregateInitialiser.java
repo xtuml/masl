@@ -24,6 +24,7 @@ package org.xtuml.masl.cppgen;
 import org.xtuml.masl.utils.TextUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,15 +38,18 @@ import java.util.List;
 public class AggregateInitialiser extends Expression {
 
     /**
-     * Creates an aggregate initialiser from a list of expressions. The
-     * expressions will be used in the order supplied in the resulting
-     * initialiser.
+     * Creates an aggregate initialiser from a list of expressions. The expressions
+     * will be used in the order supplied in the resulting initialiser.
      * <p>
      * <p>
      * the initialisers to use
      */
     public AggregateInitialiser(final List<? extends Expression> initialisers) {
         this.initialisers = initialisers;
+    }
+
+    public AggregateInitialiser(Expression... initialisers) {
+        this.initialisers = Arrays.asList(initialisers);
     }
 
     @Override
@@ -55,7 +59,7 @@ public class AggregateInitialiser extends Expression {
 
     @Override
     String getCode(final Namespace currentNamespace, final String alignment) {
-        final List<String> initCode = new ArrayList<String>();
+        final List<String> initCode = new ArrayList<>();
         for (final Expression initialiser : initialisers) {
             String code = initialiser.getCode(currentNamespace, alignment + "\t");
 

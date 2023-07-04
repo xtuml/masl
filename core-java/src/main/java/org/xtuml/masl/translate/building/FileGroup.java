@@ -19,14 +19,14 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-package org.xtuml.masl.translate.build;
+package org.xtuml.masl.translate.building;
 
 import java.io.File;
 import java.util.*;
 
 public class FileGroup {
 
-    private static final Map<String, FileGroup> lookup = new HashMap<String, FileGroup>();
+    private static final Map<String, FileGroup> lookup = new HashMap<>();
 
     public static FileGroup getFileGroup(final String name) {
         FileGroup result = lookup.get(name);
@@ -68,7 +68,7 @@ public class FileGroup {
     }
 
     public Set<FileGroup> getDependencies() {
-        final Set<FileGroup> result = new LinkedHashSet<FileGroup>(dependencies);
+        final Set<FileGroup> result = new LinkedHashSet<>(dependencies);
         for (final FileGroup group : includedGroups) {
             result.addAll(group.getDependencies());
         }
@@ -76,16 +76,17 @@ public class FileGroup {
             result.addAll(file.getDependencies());
         }
         result.removeAll(skipDeps);
+        result.remove(this);
         return Collections.unmodifiableSet(result);
     }
 
     public Set<ReferencedFile> getFiles() {
-        final Set<ReferencedFile> allFiles = new LinkedHashSet<ReferencedFile>(files.values());
+        final Set<ReferencedFile> allFiles = new LinkedHashSet<>(files.values());
         for (final FileGroup group : includedGroups) {
             allFiles.addAll(group.getFiles());
         }
 
-        final Set<ReferencedFile> result = new LinkedHashSet<ReferencedFile>(allFiles);
+        final Set<ReferencedFile> result = new LinkedHashSet<>(allFiles);
 
         for (final ReferencedFile file : allFiles) {
             if (skipFiles.contains(file.getFile())) {
@@ -97,7 +98,7 @@ public class FileGroup {
     }
 
     public Set<String> getLibPaths() {
-        final Set<String> result = new LinkedHashSet<String>(libPaths);
+        final Set<String> result = new LinkedHashSet<>(libPaths);
         for (final FileGroup group : includedGroups) {
             result.addAll(group.getLibPaths());
         }

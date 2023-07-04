@@ -36,9 +36,7 @@ import java.util.Map;
 
 public abstract class HalfRelationshipTranslator {
 
-    private static final Map<ObjectDeclaration, HalfRelationshipTranslator>
-            translators =
-            new HashMap<ObjectDeclaration, HalfRelationshipTranslator>();
+    private static final Map<ObjectDeclaration, HalfRelationshipTranslator> translators = new HashMap<>();
 
     static HalfRelationshipTranslator getTranslator(final ObjectDeclaration object) {
         return translators.get(object);
@@ -100,9 +98,7 @@ public abstract class HalfRelationshipTranslator {
         }
     }
 
-    Map<RelationshipSpecification, Variable>
-            relationshipAttributes =
-            new HashMap<RelationshipSpecification, Variable>();
+    Map<RelationshipSpecification, Variable> relationshipAttributes = new HashMap<>();
 
     public Variable getRelationshipAttribute(final RelationshipSpecification spec) {
         return relationshipAttributes.get(spec);
@@ -326,14 +322,14 @@ public abstract class HalfRelationshipTranslator {
         final TypeUsage related = new TypeUsage(relatedObj.getMainClass());
         navFunction.setReturnType(related);
 
-        final List<Expression> findArgs = new ArrayList<Expression>(navigator.getParameters().size());
+        final List<Expression> findArgs = new ArrayList<>(navigator.getParameters().size());
         for (final Variable param : navigator.getParameters()) {
             findArgs.add(param.asExpression());
         }
 
         final Function predicateFn = destObjTranslator.getFindPredicate(predicate);
 
-        final List<org.xtuml.masl.cppgen.Expression> bindArgs = new ArrayList<org.xtuml.masl.cppgen.Expression>();
+        final List<org.xtuml.masl.cppgen.Expression> bindArgs = new ArrayList<>();
         bindArgs.add(predicateFn.asFunctionPointer());
         bindArgs.add(Boost.bind_1);
 
@@ -406,13 +402,9 @@ public abstract class HalfRelationshipTranslator {
 
     private final ConcreteObjectTranslator concreteObj;
     private final org.xtuml.masl.translate.main.object.ObjectTranslator mainObjectTranslator;
-    private final Map<RelationshipSpecification, Function>
-            relationshipConstGetters =
-            new HashMap<RelationshipSpecification, Function>();
+    private final Map<RelationshipSpecification, Function> relationshipConstGetters = new HashMap<>();
 
-    private final Map<RelationshipSpecification, Function>
-            relationshipGetters =
-            new HashMap<RelationshipSpecification, Function>();
+    private final Map<RelationshipSpecification, Function> relationshipGetters = new HashMap<>();
 
     private DeclarationGroup relationships;
     private DeclarationGroup relationshipVars;

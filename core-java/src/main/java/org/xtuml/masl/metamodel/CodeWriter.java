@@ -58,53 +58,23 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
-public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
+public class CodeWriter extends ASTNodeVisitor {
 
     interface TextFilter {
 
         String apply(final String text);
     }
 
-    static final TextFilter TO_UPPER = new TextFilter() {
+    static final TextFilter TO_UPPER = text -> text.toUpperCase();
 
-        @Override
-        public String apply(final String text) {
-            return text.toUpperCase();
-        }
-    };
+    static final TextFilter TO_LOWER = text -> text.toLowerCase();
 
-    static final TextFilter TO_LOWER = new TextFilter() {
+    static final TextFilter INDENT = text -> TextUtils.indentText("  ", text);
 
-        @Override
-        public String apply(final String text) {
-            return text.toLowerCase();
-        }
-    };
-
-    static final TextFilter INDENT = new TextFilter() {
-
-        @Override
-        public String apply(final String text) {
-            return TextUtils.indentText("  ", text);
-        }
-    };
-
-    static final TextFilter STRIP_TRAILING_WHITE = new TextFilter() {
-
-        @Override
-        public String apply(final String text) {
-            return text.replaceAll(" +\n", "\n");
-        }
-    };
+    static final TextFilter STRIP_TRAILING_WHITE = text -> text.replaceAll(" +\n", "\n");
 
     static TextFilter align(final String alignTo) {
-        return new TextFilter() {
-
-            @Override
-            public String apply(final String text) {
-                return align(text, alignTo);
-            }
-        };
+        return text -> align(text, alignTo);
     }
 
     private static final String PRAGMA_ALIGNER = "£pragma£";
@@ -118,44 +88,26 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
     static final TextFilter ALIGN_STRUCT = align(STRUCT_ALIGNER);
 
     static TextFilter addSuffix(final String suffix) {
-        return new TextFilter() {
-
-            @Override
-            public String apply(final String text) {
-                return text.length() > 0 ? text + suffix : "";
-            }
-        };
+        return text -> text.length() > 0 ? text + suffix : "";
     }
 
     static TextFilter addPrefix(final String prefix) {
-        return new TextFilter() {
-
-            @Override
-            public String apply(final String text) {
-                return text.length() > 0 ? prefix + text : "";
-            }
-        };
+        return text -> text.length() > 0 ? prefix + text : "";
     }
 
     static TextFilter addLinePrefix(final String prefix) {
-        return new TextFilter() {
-
-            @Override
-            public String apply(final String text) {
-                return Pattern.compile("^", Pattern.MULTILINE).matcher(text).replaceAll(prefix);
-            }
-        };
+        return text -> Pattern.compile("^", Pattern.MULTILINE).matcher(text).replaceAll(prefix);
     }
 
     private static final String wrapComment(final String prefix, final String comment) {
-        return addLinePrefix(prefix + "// ").apply(wrap(comment, 80));
+        return addLinePrefix(prefix + "//! ").apply(wrap(comment, 80));
     }
 
     private static final String wrapComment(final String comment) {
         return wrapComment("", comment);
     }
 
-    private final Deque<StringBuilder> codeBlocks = new ArrayDeque<StringBuilder>();
+    private final Deque<StringBuilder> codeBlocks = new ArrayDeque<>();
 
     private void write(final String text) {
         codeBlocks.peek().append(text);
@@ -202,7 +154,7 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
     }
 
     @Override
-    public Void visitAnonymousStructure(final AnonymousStructure node, final Void p) throws Exception {
+    public void visitAnonymousStructure(final AnonymousStructure node) {
         write("structure\n");
         pushBlock();
         int i = 0;
@@ -214,11 +166,10 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         popBlock(ALIGN_STRUCT, INDENT);
         write("end structure");
 
-        return null;
     }
 
     @Override
-    public Void visitAnyExpression(final AnyExpression node, final Void p) throws Exception {
+    public void visitAnyExpression(final AnyExpression node) {
         visit(node.getCollection());
         write("'any");
         if (node.getCount() != null) {
@@ -226,167 +177,166 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
             visit(node.getCount());
             write(")");
         }
-        return null;
+
     }
 
     @Override
-    public Void visitArrayType(final ArrayType node, final Void p) throws Exception {
-        return null;
+    public void visitArrayType(final ArrayType node) {
+
     }
 
     @Override
-    public Void visitAssignmentStatement(final AssignmentStatement node, final Void p) throws Exception {
-        return null;
+    public void visitAssignmentStatement(final AssignmentStatement node) {
+
     }
 
     @Override
-    public Void visitAttributeDeclaration(final AttributeDeclaration node, final Void p) throws Exception {
-        return null;
+    public void visitAttributeDeclaration(final AttributeDeclaration node) {
+
     }
 
     @Override
-    public Void visitBagType(final BagType node, final Void p) throws Exception {
+    public void visitBagType(final BagType node) {
         write("set of ");
         visit(node.getContainedType());
-        return null;
+
     }
 
     @Override
-    public Void visitBinaryExpression(final BinaryExpression node, final Void p) throws Exception {
-        return null;
+    public void visitBinaryExpression(final BinaryExpression node) {
+
     }
 
     @Override
-    public Void visitBooleanLiteral(final BooleanLiteral node, final Void p) throws Exception {
+    public void visitBooleanLiteral(final BooleanLiteral node) {
         write(node.getValue() ? "true" : "false");
-        return null;
+
     }
 
     @Override
-    public Void visitBuiltinException(final BuiltinException node, final Void p) throws Exception {
-        return null;
+    public void visitBuiltinException(final BuiltinException node) {
+
     }
 
     @Override
-    public Void visitBuiltinType(final BuiltinType node, final Void p) throws Exception {
+    public void visitBuiltinType(final BuiltinType node) {
         write(node.getName());
-        return null;
+
     }
 
     @Override
-    public Void visitCancelTimerStatement(final CancelTimerStatement node, final Void p) throws Exception {
-        return null;
+    public void visitCancelTimerStatement(final CancelTimerStatement node) {
+
     }
 
     @Override
-    public Void visitCaseAlternative(final Alternative node, final Void p) throws Exception {
-        return null;
+    public void visitCaseAlternative(final Alternative node) {
+
     }
 
     @Override
-    public Void visitCaseStatement(final CaseStatement node, final Void p) throws Exception {
-        return null;
+    public void visitCaseStatement(final CaseStatement node) {
+
     }
 
     @Override
-    public Void visitCastExpression(final CastExpression node, final Void p) throws Exception {
-        return null;
+    public void visitCastExpression(final CastExpression node) {
+
     }
 
     @Override
-    public Void visitCharacterLiteral(final CharacterLiteral node, final Void p) throws Exception {
+    public void visitCharacterLiteral(final CharacterLiteral node) {
         write("'" + node.getValue() + "'");
-        return null;
+
     }
 
     @Override
-    public Void visitCharacteristicExpression(final CharacteristicExpression node, final Void p) throws Exception {
-        return null;
+    public void visitCharacteristicExpression(final CharacteristicExpression node) {
+
     }
 
     @Override
-    public Void visitCharacteristicRange(final CharacteristicRange node, final Void p) throws Exception {
-        return null;
+    public void visitCharacteristicRange(final CharacteristicRange node) {
+
     }
 
     @Override
-    public Void visitCodeBlock(final CodeBlock node, final Void p) throws Exception {
-        return null;
+    public void visitCodeBlock(final CodeBlock node) {
+
     }
 
     @Override
-    public Void visitConsoleLiteral(final ConsoleLiteral node, final Void p) throws Exception {
-        return null;
+    public void visitConsoleLiteral(final ConsoleLiteral node) {
+
     }
 
     @Override
-    public Void visitConstrainedType(final ConstrainedType node, final Void p) throws Exception {
-        return null;
+    public void visitConstrainedType(final ConstrainedType node) {
+
     }
 
     @Override
-    public Void visitCorrelatedNavExpression(final CorrelatedNavExpression node, final Void p) throws Exception {
-        return null;
+    public void visitCorrelatedNavExpression(final CorrelatedNavExpression node) {
+
     }
 
     @Override
-    public Void visitCreateAttributeValue(final AttributeValue node, final Void p) throws Exception {
-        return null;
+    public void visitCreateAttributeValue(final AttributeValue node) {
+
     }
 
     @Override
-    public Void visitCreateDurationExpression(final CreateDurationExpression node, final Void p) throws Exception {
-        return null;
+    public void visitCreateDurationExpression(final CreateDurationExpression node) {
+
     }
 
     @Override
-    public Void visitCreateExpression(final CreateExpression node, final Void p) throws Exception {
-        return null;
+    public void visitCreateExpression(final CreateExpression node) {
+
     }
 
     @Override
-    public Void visitDelayStatement(final DelayStatement node, final Void p) throws Exception {
-        return null;
+    public void visitDelayStatement(final DelayStatement node) {
+
     }
 
     @Override
-    public Void visitDeleteStatement(final DeleteStatement node, final Void p) throws Exception {
-        return null;
+    public void visitDeleteStatement(final DeleteStatement node) {
+
     }
 
     @Override
-    public Void visitDeltaConstraint(final DeltaConstraint node, final Void p) throws Exception {
-        return null;
+    public void visitDeltaConstraint(final DeltaConstraint node) {
+
     }
 
     @Override
-    public Void visitDictionaryAccessExpression(final DictionaryAccessExpression node, final Void p) throws Exception {
-        return null;
+    public void visitDictionaryAccessExpression(final DictionaryAccessExpression node) {
+
     }
 
     @Override
-    public Void visitDictionaryContainsExpression(final DictionaryContainsExpression node, final Void p) throws
-                                                                                                         Exception {
-        return null;
+    public void visitDictionaryContainsExpression(final DictionaryContainsExpression node) {
+
     }
 
     @Override
-    public Void visitDictionaryKeysExpression(final DictionaryKeysExpression node, final Void p) throws Exception {
-        return null;
+    public void visitDictionaryKeysExpression(final DictionaryKeysExpression node) {
+
     }
 
     @Override
-    public Void visitDictionaryValuesExpression(final DictionaryValuesExpression node, final Void p) throws Exception {
-        return null;
+    public void visitDictionaryValuesExpression(final DictionaryValuesExpression node) {
+
     }
 
     @Override
-    public Void visitDigitsConstraint(final DigitsConstraint node, final Void p) throws Exception {
-        return null;
+    public void visitDigitsConstraint(final DigitsConstraint node) {
+
     }
 
     @Override
-    public Void visitDomain(final Domain domain, final Void p) throws Exception {
+    public void visitDomain(final Domain domain) {
         write("domain " + domain.getName() + " is\n");
 
         if (!interfaceOnly) {
@@ -434,13 +384,12 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         visit(domain.getPragmas());
         popBlock();
 
-        return null;
     }
 
     private void visit(final Collection<? extends ASTNode> nodes,
                        final String prefix,
                        final String separator,
-                       final String suffix) throws Exception {
+                       final String suffix) {
         if (nodes.size() > 0) {
             write(prefix);
         }
@@ -457,20 +406,20 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
     }
 
     @Override
-    public Void visitDomainFunctionInvocation(final DomainFunctionInvocation node, final Void p) throws Exception {
+    public void visitDomainFunctionInvocation(final DomainFunctionInvocation node) {
         if (node.getService().getDomain() != currentDomain) {
             write(node.getService().getDomain().getName() + "::");
         }
         write(node.getService().getName() + "(");
         visit(node.getArguments(), " ", ", ", " ");
         write(")");
-        return null;
+
     }
 
     @Override
-    public Void visitDomainService(final DomainService node, final Void p) throws Exception {
+    public void visitDomainService(final DomainService node) {
         if (interfaceOnly && node.getVisibility() == Visibility.PRIVATE) {
-            return null;
+
         }
 
         pushBlock();
@@ -490,22 +439,22 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         }
         popBlock(ALIGN_PRAGMA, ALIGN_PARAM);
         write("\n");
-        return null;
+
     }
 
     @Override
-    public Void visitDomainServiceInvocation(final DomainServiceInvocation node, final Void p) throws Exception {
+    public void visitDomainServiceInvocation(final DomainServiceInvocation node) {
         if (node.getService().getDomain() != currentDomain) {
             write(node.getService().getDomain().getName() + "::");
         }
         write(node.getService().getName() + "(");
         visit(node.getArguments(), " ", ", ", " ");
         write(");");
-        return null;
+
     }
 
     @Override
-    public Void visitDomainTerminator(final DomainTerminator node, final Void p) throws Exception {
+    public void visitDomainTerminator(final DomainTerminator node) {
         if (node.getComment() != null) {
             write(wrapComment(node.getComment()));
         }
@@ -514,13 +463,12 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         visit(node.getServices());
         popBlock(INDENT);
         write("end terminator;\n");
-        write("pragma key_letter (\"" + node.getKeyLetters() + "\");\n");
         visit(node.getPragmas());
-        return null;
+
     }
 
     @Override
-    public Void visitDomainTerminatorService(final DomainTerminatorService node, final Void p) throws Exception {
+    public void visitDomainTerminatorService(final DomainTerminatorService node) {
         pushBlock();
         if (node.getComment() != null) {
             write(wrapComment(node.getComment()));
@@ -531,26 +479,29 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         visit(node.getDeclarationPragmas());
         popBlock(ALIGN_PRAGMA, ALIGN_PARAM);
         write("\n");
-        return null;
+
     }
 
     @Override
-    public Void visitDurationLiteral(final DurationLiteral node, final Void p) throws Exception {
-        return null;
+    public void visitDurationLiteral(final DurationLiteral node) {
+
     }
 
     @Override
-    public Void visitElementsExpression(final ElementsExpression node, final Void p) throws Exception {
-        return null;
+    public void visitElementsExpression(final ElementsExpression node) {
+
     }
 
     @Override
-    public Void visitEndlLiteral(final EndlLiteral node, final Void p) throws Exception {
-        return null;
+    public void visitEndlLiteral(final EndlLiteral node) {
+
     }
 
     @Override
-    public Void visitEnumerateItem(final EnumerateItem node, final Void p) throws Exception {
+    public void visitEnumerateItem(final EnumerateItem node) {
+        if (node.getComment() != null) {
+            write("\n" + wrapComment(node.getComment()));
+        }
         write(node.getName());
         if (node.getValue() != null) {
             write(" = ");
@@ -560,233 +511,227 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         if (node != node.getEnumerate().getItems().get(node.getEnumerate().getItems().size() - 1)) {
             write(",");
         }
-        if (node.getComment() != null) {
-            write(wrapComment(COMMENT_ALIGNER, node.getComment()));
-        } else {
-            write("\n");
-        }
-        return null;
+        write("\n");
+
     }
 
     @Override
-    public Void visitEnumerateLiteral(final EnumerateLiteral node, final Void p) throws Exception {
+    public void visitEnumerateLiteral(final EnumerateLiteral node) {
         if (node.getValue().getEnumerate().getTypeDeclaration().getDomain() != currentDomain) {
             write(node.getValue().getEnumerate().getTypeDeclaration().getDomain().getName() + "::");
         }
         write(node.getValue().getEnumerate().getTypeDeclaration().getName() + "." + node.getValue().getName());
-        return null;
+
     }
 
     @Override
-    public Void visitEnumerateType(final EnumerateType node, final Void p) throws Exception {
+    public void visitEnumerateType(final EnumerateType node) {
         write("enum (\n");
         pushBlock();
         visit(node.getItems());
         popBlock(ALIGN_COMMENT, INDENT);
         write(")");
-        return null;
+
     }
 
     @Override
-    public Void visitEofExpression(final EofExpression node, final Void p) throws Exception {
-        return null;
+    public void visitEofExpression(final EofExpression node) {
+
     }
 
     @Override
-    public Void visitEraseStatement(final EraseStatement node, final Void p) throws Exception {
-        return null;
+    public void visitEraseStatement(final EraseStatement node) {
+
     }
 
     @Override
-    public Void visitEventDeclaration(final EventDeclaration node, final Void p) throws Exception {
-        return null;
+    public void visitEventDeclaration(final EventDeclaration node) {
+
     }
 
     @Override
-    public Void visitEventExpression(final EventExpression node, final Void p) throws Exception {
-        return null;
+    public void visitEventExpression(final EventExpression node) {
+
     }
 
     @Override
-    public Void visitExceptionDeclaration(final ExceptionDeclaration node, final Void p) throws Exception {
+    public void visitExceptionDeclaration(final ExceptionDeclaration node) {
         pushBlock();
         write(getVisibility(node.getVisibility()) + " exception" + PRAGMA_ALIGNER + node.getName() + ";\n");
         visit(node.getPragmas());
         popBlock(addSuffix("\n"), ALIGN_PRAGMA);
 
-        return null;
     }
 
     @Override
-    public Void visitExceptionHandler(final ExceptionHandler node, final Void p) throws Exception {
-        return null;
+    public void visitExceptionHandler(final ExceptionHandler node) {
+
     }
 
     @Override
-    public Void visitExceptionReference(final ExceptionReference node, final Void p) throws Exception {
-        return null;
+    public void visitExceptionReference(final ExceptionReference node) {
+
     }
 
     @Override
-    public Void visitExitStatement(final ExitStatement node, final Void p) throws Exception {
-        return null;
+    public void visitExitStatement(final ExitStatement node) {
+
     }
 
     @Override
-    public Void visitFindAttributeNameExpression(final FindAttributeNameExpression node, final Void p) throws
-                                                                                                       Exception {
-        return null;
+    public void visitFindAttributeNameExpression(final FindAttributeNameExpression node) {
+
     }
 
     @Override
-    public Void visitFindExpression(final FindExpression node, final Void p) throws Exception {
-        return null;
+    public void visitFindExpression(final FindExpression node) {
+
     }
 
     @Override
-    public Void visitFindParameterExpression(final FindParameterExpression node, final Void p) throws Exception {
-        return null;
+    public void visitFindParameterExpression(final FindParameterExpression node) {
+
     }
 
     @Override
-    public Void visitFlushLiteral(final FlushLiteral node, final Void p) throws Exception {
-        return null;
+    public void visitFlushLiteral(final FlushLiteral node) {
+
     }
 
     @Override
-    public Void visitForStatement(final ForStatement node, final Void p) throws Exception {
-        return null;
+    public void visitForStatement(final ForStatement node) {
+
     }
 
     @Override
-    public Void visitGenerateStatement(final GenerateStatement node, final Void p) throws Exception {
-        return null;
+    public void visitGenerateStatement(final GenerateStatement node) {
+
     }
 
     @Override
-    public Void visitIOStreamStatement(final IOStreamStatement node, final Void p) throws Exception {
-        return null;
+    public void visitIOStreamStatement(final IOStreamStatement node) {
+
     }
 
     @Override
-    public Void visitIdentifierDeclaration(final IdentifierDeclaration node, final Void p) throws Exception {
-        return null;
+    public void visitIdentifierDeclaration(final IdentifierDeclaration node) {
+
     }
 
     @Override
-    public Void visitIfBranch(final Branch node, final Void p) throws Exception {
-        return null;
+    public void visitIfBranch(final Branch node) {
+
     }
 
     @Override
-    public Void visitIfStatement(final IfStatement node, final Void p) throws Exception {
-        return null;
+    public void visitIfStatement(final IfStatement node) {
+
     }
 
     @Override
-    public Void visitIndexedNameExpression(final IndexedNameExpression node, final Void p) throws Exception {
-        return null;
+    public void visitIndexedNameExpression(final IndexedNameExpression node) {
+
     }
 
     @Override
-    public Void visitInstanceFunctionInvocation(final InstanceFunctionInvocation node, final Void p) throws Exception {
-        return null;
+    public void visitInstanceFunctionInvocation(final InstanceFunctionInvocation node) {
+
     }
 
     @Override
-    public Void visitInstanceOrderingExpression(final InstanceOrderingExpression node, final Void p) throws Exception {
-        return null;
+    public void visitInstanceOrderingExpression(final InstanceOrderingExpression node) {
+
     }
 
     @Override
-    public Void visitInstanceServiceInvocation(final InstanceServiceInvocation node, final Void p) throws Exception {
-        return null;
+    public void visitInstanceServiceInvocation(final InstanceServiceInvocation node) {
+
     }
 
     @Override
-    public Void visitInstanceType(final InstanceType node, final Void p) throws Exception {
-        return null;
+    public void visitInstanceType(final InstanceType node) {
+
     }
 
     @Override
-    public Void visitIntegerLiteral(final IntegerLiteral node, final Void p) throws Exception {
+    public void visitIntegerLiteral(final IntegerLiteral node) {
         write(String.valueOf(node.getValue()));
-        return null;
+
     }
 
     @Override
-    public Void visitLinkUnlinkExpression(final LinkUnlinkExpression node, final Void p) throws Exception {
-        return null;
+    public void visitLinkUnlinkExpression(final LinkUnlinkExpression node) {
+
     }
 
     @Override
-    public Void visitLinkUnlinkStatement(final LinkUnlinkStatement node, final Void p) throws Exception {
-        return null;
+    public void visitLinkUnlinkStatement(final LinkUnlinkStatement node) {
+
     }
 
     @Override
-    public Void visitLoopFromToRange(final FromToRange node, final Void p) throws Exception {
-        return null;
+    public void visitLoopFromToRange(final FromToRange node) {
+
     }
 
     @Override
-    public Void visitLoopTypeRange(final TypeRange node, final Void p) throws Exception {
-        return null;
+    public void visitLoopTypeRange(final TypeRange node) {
+
     }
 
     @Override
-    public Void visitLoopVariableElements(final VariableElements node, final Void p) throws Exception {
-        return null;
+    public void visitLoopVariableElements(final VariableElements node) {
+
     }
 
     @Override
-    public Void visitLoopVariableRange(final VariableRange node, final Void p) throws Exception {
-        return null;
+    public void visitLoopVariableRange(final VariableRange node) {
+
     }
 
     @Override
-    public Void visitMinMaxRange(final MinMaxRange node, final Void p) throws Exception {
-        return null;
+    public void visitMinMaxRange(final MinMaxRange node) {
+
     }
 
     @Override
-    public Void visitNavigationExpression(final NavigationExpression node, final Void p) throws Exception {
-        return null;
+    public void visitNavigationExpression(final NavigationExpression node) {
+
     }
 
     @Override
-    public Void visitNullLiteral(final NullLiteral node, final Void p) throws Exception {
+    public void visitNullLiteral(final NullLiteral node) {
         write("null");
-        return null;
+
     }
 
     @Override
-    public Void visitObjectDeclaration(final ObjectDeclaration node, final Void p) throws Exception {
-        return null;
+    public void visitObjectDeclaration(final ObjectDeclaration node) {
+
     }
 
     @Override
-    public Void visitObjectFunctionInvocation(final ObjectFunctionInvocation node, final Void p) throws Exception {
-        return null;
+    public void visitObjectFunctionInvocation(final ObjectFunctionInvocation node) {
+
     }
 
     @Override
-    public Void visitObjectNameExpression(final ObjectNameExpression node, final Void p) throws Exception {
-        return null;
+    public void visitObjectNameExpression(final ObjectNameExpression node) {
+
     }
 
     @Override
-    public Void visitObjectService(final ObjectService node, final Void p) throws Exception {
-        return null;
+    public void visitObjectService(final ObjectService node) {
+
     }
 
     @Override
-    public Void visitObjectServiceInvocation(final ObjectServiceInvocation node, final Void p) throws Exception {
-        return null;
+    public void visitObjectServiceInvocation(final ObjectServiceInvocation node) {
+
     }
 
     @Override
-    public Void visitParameterDefinition(final ParameterDefinition node, final Void p) throws Exception {
+    public void visitParameterDefinition(final ParameterDefinition node) {
         write(PARAM_ALIGNER +
               node.getName() +
               PARAM_ALIGNER +
@@ -795,21 +740,21 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
               " " +
               PARAM_ALIGNER);
         visit(node.getType());
-        return null;
+
     }
 
     @Override
-    public Void visitParameterNameExpression(final ParameterNameExpression node, final Void p) throws Exception {
-        return null;
+    public void visitParameterNameExpression(final ParameterNameExpression node) {
+
     }
 
     @Override
-    public Void visitParseExpression(final ParseExpression node, final Void p) throws Exception {
-        return null;
+    public void visitParseExpression(final ParseExpression node) {
+
     }
 
     @Override
-    public Void visitPragmaDefinition(final PragmaDefinition node, final Void p) throws Exception {
+    public void visitPragmaDefinition(final PragmaDefinition node) {
         write(PRAGMA_ALIGNER +
               "pragma " +
               node.getName() +
@@ -817,72 +762,69 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
               " (" +
               TextUtils.formatList(node.getValues(), "\"", "\", \"", "\"") +
               ");\n");
-        return null;
+
     }
 
     @Override
-    public Void visitPragmaList(final PragmaList node, final Void p) throws Exception {
+    public void visitPragmaList(final PragmaList node) {
         visit(node.getPragmas());
-        return null;
+
     }
 
     @Override
-    public Void visitPragmaStatement(final PragmaStatement node, final Void p) throws Exception {
+    public void visitPragmaStatement(final PragmaStatement node) {
         pushBlock();
         visit(node.getPragmas());
         popBlock(ALIGN_PRAGMA);
-        return null;
+
     }
 
     @Override
-    public Void visitRaiseStatement(final RaiseStatement node, final Void p) throws Exception {
-        return null;
+    public void visitRaiseStatement(final RaiseStatement node) {
+
     }
 
     @Override
-    public Void visitRangeConstraint(final RangeConstraint node, final Void p) throws Exception {
-        return null;
+    public void visitRangeConstraint(final RangeConstraint node) {
+
     }
 
     @Override
-    public Void visitRealLiteral(final RealLiteral node, final Void p) throws Exception {
+    public void visitRealLiteral(final RealLiteral node) {
         write(String.valueOf(node.getValue()));
-        return null;
+
     }
 
     @Override
-    public Void visitReferentialAttributeDefinition(final ReferentialAttributeDefinition node, final Void p) throws
-                                                                                                             Exception {
-        return null;
+    public void visitReferentialAttributeDefinition(final ReferentialAttributeDefinition node) {
+
     }
 
     @Override
-    public Void visitReturnStatement(final ReturnStatement node, final Void p) throws Exception {
+    public void visitReturnStatement(final ReturnStatement node) {
         write("return ");
         visit(node.getReturnValue());
         write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitScheduleStatement(final ScheduleStatement node, final Void p) throws Exception {
-        return null;
+    public void visitScheduleStatement(final ScheduleStatement node) {
+
     }
 
     @Override
-    public Void visitSelectedAttributeExpression(final SelectedAttributeExpression node, final Void p) throws
-                                                                                                       Exception {
-        return null;
+    public void visitSelectedAttributeExpression(final SelectedAttributeExpression node) {
+
     }
 
     @Override
-    public Void visitSelectedComponentExpression(final SelectedComponentExpression node, final Void p) throws
-                                                                                                       Exception {
-        return null;
+    public void visitSelectedComponentExpression(final SelectedComponentExpression node) {
+
     }
 
     @Override
-    public Void visitSequenceType(final SequenceType node, final Void p) throws Exception {
+    public void visitSequenceType(final SequenceType node) {
         write("sequence ");
         if (node.getBound() != null) {
             write("(");
@@ -891,53 +833,56 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         }
         write("of ");
         visit(node.getContainedType());
-        return null;
+
     }
 
     @Override
-    public Void visitSetType(final SetType node, final Void p) throws Exception {
+    public void visitSetType(final SetType node) {
         write("set of ");
         visit(node.getContainedType());
-        return null;
+
     }
 
     @Override
-    public Void visitDictionaryType(final DictionaryType node, final Void p) throws Exception {
+    public void visitDictionaryType(final DictionaryType node) {
         write("dictionary ");
         visit(node.getKeyType());
         write(" of ");
         visit(node.getValueType());
-        return null;
+
     }
 
     @Override
-    public Void visitSliceExpression(final SliceExpression node, final Void p) throws Exception {
-        return null;
+    public void visitSliceExpression(final SliceExpression node) {
+
     }
 
     @Override
-    public Void visitSplitExpression(final SplitExpression node, final Void p) throws Exception {
-        return null;
+    public void visitSplitExpression(final SplitExpression node) {
+
     }
 
     @Override
-    public Void visitState(final State node, final Void p) throws Exception {
-        return null;
+    public void visitState(final State node) {
+
     }
 
     @Override
-    public Void visitStringLiteral(final StringLiteral node, final Void p) throws Exception {
+    public void visitStringLiteral(final StringLiteral node) {
         write("\"" + node.getValue() + "\"");
-        return null;
+
     }
 
     @Override
-    public Void visitStructureAggregate(final StructureAggregate node, final Void p) throws Exception {
-        return null;
+    public void visitStructureAggregate(final StructureAggregate node) {
+
     }
 
     @Override
-    public Void visitStructureElement(final StructureElement node, final Void p) throws Exception {
+    public void visitStructureElement(final StructureElement node) {
+        if (node.getComment() != null) {
+            write("\n" + wrapComment(node.getComment()));
+        }
         write(node.getName() + STRUCT_ALIGNER + " : ");
         visit(node.getType());
         if (!interfaceOnly && node.getDefault() != null) {
@@ -947,85 +892,78 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         } else {
             write(";" + STRUCT_ALIGNER);
         }
-        if (node.getComment() != null) {
-            write(" " + wrapComment(COMMENT_ALIGNER, node.getComment()));
-        } else {
-            write("\n");
-        }
-        return null;
+        write("\n");
+
     }
 
     @Override
-    public Void visitStructureOrderingExpression(final StructureOrderingExpression node, final Void p) throws
-                                                                                                       Exception {
-        return null;
+    public void visitStructureOrderingExpression(final StructureOrderingExpression node) {
+
     }
 
     @Override
-    public Void visitStructureType(final StructureType structure, final Void p) throws Exception {
+    public void visitStructureType(final StructureType structure) {
         write("structure\n");
         pushBlock();
         visit(structure.getElements());
         popBlock(ALIGN_STRUCT, ALIGN_COMMENT, INDENT);
         write("end structure");
-        return null;
+
     }
 
     @Override
-    public Void visitTerminatorFunctionInvocation(final TerminatorFunctionInvocation node, final Void p) throws
-                                                                                                         Exception {
-        return null;
+    public void visitTerminatorFunctionInvocation(final TerminatorFunctionInvocation node) {
+
     }
 
     @Override
-    public Void visitTerminatorNameExpression(final TerminatorNameExpression node, final Void p) throws Exception {
-        return null;
+    public void visitTerminatorNameExpression(final TerminatorNameExpression node) {
+
     }
 
     @Override
-    public Void visitTerminatorServiceInvocation(final TerminatorServiceInvocation node, final Void p) throws
-                                                                                                       Exception {
-        return null;
+    public void visitTerminatorServiceInvocation(final TerminatorServiceInvocation node) {
+
     }
 
     @Override
-    public Void visitThisLiteral(final ThisLiteral node, final Void p) throws Exception {
-        return null;
+    public void visitThisLiteral(final ThisLiteral node) {
+
     }
 
     @Override
-    public Void visitTimeFieldExpression(final TimeFieldExpression node, final Void p) throws Exception {
-        return null;
+    public void visitTimeFieldExpression(final TimeFieldExpression node) {
+
     }
 
     @Override
-    public Void visitTimerFieldExpression(final TimerFieldExpression node, final Void p) throws Exception {
-        return null;
+    public void visitTimerFieldExpression(final TimerFieldExpression node) {
+
     }
 
     @Override
-    public Void visitTimestampDeltaExpression(final TimestampDeltaExpression node, final Void p) throws Exception {
-        return null;
+    public void visitTimestampDeltaExpression(final TimestampDeltaExpression node) {
+
     }
 
     @Override
-    public Void visitTimestampLiteral(final TimestampLiteral node, final Void p) throws Exception {
-        return null;
+    public void visitTimestampLiteral(final TimestampLiteral node) {
+
     }
 
     @Override
-    public Void visitTransitionOption(final TransitionOption node, final Void p) throws Exception {
-        return null;
+    public void visitTransitionOption(final TransitionOption node) {
+
     }
 
     @Override
-    public Void visitTransitionRow(final TransitionRow node, final Void p) throws Exception {
-        return null;
+    public void visitTransitionRow(final TransitionRow node) {
+
     }
 
     @Override
-    public Void visitTransitionTable(final TransitionTable node, final Void p) throws Exception {
-        return null;
+    public void visitTransitionTable(final TransitionTable node) {
+
     }
 
     String getVisibility(final Visibility v) {
@@ -1033,9 +971,9 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
     }
 
     @Override
-    public Void visitTypeDeclaration(final TypeDeclaration type, final Void p) throws Exception {
+    public void visitTypeDeclaration(final TypeDeclaration type) {
         if (interfaceOnly && type.getVisibility() == Visibility.PRIVATE) {
-            return null;
+
         }
 
         write("\n");
@@ -1045,16 +983,16 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         write(getVisibility(type.getVisibility()) + " type " + type.getName() + " is ");
         visit(type.getTypeDefinition());
         write(";\n");
-        return null;
+
     }
 
     @Override
-    public Void visitTypeNameExpression(final TypeNameExpression node, final Void p) throws Exception {
-        return null;
+    public void visitTypeNameExpression(final TypeNameExpression node) {
+
     }
 
     @Override
-    public Void visitUnaryExpression(final UnaryExpression node, final Void p) throws Exception {
+    public void visitUnaryExpression(final UnaryExpression node) {
         switch (node.getOperator()) {
             case ABS:
                 write("abs ");
@@ -1070,52 +1008,50 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
                 break;
         }
         visit(node.getRhs());
-        return null;
+
     }
 
     @Override
-    public Void visitUnconstrainedArraySubtype(final UnconstrainedArraySubtype node, final Void p) throws Exception {
-        return null;
+    public void visitUnconstrainedArraySubtype(final UnconstrainedArraySubtype node) {
+
     }
 
     @Override
-    public Void visitUnconstrainedArrayType(final UnconstrainedArrayType node, final Void p) throws Exception {
-        return null;
+    public void visitUnconstrainedArrayType(final UnconstrainedArrayType node) {
+
     }
 
     @Override
-    public Void visitUserDefinedType(final UserDefinedType node, final Void p) throws Exception {
+    public void visitUserDefinedType(final UserDefinedType node) {
         if (node.getDomain() != currentDomain) {
             write(node.getDomain().getName() + "::");
         }
         write(node.getName());
-        return null;
+
     }
 
     @Override
-    public Void visitVariableDefinition(final VariableDefinition node, final Void p) throws Exception {
-        return null;
+    public void visitVariableDefinition(final VariableDefinition node) {
+
     }
 
     @Override
-    public Void visitVariableNameExpression(final VariableNameExpression node, final Void p) throws Exception {
-        return null;
+    public void visitVariableNameExpression(final VariableNameExpression node) {
+
     }
 
     @Override
-    public Void visitWhileStatement(final WhileStatement node, final Void p) throws Exception {
-        return null;
+    public void visitWhileStatement(final WhileStatement node) {
+
     }
 
     @Override
-    public Void vistAssociativeRelationshipDeclaration(final AssociativeRelationshipDeclaration node,
-                                                       final Void p) throws Exception {
-        return null;
+    public void vistAssociativeRelationshipDeclaration(final AssociativeRelationshipDeclaration node) {
+
     }
 
     @Override
-    public Void vistNormalRelationshipDeclaration(final NormalRelationshipDeclaration node, final Void p) throws
-                                                                                                          Exception {
+    public void vistNormalRelationshipDeclaration(final NormalRelationshipDeclaration node) {
         pushBlock();
         write("relationship" + node.getName() + " is");
         visit(node.getLeftToRightSpec());
@@ -1124,18 +1060,17 @@ public class CodeWriter extends AbstractASTNodeVisitor<Void, Void> {
         write("\n");
         visit(node.getPragmas());
         popBlock(ALIGN_PRAGMA);
-        return null;
+
     }
 
     @Override
-    public Void vistRelationshipSpecification(final RelationshipSpecification node, final Void p) throws Exception {
-        return null;
+    public void vistRelationshipSpecification(final RelationshipSpecification node) {
+
     }
 
     @Override
-    public Void vistSubtypeRelationshipDeclaration(final SubtypeRelationshipDeclaration node, final Void p) throws
-                                                                                                            Exception {
-        return null;
+    public void vistSubtypeRelationshipDeclaration(final SubtypeRelationshipDeclaration node) {
+
     }
 
     private static final String

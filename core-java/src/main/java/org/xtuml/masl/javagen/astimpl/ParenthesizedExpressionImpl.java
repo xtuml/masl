@@ -33,8 +33,8 @@ class ParenthesizedExpressionImpl extends ExpressionImpl implements Parenthesize
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitParenthesizedExpression(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitParenthesizedExpression(this);
     }
 
     @Override
@@ -53,6 +53,6 @@ class ParenthesizedExpressionImpl extends ExpressionImpl implements Parenthesize
         return Integer.MAX_VALUE;
     }
 
-    private final ChildNode<ExpressionImpl> expression = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> expression = new ChildNode<>(this);
 
 }

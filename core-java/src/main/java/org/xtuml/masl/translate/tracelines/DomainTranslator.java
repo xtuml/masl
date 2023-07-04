@@ -36,7 +36,6 @@ import org.xtuml.masl.translate.main.code.CodeBlockTranslator;
 import org.xtuml.masl.translate.main.code.CodeTranslator;
 import org.xtuml.masl.translate.main.object.ObjectTranslator;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -58,7 +57,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
      */
     @Override
     public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.DomainTranslator>singletonList(mainDomainTranslator);
+        return Collections.singletonList(mainDomainTranslator);
     }
 
     @Override

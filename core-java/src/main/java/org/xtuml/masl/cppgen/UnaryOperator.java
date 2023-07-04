@@ -52,8 +52,7 @@ public enum UnaryOperator {
     /**
      * Determines the precedence for the operator. Precedence is determined
      * according to the table in C++ Programming Language (Third Edition)
-     * Stroustrup, Section 6.2. See {@link Expression#getPrecedence()} for
-     * details.
+     * Stroustrup, Section 6.2. See {@link Expression#getPrecedence()} for details.
      *
      * @return the precedence of the operator
      */

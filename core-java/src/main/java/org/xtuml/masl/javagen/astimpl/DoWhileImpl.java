@@ -34,8 +34,8 @@ public class DoWhileImpl extends StatementImpl implements DoWhile {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDoWhile(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitDoWhile(this);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class DoWhileImpl extends StatementImpl implements DoWhile {
         this.statement.set((StatementImpl) statement);
     }
 
-    private final ChildNode<ExpressionImpl> condition = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> condition = new ChildNode<>(this);
 
-    private final ChildNode<StatementImpl> statement = new ChildNode<StatementImpl>(this);
+    private final ChildNode<StatementImpl> statement = new ChildNode<>(this);
 }

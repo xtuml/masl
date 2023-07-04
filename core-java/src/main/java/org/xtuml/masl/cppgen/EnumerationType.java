@@ -47,8 +47,8 @@ public class EnumerationType extends Type {
          * <p>
          * The name of the enumerate.
          * <p>
-         * The value to be assigned to this enumerate. If null, then the
-         * enumerate will have the default value.
+         * The value to be assigned to this enumerate. If null, then the enumerate will
+         * have the default value.
          */
         Enumerator(final String name, final Expression value) {
             this.name = name;
@@ -70,7 +70,7 @@ public class EnumerationType extends Type {
 
                 @Override
                 Set<Declaration> getForwardDeclarations() {
-                    return new LinkedHashSet<Declaration>();
+                    return new LinkedHashSet<>();
                 }
 
                 @Override
@@ -113,8 +113,8 @@ public class EnumerationType extends Type {
         }
 
         /**
-         * Gets the name of the enumerator suitably qualified to be used in the
-         * supplied namespace
+         * Gets the name of the enumerator suitably qualified to be used in the supplied
+         * namespace
          * <p>
          * <p>
          * The namespace the name is to be used in
@@ -183,7 +183,7 @@ public class EnumerationType extends Type {
                                                                                                           IOException {
             final StringBuilder definition = new StringBuilder();
 
-            final List<String> strings = new ArrayList<String>(values.size());
+            final List<String> strings = new ArrayList<>(values.size());
             for (final Enumerator value : values) {
                 strings.add(value.getDeclaration(currentNamespace));
             }
@@ -242,8 +242,8 @@ public class EnumerationType extends Type {
      * <p>
      * The name of the enumerator
      * <p>
-     * The value that this name will be assigned. <code>null</code> means
-     * that no value is specified, so the C++ default will be used.
+     * The value that this name will be assigned. <code>null</code> means that no
+     * value is specified, so the C++ default will be used.
      *
      * @return the emumerator that was added
      */
@@ -308,6 +308,6 @@ public class EnumerationType extends Type {
 
     private final Declaration declaration = new EnumerationDeclaration();
 
-    private final List<Enumerator> values = new ArrayList<Enumerator>();
+    private final List<Enumerator> values = new ArrayList<>();
 
 }

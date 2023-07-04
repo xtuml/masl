@@ -38,8 +38,8 @@ class ConditionalImpl extends ExpressionImpl implements Conditional {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitConditional(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitConditional(this);
     }
 
     @Override
@@ -93,8 +93,8 @@ class ConditionalImpl extends ExpressionImpl implements Conditional {
         return 2;
     }
 
-    private final ChildNode<ExpressionImpl> condition = new ChildNode<ExpressionImpl>(this);
-    private final ChildNode<ExpressionImpl> trueValue = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> condition = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> trueValue = new ChildNode<>(this);
 
-    private final ChildNode<ExpressionImpl> falseValue = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> falseValue = new ChildNode<>(this);
 }

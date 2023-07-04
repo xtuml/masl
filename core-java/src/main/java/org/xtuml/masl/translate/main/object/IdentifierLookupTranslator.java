@@ -40,7 +40,7 @@ public abstract class IdentifierLookupTranslator {
         this.concreteObj = concreteObj;
         this.identifier = identifier;
 
-        final List<TypeUsage> keyTypes = new ArrayList<TypeUsage>();
+        final List<TypeUsage> keyTypes = new ArrayList<>();
         String name = "";
         for (final AttributeDeclaration attDec : identifier.getAttributes()) {
             keyTypes.add(Types.getInstance().getType(attDec.getType()));
@@ -65,8 +65,8 @@ public abstract class IdentifierLookupTranslator {
                                                                       lookupName + "_Lookup",
                                                                       new TypeUsage(lookupType),
                                                                       Visibility.PRIVATE);
-        final List<Expression> createGetters = new ArrayList<Expression>();
-        final List<Expression> deleteGetters = new ArrayList<Expression>();
+        final List<Expression> createGetters = new ArrayList<>();
+        final List<Expression> deleteGetters = new ArrayList<>();
         for (final AttributeDeclaration attDec : identifier.getAttributes()) {
             final Expression
                     createGetter =
@@ -109,7 +109,7 @@ public abstract class IdentifierLookupTranslator {
             findFunction.setConst(true);
             findFunction.setReturnType(new TypeUsage(objPtr));
             concreteObj.getPopulationBodyFile().addFunctionDefinition(findFunction);
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
             for (final AttributeDeclaration attDec : identifier.getAttributes()) {
                 final Variable
                         param =
@@ -157,7 +157,7 @@ public abstract class IdentifierLookupTranslator {
             checkFunction.setConst(true);
             checkFunction.setReturnType(new TypeUsage(FundamentalType.BOOL));
             concreteObj.getPopulationBodyFile().addFunctionDefinition(checkFunction);
-            final List<Expression> params = new ArrayList<Expression>();
+            final List<Expression> params = new ArrayList<>();
             for (final AttributeDeclaration attDec : identifier.getAttributes()) {
                 final Variable
                         param =

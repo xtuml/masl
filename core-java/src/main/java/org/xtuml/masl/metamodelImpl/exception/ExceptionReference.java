@@ -21,11 +21,14 @@
  */
 package org.xtuml.masl.metamodelImpl.exception;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
 import org.xtuml.masl.metamodelImpl.domain.Domain;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
+
+import java.util.List;
 
 public abstract class ExceptionReference extends Positioned
         implements org.xtuml.masl.metamodel.exception.ExceptionReference {
@@ -60,12 +63,17 @@ public abstract class ExceptionReference extends Positioned
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitExceptionReference(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitExceptionReference(this);
     }
 
     public ExceptionReference(final Position position) {
         super(position);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

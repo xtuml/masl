@@ -33,7 +33,7 @@ public class Test {
     public static void main(final String[] args) throws Exception {
 
         final AST ast = ASTFactory.createAST();
-        final Package pkg = ast.createPackage("org.xtuml.wharf.datacache");
+        final Package pkg = ast.createPackage("org.xtuml.datacache");
         final TypeDeclaration td = pkg.addTypeDeclaration("MyClass");
 
         final Field fieldP1 = td.addField(ast.createInt(), "p1");

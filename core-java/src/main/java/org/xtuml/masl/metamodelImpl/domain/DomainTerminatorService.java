@@ -104,11 +104,11 @@ public class DomainTerminatorService extends Service
                                         IntegerType.createAnonymous(),
                                         true,
                                         true,
-                                        new ArrayList<ReferentialAttributeDefinition>(),
+                                        new ArrayList<>(),
                                         null,
                                         new PragmaList());
 
-            final List<CreateAggregateValue> aggregate = new ArrayList<CreateAggregateValue>();
+            final List<CreateAggregateValue> aggregate = new ArrayList<>();
             final AttributeDeclaration
                     timeAtt =
                     AttributeDeclaration.create(testObject,
@@ -116,7 +116,7 @@ public class DomainTerminatorService extends Service
                                                 TimestampType.createAnonymous(),
                                                 false,
                                                 false,
-                                                new ArrayList<ReferentialAttributeDefinition>(),
+                                                new ArrayList<>(),
                                                 null,
                                                 new PragmaList());
             aggregate.add(new CreateExpression.NormalAttribute(position,
@@ -126,7 +126,7 @@ public class DomainTerminatorService extends Service
                                                                                                        position,
                                                                                                        TimestampType.createAnonymous()),
                                                                                                "now",
-                                                                                               new ArrayList<Expression>())));
+                                                                                               new ArrayList<>())));
 
             for (final ParameterDefinition param : parameters) {
                 final AttributeDeclaration
@@ -136,7 +136,7 @@ public class DomainTerminatorService extends Service
                                                     param.getType(),
                                                     false,
                                                     false,
-                                                    new ArrayList<ReferentialAttributeDefinition>(),
+                                                    new ArrayList<>(),
                                                     null,
                                                     new PragmaList());
                 aggregate.add(new CreateExpression.NormalAttribute(position,
@@ -176,11 +176,7 @@ public class DomainTerminatorService extends Service
             getDeclarationPragmas().getPragmaValues(PragmaList.FILENAME).size() > 0) {
             return getDeclarationPragmas().getPragmaValues(PragmaList.FILENAME).get(0);
         } else {
-            return terminator.getKeyLetters() +
-                   "_" +
-                   getName() +
-                   (getOverloadNo() > 0 ? "." + getOverloadNo() : "") +
-                   ".tr";
+            return terminator.getName() + "_" + getName() + (getOverloadNo() > 0 ? "." + getOverloadNo() : "") + ".tr";
         }
     }
 
@@ -203,8 +199,8 @@ public class DomainTerminatorService extends Service
     private VariableDefinition testInstance = null;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDomainTerminatorService(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDomainTerminatorService(this);
     }
 
     private String comment;

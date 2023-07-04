@@ -33,8 +33,8 @@ public class TypeDeclarationStatementImpl extends StatementImpl implements TypeD
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTypeDeclarationStatement(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitTypeDeclarationStatement(this);
     }
 
     @Override
@@ -47,6 +47,6 @@ public class TypeDeclarationStatementImpl extends StatementImpl implements TypeD
         this.typeDeclaration.set((TypeDeclarationImpl) typeDeclaration);
     }
 
-    private final ChildNode<TypeDeclarationImpl> typeDeclaration = new ChildNode<TypeDeclarationImpl>(this);
+    private final ChildNode<TypeDeclarationImpl> typeDeclaration = new ChildNode<>(this);
 
 }

@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,7 +20,6 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.metamodelImpl.type;
-
 import static org.xtuml.masl.metamodelImpl.type.TestTypes.data1;
 
 public abstract class TestCollectionConversion extends TestTypeConversion {
@@ -28,13 +27,8 @@ public abstract class TestCollectionConversion extends TestTypeConversion {
     public static class TestSequence extends TestCollectionConversion {
 
         public TestSequence() {
-            super(data1.seqOfInt,
-                  data1.seqOfSeqOfInt,
-                  data1.seqOfSetOfInt,
-                  data1.seqOfBagOfInt,
-                  data1.seqOfArrayOfInt,
-                  data1.seqOfUdIntType,
-                  data1.seqOfUdIntTypeType);
+            super(data1.seqOfInt, data1.seqOfSeqOfInt, data1.seqOfSetOfInt, data1.seqOfBagOfInt, data1.seqOfArrayOfInt,
+                    data1.seqOfUdIntType, data1.seqOfUdIntTypeType);
 
         }
     }
@@ -42,13 +36,8 @@ public abstract class TestCollectionConversion extends TestTypeConversion {
     public static class TestArray1to10 extends TestCollectionConversion {
 
         public TestArray1to10() {
-            super(data1.array1to10OfInt,
-                  data1.arrayOfSeqOfInt,
-                  data1.arrayOfSetOfInt,
-                  data1.arrayOfBagOfInt,
-                  data1.arrayOfArrayOfInt,
-                  data1.arrayOfUdIntType,
-                  data1.arrayOfUdIntTypeType);
+            super(data1.array1to10OfInt, data1.arrayOfSeqOfInt, data1.arrayOfSetOfInt, data1.arrayOfBagOfInt,
+                    data1.arrayOfArrayOfInt, data1.arrayOfUdIntType, data1.arrayOfUdIntTypeType);
 
         }
     }
@@ -56,13 +45,8 @@ public abstract class TestCollectionConversion extends TestTypeConversion {
     public static class TestSet extends TestCollectionConversion {
 
         public TestSet() {
-            super(data1.setOfInt,
-                  data1.setOfSeqOfInt,
-                  data1.setOfSetOfInt,
-                  data1.setOfBagOfInt,
-                  data1.setOfArrayOfInt,
-                  data1.setOfUdIntType,
-                  data1.setOfUdIntTypeType);
+            super(data1.setOfInt, data1.setOfSeqOfInt, data1.setOfSetOfInt, data1.setOfBagOfInt, data1.setOfArrayOfInt,
+                    data1.setOfUdIntType, data1.setOfUdIntTypeType);
 
         }
     }
@@ -70,13 +54,8 @@ public abstract class TestCollectionConversion extends TestTypeConversion {
     public static class TestBag extends TestCollectionConversion {
 
         public TestBag() {
-            super(data1.bagOfInt,
-                  data1.bagOfSeqOfInt,
-                  data1.bagOfSetOfInt,
-                  data1.bagOfBagOfInt,
-                  data1.bagOfArrayOfInt,
-                  data1.bagOfUdIntType,
-                  data1.bagOfUdIntTypeType);
+            super(data1.bagOfInt, data1.bagOfSeqOfInt, data1.bagOfSetOfInt, data1.bagOfBagOfInt, data1.bagOfArrayOfInt,
+                    data1.bagOfUdIntType, data1.bagOfUdIntTypeType);
 
         }
     }
@@ -89,13 +68,10 @@ public abstract class TestCollectionConversion extends TestTypeConversion {
     private final CollectionType collOfUdIntType;
     private final CollectionType collOfUdIntTypeType;
 
-    protected TestCollectionConversion(final CollectionType collOfInt,
-                                       final CollectionType collOfSeqOfInt,
-                                       final CollectionType collOfSetOfInt,
-                                       final CollectionType collOfBagOfInt,
-                                       final CollectionType collOfArrayOfInt,
-                                       final CollectionType collOfUdIntType,
-                                       final CollectionType collOfUdIntTypeType) {
+    protected TestCollectionConversion(final CollectionType collOfInt, final CollectionType collOfSeqOfInt,
+            final CollectionType collOfSetOfInt, final CollectionType collOfBagOfInt,
+            final CollectionType collOfArrayOfInt, final CollectionType collOfUdIntType,
+            final CollectionType collOfUdIntTypeType) {
         this.collOfInt = collOfInt;
         this.collOfSeqOfInt = collOfSeqOfInt;
         this.collOfSetOfInt = collOfSetOfInt;

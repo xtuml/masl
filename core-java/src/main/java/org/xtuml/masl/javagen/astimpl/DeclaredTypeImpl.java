@@ -55,12 +55,12 @@ public class DeclaredTypeImpl extends ReferenceTypeImpl implements DeclaredType 
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDeclaredType(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitDeclaredType(this);
     }
 
     private final TypeDeclarationImpl typeDeclaration;
-    private final List<TypeImpl> typeArguments = new ChildNodeList<TypeImpl>(this);
+    private final List<TypeImpl> typeArguments = new ChildNodeList<>(this);
 
     @Override
     public QualifierImpl getQualifier() {
@@ -71,7 +71,7 @@ public class DeclaredTypeImpl extends ReferenceTypeImpl implements DeclaredType 
         return qualifier.get();
     }
 
-    private final ChildNode<QualifierImpl> qualifier = new ChildNode<QualifierImpl>(this);
+    private final ChildNode<QualifierImpl> qualifier = new ChildNode<>(this);
 
     @Override
     public void forceQualifier() {

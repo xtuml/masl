@@ -273,22 +273,22 @@ public class SqliteBinaryRelationshipToTableTranslator implements BinaryRelation
     }
 
     /**
-     * Generate the SQL SELECT statement for loading the lhs column data based on
-     * a where clause using the value of a rhs object id.
+     * Generate the SQL SELECT statement for loading the lhs column data based on a
+     * where clause using the value of a rhs object id.
      * <p>
      * <p>
      * the variable to assign the SQL SELECT statement to
      * <p>
      * the variable that holds the value for the WHERE clause
      *
-     * @return an expression that generates an SQL SELECT statement for loading
-     * lhs column data
+     * @return an expression that generates an SQL SELECT statement for loading lhs
+     * column data
      */
     private Expression generateLoadLhsSelectSQL(final Variable queryVar, final Variable identityVar) {
         // Create cpp line:
         // query << "SELECT R5_lhs FROM R5_LINK_TABLE WHERE R5_rhs = " <<
         // rhsIdentity << ";";
-        final List<Expression> streamExprList = new ArrayList<Expression>();
+        final List<Expression> streamExprList = new ArrayList<>();
         streamExprList.add(queryVar.asExpression());
         streamExprList.add(Literal.createStringLiteral("SELECT " +
                                                        getLeftColumnName() +
@@ -304,19 +304,19 @@ public class SqliteBinaryRelationshipToTableTranslator implements BinaryRelation
     }
 
     /**
-     * Generate the SQL SELECT statement for loading the rhs column data based on
-     * a where clause using the value of a lhs object id.
+     * Generate the SQL SELECT statement for loading the rhs column data based on a
+     * where clause using the value of a lhs object id.
      * <p>
      * <p>
      * the variable to assign the SQL SELECT statement to
      * <p>
      * the variable that holds the value for the WHERE clause
      *
-     * @return an expression that generates an SQL SELECT statement for loading
-     * rhs column data
+     * @return an expression that generates an SQL SELECT statement for loading rhs
+     * column data
      */
     private Expression generateLoadRhsSelectSQL(final Variable queryVar, final Variable identityVar) {
-        final List<Expression> streamExprList = new ArrayList<Expression>();
+        final List<Expression> streamExprList = new ArrayList<>();
         streamExprList.add(queryVar.asExpression());
         streamExprList.add(Literal.createStringLiteral("SELECT " +
                                                        getRightColumnName() +

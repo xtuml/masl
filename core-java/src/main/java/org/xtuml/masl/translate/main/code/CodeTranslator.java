@@ -157,7 +157,7 @@ public abstract class CodeTranslator {
 
     private final Scope scope;
 
-    private final List<CodeTranslator> childTranslators = new ArrayList<CodeTranslator>();
+    private final List<CodeTranslator> childTranslators = new ArrayList<>();
 
     private final StatementGroup code = new StatementGroup();
     private final CodeBlock fullCode;

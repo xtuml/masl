@@ -37,9 +37,7 @@ public abstract class ClassAttributeTranslator {
     private final org.xtuml.masl.translate.main.DomainTranslator mainDomainTranslator;
     private final org.xtuml.masl.translate.main.object.ObjectTranslator mainObjectTranslator;
 
-    private static final Map<ObjectDeclaration, ClassAttributeTranslator>
-            translators =
-            new HashMap<ObjectDeclaration, ClassAttributeTranslator>();
+    private static final Map<ObjectDeclaration, ClassAttributeTranslator> translators = new HashMap<>();
     public static final String CURRENT_STATE = "currentState";
     public static final String ASSIGNER_STATE = "assignerState";
 

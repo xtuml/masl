@@ -127,15 +127,15 @@ public class ForImpl extends StatementImpl implements For {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitFor(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitFor(this);
     }
 
-    private final ChildNode<StatementImpl> code = new ChildNode<StatementImpl>(this);
-    private final ChildNode<ExpressionImpl> condition = new ChildNode<ExpressionImpl>(this);
-    private final ChildNode<LocalVariableImpl> variable = new ChildNode<LocalVariableImpl>(this);
-    private final ChildNode<ExpressionImpl> collection = new ChildNode<ExpressionImpl>(this);
-    private final ChildNodeList<ExpressionImpl> updates = new ChildNodeList<ExpressionImpl>(this);
-    private final ChildNodeList<ExpressionImpl> starts = new ChildNodeList<ExpressionImpl>(this);
+    private final ChildNode<StatementImpl> code = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> condition = new ChildNode<>(this);
+    private final ChildNode<LocalVariableImpl> variable = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> collection = new ChildNode<>(this);
+    private final ChildNodeList<ExpressionImpl> updates = new ChildNodeList<>(this);
+    private final ChildNodeList<ExpressionImpl> starts = new ChildNodeList<>(this);
 
 }

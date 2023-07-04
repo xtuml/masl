@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -50,7 +51,7 @@ public class ForStatement extends Statement implements org.xtuml.masl.metamodel.
         super(position);
         this.loopSpec = loopSpec;
         nameLookup.addName(loopSpec.getLoopVariableDef());
-        this.statements = new ArrayList<Statement>();
+        this.statements = new ArrayList<>();
     }
 
     private final NameLookup nameLookup = new NameLookup();
@@ -100,8 +101,13 @@ public class ForStatement extends Statement implements org.xtuml.masl.metamodel.
     private final List<Statement> statements;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitForStatement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitForStatement(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(loopSpec, statements);
     }
 
 }

@@ -21,7 +21,10 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.common.Position;
+
+import java.util.List;
 
 public abstract class LiteralExpression extends Expression
         implements org.xtuml.masl.metamodel.expression.LiteralExpression {
@@ -33,6 +36,11 @@ public abstract class LiteralExpression extends Expression
     @Override
     public LiteralExpression evaluate() {
         return this;
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

@@ -22,7 +22,6 @@
 package org.xtuml.masl.cppgen;
 
 import org.xtuml.masl.utils.TextUtils;
-import org.xtuml.masl.utils.TextUtils.Formatter;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -64,6 +63,9 @@ public class Variable {
                          " " +
                          getQualifiedName(currentNamespace) +
                          getArraySize());
+            if (!isStatic && initialValue != null) {
+                writer.write(" = " + initialValue.getCode(currentNamespace));
+            }
             writer.write(";\n");
         }
 
@@ -105,7 +107,7 @@ public class Variable {
             if (initialValue != null) {
                 writer.write(TextUtils.alignTabs(" = " + initialValue.getCode(currentNamespace)));
             } else if (constructorParams != null) {
-                final List<String> paramCode = new ArrayList<String>();
+                final List<String> paramCode = new ArrayList<>();
                 for (final Expression param : constructorParams) {
                     paramCode.add(param.getCode(currentNamespace));
                 }
@@ -165,38 +167,29 @@ public class Variable {
     public static void writeParameterDeclaration(final Writer writer,
                                                  final List<Variable> variables,
                                                  final Namespace currentNamespace) throws IOException {
-        TextUtils.formatList(writer, variables, "", new Formatter<Variable>() {
-
-            @Override
-            public String format(final Variable var) {
-                String
-                        varDef =
-                        "\t" +
-                        var.type.getQualifiedName(currentNamespace) +
-                        "\t" +
-                        var.getQualifiedName(currentNamespace);
-                if (var.initialValue != null) {
-                    varDef = varDef + TextUtils.alignTabs(" = " + var.initialValue.getCode(currentNamespace));
-                }
-                return varDef;
+        TextUtils.formatList(writer, variables, "", var -> {
+            String
+                    varDef =
+                    "\t" + var.type.getQualifiedName(currentNamespace) + "\t" + var.getQualifiedName(currentNamespace);
+            if (var.initialValue != null) {
+                varDef = varDef + TextUtils.alignTabs(" = " + var.initialValue.getCode(currentNamespace));
             }
-
+            return varDef;
         }, ",\n", "");
     }
 
     public static void writeParameterDefinition(final Writer writer,
                                                 final List<Variable> variables,
                                                 final Namespace currentNamespace) throws IOException {
-        TextUtils.formatList(writer, variables, "", new Formatter<Variable>() {
-
-            @Override
-            public String format(final Variable var) {
-                return "\t" +
-                       var.type.getQualifiedName(currentNamespace) +
-                       "\t" +
-                       var.getQualifiedName(currentNamespace);
-            }
-        }, ",\n", "");
+        TextUtils.formatList(writer,
+                             variables,
+                             "",
+                             var -> "\t" +
+                                    var.type.getQualifiedName(currentNamespace) +
+                                    "\t" +
+                                    var.getQualifiedName(currentNamespace),
+                             ",\n",
+                             "");
     }
 
     public String getParameterDefinition(final Namespace currentNamespace) {

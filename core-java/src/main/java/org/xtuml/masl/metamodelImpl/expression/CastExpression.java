@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
@@ -29,7 +30,6 @@ import org.xtuml.masl.metamodelImpl.type.IntegerType;
 import org.xtuml.masl.metamodelImpl.type.RealType;
 import org.xtuml.masl.utils.HashCode;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class CastExpression extends CallExpression implements org.xtuml.masl.metamodel.expression.CastExpression {
@@ -139,13 +139,13 @@ public class CastExpression extends CallExpression implements org.xtuml.masl.met
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCastExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitCastExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(typeName, rhs);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(typeName, rhs);
     }
 
 }

@@ -21,9 +21,12 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.expression.MinMaxRange;
+
+import java.util.List;
 
 public class FromToRange extends LoopSpec implements org.xtuml.masl.metamodel.code.LoopSpec.FromToRange {
 
@@ -48,8 +51,13 @@ public class FromToRange extends LoopSpec implements org.xtuml.masl.metamodel.co
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitLoopFromToRange(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitLoopFromToRange(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(range);
     }
 
     private final MinMaxRange range;

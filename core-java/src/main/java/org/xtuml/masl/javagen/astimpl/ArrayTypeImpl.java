@@ -42,11 +42,11 @@ public class ArrayTypeImpl extends ReferenceTypeImpl implements org.xtuml.masl.j
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitArrayType(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitArrayType(this);
     }
 
-    private final ChildNode<TypeImpl> elementType = new ChildNode<TypeImpl>(this);
+    private final ChildNode<TypeImpl> elementType = new ChildNode<>(this);
 
     @Override
     public ArrayTypeImpl deepCopy() {

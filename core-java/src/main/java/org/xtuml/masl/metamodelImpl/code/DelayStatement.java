@@ -21,12 +21,16 @@
  */
 package org.xtuml.masl.metamodelImpl.code;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
 import org.xtuml.masl.metamodelImpl.type.DurationType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DelayStatement extends Statement implements org.xtuml.masl.metamodel.code.DelayStatement {
 
@@ -65,8 +69,15 @@ public class DelayStatement extends Statement implements org.xtuml.masl.metamode
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitDelayStatement(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitDelayStatement(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        final List<ASTNode> result = new ArrayList();
+        result.add(duration);
+        return result;
     }
 
 }

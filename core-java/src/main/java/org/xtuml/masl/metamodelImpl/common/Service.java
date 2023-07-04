@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.common;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodelImpl.code.CodeBlock;
 import org.xtuml.masl.metamodelImpl.error.AlreadyDefined;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
@@ -50,9 +51,9 @@ public abstract class Service extends Positioned implements Named, org.xtuml.mas
         this.returnType = returnType;
         this.exceptionSpecs = exceptionSpecs;
         this.params =
-                new CheckedLookup<ParameterDefinition>(SemanticErrorCode.ParameterAlreadyDefinedOnService,
-                                                       SemanticErrorCode.ParameterNotFoundOnService,
-                                                       this);
+                new CheckedLookup<>(SemanticErrorCode.ParameterAlreadyDefinedOnService,
+                                    SemanticErrorCode.ParameterNotFoundOnService,
+                                    this);
 
         for (final ParameterDefinition param : parameters) {
             try {
@@ -184,11 +185,21 @@ public abstract class Service extends Positioned implements Named, org.xtuml.mas
     }
 
     @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(getParameters(),
+                                    returnType,
+                                    exceptionSpecs,
+                                    declarationPragmas,
+                                    definitionPragmas,
+                                    code);
+    }
+
+    @Override
     public String toString() {
         return visibility +
                (visibility.toString().equals("") ? "" : " ") +
                getServiceType() +
-               (returnType == null ? "service\t" : "function\t") +
+               "service\t" +
                name +
                "\t(\t" +
                org.xtuml.masl.utils.TextUtils.formatList(params.asList(), "", ",\n\t\t\t", "") +
@@ -217,6 +228,6 @@ public abstract class Service extends Positioned implements Named, org.xtuml.mas
 
     private String fileHash = null;
 
-    private final List<BasicType> signature = new ArrayList<BasicType>();
+    private final List<BasicType> signature = new ArrayList<>();
 
 }

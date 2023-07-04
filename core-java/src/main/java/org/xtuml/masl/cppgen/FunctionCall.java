@@ -62,7 +62,7 @@ public class FunctionCall extends Expression {
     String getCode(final Namespace currentNamespace, final String alignment) {
         final StringBuilder buf = new StringBuilder();
         buf.append(function.getCallName(currentNamespace));
-        final List<String> argCode = new ArrayList<String>();
+        final List<String> argCode = new ArrayList<>();
         for (final Expression arg : arguments) {
             String code = arg.getCode(currentNamespace);
             // Need to parenthesise any comma operator to ensure correct parsing

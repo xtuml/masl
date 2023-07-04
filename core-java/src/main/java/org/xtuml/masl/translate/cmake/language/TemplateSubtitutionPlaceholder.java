@@ -19,35 +19,26 @@
  Classification: UK OFFICIAL
  ----------------------------------------------------------------------------
  */
-package org.xtuml.masl.metamodel.code;
+package org.xtuml.masl.translate.cmake.language;
 
-import org.xtuml.masl.metamodel.ASTNodeVisitor;
+import org.xtuml.masl.translate.cmake.CMakeListsItem;
 
-public class StatementTraverser<P> {
+import java.io.IOException;
+import java.io.Writer;
 
-    private final ASTNodeVisitor<Void, P> visitor;
+public class TemplateSubtitutionPlaceholder implements CMakeListsItem {
 
-    public StatementTraverser(final ASTNodeVisitor<Void, P> visitor) {
-        this.visitor = visitor;
+    private final String placeholder;
 
+    public TemplateSubtitutionPlaceholder(final String placeholder) {
+        this.placeholder = placeholder;
     }
 
-    public void traverse(final Statement statement, final P p) throws Exception {
-        visitor.visit(statement, p);
-        for (final Statement child : statement.getChildStatements()) {
-            if (child != null) {
-                traverse(child, p);
-            }
-        }
-    }
+    @Override
+    public void writeCode(final Writer writer, final String indent) throws IOException {
 
-    public void traverseDepthFirst(final Statement statement, final P p) throws Exception {
-        for (final Statement child : statement.getChildStatements()) {
-            if (child != null) {
-                traverse(child, p);
-            }
-        }
-        visitor.visit(statement, p);
+        writer.write(indent + "@" + placeholder + "@");
+
     }
 
 }

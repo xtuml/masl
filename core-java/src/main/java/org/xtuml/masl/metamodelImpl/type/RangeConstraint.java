@@ -36,8 +36,8 @@ public class RangeConstraint extends TypeConstraint implements org.xtuml.masl.me
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitRangeConstraint(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitRangeConstraint(this);
     }
 
 }

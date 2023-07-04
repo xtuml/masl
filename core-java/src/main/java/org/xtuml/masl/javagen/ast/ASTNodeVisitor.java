@@ -27,153 +27,153 @@ import org.xtuml.masl.javagen.ast.def.*;
 import org.xtuml.masl.javagen.ast.expr.*;
 import org.xtuml.masl.javagen.ast.types.*;
 
-public interface ASTNodeVisitor<R, P> {
+public interface ASTNodeVisitor {
 
-    R visitNull(P param) throws Exception;
+    void visitNull() throws Exception;
 
-    R visit(ASTNode node, P param) throws Exception;
+    void visit(ASTNode node) throws Exception;
 
-    R visitArrayAccess(ArrayAccess node, P param) throws Exception;
+    void visitArrayAccess(ArrayAccess node) throws Exception;
 
-    R visitImport(Import node, P param) throws Exception;
+    void visitImport(Import node) throws Exception;
 
-    R visitClassLiteral(ClassLiteral node, P param) throws Exception;
+    void visitClassLiteral(ClassLiteral node) throws Exception;
 
-    R visitNewArray(NewArray node, P param) throws Exception;
+    void visitNewArray(NewArray node) throws Exception;
 
-    R visitArrayInitializer(ArrayInitializer node, P param) throws Exception;
+    void visitArrayInitializer(ArrayInitializer node) throws Exception;
 
-    R visitArrayType(ArrayType node, P param) throws Exception;
+    void visitArrayType(ArrayType node) throws Exception;
 
-    R visitAssert(Assert node, P param) throws Exception;
+    void visitAssert(Assert node) throws Exception;
 
-    R visitAssignmen(Assignment node, P param) throws Exception;
+    void visitAssignmen(Assignment node) throws Exception;
 
-    R visitAST(AST node, P param) throws Exception;
+    void visitAST(AST node) throws Exception;
 
-    R visitBinaryExpression(BinaryExpression node, P param) throws Exception;
+    void visitBinaryExpression(BinaryExpression node) throws Exception;
 
-    R visitBooleanLiteral(Literal.BooleanLiteral node, P param) throws Exception;
+    void visitBooleanLiteral(Literal.BooleanLiteral node) throws Exception;
 
-    R visitBreak(Break node, P param) throws Exception;
+    void visitBreak(Break node) throws Exception;
 
-    R visitCast(Cast node, P param) throws Exception;
+    void visitCast(Cast node) throws Exception;
 
-    R visitCatch(Catch node, P param) throws Exception;
+    void visitCatch(Catch node) throws Exception;
 
-    R visitCharacterLiteral(Literal.CharacterLiteral node, P param) throws Exception;
+    void visitCharacterLiteral(Literal.CharacterLiteral node) throws Exception;
 
-    R visitCodeBlock(CodeBlock node, P param) throws Exception;
+    void visitCodeBlock(CodeBlock node) throws Exception;
 
-    R visitComment(Comment node, P param) throws Exception;
+    void visitComment(Comment node) throws Exception;
 
-    R visitCompilationUnit(CompilationUnit node, P param) throws Exception;
+    void visitCompilationUnit(CompilationUnit node) throws Exception;
 
-    R visitConditional(Conditional node, P param) throws Exception;
+    void visitConditional(Conditional node) throws Exception;
 
-    R visitConstructor(Constructor node, P param) throws Exception;
+    void visitConstructor(Constructor node) throws Exception;
 
-    R visitContinue(Continue node, P param) throws Exception;
+    void visitContinue(Continue node) throws Exception;
 
-    R visitDeclaredType(DeclaredType node, P param) throws Exception;
+    void visitDeclaredType(DeclaredType node) throws Exception;
 
-    R visitDoubleLiteral(Literal.DoubleLiteral node, P param) throws Exception;
+    void visitDoubleLiteral(Literal.DoubleLiteral node) throws Exception;
 
-    R visitDoWhile(DoWhile node, P param) throws Exception;
+    void visitDoWhile(DoWhile node) throws Exception;
 
-    R visitEmptyStatement(EmptyStatement node, P param) throws Exception;
+    void visitEmptyStatement(EmptyStatement node) throws Exception;
 
-    R visitEnumConstant(EnumConstant node, P param) throws Exception;
+    void visitEnumConstant(EnumConstant node) throws Exception;
 
-    R visitEnumConstantAccess(EnumConstantAccess node, P param) throws Exception;
+    void visitEnumConstantAccess(EnumConstantAccess node) throws Exception;
 
-    R visitExpressionStatement(ExpressionStatement node, P param) throws Exception;
+    void visitExpressionStatement(ExpressionStatement node) throws Exception;
 
-    R visitFieldAccess(FieldAccess node, P param) throws Exception;
+    void visitFieldAccess(FieldAccess node) throws Exception;
 
-    R visitField(Field node, P param) throws Exception;
+    void visitField(Field node) throws Exception;
 
-    R visitFloatLiteral(Literal.FloatLiteral node, P param) throws Exception;
+    void visitFloatLiteral(Literal.FloatLiteral node) throws Exception;
 
-    R visitFor(For node, P param) throws Exception;
+    void visitFor(For node) throws Exception;
 
-    R visitIf(If node, P param) throws Exception;
+    void visitIf(If node) throws Exception;
 
-    R visitInitializerBlock(InitializerBlock node, P param) throws Exception;
+    void visitInitializerBlock(InitializerBlock node) throws Exception;
 
-    R visitNewInstance(NewInstance node, P param) throws Exception;
+    void visitNewInstance(NewInstance node) throws Exception;
 
-    R visitIntegerLiteral(Literal.IntegerLiteral node, P param) throws Exception;
+    void visitIntegerLiteral(Literal.IntegerLiteral node) throws Exception;
 
-    R visitLabeledStatement(LabeledStatement node, P param) throws Exception;
+    void visitLabeledStatement(LabeledStatement node) throws Exception;
 
-    R visitLocalVariable(LocalVariable node, P param) throws Exception;
+    void visitLocalVariable(LocalVariable node) throws Exception;
 
-    R visitLongLiteral(Literal.LongLiteral node, P param) throws Exception;
+    void visitLongLiteral(Literal.LongLiteral node) throws Exception;
 
-    R visitMethod(Method node, P param) throws Exception;
+    void visitMethod(Method node) throws Exception;
 
-    R visitMethodInvocation(MethodInvocation node, P param) throws Exception;
+    void visitMethodInvocation(MethodInvocation node) throws Exception;
 
-    R visitModifiers(Modifiers node, P param) throws Exception;
+    void visitModifiers(Modifiers node) throws Exception;
 
-    R visitNullLiteral(Literal.NullLiteral node, P param) throws Exception;
+    void visitNullLiteral(Literal.NullLiteral node) throws Exception;
 
-    R visitPackage(Package node, P param) throws Exception;
+    void visitPackage(Package node) throws Exception;
 
-    R visitPackageQualifier(PackageQualifier node, P param) throws Exception;
+    void visitPackageQualifier(PackageQualifier node) throws Exception;
 
-    R visitParameter(Parameter node, P param) throws Exception;
+    void visitParameter(Parameter node) throws Exception;
 
-    R visitParenthesizedExpression(ParenthesizedExpression node, P param) throws Exception;
+    void visitParenthesizedExpression(ParenthesizedExpression node) throws Exception;
 
-    R visitPostfixExpression(PostfixExpression node, P param) throws Exception;
+    void visitPostfixExpression(PostfixExpression node) throws Exception;
 
-    R visitPrefixExpression(PrefixExpression node, P param) throws Exception;
+    void visitPrefixExpression(PrefixExpression node) throws Exception;
 
-    R visitPrimitiveType(PrimitiveType node, P param) throws Exception;
+    void visitPrimitiveType(PrimitiveType node) throws Exception;
 
-    R visitReturn(Return node, P param) throws Exception;
+    void visitReturn(Return node) throws Exception;
 
-    R visitStringLiteral(Literal.StringLiteral node, P param) throws Exception;
+    void visitStringLiteral(Literal.StringLiteral node) throws Exception;
 
-    R visitSuperQualifier(SuperQualifier node, P param) throws Exception;
+    void visitSuperQualifier(SuperQualifier node) throws Exception;
 
-    R visitSwitchBlock(Switch.SwitchBlock node, P param) throws Exception;
+    void visitSwitchBlock(Switch.SwitchBlock node) throws Exception;
 
-    R visitSwitch(Switch node, P param) throws Exception;
+    void visitSwitch(Switch node) throws Exception;
 
-    R visitSynchronizedBlock(SynchronizedBlock node, P param) throws Exception;
+    void visitSynchronizedBlock(SynchronizedBlock node) throws Exception;
 
-    R visitThis(This node, P param) throws Exception;
+    void visitThis(This node) throws Exception;
 
-    R visitThrow(Throw node, P param) throws Exception;
+    void visitThrow(Throw node) throws Exception;
 
-    R visitTry(Try node, P param) throws Exception;
+    void visitTry(Try node) throws Exception;
 
-    R visitTypeBody(TypeBody node, P param) throws Exception;
+    void visitTypeBody(TypeBody node) throws Exception;
 
-    R visitTypeDeclaration(TypeDeclaration node, P param) throws Exception;
+    void visitTypeDeclaration(TypeDeclaration node) throws Exception;
 
-    R visitTypeDeclarationStatement(TypeDeclarationStatement node, P param) throws Exception;
+    void visitTypeDeclarationStatement(TypeDeclarationStatement node) throws Exception;
 
-    R visitTypeParameter(TypeParameter node, P param) throws Exception;
+    void visitTypeParameter(TypeParameter node) throws Exception;
 
-    R visitTypeQualifier(TypeQualifier node, P param) throws Exception;
+    void visitTypeQualifier(TypeQualifier node) throws Exception;
 
-    R visitTypeVariable(TypeVariable node, P param) throws Exception;
+    void visitTypeVariable(TypeVariable node) throws Exception;
 
-    R visitUnaryExpression(UnaryExpression node, P param) throws Exception;
+    void visitUnaryExpression(UnaryExpression node) throws Exception;
 
-    R visitvariableAccess(VariableAccess node, P param) throws Exception;
+    void visitvariableAccess(VariableAccess node) throws Exception;
 
-    R visitLocalVariableDeclaration(LocalVariableDeclaration node, P param) throws Exception;
+    void visitLocalVariableDeclaration(LocalVariableDeclaration node) throws Exception;
 
-    R visitWhile(While node, P param) throws Exception;
+    void visitWhile(While node) throws Exception;
 
-    R visitWildcardType(WildcardType node, P param) throws Exception;
+    void visitWildcardType(WildcardType node) throws Exception;
 
-    R visitArrayLengthAccess(ArrayLengthAccess node, P param) throws Exception;
+    void visitArrayLengthAccess(ArrayLengthAccess node) throws Exception;
 
-    R visitConstructorInvocation(ConstructorInvocation node, P param) throws Exception;
+    void visitConstructorInvocation(ConstructorInvocation node) throws Exception;
 }

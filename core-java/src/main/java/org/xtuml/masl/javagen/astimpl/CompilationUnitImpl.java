@@ -192,8 +192,8 @@ class CompilationUnitImpl extends ASTNodeImpl implements CompilationUnit, Scoped
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCompilationUnit(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitCompilationUnit(this);
     }
 
     @Override
@@ -280,8 +280,8 @@ class CompilationUnitImpl extends ASTNodeImpl implements CompilationUnit, Scoped
 
     private final String name;
 
-    private final List<TypeDeclarationImpl> typeDeclarations = new ChildNodeList<TypeDeclarationImpl>(this);
+    private final List<TypeDeclarationImpl> typeDeclarations = new ChildNodeList<>(this);
 
-    private final List<ImportImpl> importDeclarations = new ChildNodeList<ImportImpl>(this);
+    private final List<ImportImpl> importDeclarations = new ChildNodeList<>(this);
 
 }

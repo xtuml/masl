@@ -145,7 +145,7 @@ public class Population {
         return createInstanceParams.get(att);
     }
 
-    Map<AttributeDeclaration, Expression> createInstanceParams = new HashMap<AttributeDeclaration, Expression>();
+    Map<AttributeDeclaration, Expression> createInstanceParams = new HashMap<>();
 
     Function addDeleteInstance() {
         deleteInstance = theClass.createMemberFunction(creators, "deleteInstance", Visibility.PUBLIC);
@@ -225,7 +225,7 @@ public class Population {
         }
     }
 
-    Collection<FindFunction> findFunctions = new ArrayList<FindFunction>();
+    Collection<FindFunction> findFunctions = new ArrayList<>();
 
     public Collection<FindFunction> getFindFunctions() {
         return findFunctions;
@@ -348,8 +348,8 @@ public class Population {
     private Function getInstance;
 
     private final Function getSingleton;
-    private final Map<AttributeDeclaration, Function> getUniqueIds = new HashMap<AttributeDeclaration, Function>();
-    private final Map<AttributeDeclaration, Function> useUniqueIds = new HashMap<AttributeDeclaration, Function>();
+    private final Map<AttributeDeclaration, Function> getUniqueIds = new HashMap<>();
+    private final Map<AttributeDeclaration, Function> useUniqueIds = new HashMap<>();
     private Function getNextArchId;
 
     private final DeclarationGroup retrieval;

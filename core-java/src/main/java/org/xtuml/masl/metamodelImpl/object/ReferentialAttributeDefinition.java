@@ -21,12 +21,15 @@
  */
 package org.xtuml.masl.metamodelImpl.object;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.relationship.RelationshipSpecification;
+
+import java.util.List;
 
 public class ReferentialAttributeDefinition extends Positioned
         implements org.xtuml.masl.metamodel.object.ReferentialAttributeDefinition {
@@ -110,8 +113,13 @@ public class ReferentialAttributeDefinition extends Positioned
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitReferentialAttributeDefinition(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitReferentialAttributeDefinition(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
     }
 
 }

@@ -41,7 +41,7 @@ public class DeviceType extends BuiltinType {
 
     @Override
     public DeviceType getPrimitiveType() {
-        return this;
+        return ANON;
     }
 
     @Override

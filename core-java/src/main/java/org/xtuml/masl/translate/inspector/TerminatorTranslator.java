@@ -39,9 +39,7 @@ class TerminatorTranslator {
     private final CodeFile headerFile;
     private final Class handlerClass;
 
-    private final Map<DomainTerminatorService, ActionTranslator>
-            serviceTranslators =
-            new HashMap<DomainTerminatorService, ActionTranslator>();
+    private final Map<DomainTerminatorService, ActionTranslator> serviceTranslators = new HashMap<>();
     private final DomainTranslator domainTranslator;
 
     private final Namespace namespace;

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.PragmaList;
@@ -31,6 +32,8 @@ import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.expression.TypeNameExpression;
 import org.xtuml.masl.metamodelImpl.name.Name;
 import org.xtuml.masl.utils.TextUtils;
+
+import java.util.List;
 
 public final class TypeDeclaration extends Name implements org.xtuml.masl.metamodel.type.TypeDeclaration {
 
@@ -215,7 +218,13 @@ public final class TypeDeclaration extends Name implements org.xtuml.masl.metamo
     private String comment;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTypeDeclaration(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTypeDeclaration(this);
     }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(typeDefinition);
+    }
+
 }

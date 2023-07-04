@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.type.TypeDefinition.ActualType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -30,8 +31,6 @@ import org.xtuml.masl.metamodelImpl.type.*;
 import org.xtuml.masl.utils.HashCode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class TimerFieldExpression extends Expression
@@ -125,27 +124,27 @@ public class TimerFieldExpression extends Expression
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        return new ArrayList<Expression>(lhs.getFindArguments());
+        return new ArrayList<>(lhs.getFindArguments());
 
     }
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        return new ArrayList<FindParameterExpression>(lhs.getConcreteFindParameters());
+        return new ArrayList<>(lhs.getConcreteFindParameters());
 
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTimerFieldExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTimerFieldExpression(this);
     }
 
     private final Expression lhs;
     private final Field field;
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.<Expression>singletonList(lhs);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs);
     }
 
 }

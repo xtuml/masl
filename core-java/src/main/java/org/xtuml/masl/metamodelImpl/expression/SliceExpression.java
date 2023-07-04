@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.type.DictionaryType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -29,7 +30,6 @@ import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.type.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SliceExpression extends Expression implements org.xtuml.masl.metamodel.expression.SliceExpression {
@@ -95,7 +95,7 @@ public class SliceExpression extends Expression implements org.xtuml.masl.metamo
 
     @Override
     protected List<Expression> getFindArgumentsInner() {
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         params.addAll(prefix.getFindArguments());
         if (range instanceof MinMaxRange) {
             params.addAll(getRange().getMin().getFindArguments());
@@ -106,7 +106,7 @@ public class SliceExpression extends Expression implements org.xtuml.masl.metamo
 
     @Override
     protected List<FindParameterExpression> getFindParametersInner() {
-        final List<FindParameterExpression> params = new ArrayList<FindParameterExpression>();
+        final List<FindParameterExpression> params = new ArrayList<>();
         params.addAll(prefix.getConcreteFindParameters());
         if (range instanceof MinMaxRange) {
             params.addAll(getRange().getMin().getConcreteFindParameters());
@@ -178,13 +178,13 @@ public class SliceExpression extends Expression implements org.xtuml.masl.metamo
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitSliceExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitSliceExpression(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Arrays.asList(prefix, range);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(prefix, range);
     }
 
 }

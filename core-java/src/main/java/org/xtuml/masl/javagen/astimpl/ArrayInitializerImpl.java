@@ -38,8 +38,8 @@ class ArrayInitializerImpl extends ExpressionImpl implements ArrayInitializer {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitArrayInitializer(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitArrayInitializer(this);
     }
 
     @Override
@@ -60,6 +60,6 @@ class ArrayInitializerImpl extends ExpressionImpl implements ArrayInitializer {
         return Integer.MAX_VALUE;
     }
 
-    private final ChildNodeList<ExpressionImpl> elements = new ChildNodeList<ExpressionImpl>(this);
+    private final ChildNodeList<ExpressionImpl> elements = new ChildNodeList<>(this);
 
 }

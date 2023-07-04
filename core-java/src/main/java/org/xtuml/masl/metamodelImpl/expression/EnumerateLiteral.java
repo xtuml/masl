@@ -69,7 +69,7 @@ public class EnumerateLiteral extends LiteralExpression
             return InternalType.AMBIGUOUS_ENUM;
         }
 
-        private final Map<EnumerateType, EnumerateLiteral> lookup = new HashMap<EnumerateType, EnumerateLiteral>();
+        private final Map<EnumerateType, EnumerateLiteral> lookup = new HashMap<>();
 
         @Override
         public int hashCode() {
@@ -83,7 +83,7 @@ public class EnumerateLiteral extends LiteralExpression
         }
 
         @Override
-        public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+        public void accept(final ASTNodeVisitor v) {
             throw new IllegalStateException("Cannot visit AmbiguousEnumerateLiteral");
         }
     }
@@ -139,8 +139,8 @@ public class EnumerateLiteral extends LiteralExpression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitEnumerateLiteral(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitEnumerateLiteral(this);
     }
 
 }

@@ -21,12 +21,12 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.CheckedLookup;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
-import org.xtuml.masl.metamodelImpl.name.Named;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,17 +52,11 @@ public class StructureType extends FullTypeDefinition implements org.xtuml.masl.
     private StructureType(final Position position, final List<StructureElement> elements) throws SemanticError {
         super(position);
         this.elements =
-                new CheckedLookup<StructureElement>(SemanticErrorCode.ElementAlreadyDefinedOnStructure,
-                                                    SemanticErrorCode.ElementNotFoundOnStructure,
-                                                    new Named() {
+                new CheckedLookup<>(SemanticErrorCode.ElementAlreadyDefinedOnStructure,
+                                    SemanticErrorCode.ElementNotFoundOnStructure,
+                                    () -> getUserDefinedType().getName());
 
-                                                        @Override
-                                                        public String getName() {
-                                                            return getUserDefinedType().getName();
-                                                        }
-                                                    });
-
-        final List<BasicType> elTypes = new ArrayList<BasicType>();
+        final List<BasicType> elTypes = new ArrayList<>();
         for (final StructureElement element : elements) {
             if (element != null) {
                 this.elements.put(element.getName(), element);
@@ -149,8 +143,13 @@ public class StructureType extends FullTypeDefinition implements org.xtuml.masl.
     private final AnonymousStructure anonymousStruct;
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitStructureType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitStructureType(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(elements);
     }
 
 }

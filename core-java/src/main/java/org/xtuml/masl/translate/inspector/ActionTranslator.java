@@ -185,7 +185,7 @@ class ActionTranslator {
         final Function invoker = invokerClass.createMemberFunction(functions, "operator()", Visibility.PUBLIC);
         invoker.declareInClass(true);
 
-        final List<Expression> invokeArgs = new ArrayList<Expression>();
+        final List<Expression> invokeArgs = new ArrayList<>();
 
         for (final ParameterDefinition param : params) {
             final TypeUsage type = Types.getInstance().getType(param.getType());
@@ -313,7 +313,7 @@ class ActionTranslator {
 
         forBlock.appendStatement(new BinaryExpression(channel, BinaryOperator.LEFT_SHIFT, lvId).asStatement());
 
-        final List<CaseCondition> caseConditions = new ArrayList<CaseCondition>();
+        final List<CaseCondition> caseConditions = new ArrayList<>();
 
         for (int i = 0; i < localVars.size(); ++i) {
             final VariableDefinition localVar = localVars.get(i);

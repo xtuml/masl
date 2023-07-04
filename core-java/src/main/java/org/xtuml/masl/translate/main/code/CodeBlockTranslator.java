@@ -55,7 +55,7 @@ public class CodeBlockTranslator extends CodeTranslator {
             childStatements.appendStatement(createChildTranslator(maslStatement).getFullCode());
         }
 
-        final List<TryCatchBlock.CatchBlock> catchBlocks = new ArrayList<TryCatchBlock.CatchBlock>();
+        final List<TryCatchBlock.CatchBlock> catchBlocks = new ArrayList<>();
         for (final ExceptionHandler handler : block.getExceptionHandlers()) {
             final HandlerTranslator translator = new HandlerTranslator(handler);
             handlerTranslators.add(translator);
@@ -156,9 +156,7 @@ public class CodeBlockTranslator extends CodeTranslator {
 
     private final StatementGroup childStatements = new StatementGroup();
 
-    private final List<VariableDefinitionTranslator>
-            variableTranslators =
-            new ArrayList<VariableDefinitionTranslator>();
+    private final List<VariableDefinitionTranslator> variableTranslators = new ArrayList<>();
 
-    private final List<HandlerTranslator> handlerTranslators = new ArrayList<HandlerTranslator>();
+    private final List<HandlerTranslator> handlerTranslators = new ArrayList<>();
 }

@@ -35,8 +35,8 @@ class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpression {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitBinaryExpression(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitBinaryExpression(this);
     }
 
     @Override
@@ -117,8 +117,8 @@ class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpression {
         }
     }
 
-    private final ChildNode<ExpressionImpl> lhs = new ChildNode<ExpressionImpl>(this);
-    private final ChildNode<ExpressionImpl> rhs = new ChildNode<ExpressionImpl>(this);
+    private final ChildNode<ExpressionImpl> lhs = new ChildNode<>(this);
+    private final ChildNode<ExpressionImpl> rhs = new ChildNode<>(this);
 
     Operator operator;
 }

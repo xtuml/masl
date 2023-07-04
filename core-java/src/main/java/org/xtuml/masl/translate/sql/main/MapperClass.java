@@ -232,7 +232,7 @@ public class MapperClass implements GeneratedClass {
                         objectTranslator.getClass("ImplementationClass"))));
         final FunctionCall
                 sqlGenFunCall =
-                sqlGenPtr.callConstructor(new NewExpression(new TypeUsage(sqlGenClass), new ArrayList<Expression>()));
+                sqlGenPtr.callConstructor(new NewExpression(new TypeUsage(sqlGenClass), new ArrayList<>()));
         final List<Expression> constructorArgs = Arrays.asList(new Expression[]{sqlGenFunCall});
         constructor.setSuperclassArgs(baseClass, constructorArgs);
         return constructor;
@@ -253,7 +253,7 @@ public class MapperClass implements GeneratedClass {
                                              Visibility.PUBLIC);
         bodyFile.addFunctionDefinition(creator);
 
-        final List<Expression> idParamList = new ArrayList<Expression>();
+        final List<Expression> idParamList = new ArrayList<>();
         for (final Variable parameter : creator.getParameters()) {
             final String parameterName = parameter.getName();
             final AttributeDeclaration attribute = findObjectAttribute(parameterName);
@@ -307,7 +307,7 @@ public class MapperClass implements GeneratedClass {
         final Class objectClass = objectTranslator.getClass(ImplementationClass.KEY_NAME);
         final Class sharedPtr = Boost.getSharedPtrType(new TypeUsage(objectClass));
 
-        final List<Expression> paramsAsExpr = new ArrayList<Expression>();
+        final List<Expression> paramsAsExpr = new ArrayList<>();
         paramsAsExpr.add(uniqueIdVar.asExpression());
         for (final Variable parameter : creator.getParameters()) {
             paramsAsExpr.add(parameter.asExpression());
@@ -635,7 +635,7 @@ public class MapperClass implements GeneratedClass {
     }
 
     private Class createFindFnPredicateClass() {
-        final List<TypeUsage> functionPtrParameters = new ArrayList<TypeUsage>();
+        final List<TypeUsage> functionPtrParameters = new ArrayList<>();
         functionPtrParameters.add(new TypeUsage(objectTranslator.getClass(ImplementationClass.KEY_NAME),
                                                 TypeUsage.Pointer));
         final Class predicateClass = Boost.functionClass(new TypeUsage(FundamentalType.BOOL), functionPtrParameters);
@@ -648,11 +648,11 @@ public class MapperClass implements GeneratedClass {
         // ::boost::bind(
         // &::masld_PERF::maslo_Find_Test_Object_A::findPredicate_OPOPOPmasl_attribute_1_maslEQp1CPOROPmasl_attribute_1_maslEQp2CPCPOROPmasl_attribute_1_maslEQp3CPCP,_1,p1,p2,p3);
 
-        final List<Expression> bindArgs = new ArrayList<Expression>();
+        final List<Expression> bindArgs = new ArrayList<>();
         bindArgs.add(predicateFn.asFunctionPointer());
         bindArgs.add(Boost.bind_1);
 
-        final List<Expression> findArgs = new ArrayList<Expression>(findFn.getParameters().size());
+        final List<Expression> findArgs = new ArrayList<>(findFn.getParameters().size());
         for (final Variable param : findFn.getParameters()) {
             findArgs.add(param.asExpression());
         }

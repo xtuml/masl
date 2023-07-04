@@ -63,6 +63,7 @@ public class EnumerationTranslator {
         indexConversion = clazz.createDeclarationGroup("Index Conversions");
         valueConversion = clazz.createDeclarationGroup("Value Conversions");
         textConversion = clazz.createDeclarationGroup("Text Conversions");
+        jsonConversion = clazz.createDeclarationGroup("Json Conversions");
 
         operators = clazz.createDeclarationGroup("Operators");
 
@@ -83,6 +84,7 @@ public class EnumerationTranslator {
 
         addHashFunction();
         addASN1Codecs();
+        addJsonCodecs();
 
         defaultConstructor.setInitialValue(index, minIndex);
 
@@ -154,6 +156,40 @@ public class EnumerationTranslator {
                                                                                                     false)).asStatement());
 
         headerFile.addFunctionDefinition(decode);
+    }
+
+    private void addJsonCodecs() {
+        addToJson();
+        addFromJson();
+    }
+
+    private void addToJson() {
+        final Function function = new Function("to_json", namespace);
+        headerFile.addFunctionDefinition(function);
+        function.setInlineModifier(true);
+        Expression
+                j =
+                function.createParameter(new TypeUsage(NlohmannJson.json, TypeUsage.Reference), "j").asExpression();
+        Expression v = function.createParameter(new TypeUsage(clazz, TypeUsage.ConstReference), "v").asExpression();
+        function.getCode().appendExpression(new BinaryExpression(j,
+                                                                 BinaryOperator.ASSIGN,
+                                                                 getText.asFunctionCall(v, false)));
+    }
+
+    private void addFromJson() {
+        final Function function = new Function("from_json", namespace);
+        headerFile.addFunctionDefinition(function);
+        function.setInlineModifier(true);
+        Expression
+                j =
+                function.createParameter(new TypeUsage(NlohmannJson.json, TypeUsage.ConstReference),
+                                         "j").asExpression();
+        Expression v = function.createParameter(new TypeUsage(clazz, TypeUsage.Reference), "v").asExpression();
+        function.getCode().appendExpression(new BinaryExpression(v,
+                                                                 BinaryOperator.ASSIGN,
+                                                                 clazz.callConstructor(NlohmannJson.get(j,
+                                                                                                        new TypeUsage(
+                                                                                                                Std.string)))));
     }
 
     private void addHashFunction() {
@@ -261,7 +297,7 @@ public class EnumerationTranslator {
         setIndex.declareInClass(true);
         setIndex.getCode().appendStatement(new ReturnStatement(index.asExpression()));
 
-        indexEnumerators = new ArrayList<EnumerationType.Enumerator>();
+        indexEnumerators = new ArrayList<>();
 
         for (final EnumerateItem maslEnumItem : maslEnumerates) {
             final EnumerationType.Enumerator
@@ -427,7 +463,7 @@ public class EnumerationTranslator {
         getText.declareInClass(true);
         getText.setConst(true);
 
-        final List<Literal> literals = new ArrayList<Literal>();
+        final List<Literal> literals = new ArrayList<>();
 
         for (final EnumerateItem maslEnumerate : maslEnumerates) {
             literals.add(Literal.createStringLiteral(maslEnumerate.getName()));
@@ -464,8 +500,8 @@ public class EnumerationTranslator {
         getValue.declareInClass(true);
         getValue.setConst(true);
 
-        valueEnumerators = new ArrayList<EnumerationType.Enumerator>();
-        final List<Expression> values = new ArrayList<Expression>();
+        valueEnumerators = new ArrayList<>();
+        final List<Expression> values = new ArrayList<>();
 
         for (final EnumerateItem maslEnum : maslEnumerates) {
             Expression specifiedValue = null;
@@ -583,7 +619,7 @@ public class EnumerationTranslator {
         final Function fromValue = clazz.createStaticFunction(valueConversion, "fromValue", Visibility.PRIVATE);
         final Variable value = fromValue.createParameter(new TypeUsage(valueEnum), "value");
 
-        final List<CaseCondition> cases = new ArrayList<CaseCondition>();
+        final List<CaseCondition> cases = new ArrayList<>();
 
         for (int i = 0; i < maslEnumerates.size(); ++i) {
             final Expression discriminator = valueEnumerators.get(i).asExpression();
@@ -611,9 +647,9 @@ public class EnumerationTranslator {
     final private DeclarationGroup enumConstants;
 
     final private DeclarationGroup enumeration;
-    final private Map<EnumerateItem, Expression> enumeratorValues = new HashMap<EnumerateItem, Expression>();
-    final private Map<EnumerateItem, Expression> enumeratorIndexes = new HashMap<EnumerateItem, Expression>();
-    final private Map<EnumerateItem, Expression> enumerators = new HashMap<EnumerateItem, Expression>();
+    final private Map<EnumerateItem, Expression> enumeratorValues = new HashMap<>();
+    final private Map<EnumerateItem, Expression> enumeratorIndexes = new HashMap<>();
+    final private Map<EnumerateItem, Expression> enumerators = new HashMap<>();
 
     private Function getIndex;
     private Function setIndex;
@@ -635,6 +671,7 @@ public class EnumerationTranslator {
     final private TypeUsage type;
     final private DeclarationGroup valueConversion;
     private EnumerationType valueEnum;
+    final private DeclarationGroup jsonConversion;
 
     private List<EnumerationType.Enumerator> valueEnumerators;
     private Variable valueLookupVar;

@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.statemodel;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.common.Positioned;
@@ -115,8 +116,13 @@ public class TransitionTable extends Positioned implements org.xtuml.masl.metamo
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitTransitionTable(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitTransitionTable(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(rows, pragmas);
     }
 
 }

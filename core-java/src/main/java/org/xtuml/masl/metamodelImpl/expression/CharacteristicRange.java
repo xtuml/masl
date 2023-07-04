@@ -21,13 +21,12 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class CharacteristicRange extends RangeExpression implements org.xtuml.masl.metamodel.CharacteristicRange {
@@ -98,8 +97,8 @@ public class CharacteristicRange extends RangeExpression implements org.xtuml.ma
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCharacteristicRange(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitCharacteristicRange(this);
     }
 
     @Override
@@ -108,8 +107,8 @@ public class CharacteristicRange extends RangeExpression implements org.xtuml.ma
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        return Collections.<Expression>singletonList(typeName);
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(typeName);
     }
 
 }

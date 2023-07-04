@@ -34,11 +34,11 @@ public class VariableDeclarationStatementImpl extends StatementImpl implements L
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitLocalVariableDeclaration(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitLocalVariableDeclaration(this);
     }
 
-    private final ChildNode<LocalVariableImpl> declaration = new ChildNode<LocalVariableImpl>(this);
+    private final ChildNode<LocalVariableImpl> declaration = new ChildNode<>(this);
 
     @Override
     public LocalVariableImpl getLocalVariable() {

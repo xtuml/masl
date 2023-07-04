@@ -411,7 +411,7 @@ public class Main {
         // maximum number of parameters, so if we would exceed this number (after
         // including the object to bind to at the start) then use a tuple.
         if (predicate.getFindParameters().size() + 1 > Boost.MAX_BIND_PARAMS) {
-            final List<TypeUsage> tupleTypes = new ArrayList<TypeUsage>(predicate.getFindParameters().size());
+            final List<TypeUsage> tupleTypes = new ArrayList<>(predicate.getFindParameters().size());
             for (final FindParameterExpression maslParam : predicate.getFindParameters()) {
                 tupleTypes.add(domainTranslator.getTypes().getType(maslParam.getType()));
             }
@@ -513,7 +513,7 @@ public class Main {
         if (attributeOrder.size() == 0) {
             final List<AttributeDeclaration>
                     reversedAttributes =
-                    new ArrayList<AttributeDeclaration>(translator.getObjectDeclaration().getPreferredIdentifier().getAttributes());
+                    new ArrayList<>(translator.getObjectDeclaration().getPreferredIdentifier().getAttributes());
             Collections.reverse(reversedAttributes);
             for (final AttributeDeclaration orderAttribute : reversedAttributes) {
                 final Function getter = translator.getAttributeGetter(orderAttribute);
@@ -522,9 +522,7 @@ public class Main {
                 predicateExpression = Structure.buildComparator(predicateExpression, lhs, rhs, false);
             }
         } else {
-            final List<InstanceOrderingExpression.Component>
-                    reversedAttributes =
-                    new ArrayList<InstanceOrderingExpression.Component>(attributeOrder);
+            final List<InstanceOrderingExpression.Component> reversedAttributes = new ArrayList<>(attributeOrder);
             Collections.reverse(reversedAttributes);
             for (final InstanceOrderingExpression.Component orderAttribute : reversedAttributes) {
                 final Function getter = translator.getAttributeGetter(orderAttribute.getAttribute());
@@ -556,7 +554,7 @@ public class Main {
         final Function forwarder = mainClass.createStaticFunction(group, newName, Visibility.PUBLIC);
         forwarder.setReturnType(populationFunction.getReturnType());
 
-        final List<Expression> params = new ArrayList<Expression>();
+        final List<Expression> params = new ArrayList<>();
         for (final Variable populationParam : populationFunction.getParameters()) {
             final Variable param = forwarder.createParameter(populationParam.getType(), populationParam.getName());
             params.add(param.asExpression());
@@ -738,7 +736,7 @@ public class Main {
     private final DeclarationGroup nestedTypes;
 
     private Population population;
-    private final Map<ObjectService, Scope> serviceScopes = new HashMap<ObjectService, Scope>();
+    private final Map<ObjectService, Scope> serviceScopes = new HashMap<>();
 
     private final CodeFile bodyFile;
     private final DeclarationGroup constructors;

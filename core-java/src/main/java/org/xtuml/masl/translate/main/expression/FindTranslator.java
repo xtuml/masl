@@ -49,7 +49,7 @@ public class FindTranslator extends ExpressionTranslator {
             } else {
                 final Function findFunction = objTrans.getFindFunction(find.getSkeleton(), find.getFindType());
 
-                final List<Expression> findParams = new ArrayList<Expression>();
+                final List<Expression> findParams = new ArrayList<>();
 
                 for (final org.xtuml.masl.metamodel.expression.Expression param : find.getArguments()) {
                     findParams.add(createTranslator(param, scope).getReadExpression());
@@ -86,7 +86,7 @@ public class FindTranslator extends ExpressionTranslator {
 
                 final List<? extends org.xtuml.masl.metamodel.expression.Expression> maslParams = find.getArguments();
 
-                final List<Expression> findArgs = new ArrayList<Expression>(maslParams.size());
+                final List<Expression> findArgs = new ArrayList<>(maslParams.size());
 
                 for (final org.xtuml.masl.metamodel.expression.Expression param : maslParams) {
                     findArgs.add(createTranslator(param, scope).getReadExpression());

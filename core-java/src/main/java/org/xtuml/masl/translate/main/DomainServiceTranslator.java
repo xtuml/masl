@@ -81,7 +81,7 @@ public class DomainServiceTranslator {
     }
 
     public List<ParameterTranslator> getParameters() {
-        return new ArrayList<ParameterTranslator>(parameters.values());
+        return new ArrayList<>(parameters.values());
     }
 
     public ParameterTranslator getParameter(final ParameterDefinition param) {
@@ -127,7 +127,11 @@ public class DomainServiceTranslator {
         final CodeFile file;
 
         if (service.getCode() != null || service.getDeclarationPragmas().hasPragma("generated_code")) {
-            file = domainTranslator.getLibrary().createBodyFile(Mangler.mangleFile(service));
+            if (service.getDeclarationPragmas().hasPragma("define_in_interface")) {
+                file = domainTranslator.getInterfaceLibrary().createBodyFile(Mangler.mangleFile(service));
+            } else {
+                file = domainTranslator.getLibrary().createBodyFile(Mangler.mangleFile(service));
+            }
         } else {
             file = domainTranslator.getNativeStubs();
         }
@@ -191,9 +195,7 @@ public class DomainServiceTranslator {
 
     private final Scope scope;
 
-    private final Map<ParameterDefinition, ParameterTranslator>
-            parameters =
-            new LinkedHashMap<ParameterDefinition, ParameterTranslator>();
+    private final Map<ParameterDefinition, ParameterTranslator> parameters = new LinkedHashMap<>();
 
     private final Function function;
 

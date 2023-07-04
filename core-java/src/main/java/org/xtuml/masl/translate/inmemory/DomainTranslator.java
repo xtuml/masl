@@ -32,7 +32,6 @@ import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
 import org.xtuml.masl.translate.main.ConcreteDomainTranslator;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -103,7 +102,7 @@ public class DomainTranslator extends ConcreteDomainTranslator {
 
     @Override
     public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
-        return Collections.<org.xtuml.masl.translate.DomainTranslator>singletonList(mainDomainTranslator);
+        return Collections.singletonList(mainDomainTranslator);
     }
 
     @Override

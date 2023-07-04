@@ -42,7 +42,7 @@ import org.xtuml.masl.metamodelImpl.project.ProjectDomain;
 import org.xtuml.masl.metamodelImpl.project.ProjectTerminator;
 import org.xtuml.masl.metamodelImpl.project.ProjectTerminatorService;
 import org.xtuml.masl.metamodelImpl.statemodel.State;
-import org.xtuml.masl.translate.build.BuildSet;
+import org.xtuml.masl.translate.building.BuildSet;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -103,8 +103,6 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
-            buildSet.addFileDependent(file);
-
             service.setFileHash(getMd5Sum(file));
             new Walker(this, file).projectTerminatorServiceDefinition(service);
         }
@@ -116,8 +114,6 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
-            buildSet.addFileDependent(file);
-
             service.setFileHash(getMd5Sum(file));
             new Walker(this, file).domainServiceDefinition(service);
         }
@@ -129,8 +125,6 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
-            buildSet.addFileDependent(file);
-
             service.setFileHash(getMd5Sum(file));
             new Walker(this, file).terminatorServiceDefinition(service);
         }
@@ -142,8 +136,6 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
-            buildSet.addFileDependent(file);
-
             service.setFileHash(getMd5Sum(file));
             new Walker(this, file).objectServiceDefinition(service);
         }
@@ -155,8 +147,6 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
-            buildSet.addFileDependent(file);
-
             state.setFileHash(getMd5Sum(file));
             new Walker(this, file).stateDefinition(state);
         }
@@ -192,8 +182,6 @@ public class Masl {
         sourceDir = prjFile.getParentFile();
         final Project project = parsePackage(prjFile);
         parseTerminators(project);
-
-        System.out.println("Parsed (" + (System.currentTimeMillis() - millis) / 1000.0 + "secs)");
         return project;
     }
 
@@ -207,12 +195,36 @@ public class Masl {
         }
     }
 
+    public Domain parseInterface(final File modFile) throws RecognitionException, IOException {
+        System.err.println("Parsing interface");
+        final long millis = System.currentTimeMillis();
+
+        sourceDir = modFile.getParentFile();
+
+        Domain domain = null;
+        if (CommandLine.INSTANCE.getDomainParser() != null) {
+            try {
+                domain =
+                        Class.forName(CommandLine.INSTANCE.getDomainParser()).asSubclass(DomainParser.class).getDeclaredConstructor(
+                                Masl.class,
+                                File.class).newInstance(this, modFile).getDomain();
+            } catch (final ReflectiveOperationException | SecurityException e) {
+                e.printStackTrace();
+            }
+        } else {
+            domain = parseModel(modFile);
+        }
+
+        System.err.println("Parsed (" + (System.currentTimeMillis() - millis) / 1000.0 + "secs)");
+
+        return domain;
+    }
+
     public Domain parseDomain(final File modFile) throws RecognitionException, IOException {
         System.err.println("Parsing model");
         final long millis = System.currentTimeMillis();
 
         sourceDir = modFile.getParentFile();
-        buildSet.addFileDependent(modFile);
 
         Domain domain = null;
         if (CommandLine.INSTANCE.getDomainParser() != null) {
@@ -229,8 +241,6 @@ public class Masl {
         }
 
         parseActions(domain);
-
-        System.err.println("Parsed (" + (System.currentTimeMillis() - millis) / 1000.0 + "secs)");
 
         return domain;
     }
@@ -288,12 +298,10 @@ public class Masl {
     }
 
     public Domain parseModel(final File file) throws RecognitionException, IOException {
-        buildSet.addFileDependent(file);
         return new Walker(this, file).domainDefinition();
     }
 
     public Project parsePackage(final File file) throws RecognitionException, IOException {
-        buildSet.addFileDependent(file);
         return new Walker(this, file).projectDefinition();
     }
 
@@ -344,11 +352,6 @@ public class Masl {
             if (file.canRead()) {
                 foundFile = file;
             }
-
-        }
-
-        if (foundFile != null) {
-            buildSet.addFileDependent(foundFile);
         }
 
         return foundFile;
@@ -386,7 +389,7 @@ public class Masl {
             ErrorLog.getInstance().addErrorListener(this);
         }
 
-        private static final Map<ErrorType, Integer> counts = new EnumMap<ErrorType, Integer>(ErrorType.class);
+        private static final Map<ErrorType, Integer> counts = new EnumMap<>(ErrorType.class);
 
         private int getCount(final ErrorType type) {
             final Integer result = counts.get(type);
@@ -429,17 +432,12 @@ public class Masl {
 
     }
 
-    public BuildSet getBuildSet() {
-        return buildSet;
-    }
-
     private final ErrorCounter errorCounter = new ErrorCounter();
 
     @SuppressWarnings("unused")
     private final ErrorReporter errorReporter = new ErrorReporter();
 
     private final List<String> domainPaths;
-    private final BuildSet buildSet = new BuildSet(null);
 
     private File sourceDir;
 }

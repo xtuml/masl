@@ -49,8 +49,6 @@ public interface ObjectDeclaration extends ASTNode {
 
     List<? extends IdentifierDeclaration> getIdentifiers();
 
-    String getKeyLetters();
-
     String getName();
 
     List<? extends RelationshipSpecification> getRelationships();

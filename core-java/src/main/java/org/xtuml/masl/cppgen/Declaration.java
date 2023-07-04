@@ -72,7 +72,7 @@ abstract class Declaration {
      * @return the required forward declarations
      */
     Set<Declaration> getForwardDeclarations() {
-        return new LinkedHashSet<Declaration>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -81,7 +81,7 @@ abstract class Declaration {
      * @return the required include files
      */
     Set<CodeFile> getIncludes() {
-        return new LinkedHashSet<CodeFile>();
+        return new LinkedHashSet<>();
     }
 
     /**
@@ -95,8 +95,8 @@ abstract class Declaration {
     }
 
     /**
-     * If this declaration is a member of a class, returns the namespace defined
-     * by that class. If the declaration is contained in a namespace, returns that
+     * If this declaration is a member of a class, returns the namespace defined by
+     * that class. If the declaration is contained in a namespace, returns that
      * namespace.
      *
      * @return the namespace containing this declaration
@@ -108,9 +108,8 @@ abstract class Declaration {
     /**
      * Calculates the set of include files needed to make use of this declaration.
      * This would typically just be the incldue file containing the actual
-     * declaration. If this declaration is a member of a class, then the
-     * declaration of that class is needed, and hence its include file should be
-     * returned.
+     * declaration. If this declaration is a member of a class, then the declaration
+     * of that class is needed, and hence its include file should be returned.
      *
      * @return the include files needed
      */
@@ -118,7 +117,7 @@ abstract class Declaration {
         if (parentClass != null) {
             return parentClass.getDeclaration().getUsageIncludes();
         }
-        return new LinkedHashSet<CodeFile>(usageIncludes);
+        return new LinkedHashSet<>(usageIncludes);
     }
 
     /**
@@ -205,7 +204,7 @@ abstract class Declaration {
      * The set of include files needed to make use of this declaration. This would
      * typically just be the incldue file containing the actual declaration.
      */
-    private final Set<CodeFile> usageIncludes = new LinkedHashSet<CodeFile>();
+    private final Set<CodeFile> usageIncludes = new LinkedHashSet<>();
 
     /**
      * The visibility of this declaration. Only relevant if it is a member class.

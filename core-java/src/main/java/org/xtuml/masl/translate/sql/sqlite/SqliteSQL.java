@@ -32,16 +32,15 @@ import org.xtuml.masl.translate.main.ASN1;
 import org.xtuml.masl.translate.main.Architecture;
 import org.xtuml.masl.translate.main.Types;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class SqliteSQL {
 
     /**
      * Define an enum that can be used to represent the columns allowed by SQLITE.
-     * Use this enum to hold data on the column names that should be associated
-     * with each type and the C API functions that should be invoked to extract
-     * the data from the column.
+     * Use this enum to hold data on the column names that should be associated with
+     * each type and the C API functions that should be invoked to extract the data
+     * from the column.
      */
     private enum SqliteColumnType {
         INTEGER32("INTEGER"), INTEGER64("INTEGER"), DURATION("INTEGER"), TIMESTAMP("INTEGER"), TEXT("TEXT"), REAL("REAL"), BLOB(
@@ -92,8 +91,8 @@ public class SqliteSQL {
     /**
      * the MASL type that needs to be mapped to a column type.
      *
-     * @return the name of the column type that will be used to store the
-     * specified type.
+     * @return the name of the column type that will be used to store the specified
+     * type.
      */
     static String getColumnType(final TypeDefinition baseType) {
         final SqliteColumnType columnType = getSqliteColumnType(baseType);
@@ -178,8 +177,7 @@ public class SqliteSQL {
      * table name.
      * <p>
      * <p>
-     * the name of the class that the function belongs to (used for debug
-     * on error).
+     * the name of the class that the function belongs to (used for debug on error).
      * <p>
      * the function body the query should be placed in.
      * <p>
@@ -203,12 +201,11 @@ public class SqliteSQL {
 
     /**
      * Using the supplied parameters create a select query that uses the count
-     * function to determine the number of rows contained within the specified
-     * table name.
+     * function to determine the number of rows contained within the specified table
+     * name.
      * <p>
      * <p>
-     * the name of the class that the function belongs to (used for debug
-     * on error).
+     * the name of the class that the function belongs to (used for debug on error).
      * <p>
      * the function body the query should be placed in.
      * <p>
@@ -223,13 +220,12 @@ public class SqliteSQL {
     }
 
     /**
-     * Generic function that can be used to generate the required code to extract
-     * a single integer cell value from the result set of a select query that uses
-     * one of the associated SQL functions i.e. max/min/count
+     * Generic function that can be used to generate the required code to extract a
+     * single integer cell value from the result set of a select query that uses one
+     * of the associated SQL functions i.e. max/min/count
      * <p>
      * <p>
-     * the name of the class that the function belongs to (used for debug
-     * on error).
+     * the name of the class that the function belongs to (used for debug on error).
      * <p>
      * the function body generated code should be placed in.
      * <p>
@@ -342,9 +338,7 @@ public class SqliteSQL {
         // value = stringToValue< ::SWA::IdType >(cellValue);
         final Function stringToValueFn = org.xtuml.masl.translate.sql.main.Database.getStringToValueFn();
         stringToValueFn.addTemplateSpecialisation(new TypeUsage(valueVar.getType().getType()));
-        final Expression
-                stringToValueFnCall =
-                stringToValueFn.asFunctionCall(cellValueVar.asExpression());
+        final Expression stringToValueFnCall = stringToValueFn.asFunctionCall(cellValueVar.asExpression());
         final BinaryExpression
                 rowCountAssign =
                 new BinaryExpression(valueVar.asExpression(), BinaryOperator.ASSIGN, stringToValueFnCall);
@@ -353,23 +347,23 @@ public class SqliteSQL {
 
     /**
      * This function will generate the standard sqlite code block to enable the
-     * execution of a query and the processing of the associated result set. It
-     * will generate all the required error handling code.
+     * execution of a query and the processing of the associated result set. It will
+     * generate all the required error handling code.
      * <p>
      * <p>
      * the sqlite database handle
      * <p>
      * the select query to be executed
      * <p>
-     * the name of the method that this code block wil be placed in (used
-     * for debug on error)
+     * the name of the method that this code block wil be placed in (used for debug
+     * on error)
      * <p>
      * the code block to place all generated code.
      * <p>
      * the expected number of columns in the query result set.
      *
-     * @return the inner code block that all further statements, relating to
-     * column extraction, should be placed.
+     * @return the inner code block that all further statements, relating to column
+     * extraction, should be placed.
      */
     static CodeBlock addDbQueryCodeBlock(final Variable sqlite3Stmt,
                                          final Expression queryExpr,
@@ -398,8 +392,7 @@ public class SqliteSQL {
         final Class finaliserClass = databaseClass.referenceNestedType("ScopedFinalise");
         final Variable
                 finaliserVar =
-                new Variable(new TypeUsage(finaliserClass),
-                             "finaliser", methodName, sqlite3Stmt.asExpression());
+                new Variable(new TypeUsage(finaliserClass), "finaliser", methodName, sqlite3Stmt.asExpression());
         resultSetBlock.appendStatement(finaliserVar.asStatement());
 
         // Create cpp line:
@@ -441,9 +434,7 @@ public class SqliteSQL {
         // ("RelationshipR1SqlGenerator::loadMany",sqlite3_column_count( ppStmt ));
         final Function checkColumnCountFn = new Function("checkColumnCount");
         final Function sqlite3ColumnCountFn = new Function("sqlite3_column_count");
-        final Expression
-                sqlite3ColumnCountFnCall =
-                sqlite3ColumnCountFn.asFunctionCall(sqlite3Stmt.asExpression());
+        final Expression sqlite3ColumnCountFnCall = sqlite3ColumnCountFn.asFunctionCall(sqlite3Stmt.asExpression());
         final Expression
                 checkColumnCountFnCall =
                 checkColumnCountFn.asFunctionCall(databaseVar.asExpression(),
@@ -478,9 +469,9 @@ public class SqliteSQL {
     }
 
     /**
-     * Generate the required code to de-serialise the data stored in a table
-     * column to it's associated object attribute. The generated code uses the
-     * SQLite C API.
+     * Generate the required code to de-serialise the data stored in a table column
+     * to it's associated object attribute. The generated code uses the SQLite C
+     * API.
      * <p>
      * <p>
      * the sqlite database handle.
@@ -544,16 +535,15 @@ public class SqliteSQL {
     }
 
     /**
-     * Read an integer value from the specified column index and place it in an
-     * int variable.
+     * Read an integer value from the specified column index and place it in an int
+     * variable.
      * <p>
      * <p>
      * the sqlite database handle.
      * <p>
      * the code block to place all generated code.
      * <p>
-     * the name to use for the variable that will hold the extracted
-     * column value.
+     * the name to use for the variable that will hold the extracted column value.
      * <p>
      * the column index to read data from.
      *
@@ -584,8 +574,7 @@ public class SqliteSQL {
      * <p>
      * the code block to place all generated code.
      * <p>
-     * the name to use for the variable that will hold the extracted
-     * column value.
+     * the name to use for the variable that will hold the extracted column value.
      * <p>
      * the column index to read data from.
      *
@@ -617,8 +606,7 @@ public class SqliteSQL {
      * <p>
      * the code block to place all generated code.
      * <p>
-     * the name to use for the variable that will hold the extracted
-     * column value.
+     * the name to use for the variable that will hold the extracted column value.
      * <p>
      * the column index to read data from.
      *
@@ -654,8 +642,7 @@ public class SqliteSQL {
      * <p>
      * the code block to place all generated code.
      * <p>
-     * the name to use for the variable that will hold the extracted
-     * column value.
+     * the name to use for the variable that will hold the extracted column value.
      * <p>
      * the column index to read data from.
      *
@@ -683,16 +670,15 @@ public class SqliteSQL {
     }
 
     /**
-     * Read an real value from the specified column index and place it in an
-     * double variable.
+     * Read an real value from the specified column index and place it in an double
+     * variable.
      * <p>
      * <p>
      * the sqlite database handle.
      * <p>
      * the code block to place all generated code.
      * <p>
-     * the name to use for the variable that will hold the extracted
-     * column value.
+     * the name to use for the variable that will hold the extracted column value.
      * <p>
      * the column index to read data from.
      *
@@ -724,8 +710,7 @@ public class SqliteSQL {
      * <p>
      * the code block to place all generated code.
      * <p>
-     * the name to use for the variable that will hold the extracted
-     * column value.
+     * the name to use for the variable that will hold the extracted column value.
      * <p>
      * the column index to read data from.
      *
@@ -762,8 +747,7 @@ public class SqliteSQL {
      * <p>
      * the code block to place all generated code.
      * <p>
-     * the name to use for the variable that will hold the extracted
-     * column value.
+     * the name to use for the variable that will hold the extracted column value.
      * <p>
      * the column index to read data from.
      *
@@ -822,7 +806,7 @@ public class SqliteSQL {
                 new Variable(new TypeUsage(ASN1.BERDecoder(new TypeUsage(FundamentalType.UCHAR,
                                                                          TypeUsage.PointerToConst))),
                              "decoder" + columnIndex,
-                             Collections.<Expression>singletonList(blobColumnVar.asExpression()));
+                             Collections.singletonList(blobColumnVar.asExpression()));
         codeBlock.appendStatement(decoder.asStatement());
 
         codeBlock.appendStatement(ASN1.BERDecode.asFunctionCall(decoder.asExpression(),

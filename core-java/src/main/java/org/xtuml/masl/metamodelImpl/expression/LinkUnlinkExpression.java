@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.relationship.MultiplicityType;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -36,6 +37,7 @@ import org.xtuml.masl.metamodelImpl.type.InstanceType;
 import org.xtuml.masl.metamodelImpl.type.SetType;
 import org.xtuml.masl.utils.HashCode;
 
+import java.util.List;
 import java.util.Objects;
 
 public class LinkUnlinkExpression extends Expression
@@ -238,8 +240,13 @@ public class LinkUnlinkExpression extends Expression
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitLinkUnlinkExpression(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitLinkUnlinkExpression(this);
+    }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(lhs, rhs);
     }
 
 }

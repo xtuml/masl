@@ -51,8 +51,8 @@ public class DeclarationGroup {
      * Creates a declaration group with the supplied comment
      * <p>
      * <p>
-     * the comment to display at the top of the group. No comment will be
-     * displayed if this is null.
+     * the comment to display at the top of the group. No comment will be displayed
+     * if this is null.
      */
     DeclarationGroup(final String comment) {
         if (comment != null) {
@@ -81,8 +81,8 @@ public class DeclarationGroup {
 
     /**
      * Adds a variable to the group. The variable list is maintained in the same
-     * order as the declarations, and is used by the constructor code to
-     * initialise the variable values.
+     * order as the declarations, and is used by the constructor code to initialise
+     * the variable values.
      * <p>
      * <p>
      * The variable to add to the list
@@ -92,13 +92,13 @@ public class DeclarationGroup {
     }
 
     /**
-     * Gets the list of declarations that were added to this group in the order
-     * they were added.
+     * Gets the list of declarations that were added to this group in the order they
+     * were added.
      *
      * @return the list of declarations
      */
     List<Declaration> getDeclarations() {
-        return new ArrayList<Declaration>(declarations);
+        return new ArrayList<>(declarations);
     }
 
     /**
@@ -108,7 +108,7 @@ public class DeclarationGroup {
      * @return a set of required include files
      */
     Set<Declaration> getForwardDeclarations() {
-        final Set<Declaration> result = new LinkedHashSet<Declaration>();
+        final Set<Declaration> result = new LinkedHashSet<>();
 
         for (final Declaration dec : declarations) {
             result.addAll(dec.getForwardDeclarations());
@@ -123,7 +123,7 @@ public class DeclarationGroup {
      * @return a set of required include files
      */
     Set<CodeFile> getIncludes() {
-        final Set<CodeFile> result = new LinkedHashSet<CodeFile>();
+        final Set<CodeFile> result = new LinkedHashSet<>();
 
         for (final Declaration dec : declarations) {
             result.addAll(dec.getIncludes());
@@ -145,16 +145,15 @@ public class DeclarationGroup {
     /**
      * Writes the group of declarations to the supplied writer at the required
      * indent level. The declarations will be written in the order that they were
-     * added to the group. The visibility will be written each time it is
-     * different to the previous declaration's visibility.
+     * added to the group. The visibility will be written each time it is different
+     * to the previous declaration's visibility.
      * <p>
      * <p>
      * the writer to write to
      * <p>
      * indetentation for each declaration
      * <p>
-     * the namspace that is currently open to write the declaration group
-     * into
+     * the namspace that is currently open to write the declaration group into
      *
      * @throws IOException
      */
@@ -186,7 +185,7 @@ public class DeclarationGroup {
     /**
      * A list of the delcarations.
      */
-    private final List<Declaration> declarations = new ArrayList<Declaration>();
+    private final List<Declaration> declarations = new ArrayList<>();
     /**
      * A comment to display at the top of the group
      */
@@ -195,6 +194,6 @@ public class DeclarationGroup {
     /**
      * List of variables declared in this group
      */
-    private final List<Variable> variables = new ArrayList<Variable>();
+    private final List<Variable> variables = new ArrayList<>();
 
 }

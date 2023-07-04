@@ -66,8 +66,8 @@ public class EnumConstantImpl extends ASTNodeImpl implements EnumConstant {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitEnumConstant(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitEnumConstant(this);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class EnumConstantImpl extends ASTNodeImpl implements EnumConstant {
         return (TypeBodyImpl) typeBody;
     }
 
-    private final ChildNode<TypeBodyImpl> typeBody = new ChildNode<TypeBodyImpl>(this);
+    private final ChildNode<TypeBodyImpl> typeBody = new ChildNode<>(this);
     private String name;
 
     @Override
@@ -95,7 +95,7 @@ public class EnumConstantImpl extends ASTNodeImpl implements EnumConstant {
         return (ExpressionImpl) argument;
     }
 
-    private final ChildNodeList<ExpressionImpl> arguments = new ChildNodeList<ExpressionImpl>(this);
+    private final ChildNodeList<ExpressionImpl> arguments = new ChildNodeList<>(this);
 
     TypeBodyImpl getParentTypeBody() {
         return (TypeBodyImpl) getParentNode();

@@ -160,18 +160,10 @@ class MirroredTypeBodyImpl extends TypeBodyImpl implements TypeBody {
     }
 
     private Class<?> mirroredClass = null;
-    private final Map<java.lang.reflect.Constructor<?>, MirroredMethodImpl>
-            constructorLookup =
-            new HashMap<java.lang.reflect.Constructor<?>, MirroredMethodImpl>();
-    private final Map<java.lang.reflect.Method, MirroredMethodImpl>
-            methodLookup =
-            new HashMap<java.lang.reflect.Method, MirroredMethodImpl>();
-    private final Map<java.lang.Class<?>, MirroredTypeDeclarationImpl>
-            typeLookup =
-            new HashMap<java.lang.Class<?>, MirroredTypeDeclarationImpl>();
-    private final Map<java.lang.reflect.Field, MirroredFieldImpl>
-            fieldLookup =
-            new HashMap<java.lang.reflect.Field, MirroredFieldImpl>();
+    private final Map<java.lang.reflect.Constructor<?>, MirroredMethodImpl> constructorLookup = new HashMap<>();
+    private final Map<java.lang.reflect.Method, MirroredMethodImpl> methodLookup = new HashMap<>();
+    private final Map<java.lang.Class<?>, MirroredTypeDeclarationImpl> typeLookup = new HashMap<>();
+    private final Map<java.lang.reflect.Field, MirroredFieldImpl> fieldLookup = new HashMap<>();
     private boolean mirrorPopulated = false;
 
 }

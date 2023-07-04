@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- (c) 2008-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
  The copyright of this Software is vested in the Crown
  and the Software is the property of the Crown.
  ----------------------------------------------------------------------------
@@ -20,7 +20,6 @@
  ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.cppgen;
-
 import junit.framework.TestCase;
 
 public class TestLiteral extends TestCase {
@@ -90,11 +89,11 @@ public class TestLiteral extends TestCase {
     }
 
     public void testExtendedLatin() {
-        checkChar("'À'", 'À');
+        checkChar("'\u00C0'", '\u00C0');
     }
 
     public void testMaxNormal() {
-        checkChar("'ÿ'", 'ÿ');
+        checkChar("'\u00FF'", '\u00FF');
     }
 
     public void testMinUnicode() {
@@ -110,11 +109,12 @@ public class TestLiteral extends TestCase {
     }
 
     public void testNarrowString() {
-        checkString("\"\\000ABC123abc\\177\\n\\r\\vÀÿ\"", "\000ABC123abc\177\n\r\013Àÿ");
+        checkString("\"\\000ABC123abc\\177\\n\\r\\v\u00C0\u00FF\"", "\000ABC123abc\177\n\r\013\u00C0\u00FF");
     }
 
     public void testWideString() {
-        checkString("L\"\\000ABC123abc\\177\\n\\r\\vÀÿ\\u1234\"", "\000ABC123abc\177\n\r\013Àÿ\u1234");
+        checkString("L\"\\000ABC123abc\\177\\n\\r\\v\u00C0\u00FF\\u1234\"",
+                "\000ABC123abc\177\n\r\013\u00C0\u00FF\u1234");
 
     }
 

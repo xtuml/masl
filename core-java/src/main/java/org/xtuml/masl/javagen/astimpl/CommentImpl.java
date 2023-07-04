@@ -37,8 +37,8 @@ public class CommentImpl extends TypeMemberImpl implements Comment {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitComment(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitComment(this);
     }
 
     private final String text;

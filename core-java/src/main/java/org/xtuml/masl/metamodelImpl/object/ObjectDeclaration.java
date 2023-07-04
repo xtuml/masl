@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.object;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.CheckedLookup;
 import org.xtuml.masl.metamodelImpl.common.ParseOptions;
@@ -166,7 +167,7 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
         List<RelationshipSpecification> specs = relSpecLookup.get(relSpec.getRelationship());
 
         if (specs == null) {
-            specs = new ArrayList<RelationshipSpecification>();
+            specs = new ArrayList<>();
             relSpecLookup.put(relSpec.getRelationship(), specs);
         }
         specs.add(relSpec);
@@ -266,7 +267,7 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
 
     @Override
     public List<EventDeclaration> getAllEvents() {
-        final List<EventDeclaration> allEvents = new ArrayList<EventDeclaration>();
+        final List<EventDeclaration> allEvents = new ArrayList<>();
         getAllEvents(getSupertypes(), allEvents);
         allEvents.addAll(getEvents());
         return Collections.unmodifiableList(allEvents);
@@ -281,12 +282,7 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
 
     @Override
     public List<IdentifierDeclaration> getIdentifiers() {
-        return Collections.unmodifiableList(new ArrayList<IdentifierDeclaration>(identifiers));
-    }
-
-    @Override
-    public String getKeyLetters() {
-        return keyLetters;
+        return Collections.unmodifiableList(new ArrayList<>(identifiers));
     }
 
     public NameLookup getNameLookup() {
@@ -368,7 +364,7 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
             throw new SemanticError(SemanticErrorCode.NoLink, relRef.getPosition(), relationship.getName(), getName());
         }
 
-        final List<RelationshipSpecification> matchingSpecs = new ArrayList<RelationshipSpecification>();
+        final List<RelationshipSpecification> matchingSpecs = new ArrayList<>();
 
         for (final RelationshipSpecification spec : specs) {
             if ((role == null || role.equals(spec.getRole())) &&
@@ -410,7 +406,7 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
 
     @Override
     public List<ObjectService> getServices() {
-        final List<ObjectService> result = new ArrayList<ObjectService>();
+        final List<ObjectService> result = new ArrayList<>();
         for (final ServiceOverload overload : services.asList()) {
             result.addAll(overload.asList());
         }
@@ -458,7 +454,7 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
     public void linkReferentialAttributes() {
         // This can't be done as attributes are added, because related objects may
         // not be fully defined.
-        final Set<ReferentialAttributeDefinition> allFormalisms = new HashSet<ReferentialAttributeDefinition>();
+        final Set<ReferentialAttributeDefinition> allFormalisms = new HashSet<>();
 
         for (final AttributeDeclaration att : attributes) {
             att.linkReferentialAttributes();
@@ -471,7 +467,7 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
             try {
                 if (spec.isFormalisingEnd()) {
                     final ObjectDeclaration identifierEnd = spec.getDestinationObject();
-                    final Set<AttributeDeclaration> formalisedAtts = new HashSet<AttributeDeclaration>();
+                    final Set<AttributeDeclaration> formalisedAtts = new HashSet<>();
 
                     for (final Iterator<ReferentialAttributeDefinition> it = allFormalisms.iterator(); it.hasNext(); ) {
                         final ReferentialAttributeDefinition formalism = it.next();
@@ -490,7 +486,7 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
 
                     boolean foundMatch = false;
                     for (final IdentifierDeclaration ident : identifierEnd.getIdentifiers()) {
-                        if (formalisedAtts.equals(new HashSet<AttributeDeclaration>(ident.getAttributes()))) {
+                        if (formalisedAtts.equals(new HashSet<>(ident.getAttributes()))) {
                             foundMatch = true;
                             break;
                         }
@@ -512,19 +508,6 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
 
     public void setDefinitionPragmas(final PragmaList pragmas) {
         this.definitionPragmas = pragmas;
-        final List<String> klPragma = definitionPragmas.getPragmaValues(PragmaList.KEY_LETTER);
-        if (klPragma == null ||
-            klPragma.size() == 0 ||
-            klPragma.get(0).length() == 0 ||
-            klPragma.get(0).equals("\"\"")) {
-            this.keyLetters = getName();
-        } else {
-            this.keyLetters = klPragma.get(0);
-        }
-
-        if (keyLetters.charAt(0) == '\"') {
-            keyLetters = keyLetters.substring(1, keyLetters.length() - 1);
-        }
     }
 
     @Override
@@ -551,57 +534,53 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
                definitionPragmas;
     }
 
-    private String keyLetters;
-
     private final NameLookup
             nameLookup =
             new NameLookup(SemanticErrorCode.NameAlreadyDefinedOnObject, SemanticErrorCode.NotObjectMember, this);
 
     private final CheckedLookup<AttributeDeclaration>
             attributes =
-            new CheckedLookup<AttributeDeclaration>(SemanticErrorCode.AttributeAlreadyDefinedOnObject,
-                                                    SemanticErrorCode.AttributeNotFoundOnObject,
-                                                    this);
+            new CheckedLookup<>(SemanticErrorCode.AttributeAlreadyDefinedOnObject,
+                                SemanticErrorCode.AttributeNotFoundOnObject,
+                                this);
 
-    private final LinkedHashSet<IdentifierDeclaration> identifiers = new LinkedHashSet<IdentifierDeclaration>();
+    private final LinkedHashSet<IdentifierDeclaration> identifiers = new LinkedHashSet<>();
 
     private final IdentifierDeclaration preferredIdentifier = IdentifierDeclaration.createPreferred();
 
     private final CheckedLookup<ServiceOverload>
             services =
-            new CheckedLookup<ServiceOverload>(SemanticErrorCode.ServiceAlreadyDefinedOnObject,
-                                               SemanticErrorCode.ServiceNotFoundOnObject,
-                                               this);
+            new CheckedLookup<>(SemanticErrorCode.ServiceAlreadyDefinedOnObject,
+                                SemanticErrorCode.ServiceNotFoundOnObject,
+                                this);
 
     private final CheckedLookup<EventDeclaration>
             events =
-            new CheckedLookup<EventDeclaration>(SemanticErrorCode.EventAlreadyDefinedOnObject,
-                                                SemanticErrorCode.EventNotFoundOnObject,
-                                                this);
+            new CheckedLookup<>(SemanticErrorCode.EventAlreadyDefinedOnObject,
+                                SemanticErrorCode.EventNotFoundOnObject,
+                                this);
 
     private final CheckedLookup<State>
             states =
-            new CheckedLookup<State>(SemanticErrorCode.StateAlreadyDefinedOnObject,
-                                     SemanticErrorCode.StateNotFoundOnObject,
-                                     this);
+            new CheckedLookup<>(SemanticErrorCode.StateAlreadyDefinedOnObject,
+                                SemanticErrorCode.StateNotFoundOnObject,
+                                this);
 
     private TransitionTable stateMachine = null;
     private TransitionTable assignerStateMachine = null;
-    private final List<RelationshipSpecification> relationships = new ArrayList<RelationshipSpecification>();
+    private final List<RelationshipSpecification> relationships = new ArrayList<>();
 
     private PragmaList definitionPragmas;
 
     private final PragmaList declarationPragmas;
 
-    private final List<ObjectDeclaration> supertypes = new ArrayList<ObjectDeclaration>();
+    private final List<ObjectDeclaration> supertypes = new ArrayList<>();
 
     private final Domain domain;
 
     private final InstanceType type;
 
-    private final Map<RelationshipDeclaration, List<RelationshipSpecification>>
-            relSpecLookup =
-            new HashMap<RelationshipDeclaration, List<RelationshipSpecification>>();
+    private final Map<RelationshipDeclaration, List<RelationshipSpecification>> relSpecLookup = new HashMap<>();
 
     private boolean hasCurrentState;
     private boolean hasAssignerState;
@@ -636,7 +615,22 @@ public class ObjectDeclaration extends Name implements org.xtuml.masl.metamodel.
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitObjectDeclaration(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitObjectDeclaration(this);
     }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(getAttributes(),
+                                    getIdentifiers(),
+                                    getServices(),
+                                    getEvents(),
+                                    getStates(),
+                                    stateMachine,
+                                    assignerStateMachine,
+                                    getRelationships(),
+                                    definitionPragmas,
+                                    declarationPragmas);
+    }
+
 }

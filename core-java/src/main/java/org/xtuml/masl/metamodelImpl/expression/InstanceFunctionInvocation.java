@@ -21,11 +21,11 @@
  */
 package org.xtuml.masl.metamodelImpl.expression;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.object.ObjectService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InstanceFunctionInvocation extends FunctionInvocation<ObjectService>
@@ -80,16 +80,13 @@ public class InstanceFunctionInvocation extends FunctionInvocation<ObjectService
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitInstanceFunctionInvocation(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitInstanceFunctionInvocation(this);
     }
 
     @Override
-    public List<Expression> getChildExpressions() {
-        final List<Expression> result = new ArrayList<Expression>();
-        result.add(instance);
-        result.addAll(super.getChildExpressions());
-        return result;
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren(super.children(), instance);
     }
 
 }

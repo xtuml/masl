@@ -135,9 +135,7 @@ class MirroredTypeDeclarationImpl extends TypeDeclarationImpl {
     private boolean mirrorPopulated = false;
     private final Map<java.lang.reflect.TypeVariable<?>, MirroredTypeParameterImpl>
             typeParameterLookup =
-            new HashMap<java.lang.reflect.TypeVariable<?>, MirroredTypeParameterImpl>();
-    private final Map<Enum<?>, MirroredEnumConstantImpl>
-            enumConstantLookup =
-            new HashMap<Enum<?>, MirroredEnumConstantImpl>();
+            new HashMap<>();
+    private final Map<Enum<?>, MirroredEnumConstantImpl> enumConstantLookup = new HashMap<>();
 
 }

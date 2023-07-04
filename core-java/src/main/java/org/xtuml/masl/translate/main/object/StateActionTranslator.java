@@ -82,7 +82,7 @@ public class StateActionTranslator {
         }
     }
 
-    private final List<ParameterTranslator> parameters = new ArrayList<ParameterTranslator>();
+    private final List<ParameterTranslator> parameters = new ArrayList<>();
 
     public CodeTranslator getCodeTranslator() {
         return codeTranslator;

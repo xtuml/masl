@@ -21,6 +21,7 @@
  */
 package org.xtuml.masl.metamodelImpl.type;
 
+import org.xtuml.masl.metamodel.ASTNode;
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodel.common.Visibility;
 import org.xtuml.masl.metamodelImpl.common.Position;
@@ -29,6 +30,8 @@ import org.xtuml.masl.metamodelImpl.error.NotFound;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.expression.Expression;
+
+import java.util.List;
 
 public class UserDefinedType extends BasicType implements org.xtuml.masl.metamodel.type.UserDefinedType {
 
@@ -178,7 +181,13 @@ public class UserDefinedType extends BasicType implements org.xtuml.masl.metamod
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitUserDefinedType(this, p);
+    public void accept(final ASTNodeVisitor v) {
+        v.visitUserDefinedType(this);
     }
+
+    @Override
+    public List<ASTNode> children() {
+        return ASTNode.makeChildren();
+    }
+
 }

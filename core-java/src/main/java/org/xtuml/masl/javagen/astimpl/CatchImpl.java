@@ -55,11 +55,11 @@ public class CatchImpl extends ASTNodeImpl implements Catch {
     }
 
     @Override
-    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
-        return v.visitCatch(this, p);
+    public void accept(final ASTNodeVisitor v) throws Exception {
+        v.visitCatch(this);
     }
 
-    private final ChildNode<ParameterImpl> exceptionParameter = new ChildNode<ParameterImpl>(this);
-    private final ChildNode<CodeBlockImpl> codeBlock = new ChildNode<CodeBlockImpl>(this);
+    private final ChildNode<ParameterImpl> exceptionParameter = new ChildNode<>(this);
+    private final ChildNode<CodeBlockImpl> codeBlock = new ChildNode<>(this);
 
 }
