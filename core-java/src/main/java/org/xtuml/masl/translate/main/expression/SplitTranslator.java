@@ -1,14 +1,25 @@
-//
-// File: NameExpressionTranslator.java
-//
-// UK Crown Copyright (c) 2006. All Rights Reserved.
-//
-package org.xtuml.masl.translate.main.expression;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.translate.main.expression;
 
 import org.xtuml.masl.cppgen.Expression;
 import org.xtuml.masl.metamodel.expression.SplitExpression;
@@ -16,119 +27,107 @@ import org.xtuml.masl.metamodel.type.TypeDefinition;
 import org.xtuml.masl.translate.main.Architecture;
 import org.xtuml.masl.translate.main.Scope;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
+public class SplitTranslator extends ExpressionTranslator {
 
-public class SplitTranslator extends ExpressionTranslator
-{
+    private final Expression lhs;
+    private final List<Expression> arguments = new ArrayList<Expression>();
 
-  private final Expression       lhs;
-  private final List<Expression> arguments = new ArrayList<Expression>();
+    SplitTranslator(final SplitExpression splitExpression, final Scope scope) {
+        for (final org.xtuml.masl.metamodel.expression.Expression arg : splitExpression.getArguments()) {
+            arguments.add(ExpressionTranslator.createTranslator(arg, scope).getReadExpression());
+        }
 
-  SplitTranslator ( final SplitExpression splitExpression, final Scope scope )
-  {
-    for ( final org.xtuml.masl.metamodel.expression.Expression arg : splitExpression.getArguments() )
-    {
-      arguments.add(ExpressionTranslator.createTranslator(arg, scope).getReadExpression());
+        switch (splitExpression.getSplitType()) {
+            case COMBINE:
+                lhs = null;
+                translateCombine(splitExpression);
+                break;
+            case SPLIT:
+                lhs = ExpressionTranslator.createTranslator(splitExpression.getLhs(), scope).getReadExpression();
+                translateSplit(splitExpression);
+                break;
+            default:
+                lhs = null;
+                assert false;
+        }
     }
 
-    switch ( splitExpression.getSplitType() )
-    {
-      case COMBINE:
-        lhs = null;
-        translateCombine(splitExpression);
-        break;
-      case SPLIT:
-        lhs = ExpressionTranslator.createTranslator(splitExpression.getLhs(), scope).getReadExpression();
-        translateSplit(splitExpression);
-        break;
-      default:
-        lhs = null;
-        assert false;
-    }
-  }
+    void translateCombine(final SplitExpression splitExpression) {
+        if (splitExpression.getType().getBasicType().getActualType() == TypeDefinition.ActualType.DURATION) {
+            final List<Expression> fields = new ArrayList<Expression>();
+            for (final SplitExpression.Field field : splitExpression.getFields()) {
+                fields.add(durationFieldLookup.get(field));
+            }
 
-  void translateCombine ( final SplitExpression splitExpression )
-  {
-    if ( splitExpression.getType().getBasicType().getActualType() == TypeDefinition.ActualType.DURATION )
-    {
-      final List<Expression> fields = new ArrayList<Expression>();
-      for ( final SplitExpression.Field field : splitExpression.getFields() )
-      {
-        fields.add(durationFieldLookup.get(field));
-      }
+            setReadExpression(Architecture.Duration.getCombine(fields, arguments));
+        } else {
+            final List<Expression> fields = new ArrayList<Expression>();
+            for (final SplitExpression.Field field : splitExpression.getFields()) {
+                fields.add(timestampFieldLookup.get(field));
+            }
 
-      setReadExpression(Architecture.Duration.getCombine(fields, arguments));
-    }
-    else
-    {
-      final List<Expression> fields = new ArrayList<Expression>();
-      for ( final SplitExpression.Field field : splitExpression.getFields() )
-      {
-        fields.add(timestampFieldLookup.get(field));
-      }
-
-      setReadExpression(Architecture.Timestamp.getCombine(fields, arguments));
-    }
-  }
-
-
-  void translateSplit ( final SplitExpression splitExpression )
-  {
-    if ( splitExpression.getLhs().getType().getBasicType().getActualType() == TypeDefinition.ActualType.DURATION )
-    {
-      final List<Expression> fields = new ArrayList<Expression>();
-      for ( final SplitExpression.Field field : splitExpression.getFields() )
-      {
-        fields.add(durationFieldLookup.get(field));
-      }
-
-      setReadExpression(Architecture.Duration.getSplit(lhs, fields));
-    }
-    else
-    {
-      final List<Expression> fields = new ArrayList<Expression>();
-      for ( final SplitExpression.Field field : splitExpression.getFields() )
-      {
-        fields.add(timestampFieldLookup.get(field));
-      }
-
-      setReadExpression(Architecture.Timestamp.getSplit(lhs, fields));
+            setReadExpression(Architecture.Timestamp.getCombine(fields, arguments));
+        }
     }
 
-  }
+    void translateSplit(final SplitExpression splitExpression) {
+        if (splitExpression.getLhs().getType().getBasicType().getActualType() == TypeDefinition.ActualType.DURATION) {
+            final List<Expression> fields = new ArrayList<Expression>();
+            for (final SplitExpression.Field field : splitExpression.getFields()) {
+                fields.add(durationFieldLookup.get(field));
+            }
 
+            setReadExpression(Architecture.Duration.getSplit(lhs, fields));
+        } else {
+            final List<Expression> fields = new ArrayList<Expression>();
+            for (final SplitExpression.Field field : splitExpression.getFields()) {
+                fields.add(timestampFieldLookup.get(field));
+            }
 
-  private static Map<SplitExpression.Field, Expression> durationFieldLookup  = new EnumMap<SplitExpression.Field, Expression>(SplitExpression.Field.class);
-  private static Map<SplitExpression.Field, Expression> timestampFieldLookup = new EnumMap<SplitExpression.Field, Expression>(SplitExpression.Field.class);
+            setReadExpression(Architecture.Timestamp.getSplit(lhs, fields));
+        }
 
-  static
-  {
-    timestampFieldLookup.put(SplitExpression.Field.CalendarYear, Architecture.Timestamp.splitCalendarYear);
-    timestampFieldLookup.put(SplitExpression.Field.MonthOfYear, Architecture.Timestamp.splitMonthOfYear);
-    timestampFieldLookup.put(SplitExpression.Field.DayOfMonth, Architecture.Timestamp.splitDayOfMonth);
-    timestampFieldLookup.put(SplitExpression.Field.WeekYear, Architecture.Timestamp.splitWeekYear);
-    timestampFieldLookup.put(SplitExpression.Field.WeekOfYear, Architecture.Timestamp.splitWeekOfYear);
-    timestampFieldLookup.put(SplitExpression.Field.DayOfWeek, Architecture.Timestamp.splitDayOfWeek);
-    timestampFieldLookup.put(SplitExpression.Field.DayOfYear, Architecture.Timestamp.splitDayOfYear);
-    timestampFieldLookup.put(SplitExpression.Field.HourOfDay, Architecture.Timestamp.splitHourOfDay);
-    timestampFieldLookup.put(SplitExpression.Field.MinuteOfHour, Architecture.Timestamp.splitMinOfHour);
-    timestampFieldLookup.put(SplitExpression.Field.SecondOfMinute, Architecture.Timestamp.splitSecOfMin);
-    timestampFieldLookup.put(SplitExpression.Field.MilliOfSecond, Architecture.Timestamp.splitMilliOfSec);
-    timestampFieldLookup.put(SplitExpression.Field.MicroOfSecond, Architecture.Timestamp.splitMicroOfSec);
-    timestampFieldLookup.put(SplitExpression.Field.NanoOfSecond, Architecture.Timestamp.splitNanoOfSec);
-    timestampFieldLookup.put(SplitExpression.Field.MicroOfMilli, Architecture.Timestamp.splitMicroOfMilli);
-    timestampFieldLookup.put(SplitExpression.Field.NanoOfMilli, Architecture.Timestamp.splitNanoOfMilli);
-    timestampFieldLookup.put(SplitExpression.Field.NanoOfMicro, Architecture.Timestamp.splitNanoOfMicro);
+    }
 
-    durationFieldLookup.put(SplitExpression.Field.Weeks, Architecture.Duration.splitWeeks);
-    durationFieldLookup.put(SplitExpression.Field.Days, Architecture.Duration.splitDays);
-    durationFieldLookup.put(SplitExpression.Field.Hours, Architecture.Duration.splitHours);
-    durationFieldLookup.put(SplitExpression.Field.Minutes, Architecture.Duration.splitMinutes);
-    durationFieldLookup.put(SplitExpression.Field.Seconds, Architecture.Duration.splitSeconds);
-    durationFieldLookup.put(SplitExpression.Field.Millis, Architecture.Duration.splitMillis);
-    durationFieldLookup.put(SplitExpression.Field.Micros, Architecture.Duration.splitMicros);
-    durationFieldLookup.put(SplitExpression.Field.Nanos, Architecture.Duration.splitNanos);
+    private static final Map<SplitExpression.Field, Expression>
+            durationFieldLookup =
+            new EnumMap<SplitExpression.Field, Expression>(SplitExpression.Field.class);
+    private static final Map<SplitExpression.Field, Expression>
+            timestampFieldLookup =
+            new EnumMap<SplitExpression.Field, Expression>(SplitExpression.Field.class);
 
-  }
+    static {
+        timestampFieldLookup.put(SplitExpression.Field.CalendarYear, Architecture.Timestamp.splitCalendarYear);
+        timestampFieldLookup.put(SplitExpression.Field.MonthOfYear, Architecture.Timestamp.splitMonthOfYear);
+        timestampFieldLookup.put(SplitExpression.Field.DayOfMonth, Architecture.Timestamp.splitDayOfMonth);
+        timestampFieldLookup.put(SplitExpression.Field.WeekYear, Architecture.Timestamp.splitWeekYear);
+        timestampFieldLookup.put(SplitExpression.Field.WeekOfYear, Architecture.Timestamp.splitWeekOfYear);
+        timestampFieldLookup.put(SplitExpression.Field.DayOfWeek, Architecture.Timestamp.splitDayOfWeek);
+        timestampFieldLookup.put(SplitExpression.Field.DayOfYear, Architecture.Timestamp.splitDayOfYear);
+        timestampFieldLookup.put(SplitExpression.Field.HourOfDay, Architecture.Timestamp.splitHourOfDay);
+        timestampFieldLookup.put(SplitExpression.Field.MinuteOfHour, Architecture.Timestamp.splitMinOfHour);
+        timestampFieldLookup.put(SplitExpression.Field.SecondOfMinute, Architecture.Timestamp.splitSecOfMin);
+        timestampFieldLookup.put(SplitExpression.Field.MilliOfSecond, Architecture.Timestamp.splitMilliOfSec);
+        timestampFieldLookup.put(SplitExpression.Field.MicroOfSecond, Architecture.Timestamp.splitMicroOfSec);
+        timestampFieldLookup.put(SplitExpression.Field.NanoOfSecond, Architecture.Timestamp.splitNanoOfSec);
+        timestampFieldLookup.put(SplitExpression.Field.MicroOfMilli, Architecture.Timestamp.splitMicroOfMilli);
+        timestampFieldLookup.put(SplitExpression.Field.NanoOfMilli, Architecture.Timestamp.splitNanoOfMilli);
+        timestampFieldLookup.put(SplitExpression.Field.NanoOfMicro, Architecture.Timestamp.splitNanoOfMicro);
+
+        durationFieldLookup.put(SplitExpression.Field.Weeks, Architecture.Duration.splitWeeks);
+        durationFieldLookup.put(SplitExpression.Field.Days, Architecture.Duration.splitDays);
+        durationFieldLookup.put(SplitExpression.Field.Hours, Architecture.Duration.splitHours);
+        durationFieldLookup.put(SplitExpression.Field.Minutes, Architecture.Duration.splitMinutes);
+        durationFieldLookup.put(SplitExpression.Field.Seconds, Architecture.Duration.splitSeconds);
+        durationFieldLookup.put(SplitExpression.Field.Millis, Architecture.Duration.splitMillis);
+        durationFieldLookup.put(SplitExpression.Field.Micros, Architecture.Duration.splitMicros);
+        durationFieldLookup.put(SplitExpression.Field.Nanos, Architecture.Duration.splitNanos);
+
+    }
 
 }

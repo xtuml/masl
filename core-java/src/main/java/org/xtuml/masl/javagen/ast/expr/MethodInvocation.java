@@ -1,40 +1,55 @@
-//
-// UK Crown Copyright (c) 2011. All Rights Reserved.
-//
-package org.xtuml.masl.javagen.ast.expr;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.List;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.javagen.ast.expr;
 
 import org.xtuml.masl.javagen.ast.def.Method;
 import org.xtuml.masl.javagen.ast.types.ReferenceType;
 
+import java.util.List;
 
-public interface MethodInvocation
-    extends StatementExpression
-{
+public interface MethodInvocation extends StatementExpression {
 
-  Expression addArgument ( Expression arg );
+    Expression addArgument(Expression arg);
 
-  ReferenceType addTypeArgument ( ReferenceType typeArg );
+    ReferenceType addTypeArgument(ReferenceType typeArg);
 
-  List<? extends Expression> getArguments ();
+    List<? extends Expression> getArguments();
 
-  Expression getInstance ();
+    Expression getInstance();
 
-  Method getMethod ();
+    Method getMethod();
 
-  List<? extends ReferenceType> getTypeArguments ();
+    List<? extends ReferenceType> getTypeArguments();
 
-  Expression setInstance ( Expression instance );
+    Expression setInstance(Expression instance);
 
-  Method setMethod ( Method method );
+    Method setMethod(Method method);
 
-  Qualifier getQualifier ();
+    Qualifier getQualifier();
 
-  void forceQualifier ();
+    void forceQualifier();
 
-  boolean isSuper ();
+    boolean isSuper();
 
-  void setSuper ();
+    void setSuper();
 
 }

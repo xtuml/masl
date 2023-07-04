@@ -1,8 +1,24 @@
-//
-// File: ObjectNameExpression.java
-//
-// UK Crown Copyright (c) 2008. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.metamodelImpl.expression;
 
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
@@ -13,91 +29,71 @@ import org.xtuml.masl.metamodelImpl.statemodel.EventDeclaration;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 import org.xtuml.masl.metamodelImpl.type.EventType;
 
+public class EventExpression extends Expression implements org.xtuml.masl.metamodel.expression.EventExpression {
 
-public class EventExpression extends Expression
-    implements org.xtuml.masl.metamodel.expression.EventExpression
-{
+    public static EventExpression create(final ObjectNameExpression objectName, final String eventName) {
+        if (eventName == null) {
+            return null;
+        }
 
-  public static EventExpression create ( final ObjectNameExpression objectName, final String eventName )
-  {
-    if ( eventName == null )
-    {
-      return null;
+        try {
+            if (objectName == null) {
+                throw new SemanticError(SemanticErrorCode.NoObjectForEvent, Position.getPosition(eventName), eventName);
+            }
+            final Position
+                    position =
+                    objectName.getPosition() == null ? Position.getPosition(eventName) : objectName.getPosition();
+            return objectName.getObject().getEvent(eventName).getReference(position);
+
+        } catch (final SemanticError e) {
+            e.report();
+            return null;
+        }
     }
 
-    try
-    {
-      if ( objectName == null )
-      {
-        throw new SemanticError(SemanticErrorCode.NoObjectForEvent, Position.getPosition(eventName), eventName);
-      }
-      final Position position = objectName.getPosition() == null ? Position.getPosition(eventName) : objectName.getPosition();
-      return objectName.getObject().getEvent(eventName).getReference(position);
-
+    public EventExpression(final Position position, final EventDeclaration event) {
+        super(position);
+        this.event = event;
     }
-    catch ( final SemanticError e )
-    {
-      e.report();
-      return null;
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof EventExpression obj2)) {
+            return false;
+        } else {
+
+            return event.equals(obj2.event);
+        }
     }
-  }
 
-
-  public EventExpression ( final Position position, final EventDeclaration event )
-  {
-    super(position);
-    this.event = event;
-  }
-
-  @Override
-  public boolean equals ( final Object obj )
-  {
-    if ( this == obj )
-    {
-      return true;
+    @Override
+    public EventDeclaration getEvent() {
+        return event;
     }
-    if ( !(obj instanceof EventExpression) )
-    {
-      return false;
+
+    @Override
+    public BasicType getType() {
+        return EventType.createAnonymous();
     }
-    else
-    {
-      final EventExpression obj2 = (EventExpression)obj;
 
-      return event.equals(obj2.event);
+    @Override
+    public int hashCode() {
+        return event.hashCode();
     }
-  }
 
-  @Override
-  public EventDeclaration getEvent ()
-  {
-    return event;
-  }
+    @Override
+    public String toString() {
+        return event.getParentObject().getName() + "." + event.getName();
+    }
 
-  @Override
-  public BasicType getType ()
-  {
-    return EventType.createAnonymous();
-  }
+    private final EventDeclaration event;
 
-  @Override
-  public int hashCode ()
-  {
-    return event.hashCode();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return event.getParentObject().getName() + "." + event.getName();
-  }
-
-  private final EventDeclaration event;
-
-  @Override
-  public <R, P> R accept ( final ASTNodeVisitor<R, P> v, final P p ) throws Exception
-  {
-    return v.visitEventExpression(this, p);
-  }
+    @Override
+    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+        return v.visitEventExpression(this, p);
+    }
 
 }

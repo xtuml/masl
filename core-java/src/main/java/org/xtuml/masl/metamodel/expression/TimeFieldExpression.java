@@ -1,57 +1,38 @@
-//
-// File: SplitExpression.java
-//
-// UK Crown Copyright (c) 2009. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.metamodel.expression;
 
+public interface TimeFieldExpression extends Expression {
 
-public interface TimeFieldExpression
-    extends Expression
-{
+    enum Field {
+        CalendarYear, MonthOfYear, DayOfMonth, DayOfYear, WeekYear, WeekOfYear, DayOfWeek, HourOfDay, MinuteOfHour, SecondOfMinute, MilliOfSecond, MicroOfSecond, MicroOfMilli, NanoOfSecond, NanoOfMilli, NanoOfMicro,
 
-  public enum Field
-  {
-    CalendarYear,
-    MonthOfYear,
-    DayOfMonth,
-    DayOfYear,
-    WeekYear,
-    WeekOfYear,
-    DayOfWeek,
-    HourOfDay,
-    MinuteOfHour,
-    SecondOfMinute,
-    MilliOfSecond,
-    MicroOfSecond,
-    MicroOfMilli,
-    NanoOfSecond,
-    NanoOfMilli,
-    NanoOfMicro,
+        DurationDayOfWeek, DurationHourOfDay, DurationMinuteOfHour, DurationSecondOfMinute, DurationMilliOfSecond, DurationMicroOfSecond, DurationMicroOfMilli, DurationNanoOfSecond, DurationNanoOfMilli, DurationNanoOfMicro,
 
-    DurationDayOfWeek,
-    DurationHourOfDay,
-    DurationMinuteOfHour,
-    DurationSecondOfMinute,
-    DurationMilliOfSecond,
-    DurationMicroOfSecond,
-    DurationMicroOfMilli,
-    DurationNanoOfSecond,
-    DurationNanoOfMilli,
-    DurationNanoOfMicro,
+        Weeks, Days, Hours, Minutes, Seconds, Millis, Micros, Nanos
+    }
 
-    Weeks,
-    Days,
-    Hours,
-    Minutes,
-    Seconds,
-    Millis,
-    Micros,
-    Nanos
-  }
+    Field getField();
 
-  public Field getField ();
-
-  public Expression getLhs ();
+    Expression getLhs();
 
 }

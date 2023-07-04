@@ -1,172 +1,153 @@
-//
-// File: Name.java
-//
-// UK Crown Copyright (c) 2006. All Rights Reserved.
-//
-package org.xtuml.masl.metamodelImpl.expression;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.metamodelImpl.expression;
 
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 import org.xtuml.masl.metamodelImpl.common.Position;
 import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
-import org.xtuml.masl.metamodelImpl.type.BasicType;
-import org.xtuml.masl.metamodelImpl.type.CollectionType;
-import org.xtuml.masl.metamodelImpl.type.StructureElement;
-import org.xtuml.masl.metamodelImpl.type.StructureType;
-import org.xtuml.masl.metamodelImpl.type.TypeDefinition;
+import org.xtuml.masl.metamodelImpl.type.*;
 import org.xtuml.masl.utils.HashCode;
 import org.xtuml.masl.utils.TextUtils;
 
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class StructureOrderingExpression extends OrderingExpression
-    implements org.xtuml.masl.metamodel.expression.StructureOrderingExpression
-{
+        implements org.xtuml.masl.metamodel.expression.StructureOrderingExpression {
 
-  public static class Component extends OrderingExpression.Component
-      implements org.xtuml.masl.metamodel.expression.StructureOrderingExpression.Component
-  {
+    public static class Component extends OrderingExpression.Component
+            implements org.xtuml.masl.metamodel.expression.StructureOrderingExpression.Component {
 
-    Component ( final boolean reverse, final StructureElement element )
-    {
-      super(reverse);
-      this.element = element;
+        Component(final boolean reverse, final StructureElement element) {
+            super(reverse);
+            this.element = element;
+        }
+
+        @Override
+        public StructureElement getElement() {
+            return element;
+        }
+
+        private final StructureElement element;
+
+        @Override
+        public int hashCode() {
+            return HashCode.makeHash(isReverse(), element);
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof Component obj2)) {
+                return false;
+            } else {
+
+                return isReverse() == obj2.isReverse() && element == obj2.element;
+            }
+        }
+
+        @Override
+        public String toString() {
+            return (isReverse() ? "reverse " : " ") + element.toString();
+        }
+
     }
 
-    @Override
-    public StructureElement getElement ()
-    {
-      return element;
-    }
-
-    private final StructureElement element;
-
-    @Override
-    public int hashCode ()
-    {
-      return HashCode.makeHash(isReverse(), element);
-    }
-
-    @Override
-    public boolean equals ( final Object obj )
-    {
-      if ( this == obj )
-      {
-        return true;
-      }
-      if ( !(obj instanceof Component) )
-      {
-        return false;
-      }
-      else
-      {
-        final Component obj2 = (Component)obj;
-
-        return isReverse() == obj2.isReverse() && element == obj2.element;
-      }
-    }
-
-    @Override
-    public String toString ()
-    {
-      return (isReverse() ? "reverse " : " ") + element.toString();
-    }
-
-  }
-
-  public StructureOrderingExpression ( final Position position,
+    public StructureOrderingExpression(final Position position,
                                        final Expression collection,
                                        final boolean reverse,
-                                       final List<OrderComponent> components )
-  {
-    super(position, collection, reverse);
-    this.order = new ArrayList<Component>();
-    for ( final OrderComponent component : components )
-    {
-      try
-      {
-        addComponent(component);
-      }
-      catch ( final SemanticError e )
-      {
-        e.report();
-      }
+                                       final List<OrderComponent> components) {
+        super(position, collection, reverse);
+        this.order = new ArrayList<Component>();
+        for (final OrderComponent component : components) {
+            try {
+                addComponent(component);
+            } catch (final SemanticError e) {
+                e.report();
+            }
+        }
+
     }
 
-  }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof StructureOrderingExpression obj2)) {
+            return false;
+        } else {
 
-  @Override
-  public boolean equals ( final Object obj )
-  {
-    if ( this == obj )
-    {
-      return true;
+            return getCollection().equals(obj2.getCollection()) &&
+                   isReverse() == obj2.isReverse() &&
+                   order.equals(obj2.order);
+        }
     }
-    if ( !(obj instanceof StructureOrderingExpression) )
-    {
-      return false;
+
+    @Override
+    public List<StructureOrderingExpression.Component> getOrder() {
+        return Collections.unmodifiableList(order);
     }
-    else
-    {
-      final StructureOrderingExpression obj2 = (StructureOrderingExpression)obj;
 
-      return getCollection().equals(obj2.getCollection()) && isReverse() == obj2.isReverse() && order.equals(obj2.order);
+    @Override
+    public int hashCode() {
+
+        return super.hashCode() ^ order.hashCode();
     }
-  }
 
+    @Override
+    public String toString() {
+        return super.toString() + " (" + TextUtils.formatList(order, "", ",", "") + ")";
 
-  @Override
-  public List<StructureOrderingExpression.Component> getOrder ()
-  {
-    return Collections.unmodifiableList(order);
-  }
-
-  @Override
-  public int hashCode ()
-  {
-
-    return super.hashCode() ^ order.hashCode();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return super.toString() + " (" + TextUtils.formatList(order, "", ",", "") + ")";
-
-  }
-
-  public void addComponent ( final OrderComponent component ) throws SemanticError
-  {
-    final BasicType basicType = getCollection().getType().getBasicType();
-
-    assert basicType instanceof CollectionType;
-
-    final TypeDefinition containedType = ((CollectionType)basicType).getContainedType().getBasicType().getDefinedType();
-
-    if ( containedType instanceof StructureType )
-    {
-      final StructureType contained = (StructureType)containedType;
-      final StructureElement elt = contained.getElement(component.getName());
-      order.add(new Component(component.isReverse(), elt));
     }
-    else
-    {
-      throw new SemanticError(SemanticErrorCode.ElementNotFoundOnType,
-                              Position.getPosition(component.getName()),
-                              component.getName(),
-                              getCollection().getType());
+
+    public void addComponent(final OrderComponent component) throws SemanticError {
+        final BasicType basicType = getCollection().getType().getBasicType();
+
+        assert basicType instanceof CollectionType;
+
+        final TypeDefinition
+                containedType =
+                basicType.getContainedType().getBasicType().getDefinedType();
+
+        if (containedType instanceof StructureType contained) {
+            final StructureElement elt = contained.getElement(component.getName());
+            order.add(new Component(component.isReverse(), elt));
+        } else {
+            throw new SemanticError(SemanticErrorCode.ElementNotFoundOnType,
+                                    Position.getPosition(component.getName()),
+                                    component.getName(),
+                                    getCollection().getType());
+        }
     }
-  }
 
-  @Override
-  public <R, P> R accept ( final ASTNodeVisitor<R, P> v, final P p ) throws Exception
-  {
-    return v.visitStructureOrderingExpression(this, p);
-  }
+    @Override
+    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+        return v.visitStructureOrderingExpression(this, p);
+    }
 
-  private final List<Component> order;
+    private final List<Component> order;
 }

@@ -1,13 +1,25 @@
-//
-// File: Service.java
-//
-// UK Crown Copyright (c) 2008. All Rights Reserved.
-//
-package org.xtuml.masl.metamodelImpl.common;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.metamodelImpl.common;
 
 import org.xtuml.masl.metamodelImpl.code.CodeBlock;
 import org.xtuml.masl.metamodelImpl.error.AlreadyDefined;
@@ -18,229 +30,193 @@ import org.xtuml.masl.metamodelImpl.name.NameLookup;
 import org.xtuml.masl.metamodelImpl.name.Named;
 import org.xtuml.masl.metamodelImpl.type.BasicType;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public abstract class Service extends Positioned
-    implements Named, org.xtuml.masl.metamodel.common.Service
-{
+public abstract class Service extends Positioned implements Named, org.xtuml.masl.metamodel.common.Service {
 
-  public Service ( final Position position,
+    public Service(final Position position,
                    final String name,
                    final Visibility visibility,
                    final List<ParameterDefinition> parameters,
                    final BasicType returnType,
                    final List<ExceptionReference> exceptionSpecs,
-                   final PragmaList pragmas )
-  {
-    super(position);
-    this.declarationPragmas = pragmas;
-    this.name = name;
-    this.visibility = visibility;
-    this.returnType = returnType;
-    this.exceptionSpecs = exceptionSpecs;
-    this.params = new CheckedLookup<ParameterDefinition>(SemanticErrorCode.ParameterAlreadyDefinedOnService,
-                                                         SemanticErrorCode.ParameterNotFoundOnService,
-                                                         this);
+                   final PragmaList pragmas) {
+        super(position);
+        this.declarationPragmas = pragmas;
+        this.name = name;
+        this.visibility = visibility;
+        this.returnType = returnType;
+        this.exceptionSpecs = exceptionSpecs;
+        this.params =
+                new CheckedLookup<ParameterDefinition>(SemanticErrorCode.ParameterAlreadyDefinedOnService,
+                                                       SemanticErrorCode.ParameterNotFoundOnService,
+                                                       this);
 
-    for ( final ParameterDefinition param : parameters )
-    {
-      try
-      {
-        if ( param != null )
-        {
-          addParameter(param);
+        for (final ParameterDefinition param : parameters) {
+            try {
+                if (param != null) {
+                    addParameter(param);
+                }
+            } catch (final AlreadyDefined e) {
+                // Report error, and ignore parameter
+                e.report();
+            }
         }
-      }
-      catch ( final AlreadyDefined e )
-      {
-        // Report error, and ignore parameter
-        e.report();
-      }
     }
-  }
 
-  public void addParameter ( final ParameterDefinition param ) throws AlreadyDefined
-  {
-    nameLookup.addName(param);
-    params.put(param.getName(), param);
-    signature.add(param.getType());
-  }
-
-  
-  @Override
-  public CodeBlock getCode ()
-  {
-    return this.code;
-  }
-
-  @Override
-  public PragmaList getDeclarationPragmas ()
-  {
-    return declarationPragmas;
-  }
-
-  @Override
-  public PragmaList getDefinitionPragmas ()
-  {
-    return definitionPragmas;
-  }
-
-  @Override
-  public List<ExceptionReference> getExceptionSpecs ()
-  {
-    return Collections.unmodifiableList(exceptionSpecs);
-  }
-
-  @Override
-  public String getFileHash ()
-  {
-    return fileHash;
-  }
-
-  @Override
-  public String getName ()
-  {
-    return name;
-  }
-
-  public NameLookup getNameLookup ()
-  {
-    return nameLookup;
-  }
-
-  @Override
-  public int getOverloadNo ()
-  {
-    return overloadNo;
-  }
-
-  public ParameterDefinition getParameter ( final int i )
-  {
-    return params.asList().get(i);
-  }
-
-  @Override
-  public List<ParameterDefinition> getParameters ()
-  {
-    return Collections.unmodifiableList(params.asList());
-  }
-
-  @Override
-  public abstract String getQualifiedName ();
-
-
-  @Override
-  public BasicType getReturnType ()
-  {
-    return returnType;
-  }
-
-  public abstract String getServiceType ();
-
-
-  public List<BasicType> getSignature ()
-  {
-    return signature;
-  }
-
-  @Override
-  public org.xtuml.masl.metamodel.common.Visibility getVisibility ()
-  {
-    return visibility.getVisibility();
-  }
-
-  @Override
-  public boolean isFunction ()
-  {
-    return getReturnType() != null;
-  }
-
-  /**
-
-   *          The code to set.
-   */
-  public void setCode ( final CodeBlock code )
-  {
-    this.code = code;
-    if ( isFunction() )
-    {
-      final ReturnCheckVisitor checkReturn = new ReturnCheckVisitor();
-      try
-      {
-        checkReturn.visit(code);
-      }
-      catch ( final Exception e )
-      {
-        e.printStackTrace();
-      }
-      if ( !checkReturn.hasReturn() )
-      {
-        new SemanticError(SemanticErrorCode.FunctionMayNotReturnAValue, code.getPosition()).report();
-      }
+    public void addParameter(final ParameterDefinition param) throws AlreadyDefined {
+        nameLookup.addName(param);
+        params.put(param.getName(), param);
+        signature.add(param.getType());
     }
-  }
 
-  @Override
-  public List<org.xtuml.masl.metamodel.code.VariableDefinition> getLocalVariables ()
-  {
-    if ( code == null )
-    {
-      return Collections.<org.xtuml.masl.metamodel.code.VariableDefinition>emptyList();
+    @Override
+    public CodeBlock getCode() {
+        return this.code;
     }
-    else
-    {
-      return new LocalVariableCollector(code).getLocalVariables();
+
+    @Override
+    public PragmaList getDeclarationPragmas() {
+        return declarationPragmas;
     }
-  }
 
-  public void setDefinitionPragmas ( final PragmaList pragmas )
-  {
-    definitionPragmas = pragmas;
-  }
+    @Override
+    public PragmaList getDefinitionPragmas() {
+        return definitionPragmas;
+    }
 
-  public void setFileHash ( final String fileHash )
-  {
-    this.fileHash = fileHash;
-  }
+    @Override
+    public List<ExceptionReference> getExceptionSpecs() {
+        return Collections.unmodifiableList(exceptionSpecs);
+    }
 
-  public void setOverloadNo ( final int overloadNo )
-  {
-    this.overloadNo = overloadNo;
-  }
+    @Override
+    public String getFileHash() {
+        return fileHash;
+    }
 
-  @Override
-  public String toString ()
-  {
-    return visibility
-           + (visibility.toString().equals("") ? "" : " ")
-           + getServiceType()
-           + (returnType == null ? "service\t" : "function\t")
-           + name
-           + "\t(\t"
-           + org.xtuml.masl.utils.TextUtils.formatList(params.asList(), "", ",\n\t\t\t", "")
-           + " )"
-           + (returnType == null ? "" : "\n\t\t\treturn\t\t" + returnType)
-           + org.xtuml.masl.utils.TextUtils.formatList(exceptionSpecs, " raises ", ", ", "")
-           + ";"
-           + org.xtuml.masl.utils.TextUtils.formatList(declarationPragmas.getPragmas(), "\t", "\n\t\t\t\t\t\t", "") + "\n";
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
 
-  private final NameLookup                         nameLookup = new NameLookup();
+    public NameLookup getNameLookup() {
+        return nameLookup;
+    }
 
-  private int                                      overloadNo;
-  private CodeBlock                                code       = null;
-  private final PragmaList                         declarationPragmas;
-  private PragmaList                               definitionPragmas;
-  private final List<ExceptionReference>           exceptionSpecs;
-  private final String                             name;
+    @Override
+    public int getOverloadNo() {
+        return overloadNo;
+    }
 
-  private final CheckedLookup<ParameterDefinition> params;
+    public ParameterDefinition getParameter(final int i) {
+        return params.asList().get(i);
+    }
 
-  private final BasicType                          returnType;
+    @Override
+    public List<ParameterDefinition> getParameters() {
+        return Collections.unmodifiableList(params.asList());
+    }
 
-  private final Visibility                         visibility;
+    @Override
+    public abstract String getQualifiedName();
 
-  private String                                   fileHash   = null;
+    @Override
+    public BasicType getReturnType() {
+        return returnType;
+    }
 
-  private final List<BasicType>                    signature  = new ArrayList<BasicType>();
+    public abstract String getServiceType();
+
+    public List<BasicType> getSignature() {
+        return signature;
+    }
+
+    @Override
+    public org.xtuml.masl.metamodel.common.Visibility getVisibility() {
+        return visibility.getVisibility();
+    }
+
+    @Override
+    public boolean isFunction() {
+        return getReturnType() != null;
+    }
+
+    /**
+     * The code to set.
+     */
+    public void setCode(final CodeBlock code) {
+        this.code = code;
+        if (isFunction()) {
+            final ReturnCheckVisitor checkReturn = new ReturnCheckVisitor();
+            try {
+                checkReturn.visit(code);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            if (!checkReturn.hasReturn()) {
+                new SemanticError(SemanticErrorCode.FunctionMayNotReturnAValue, code.getPosition()).report();
+            }
+        }
+    }
+
+    @Override
+    public List<org.xtuml.masl.metamodel.code.VariableDefinition> getLocalVariables() {
+        if (code == null) {
+            return Collections.emptyList();
+        } else {
+            return new LocalVariableCollector(code).getLocalVariables();
+        }
+    }
+
+    public void setDefinitionPragmas(final PragmaList pragmas) {
+        definitionPragmas = pragmas;
+    }
+
+    public void setFileHash(final String fileHash) {
+        this.fileHash = fileHash;
+    }
+
+    public void setOverloadNo(final int overloadNo) {
+        this.overloadNo = overloadNo;
+    }
+
+    @Override
+    public String toString() {
+        return visibility +
+               (visibility.toString().equals("") ? "" : " ") +
+               getServiceType() +
+               (returnType == null ? "service\t" : "function\t") +
+               name +
+               "\t(\t" +
+               org.xtuml.masl.utils.TextUtils.formatList(params.asList(), "", ",\n\t\t\t", "") +
+               " )" +
+               (returnType == null ? "" : "\n\t\t\treturn\t\t" + returnType) +
+               org.xtuml.masl.utils.TextUtils.formatList(exceptionSpecs, " raises ", ", ", "") +
+               ";" +
+               org.xtuml.masl.utils.TextUtils.formatList(declarationPragmas.getPragmas(), "\t", "\n\t\t\t\t\t\t", "") +
+               "\n";
+    }
+
+    private final NameLookup nameLookup = new NameLookup();
+
+    private int overloadNo;
+    private CodeBlock code = null;
+    private final PragmaList declarationPragmas;
+    private PragmaList definitionPragmas;
+    private final List<ExceptionReference> exceptionSpecs;
+    private final String name;
+
+    private final CheckedLookup<ParameterDefinition> params;
+
+    private final BasicType returnType;
+
+    private final Visibility visibility;
+
+    private String fileHash = null;
+
+    private final List<BasicType> signature = new ArrayList<BasicType>();
 
 }

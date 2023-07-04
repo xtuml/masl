@@ -1,45 +1,53 @@
-//
-// UK Crown Copyright (c) 2012. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.metamodel.code;
 
 import org.xtuml.masl.metamodel.ASTNodeVisitor;
 
+public class StatementTraverser<P> {
 
-public class StatementTraverser<P>
-{
+    private final ASTNodeVisitor<Void, P> visitor;
 
-  private final ASTNodeVisitor<Void, P> visitor;
+    public StatementTraverser(final ASTNodeVisitor<Void, P> visitor) {
+        this.visitor = visitor;
 
-  public StatementTraverser ( final ASTNodeVisitor<Void, P> visitor )
-  {
-    this.visitor = visitor;
-
-  }
-
-  public void traverse ( final Statement statement, final P p ) throws Exception
-  {
-    visitor.visit(statement, p);
-    for ( final Statement child : statement.getChildStatements() )
-    {
-      if ( child != null )
-      {
-        traverse(child, p);
-      }
     }
-  }
 
-  public void traverseDepthFirst ( final Statement statement, final P p ) throws Exception
-  {
-    for ( final Statement child : statement.getChildStatements() )
-    {
-      if ( child != null )
-      {
-        traverse(child, p);
-      }
+    public void traverse(final Statement statement, final P p) throws Exception {
+        visitor.visit(statement, p);
+        for (final Statement child : statement.getChildStatements()) {
+            if (child != null) {
+                traverse(child, p);
+            }
+        }
     }
-    visitor.visit(statement, p);
-  }
 
+    public void traverseDepthFirst(final Statement statement, final P p) throws Exception {
+        for (final Statement child : statement.getChildStatements()) {
+            if (child != null) {
+                traverse(child, p);
+            }
+        }
+        visitor.visit(statement, p);
+    }
 
 }

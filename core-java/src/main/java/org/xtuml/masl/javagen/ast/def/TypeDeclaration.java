@@ -1,9 +1,25 @@
-//
-// UK Crown Copyright (c) 2011. All Rights Reserved.
-//
-package org.xtuml.masl.javagen.ast.def;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.List;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.javagen.ast.def;
 
 import org.xtuml.masl.javagen.ast.ASTNode;
 import org.xtuml.masl.javagen.ast.code.TypeDeclarationStatement;
@@ -13,74 +29,73 @@ import org.xtuml.masl.javagen.ast.expr.This;
 import org.xtuml.masl.javagen.ast.types.DeclaredType;
 import org.xtuml.masl.javagen.ast.types.Type;
 
+import java.util.List;
 
-public interface TypeDeclaration
-    extends ASTNode, TypeMember, GenericItem, TypeMemberGroup
-{
+public interface TypeDeclaration extends ASTNode, TypeMember, GenericItem, TypeMemberGroup {
 
-  DeclaredType addInterface ( DeclaredType iface );
+    DeclaredType addInterface(DeclaredType iface);
 
-  CompilationUnit getEnclosingCompilationUnit ();
+    CompilationUnit getEnclosingCompilationUnit();
 
-  Package getEnclosingPackage ();
+    Package getEnclosingPackage();
 
-  List<? extends DeclaredType> getInterfaces ();
+    List<? extends DeclaredType> getInterfaces();
 
-  Modifiers getModifiers ();
+    Modifiers getModifiers();
 
-  String getName ();
+    String getName();
 
-  void setName ( String name );
+    void setName(String name);
 
-  DeclaredType getSupertype ();
+    DeclaredType getSupertype();
 
-  boolean isAnnotation ();
+    boolean isAnnotation();
 
-  boolean isEnum ();
+    boolean isEnum();
 
-  boolean isInterface ();
+    boolean isInterface();
 
-  void setAnnotation ();
+    void setAnnotation();
 
-  void setInterface ();
+    void setInterface();
 
-  void setStatic ();
+    void setStatic();
 
-  void setAbstract ();
+    void setAbstract();
 
-  void setFinal ();
+    void setFinal();
 
-  void setStrictFp ();
+    void setStrictFp();
 
-  DeclaredType setSupertype ( DeclaredType supertype );
+    DeclaredType setSupertype(DeclaredType supertype);
 
-  TypeBody getTypeBody ();
+    TypeBody getTypeBody();
 
-  TypeDeclarationStatement asStatement ();
+    TypeDeclarationStatement asStatement();
 
-  void setVisibility ( Visibility visibility );
+    void setVisibility(Visibility visibility);
 
-  Visibility getVisibility ();
+    Visibility getVisibility();
 
-  This asThis ();
+    This asThis();
 
-  EnumConstant addEnumConstant ( EnumConstant enumConstant );
+    EnumConstant addEnumConstant(EnumConstant enumConstant);
 
-  EnumConstant addEnumConstant ( String name, Expression... args );
+    EnumConstant addEnumConstant(String name, Expression... args);
 
-  List<? extends EnumConstant> getEnumConstants ();
+    List<? extends EnumConstant> getEnumConstants();
 
-  DeclaredType asType ( Type... args );
+    DeclaredType asType(Type... args);
 
-  ClassLiteral clazz ();
+    ClassLiteral clazz();
 
-  CompilationUnit getDeclaringCompilationUnit ();
+    CompilationUnit getDeclaringCompilationUnit();
 
-  TypeDeclaration getDeclaringType ();
+    TypeDeclaration getDeclaringType();
 
-  void setEnum ();
+    void setEnum();
 
-  @Override
-  Method overrideMethod ( Method superMethod );
+    @Override
+    Method overrideMethod(Method superMethod);
 
 }

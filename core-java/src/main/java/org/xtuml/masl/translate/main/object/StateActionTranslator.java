@@ -1,12 +1,25 @@
-//
-// File: ObjectServiceTranslator.java
-//
-// UK Crown Copyright (c) 2007. All Rights Reserved.
-//
-package org.xtuml.masl.translate.main.object;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.ArrayList;
-import java.util.List;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.translate.main.object;
 
 import org.xtuml.masl.cppgen.CodeFile;
 import org.xtuml.masl.cppgen.Expression;
@@ -19,110 +32,91 @@ import org.xtuml.masl.translate.main.ParameterTranslator;
 import org.xtuml.masl.translate.main.Scope;
 import org.xtuml.masl.translate.main.code.CodeTranslator;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class StateActionTranslator
-{
+public class StateActionTranslator {
 
-  StateActionTranslator ( final ObjectTranslator objectTranslator, final State state, final Expression stateId )
-  {
-    this.state = state;
-    this.stateId = stateId;
-    this.objectTranslator = objectTranslator;
-    this.domainTranslator = objectTranslator.getDomainTranslator();
+    StateActionTranslator(final ObjectTranslator objectTranslator, final State state, final Expression stateId) {
+        this.state = state;
+        this.stateId = stateId;
+        this.objectTranslator = objectTranslator;
+        this.domainTranslator = objectTranslator.getDomainTranslator();
 
-    function = objectTranslator.getMain().addStateFunction(state);
+        function = objectTranslator.getMain().addStateFunction(state);
 
-    scope = new Scope(objectTranslator);
-    scope.setState(state);
+        scope = new Scope(objectTranslator);
+        scope.setState(state);
 
-    for ( final ParameterDefinition param : state.getParameters() )
-    {
-      final ParameterTranslator paramTrans = new ParameterTranslator(param, function);
-      parameters.add(paramTrans);
-      scope.addParameter(param, paramTrans.getVariable().asExpression());
-    }
-  }
-
-  public List<ParameterTranslator> getParameters ()
-  {
-    return parameters;
-  }
-
-
-  private final Expression stateId;
-
-  public Expression getStateId ()
-  {
-    return stateId;
-  }
-
-  void translate ()
-  {
-    CodeFile file;
-    if ( state.getCode() != null || state.getDeclarationPragmas().hasPragma("generated_code") )
-    {
-      file = domainTranslator.getLibrary().createBodyFile(Mangler.mangleFile(state));
-    }
-    else
-    {
-      file = domainTranslator.getNativeStubs();
+        for (final ParameterDefinition param : state.getParameters()) {
+            final ParameterTranslator paramTrans = new ParameterTranslator(param, function);
+            parameters.add(paramTrans);
+            scope.addParameter(param, paramTrans.getVariable().asExpression());
+        }
     }
 
-    file.addFunctionDefinition(function);
-
-
-    if ( state.getCode() != null )
-    {
-      codeTranslator = CodeTranslator.createTranslator(state.getCode(), scope);
-
-      function.getCode().appendStatement(codeTranslator.getFullCode());
+    public List<ParameterTranslator> getParameters() {
+        return parameters;
     }
-  }
 
-  private final List<ParameterTranslator> parameters = new ArrayList<ParameterTranslator>();
+    private final Expression stateId;
 
+    public Expression getStateId() {
+        return stateId;
+    }
 
-  public CodeTranslator getCodeTranslator ()
-  {
-    return codeTranslator;
-  }
+    void translate() {
+        CodeFile file;
+        if (state.getCode() != null || state.getDeclarationPragmas().hasPragma("generated_code")) {
+            file = domainTranslator.getLibrary().createBodyFile(Mangler.mangleFile(state));
+        } else {
+            file = domainTranslator.getNativeStubs();
+        }
 
+        file.addFunctionDefinition(function);
 
-  public Function getFunction ()
-  {
-    return function;
-  }
+        if (state.getCode() != null) {
+            codeTranslator = CodeTranslator.createTranslator(state.getCode(), scope);
 
-  Scope getScope ()
-  {
-    return scope;
-  }
+            function.getCode().appendStatement(codeTranslator.getFullCode());
+        }
+    }
 
-  public State getState ()
-  {
-    return state;
-  }
+    private final List<ParameterTranslator> parameters = new ArrayList<ParameterTranslator>();
 
-  private final Function         function;
+    public CodeTranslator getCodeTranslator() {
+        return codeTranslator;
+    }
 
-  private final Scope            scope;
+    public Function getFunction() {
+        return function;
+    }
 
-  private final State            state;
+    Scope getScope() {
+        return scope;
+    }
 
-  private CodeTranslator         codeTranslator = null;
+    public State getState() {
+        return state;
+    }
 
-  private final ObjectTranslator objectTranslator;
-  private final DomainTranslator domainTranslator;
+    private final Function function;
 
+    private final Scope scope;
 
-  public ObjectTranslator getObjectTranslator ()
-  {
-    return objectTranslator;
-  }
+    private final State state;
 
-  public static StateActionTranslator getInstance ( final State state )
-  {
-    return ObjectTranslator.getInstance(state.getParentObject()).getStateActionTranslator(state);
-  }
+    private CodeTranslator codeTranslator = null;
+
+    private final ObjectTranslator objectTranslator;
+    private final DomainTranslator domainTranslator;
+
+    public ObjectTranslator getObjectTranslator() {
+        return objectTranslator;
+    }
+
+    public static StateActionTranslator getInstance(final State state) {
+        return ObjectTranslator.getInstance(state.getParentObject()).getStateActionTranslator(state);
+    }
 
 }

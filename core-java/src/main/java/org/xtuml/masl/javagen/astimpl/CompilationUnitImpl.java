@@ -1,353 +1,287 @@
-//
-// UK Crown Copyright (c) 2011. All Rights Reserved.
-//
-package org.xtuml.masl.javagen.astimpl;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.Collections;
-import java.util.List;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.javagen.astimpl;
 
 import org.xtuml.masl.javagen.ast.ASTNodeVisitor;
 import org.xtuml.masl.javagen.ast.def.CompilationUnit;
 import org.xtuml.masl.javagen.ast.def.Import;
 import org.xtuml.masl.javagen.ast.def.TypeDeclaration;
 
+import java.util.Collections;
+import java.util.List;
 
-class CompilationUnitImpl extends ASTNodeImpl
-    implements CompilationUnit, Scoped
-{
+class CompilationUnitImpl extends ASTNodeImpl implements CompilationUnit, Scoped {
 
-  private final class CUScope
-      extends org.xtuml.masl.javagen.astimpl.Scope
-  {
+    private final class CUScope extends org.xtuml.masl.javagen.astimpl.Scope {
 
-    private final ImportImpl javaLangImport;
+        private final ImportImpl javaLangImport;
 
-    CUScope ()
-    {
-      super(CompilationUnitImpl.this);
-      javaLangImport = ImportImpl.createTypeImportOnDemand(getAST(),
-                                                                            getAST().getPackage(Object.class.getPackage()));
+        CUScope() {
+            super(CompilationUnitImpl.this);
+            javaLangImport =
+                    ImportImpl.createTypeImportOnDemand(getAST(), getAST().getPackage(Object.class.getPackage()));
+        }
+
+        @Override
+        protected boolean requiresQualifier(final Scope baseScope,
+                                            final FieldAccessImpl fieldAccess,
+                                            boolean visible,
+                                            boolean shadowed) {
+            final FieldImpl fieldDeclaration = fieldAccess.getField();
+            // Check single type imports
+            for (final ImportImpl importDeclaration : getImportDeclarations()) {
+                if (importDeclaration.isSingle()) {
+                    if (importDeclaration.imports(fieldDeclaration)) {
+                        visible = true;
+                    } else if (importDeclaration.importsFieldNamed(fieldDeclaration.getName())) {
+                        shadowed = true;
+                    }
+                }
+            }
+
+            if (!visible) {
+                // Check on demand imports
+                for (final ImportImpl importDeclaration : importDeclarations) {
+                    if (importDeclaration.imports(fieldDeclaration)) {
+                        visible = true;
+                    } else if (importDeclaration.importsFieldNamed(fieldDeclaration.getName())) {
+                        shadowed = true;
+                    }
+
+                }
+            }
+            return super.requiresQualifier(baseScope, fieldAccess, visible, shadowed);
+        }
+
+        @Override
+        protected boolean requiresQualifier(final Scope baseScope,
+                                            final EnumConstantAccessImpl enumAccess,
+                                            boolean visible,
+                                            boolean shadowed) {
+            final EnumConstantImpl constantDeclaration = enumAccess.getConstant();
+            // Check single type imports
+            for (final ImportImpl importDeclaration : getImportDeclarations()) {
+                if (importDeclaration.isSingle()) {
+                    if (importDeclaration.imports(constantDeclaration)) {
+                        visible = true;
+                    } else if (importDeclaration.importsFieldNamed(constantDeclaration.getName())) {
+                        shadowed = true;
+                    }
+                }
+            }
+
+            if (!visible) {
+                // Check on demand imports
+                for (final ImportImpl importDeclaration : importDeclarations) {
+                    if (importDeclaration.imports(constantDeclaration)) {
+                        visible = true;
+                    } else if (importDeclaration.importsFieldNamed(constantDeclaration.getName())) {
+                        shadowed = true;
+                    }
+
+                }
+            }
+            return super.requiresQualifier(baseScope, enumAccess, visible, shadowed);
+        }
+
+        @Override
+        protected boolean requiresQualifier(final Scope baseScope,
+                                            final MethodInvocationImpl methodCall,
+                                            boolean visible,
+                                            boolean shadowed) {
+            final MethodImpl methodDeclaration = methodCall.getMethod();
+            // Check single type imports
+            for (final ImportImpl importDeclaration : getImportDeclarations()) {
+                if (importDeclaration.isSingle()) {
+                    if (importDeclaration.imports(methodDeclaration)) {
+                        visible = true;
+                    } else if (importDeclaration.importsMethodNamed(methodDeclaration.getName())) {
+                        shadowed = true;
+                    }
+                }
+            }
+
+            if (!visible) {
+                // Check on demand imports
+                for (final ImportImpl importDeclaration : importDeclarations) {
+                    if (importDeclaration.imports(methodDeclaration)) {
+                        visible = true;
+                    } else if (importDeclaration.importsMethodNamed(methodDeclaration.getName())) {
+                        shadowed = true;
+                    }
+
+                }
+            }
+            return super.requiresQualifier(baseScope, methodCall, visible, shadowed);
+        }
+
+        @Override
+        protected boolean requiresQualifier(final Scope baseScope,
+                                            final TypeDeclarationImpl typeDeclaration,
+                                            boolean visible,
+                                            boolean shadowed) {
+            // Check single type imports
+            for (final ImportImpl importDeclaration : getImportDeclarations()) {
+                if (importDeclaration.isSingle()) {
+                    if (importDeclaration.imports(typeDeclaration)) {
+                        visible = true;
+                    } else if (importDeclaration.importsTypeNamed(typeDeclaration.getName())) {
+                        shadowed = true;
+                    }
+                }
+            }
+
+            if (!visible) {
+                if (typeDeclaration.getEnclosingCompilationUnit() == CompilationUnitImpl.this) {
+                    visible = true;
+                } else if (containsTypeNamed(typeDeclaration.getName())) {
+                    shadowed = true;
+                }
+            }
+
+            if (!visible) {
+                // Check on demand imports
+                for (final ImportImpl importDeclaration : importDeclarations) {
+                    if (importDeclaration.imports(typeDeclaration)) {
+                        visible = true;
+                    } else if (importDeclaration.importsTypeNamed(typeDeclaration.getName())) {
+                        shadowed = true;
+                    }
+
+                }
+            }
+
+            if (!visible) {
+                if (typeDeclaration.getDeclaringCompilationUnit() != null &&
+                    typeDeclaration.getEnclosingPackage() == getEnclosingPackage()) {
+                    visible = true;
+                } else if (getEnclosingPackage().containsTypeNamed(typeDeclaration.getName())) {
+                    shadowed = true;
+                }
+            }
+
+            if (!visible) {
+                if (javaLangImport.imports(typeDeclaration)) {
+                    visible = true;
+                } else if (javaLangImport.importsTypeNamed(typeDeclaration.getName())) {
+                    shadowed = true;
+                }
+            }
+
+            return super.requiresQualifier(baseScope, typeDeclaration, visible, shadowed);
+        }
     }
-
 
     @Override
-    protected boolean requiresQualifier ( final Scope baseScope,
-                                          final FieldAccessImpl fieldAccess,
-                                          boolean visible,
-                                          boolean shadowed )
-    {
-      final FieldImpl fieldDeclaration = fieldAccess.getField();
-      // Check single type imports
-      for ( final ImportImpl importDeclaration : getImportDeclarations() )
-      {
-        if ( importDeclaration.isSingle() )
-        {
-          if ( importDeclaration.imports(fieldDeclaration) )
-          {
-            visible = true;
-          }
-          else if ( importDeclaration.importsFieldNamed(fieldDeclaration.getName()) )
-          {
-            shadowed = true;
-          }
-        }
-      }
-
-      if ( !visible )
-      {
-        // Check on demand imports
-        for ( final ImportImpl importDeclaration : importDeclarations )
-        {
-          if ( importDeclaration.imports(fieldDeclaration) )
-          {
-            visible = true;
-          }
-          else if ( importDeclaration.importsFieldNamed(fieldDeclaration.getName()) )
-          {
-            shadowed = true;
-          }
-
-        }
-      }
-      return super.requiresQualifier(baseScope, fieldAccess, visible, shadowed);
+    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+        return v.visitCompilationUnit(this, p);
     }
 
     @Override
-    protected boolean requiresQualifier ( final Scope baseScope,
-                                          final EnumConstantAccessImpl enumAccess,
-                                          boolean visible,
-                                          boolean shadowed )
-    {
-      final EnumConstantImpl constantDeclaration = enumAccess.getConstant();
-      // Check single type imports
-      for ( final ImportImpl importDeclaration : getImportDeclarations() )
-      {
-        if ( importDeclaration.isSingle() )
-        {
-          if ( importDeclaration.imports(constantDeclaration) )
-          {
-            visible = true;
-          }
-          else if ( importDeclaration.importsFieldNamed(constantDeclaration.getName()) )
-          {
-            shadowed = true;
-          }
-        }
-      }
-
-      if ( !visible )
-      {
-        // Check on demand imports
-        for ( final ImportImpl importDeclaration : importDeclarations )
-        {
-          if ( importDeclaration.imports(constantDeclaration) )
-          {
-            visible = true;
-          }
-          else if ( importDeclaration.importsFieldNamed(constantDeclaration.getName()) )
-          {
-            shadowed = true;
-          }
-
-        }
-      }
-      return super.requiresQualifier(baseScope, enumAccess, visible, shadowed);
+    public TypeDeclarationImpl addTypeDeclaration(final TypeDeclaration declaration) {
+        typeDeclarations.add((TypeDeclarationImpl) declaration);
+        return (TypeDeclarationImpl) declaration;
     }
 
     @Override
-    protected boolean requiresQualifier ( final Scope baseScope,
-                                          final MethodInvocationImpl methodCall,
-                                          boolean visible,
-                                          boolean shadowed )
-    {
-      final MethodImpl methodDeclaration = methodCall.getMethod();
-      // Check single type imports
-      for ( final ImportImpl importDeclaration : getImportDeclarations() )
-      {
-        if ( importDeclaration.isSingle() )
-        {
-          if ( importDeclaration.imports(methodDeclaration) )
-          {
-            visible = true;
-          }
-          else if ( importDeclaration.importsMethodNamed(methodDeclaration.getName()) )
-          {
-            shadowed = true;
-          }
-        }
-      }
-
-      if ( !visible )
-      {
-        // Check on demand imports
-        for ( final ImportImpl importDeclaration : importDeclarations )
-        {
-          if ( importDeclaration.imports(methodDeclaration) )
-          {
-            visible = true;
-          }
-          else if ( importDeclaration.importsMethodNamed(methodDeclaration.getName()) )
-          {
-            shadowed = true;
-          }
-
-        }
-      }
-      return super.requiresQualifier(baseScope, methodCall, visible, shadowed);
+    public String getFileName() {
+        return (getEnclosingPackage() == null ? "" : getEnclosingPackage().toPathString() + "/") + name + extension;
     }
 
     @Override
-    protected boolean requiresQualifier ( final Scope baseScope,
-                                          final TypeDeclarationImpl typeDeclaration,
-                                          boolean visible,
-                                          boolean shadowed )
-    {
-      // Check single type imports
-      for ( final ImportImpl importDeclaration : getImportDeclarations() )
-      {
-        if ( importDeclaration.isSingle() )
-        {
-          if ( importDeclaration.imports(typeDeclaration) )
-          {
-            visible = true;
-          }
-          else if ( importDeclaration.importsTypeNamed(typeDeclaration.getName()) )
-          {
-            shadowed = true;
-          }
-        }
-      }
-
-
-      if ( !visible )
-      {
-        if ( typeDeclaration.getEnclosingCompilationUnit() == CompilationUnitImpl.this )
-        {
-          visible = true;
-        }
-        else if ( containsTypeNamed(typeDeclaration.getName()) )
-        {
-          shadowed = true;
-        }
-      }
-
-      if ( !visible )
-      {
-        // Check on demand imports
-        for ( final ImportImpl importDeclaration : importDeclarations )
-        {
-          if ( importDeclaration.imports(typeDeclaration) )
-          {
-            visible = true;
-          }
-          else if ( importDeclaration.importsTypeNamed(typeDeclaration.getName()) )
-          {
-            shadowed = true;
-          }
-
-        }
-      }
-
-      if ( !visible )
-      {
-        if ( typeDeclaration.getDeclaringCompilationUnit() != null && typeDeclaration.getEnclosingPackage() == getEnclosingPackage() )
-        {
-          visible = true;
-        }
-        else if ( getEnclosingPackage().containsTypeNamed(typeDeclaration.getName()) )
-        {
-          shadowed = true;
-        }
-      }
-
-      if ( !visible )
-      {
-        if ( javaLangImport.imports(typeDeclaration) )
-        {
-          visible = true;
-        }
-        else if ( javaLangImport.importsTypeNamed(typeDeclaration.getName()) )
-        {
-          shadowed = true;
-        }
-      }
-
-
-      return super.requiresQualifier(baseScope, typeDeclaration, visible, shadowed);
+    public List<ImportImpl> getImportDeclarations() {
+        return Collections.unmodifiableList(importDeclarations);
     }
-  }
 
-
-  @Override
-  public <R, P> R accept ( final ASTNodeVisitor<R, P> v, final P p ) throws Exception
-  {
-    return v.visitCompilationUnit(this, p);
-  }
-
-  @Override
-  public TypeDeclarationImpl addTypeDeclaration ( final TypeDeclaration declaration )
-  {
-    typeDeclarations.add((TypeDeclarationImpl)declaration);
-    return (TypeDeclarationImpl)declaration;
-  }
-
-  @Override
-  public String getFileName ()
-  {
-    return (getEnclosingPackage() == null ? "" : getEnclosingPackage().toPathString() + "/") + name + extension;
-  }
-
-
-  @Override
-  public List<ImportImpl> getImportDeclarations ()
-  {
-    return Collections.unmodifiableList(importDeclarations);
-  }
-
-  @Override
-  public String getName ()
-  {
-    return name;
-  }
-
-  @Override
-  public PackageImpl getPackage ()
-  {
-    return (PackageImpl)getParentNode();
-  }
-
-  @Override
-  public CUScope getScope ()
-  {
-    return scope;
-  }
-
-  @Override
-  public List<TypeDeclarationImpl> getTypeDeclarations ()
-  {
-    return Collections.unmodifiableList(typeDeclarations);
-  }
-
-  @Override
-  public String toString ()
-  {
-    return getFileName();
-  }
-
-  boolean containsPublicTypeNamed ( final String name )
-  {
-    for ( final TypeDeclaration decl : typeDeclarations )
-    {
-      if ( decl.getName().equals(name) && decl.getModifiers().isPublic() )
-      {
-        return true;
-      }
+    @Override
+    public String getName() {
+        return name;
     }
-    return false;
-  }
 
-  boolean containsTypeNamed ( final String name )
-  {
-    for ( final TypeDeclaration decl : typeDeclarations )
-    {
-      if ( decl.getName().equals(name) )
-      {
-        return true;
-      }
+    @Override
+    public PackageImpl getPackage() {
+        return (PackageImpl) getParentNode();
     }
-    return false;
-  }
 
-  private final CUScope       scope     = new CUScope();
+    @Override
+    public CUScope getScope() {
+        return scope;
+    }
 
-  private static final String extension = ".java";
+    @Override
+    public List<TypeDeclarationImpl> getTypeDeclarations() {
+        return Collections.unmodifiableList(typeDeclarations);
+    }
 
-  CompilationUnitImpl ( final ASTImpl ast, final String name )
-  {
-    super(ast);
+    @Override
+    public String toString() {
+        return getFileName();
+    }
 
-    this.name = name;
-  }
+    boolean containsPublicTypeNamed(final String name) {
+        for (final TypeDeclaration decl : typeDeclarations) {
+            if (decl.getName().equals(name) && decl.getModifiers().isPublic()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-  @Override
-  public ImportImpl addImportDeclaration ( final Import declaration )
-  {
-    importDeclarations.add((ImportImpl)declaration);
-    return (ImportImpl)declaration;
-  }
+    boolean containsTypeNamed(final String name) {
+        for (final TypeDeclaration decl : typeDeclarations) {
+            if (decl.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-  @Override
-  public TypeDeclarationImpl createTypeDeclaration ( final String name )
-  {
-    final TypeDeclarationImpl result = getAST().createTypeDeclaration(name);
-    addTypeDeclaration(result);
-    return result;
-  }
+    private final CUScope scope = new CUScope();
 
-  private final String                    name;
+    private static final String extension = ".java";
 
-  private final List<TypeDeclarationImpl> typeDeclarations   = new ChildNodeList<TypeDeclarationImpl>(this);
+    CompilationUnitImpl(final ASTImpl ast, final String name) {
+        super(ast);
 
-  private final List<ImportImpl>          importDeclarations = new ChildNodeList<ImportImpl>(this);
+        this.name = name;
+    }
+
+    @Override
+    public ImportImpl addImportDeclaration(final Import declaration) {
+        importDeclarations.add((ImportImpl) declaration);
+        return (ImportImpl) declaration;
+    }
+
+    @Override
+    public TypeDeclarationImpl createTypeDeclaration(final String name) {
+        final TypeDeclarationImpl result = getAST().createTypeDeclaration(name);
+        addTypeDeclaration(result);
+        return result;
+    }
+
+    private final String name;
+
+    private final List<TypeDeclarationImpl> typeDeclarations = new ChildNodeList<TypeDeclarationImpl>(this);
+
+    private final List<ImportImpl> importDeclarations = new ChildNodeList<ImportImpl>(this);
 
 }

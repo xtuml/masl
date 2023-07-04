@@ -1,19 +1,27 @@
 /*
- * Filename : DatabaseTraits.java
- * 
- * UK Crown Copyright (c) 2008. All Rights Reserved
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.translate.sql.main;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.xtuml.masl.cppgen.CodeBlock;
-import org.xtuml.masl.cppgen.CodeFile;
-import org.xtuml.masl.cppgen.Expression;
-import org.xtuml.masl.cppgen.Namespace;
-import org.xtuml.masl.cppgen.ThrowStatement;
-import org.xtuml.masl.cppgen.Variable;
+import org.xtuml.masl.cppgen.*;
 import org.xtuml.masl.metamodel.object.AttributeDeclaration;
 import org.xtuml.masl.metamodel.object.ObjectDeclaration;
 import org.xtuml.masl.metamodel.relationship.AssociativeRelationshipDeclaration;
@@ -23,66 +31,67 @@ import org.xtuml.masl.metamodel.relationship.SubtypeRelationshipDeclaration;
 import org.xtuml.masl.metamodel.statemodel.EventDeclaration;
 import org.xtuml.masl.metamodel.type.BasicType;
 
+import java.util.Collection;
+import java.util.List;
 
-public interface DatabaseTraits
-{
+public interface DatabaseTraits {
 
-  /**
-   * @return database product being used by translation.
-   */
-  public String getName ();
+    /**
+     * @return database product being used by translation.
+     */
+    String getName();
 
-  public Namespace getNameSpace ();
+    Namespace getNameSpace();
 
-  public String getLibrarySuffix ();
+    String getLibrarySuffix();
 
-  ObjectToTableTranslator createObjectToTableTranslator ( ObjectTranslator objectTranslator, ObjectDeclaration objectDeclaration );
+    ObjectToTableTranslator createObjectToTableTranslator(ObjectTranslator objectTranslator,
+                                                          ObjectDeclaration objectDeclaration);
 
-  BinaryRelationshipToTableTranslator createBinaryRelationshipToTableTranslator ( NormalRelationshipDeclaration relationshipDeclaration );
+    BinaryRelationshipToTableTranslator createBinaryRelationshipToTableTranslator(NormalRelationshipDeclaration relationshipDeclaration);
 
-  TenaryRelationshipToTableTranslator createTenaryRelationshipToTableTranslator ( AssociativeRelationshipDeclaration relationshipDeclaration );
+    TenaryRelationshipToTableTranslator createTenaryRelationshipToTableTranslator(AssociativeRelationshipDeclaration relationshipDeclaration);
 
-  SubTypeRelationshipToTableTranslator createSubTypeRelationshipToTableTranslator ( SubtypeRelationshipDeclaration relationshipDeclaration,
-                                                                                    ObjectDeclaration derivedObject );
+    SubTypeRelationshipToTableTranslator createSubTypeRelationshipToTableTranslator(SubtypeRelationshipDeclaration relationshipDeclaration,
+                                                                                    ObjectDeclaration derivedObject);
 
-  public void addEventCode ( Namespace namespace, CodeFile codeFile, ObjectDeclaration object, EventDeclaration event );
+    void addEventCode(Namespace namespace, CodeFile codeFile, ObjectDeclaration object, EventDeclaration event);
 
-  public ThrowStatement throwDatabaseException ( String error );
+    ThrowStatement throwDatabaseException(String error);
 
-  public ThrowStatement throwDatabaseException ( Expression error );
+    ThrowStatement throwDatabaseException(Expression error);
 
-  public org.xtuml.masl.cppgen.Class getBlobClass ();
+    org.xtuml.masl.cppgen.Class getBlobClass();
 
-  interface SqlCritera
-  {
+    interface SqlCritera {
 
-    public boolean isEmpty ();
+        boolean isEmpty();
 
-    public Variable getVariable ();
+        Variable getVariable();
 
-    public void beginCondition ();
+        void beginCondition();
 
-    public void endCondition ();
+        void endCondition();
 
-    public void addOperator ( org.xtuml.masl.metamodel.expression.BinaryExpression.Operator operator );
+        void addOperator(org.xtuml.masl.metamodel.expression.BinaryExpression.Operator operator);
 
-    public void addOperator ( org.xtuml.masl.metamodel.expression.UnaryExpression.Operator operator );
+        void addOperator(org.xtuml.masl.metamodel.expression.UnaryExpression.Operator operator);
 
-    public void addAttributeNameOperand ( AttributeDeclaration attribute );
+        void addAttributeNameOperand(AttributeDeclaration attribute);
 
-    public void addRefAttributeNameOperand ( AttributeDeclaration attribute );
+        void addRefAttributeNameOperand(AttributeDeclaration attribute);
 
-    Collection<ObjectDeclaration> getDependentObjects ();
+        Collection<ObjectDeclaration> getDependentObjects();
 
-    Collection<RelationshipDeclaration> getDependentRelationship ();
+        Collection<RelationshipDeclaration> getDependentRelationship();
 
-    public void addParameterOperand ( BasicType paramType, String parameter );
+        void addParameterOperand(BasicType paramType, String parameter);
 
-    Expression concatenateWhereClause ( List<Expression> expression );
+        Expression concatenateWhereClause(List<Expression> expression);
 
-    public void appendStatements ( CodeBlock block );
-  }
+        void appendStatements(CodeBlock block);
+    }
 
-  SqlCritera createSqlCriteria ( ObjectDeclaration sourceObject, String criteriaVarName );
+    SqlCritera createSqlCriteria(ObjectDeclaration sourceObject, String criteriaVarName);
 
 }

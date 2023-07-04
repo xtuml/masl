@@ -1,174 +1,164 @@
-//
-// File: CodeBlockTranslator.java
-//
-// UK Crown Copyright (c) 2006. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.translate.main.code;
+
+import org.xtuml.masl.cppgen.Class;
+import org.xtuml.masl.cppgen.*;
+import org.xtuml.masl.metamodel.code.ExceptionHandler;
+import org.xtuml.masl.metamodel.code.VariableDefinition;
+import org.xtuml.masl.metamodel.exception.ExceptionReference;
+import org.xtuml.masl.translate.main.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xtuml.masl.cppgen.Class;
-import org.xtuml.masl.cppgen.CodeBlock;
-import org.xtuml.masl.cppgen.CodeBlock;
-import org.xtuml.masl.cppgen.Literal;
-import org.xtuml.masl.cppgen.StatementGroup;
-import org.xtuml.masl.cppgen.TryCatchBlock;
-import org.xtuml.masl.cppgen.TypeUsage;
-import org.xtuml.masl.cppgen.Variable;
-import org.xtuml.masl.cppgen.VariableDefinitionStatement;
-import org.xtuml.masl.metamodel.code.ExceptionHandler;
-import org.xtuml.masl.metamodel.code.VariableDefinition;
-import org.xtuml.masl.metamodel.exception.ExceptionReference;
-import org.xtuml.masl.translate.main.Architecture;
-import org.xtuml.masl.translate.main.ExceptionTranslator;
-import org.xtuml.masl.translate.main.Mangler;
-import org.xtuml.masl.translate.main.Scope;
-import org.xtuml.masl.translate.main.Types;
+public class CodeBlockTranslator extends CodeTranslator {
 
-
-
-public class CodeBlockTranslator extends CodeTranslator
-{
-
-  protected CodeBlockTranslator ( final org.xtuml.masl.metamodel.code.CodeBlock block,
+    protected CodeBlockTranslator(final org.xtuml.masl.metamodel.code.CodeBlock block,
                                   final Scope parentScope,
-                                  final CodeTranslator parentTranslator )
-  {
-    super(block, parentScope, parentTranslator);
+                                  final CodeTranslator parentTranslator) {
+        super(block, parentScope, parentTranslator);
 
-    final CodeBlock codeBlock = new CodeBlock();
-    codeBlock.appendStatement(variableDefs);
+        final CodeBlock codeBlock = new CodeBlock();
+        codeBlock.appendStatement(variableDefs);
 
+        for (final VariableDefinition def : block.getVariables()) {
+            final VariableDefinitionTranslator defTrans = new VariableDefinitionTranslator(def, getScope());
 
-    for ( final VariableDefinition def : block.getVariables() )
-    {
-      final VariableDefinitionTranslator defTrans = new VariableDefinitionTranslator(def, getScope());
+            variableTranslators.add(defTrans);
 
-      variableTranslators.add(defTrans);
+            getScope().addVariable(def, defTrans.getVariable().asExpression());
 
-      getScope().addVariable(def, defTrans.getVariable().asExpression());
+            variableDefs.appendStatement(defTrans.getFullCode());
+        }
 
-      variableDefs.appendStatement(defTrans.getFullCode());
-    }
+        for (final org.xtuml.masl.metamodel.code.Statement maslStatement : block.getStatements()) {
+            childStatements.appendStatement(createChildTranslator(maslStatement).getFullCode());
+        }
 
-    for ( final org.xtuml.masl.metamodel.code.Statement maslStatement : block.getStatements() )
-    {
-      childStatements.appendStatement(createChildTranslator(maslStatement).getFullCode());
-    }
+        final List<TryCatchBlock.CatchBlock> catchBlocks = new ArrayList<TryCatchBlock.CatchBlock>();
+        for (final ExceptionHandler handler : block.getExceptionHandlers()) {
+            final HandlerTranslator translator = new HandlerTranslator(handler);
+            handlerTranslators.add(translator);
+            catchBlocks.add(translator.getCatchBlock());
 
-    final List<TryCatchBlock.CatchBlock> catchBlocks = new ArrayList<TryCatchBlock.CatchBlock>();
-    for ( final ExceptionHandler handler : block.getExceptionHandlers() )
-    {
-      final HandlerTranslator translator = new HandlerTranslator(handler);
-      handlerTranslators.add(translator);
-      catchBlocks.add(translator.getCatchBlock());
+        }
 
-    }
+        if (catchBlocks.size() == 0) {
+            codeBlock.appendStatement(childStatements);
+        } else {
+            final CodeBlock childBlock = new CodeBlock();
+            childBlock.appendStatement(childStatements);
+            codeBlock.appendStatement(new TryCatchBlock(childBlock, catchBlocks));
+        }
 
-    if ( catchBlocks.size() == 0 )
-    {
-      codeBlock.appendStatement(childStatements);
-    }
-    else
-    {
-      final CodeBlock childBlock = new CodeBlock();
-      childBlock.appendStatement(childStatements);
-      codeBlock.appendStatement(new TryCatchBlock(childBlock, catchBlocks));
-    }
-
-    getCode().appendStatement(codeBlock);
-
-  }
-
-  public class HandlerTranslator
-  {
-
-    private HandlerTranslator ( final ExceptionHandler handler )
-    {
-      this.handler = handler;
-      codeBlock.appendStatement(preamble);
-
-      final VariableDefinition maslMessageVar = handler.getMessageVarDef();
-      if (maslMessageVar != null)
-      {
-        final TypeUsage type = Types.getInstance().getType(maslMessageVar.getType());
-        final Variable messageVar = new Variable(type.getConstType(), Mangler.mangleName(maslMessageVar), new Literal("exception.what()"));
-        getScope().addVariable(maslMessageVar, messageVar.asExpression());
-        codeBlock.appendStatement(new VariableDefinitionStatement(messageVar));
-      }
-
-      for ( final org.xtuml.masl.metamodel.code.Statement maslStatement : handler.getCode() )
-      {
-        codeBlock.appendStatement(createChildTranslator(maslStatement).getFullCode());
-      }
-      codeBlock.appendStatement(postamble);
-
-      final ExceptionReference exception = handler.getException();
-      final Class exceptionClass = exception == null ? Architecture.topException : ExceptionTranslator.getExceptionClass(exception);
-
-      final Variable exceptionVar = new Variable(new TypeUsage(exceptionClass, TypeUsage.ConstReference), "exception");
-      catchBlock = new TryCatchBlock.CatchBlock(exceptionVar, codeBlock);
+        getCode().appendStatement(codeBlock);
 
     }
 
-    public ExceptionHandler getHandler ()
-    {
-      return handler;
+    public class HandlerTranslator {
+
+        private HandlerTranslator(final ExceptionHandler handler) {
+            this.handler = handler;
+            codeBlock.appendStatement(preamble);
+
+            final VariableDefinition maslMessageVar = handler.getMessageVarDef();
+            if (maslMessageVar != null) {
+                final TypeUsage type = Types.getInstance().getType(maslMessageVar.getType());
+                final Variable
+                        messageVar =
+                        new Variable(type.getConstType(),
+                                     Mangler.mangleName(maslMessageVar),
+                                     new Literal("exception.what()"));
+                getScope().addVariable(maslMessageVar, messageVar.asExpression());
+                codeBlock.appendStatement(new VariableDefinitionStatement(messageVar));
+            }
+
+            for (final org.xtuml.masl.metamodel.code.Statement maslStatement : handler.getCode()) {
+                codeBlock.appendStatement(createChildTranslator(maslStatement).getFullCode());
+            }
+            codeBlock.appendStatement(postamble);
+
+            final ExceptionReference exception = handler.getException();
+            final Class
+                    exceptionClass =
+                    exception == null ? Architecture.topException : ExceptionTranslator.getExceptionClass(exception);
+
+            final Variable
+                    exceptionVar =
+                    new Variable(new TypeUsage(exceptionClass, TypeUsage.ConstReference), "exception");
+            catchBlock = new TryCatchBlock.CatchBlock(exceptionVar, codeBlock);
+
+        }
+
+        public ExceptionHandler getHandler() {
+            return handler;
+        }
+
+        private final ExceptionHandler handler;
+
+        private final CodeBlock codeBlock = new CodeBlock();
+        private final StatementGroup preamble = new StatementGroup();
+        private final StatementGroup postamble = new StatementGroup();
+
+        private final TryCatchBlock.CatchBlock catchBlock;
+
+        public TryCatchBlock.CatchBlock getCatchBlock() {
+            return catchBlock;
+        }
+
+        public StatementGroup getPreamble() {
+            return preamble;
+        }
+
+        public StatementGroup getPostamble() {
+            return postamble;
+        }
+
     }
 
-    private final ExceptionHandler         handler;
-
-    private final CodeBlock                codeBlock = new CodeBlock();
-    private final StatementGroup           preamble  = new StatementGroup();
-    private final StatementGroup           postamble = new StatementGroup();
-
-    private final TryCatchBlock.CatchBlock catchBlock;
-
-    public TryCatchBlock.CatchBlock getCatchBlock ()
-    {
-      return catchBlock;
+    public StatementGroup getChildStatements() {
+        return childStatements;
     }
 
-    public StatementGroup getPreamble ()
-    {
-      return preamble;
+    public StatementGroup getVariableDefs() {
+        return variableDefs;
     }
 
-    public StatementGroup getPostamble ()
-    {
-      return postamble;
+    public List<VariableDefinitionTranslator> getVariableTranslators() {
+        return variableTranslators;
     }
 
-  }
+    public List<HandlerTranslator> getHandlerTranslators() {
+        return handlerTranslators;
+    }
 
-  public StatementGroup getChildStatements ()
-  {
-    return childStatements;
-  }
+    private final StatementGroup variableDefs = new StatementGroup();
 
-  public StatementGroup getVariableDefs ()
-  {
-    return variableDefs;
-  }
+    private final StatementGroup childStatements = new StatementGroup();
 
-  public List<VariableDefinitionTranslator> getVariableTranslators ()
-  {
-    return variableTranslators;
-  }
+    private final List<VariableDefinitionTranslator>
+            variableTranslators =
+            new ArrayList<VariableDefinitionTranslator>();
 
-  public List<HandlerTranslator> getHandlerTranslators ()
-  {
-    return handlerTranslators;
-  }
-
-  private final StatementGroup                     variableDefs        = new StatementGroup();
-
-
-  private final StatementGroup                     childStatements     = new StatementGroup();
-
-
-  private final List<VariableDefinitionTranslator> variableTranslators = new ArrayList<VariableDefinitionTranslator>();
-
-  private final List<HandlerTranslator>            handlerTranslators  = new ArrayList<HandlerTranslator>();
+    private final List<HandlerTranslator> handlerTranslators = new ArrayList<HandlerTranslator>();
 }

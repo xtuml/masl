@@ -1,12 +1,25 @@
 /*
- * Filename : DomainTranslator.java
- * 
- * UK Crown Copyright (c) 2007. All Rights Reserved
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
  */
 package org.xtuml.masl.translate.modeltimings;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 import org.xtuml.masl.metamodel.domain.Domain;
 import org.xtuml.masl.metamodel.domain.DomainService;
@@ -24,6 +37,9 @@ import org.xtuml.masl.translate.main.expression.ExpressionTranslator;
 import org.xtuml.masl.translate.main.expression.FindTranslator;
 import org.xtuml.masl.translate.main.object.ObjectTranslator;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Define a class that can be used to instrument the architecture code with
@@ -32,114 +48,91 @@ import org.xtuml.masl.translate.main.object.ObjectTranslator;
  * in a domain based service to the time spent during a find operation
  */
 @Alias("ModelTimings")
-public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
-{
+public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator {
 
-  public static DomainTranslator getInstance ( final Domain domain )
-  {
-    return getInstance(DomainTranslator.class, domain);
-  }
-
-  private DomainTranslator ( final Domain domain )
-  {
-    super(domain);
-    mainDomainTranslator = org.xtuml.masl.translate.main.DomainTranslator.getInstance(domain);
-  }
-
-  @Override
-  public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites ()
-  {
-    return Arrays.<org.xtuml.masl.translate.DomainTranslator>asList(mainDomainTranslator);
-  }
-
-  @Override
-  public void translate ()
-  {
-    instrumentDomainServices(domain);
-    instrumentObjectServices(domain);
-    instrumentTerminatorServices(domain);
-  }
-
-  private void instrumentFindServices ( final String methodName, final CodeTranslator translator )
-  {
-    if ( translator == null )
-    {
-      return;
+    public static DomainTranslator getInstance(final Domain domain) {
+        return getInstance(DomainTranslator.class, domain);
     }
 
-    if ( translator instanceof CodeBlockTranslator )
-    {
-      for ( final CodeTranslator child : translator.getChildTranslators() )
-      {
-        instrumentFindServices(methodName, child);
-      }
+    private DomainTranslator(final Domain domain) {
+        super(domain);
+        mainDomainTranslator = org.xtuml.masl.translate.main.DomainTranslator.getInstance(domain);
     }
-    else
-    {
-      if ( translator instanceof AssignmentTranslator )
-      {
-        final AssignmentTranslator assignment = (AssignmentTranslator)translator;
-        final ExpressionTranslator rhs = assignment.getRhsTranslator();
-        if ( rhs instanceof FindTranslator )
-        {
-          translator.getPreamble().appendStatement(TimingMonitor.getBeginTimingBlock("\"" + methodName
-                                                                                     + " : find at line "
-                                                                                     + translator.getMaslStatement()
-                                                                                                 .getLineNumber()
-                                                                                     + "\""));
-          translator.getPostamble().appendStatement(TimingMonitor.getEndTimingBlock("\"" + methodName
-                                                                                    + " : find at line "
-                                                                                    + translator.getMaslStatement().getLineNumber()
-                                                                                    + "\""));
+
+    @Override
+    public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
+        return Collections.<org.xtuml.masl.translate.DomainTranslator>singletonList(mainDomainTranslator);
+    }
+
+    @Override
+    public void translate() {
+        instrumentDomainServices(domain);
+        instrumentObjectServices(domain);
+        instrumentTerminatorServices(domain);
+    }
+
+    private void instrumentFindServices(final String methodName, final CodeTranslator translator) {
+        if (translator == null) {
+            return;
         }
-      }
 
-      for ( final CodeTranslator child : translator.getChildTranslators() )
-      {
-        instrumentFindServices(methodName, child);
-      }
+        if (translator instanceof CodeBlockTranslator) {
+            for (final CodeTranslator child : translator.getChildTranslators()) {
+                instrumentFindServices(methodName, child);
+            }
+        } else {
+            if (translator instanceof AssignmentTranslator assignment) {
+                final ExpressionTranslator rhs = assignment.getRhsTranslator();
+                if (rhs instanceof FindTranslator) {
+                    translator.getPreamble().appendStatement(TimingMonitor.getBeginTimingBlock("\"" +
+                                                                                               methodName +
+                                                                                               " : find at line " +
+                                                                                               translator.getMaslStatement().getLineNumber() +
+                                                                                               "\""));
+                    translator.getPostamble().appendStatement(TimingMonitor.getEndTimingBlock("\"" +
+                                                                                              methodName +
+                                                                                              " : find at line " +
+                                                                                              translator.getMaslStatement().getLineNumber() +
+                                                                                              "\""));
+                }
+            }
+
+            for (final CodeTranslator child : translator.getChildTranslators()) {
+                instrumentFindServices(methodName, child);
+            }
+        }
     }
-  }
 
-  private void instrumentDomainServices ( final Domain domain )
-  {
-    for ( final DomainService service : domain.getServices() )
-    {
-      final DomainServiceTranslator serviceTranslator = mainDomainTranslator.getServiceTranslator(service);
-      final CodeTranslator translator = serviceTranslator.getCodeTranslator();
-      translator.getPreamble().appendStatement(TimingMonitor.getScopedTimingBlock(service.getFileName()));
-      instrumentFindServices(service.getFileName(), translator);
+    private void instrumentDomainServices(final Domain domain) {
+        for (final DomainService service : domain.getServices()) {
+            final DomainServiceTranslator serviceTranslator = mainDomainTranslator.getServiceTranslator(service);
+            final CodeTranslator translator = serviceTranslator.getCodeTranslator();
+            translator.getPreamble().appendStatement(TimingMonitor.getScopedTimingBlock(service.getFileName()));
+            instrumentFindServices(service.getFileName(), translator);
+        }
     }
-  }
 
-
-  private void instrumentObjectServices ( final Domain domain )
-  {
-    for ( final ObjectDeclaration object : domain.getObjects() )
-    {
-      final ObjectTranslator objectTranslator = mainDomainTranslator.getObjectTranslator(object);
-      for ( final ObjectService service : object.getServices() )
-      {
-        final CodeTranslator translator = objectTranslator.getServiceTranslator(service).getCodeTranslator();
-        translator.getPreamble().appendStatement(TimingMonitor.getScopedTimingBlock(service.getFileName()));
-        instrumentFindServices(service.getFileName(), translator);
-      }
+    private void instrumentObjectServices(final Domain domain) {
+        for (final ObjectDeclaration object : domain.getObjects()) {
+            final ObjectTranslator objectTranslator = mainDomainTranslator.getObjectTranslator(object);
+            for (final ObjectService service : object.getServices()) {
+                final CodeTranslator translator = objectTranslator.getServiceTranslator(service).getCodeTranslator();
+                translator.getPreamble().appendStatement(TimingMonitor.getScopedTimingBlock(service.getFileName()));
+                instrumentFindServices(service.getFileName(), translator);
+            }
+        }
     }
-  }
 
-  private void instrumentTerminatorServices ( final Domain domain )
-  {
-    for ( final DomainTerminator term : domain.getTerminators() )
-    {
-      final TerminatorTranslator termTranslator = mainDomainTranslator.getTerminatorTranslator(term);
-      for ( final DomainTerminatorService service : term.getServices() )
-      {
-        final CodeTranslator translator = termTranslator.getServiceTranslator(service).getCodeTranslator();
-        translator.getPreamble().appendStatement(TimingMonitor.getScopedTimingBlock(service.getFileName()));
-        instrumentFindServices(service.getFileName(), translator);
-      }
+    private void instrumentTerminatorServices(final Domain domain) {
+        for (final DomainTerminator term : domain.getTerminators()) {
+            final TerminatorTranslator termTranslator = mainDomainTranslator.getTerminatorTranslator(term);
+            for (final DomainTerminatorService service : term.getServices()) {
+                final CodeTranslator translator = termTranslator.getServiceTranslator(service).getCodeTranslator();
+                translator.getPreamble().appendStatement(TimingMonitor.getScopedTimingBlock(service.getFileName()));
+                instrumentFindServices(service.getFileName(), translator);
+            }
+        }
     }
-  }
 
-  private final org.xtuml.masl.translate.main.DomainTranslator mainDomainTranslator;
+    private final org.xtuml.masl.translate.main.DomainTranslator mainDomainTranslator;
 }

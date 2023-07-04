@@ -1,9 +1,25 @@
-//
-// UK Crown Copyright (c) 2011. All Rights Reserved.
-//
-package org.xtuml.masl.javagen.astimpl;
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-import java.util.EnumSet;
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
+package org.xtuml.masl.javagen.astimpl;
 
 import org.xtuml.masl.javagen.ast.ASTNodeVisitor;
 import org.xtuml.masl.javagen.ast.def.Field;
@@ -12,219 +28,182 @@ import org.xtuml.masl.javagen.ast.def.Visibility;
 import org.xtuml.masl.javagen.ast.expr.Expression;
 import org.xtuml.masl.javagen.ast.types.Type;
 
+import java.util.EnumSet;
 
-class FieldImpl extends TypeMemberImpl
-    implements Field, ModifiersImpl.Filter
-{
+class FieldImpl extends TypeMemberImpl implements Field, ModifiersImpl.Filter {
 
-  FieldImpl ( final ASTImpl ast, final Type type, final String name )
-  {
-    super(ast);
-    setName(name);
-    setType(type);
-    this.modifiers.set(new ModifiersImpl(ast, this));
-  }
-
-
-  FieldImpl ( final ASTImpl ast, final Type type, final String name, final Expression initialValue )
-  {
-    super(ast);
-    setName(name);
-    setType(type);
-    setInitialValue(initialValue);
-    this.modifiers.set(new ModifiersImpl(ast, this));
-  }
-
-  FieldImpl ( final ASTImpl ast )
-  {
-    super(ast);
-    this.modifiers.set(new ModifiersImpl(ast, this));
-  }
-
-  @Override
-  public <R, P> R accept ( final ASTNodeVisitor<R, P> v, final P p ) throws Exception
-  {
-    return v.visitField(this, p);
-  }
-
-  @Override
-  public EnumSet<Modifier> getImplicitModifiers ()
-  {
-    if ( getDeclaringType() != null && getDeclaringType().isInterface() )
-    {
-      return EnumSet.of(Modifier.STATIC, Modifier.PUBLIC, Modifier.FINAL);
-    }
-    else
-    {
-      return EnumSet.noneOf(Modifier.class);
+    FieldImpl(final ASTImpl ast, final Type type, final String name) {
+        super(ast);
+        setName(name);
+        setType(type);
+        this.modifiers.set(new ModifiersImpl(ast, this));
     }
 
-  }
-
-  TypeBodyImpl getParentTypeBody ()
-  {
-    return (TypeBodyImpl)getParentNode();
-  }
-
-  TypeDeclarationImpl getDeclaringType ()
-  {
-    if ( getParentTypeBody() != null )
-    {
-      return getParentTypeBody().getParentTypeDeclaration();
+    FieldImpl(final ASTImpl ast, final Type type, final String name, final Expression initialValue) {
+        super(ast);
+        setName(name);
+        setType(type);
+        setInitialValue(initialValue);
+        this.modifiers.set(new ModifiersImpl(ast, this));
     }
-    else
-    {
-      return null;
+
+    FieldImpl(final ASTImpl ast) {
+        super(ast);
+        this.modifiers.set(new ModifiersImpl(ast, this));
     }
-  }
 
-  @Override
-  public ModifiersImpl getModifiers ()
-  {
-    return modifiers.get();
-  }
-
-  @Override
-  public String getName ()
-  {
-    return name;
-  }
-
-  @Override
-  public void setName ( final String name )
-  {
-    this.name = name;
-  }
-
-  @Override
-  public TypeImpl getType ()
-  {
-    return type.get();
-  }
-
-
-  @Override
-  public TypeImpl setType ( final Type type )
-  {
-    this.type.set((TypeImpl)type);
-    return (TypeImpl)type;
-  }
-
-  @Override
-  public ExpressionImpl getInitialValue ()
-  {
-    return initialValue.get();
-  }
-
-
-  @Override
-  public ExpressionImpl setInitialValue ( final Expression initialValue )
-  {
-    this.initialValue.set((ExpressionImpl)initialValue);
-    return (ExpressionImpl)initialValue;
-  }
-
-  private String                          name;
-  private final ChildNode<ModifiersImpl>  modifiers    = new ChildNode<ModifiersImpl>(this);
-  private final ChildNode<TypeImpl>       type         = new ChildNode<TypeImpl>(this);
-  private final ChildNode<ExpressionImpl> initialValue = new ChildNode<ExpressionImpl>(this);
-
-  @Override
-  public FieldAccessImpl asExpression ()
-  {
-    return getAST().createFieldAccess(this);
-  }
-
-  @Override
-  public Visibility getVisibility ()
-  {
-    return getModifiers().isPublic() ? Visibility.PUBLIC
-                                    : getModifiers().isProtected() ? Visibility.PROTECTED
-                                                                  : getModifiers().isPrivate() ? Visibility.PRIVATE
-                                                                                              : Visibility.DEFAULT;
-  }
-
-  @Override
-  public void setVisibility ( final Visibility visibility )
-  {
-    switch ( visibility )
-    {
-      case PUBLIC:
-        getModifiers().setModifier(Modifier.PUBLIC);
-        getModifiers().clearModifier(Modifier.PROTECTED);
-        getModifiers().clearModifier(Modifier.PRIVATE);
-        break;
-      case PROTECTED:
-        getModifiers().clearModifier(Modifier.PUBLIC);
-        getModifiers().setModifier(Modifier.PROTECTED);
-        getModifiers().clearModifier(Modifier.PRIVATE);
-        break;
-      case DEFAULT:
-        getModifiers().clearModifier(Modifier.PUBLIC);
-        getModifiers().clearModifier(Modifier.PROTECTED);
-        getModifiers().clearModifier(Modifier.PRIVATE);
-        break;
-      case PRIVATE:
-        getModifiers().clearModifier(Modifier.PUBLIC);
-        getModifiers().clearModifier(Modifier.PROTECTED);
-        getModifiers().setModifier(Modifier.PRIVATE);
-        break;
+    @Override
+    public <R, P> R accept(final ASTNodeVisitor<R, P> v, final P p) throws Exception {
+        return v.visitField(this, p);
     }
-  }
 
-  @Override
-  public boolean isFinal ()
-  {
-    return getModifiers().isFinal();
-  }
+    @Override
+    public EnumSet<Modifier> getImplicitModifiers() {
+        if (getDeclaringType() != null && getDeclaringType().isInterface()) {
+            return EnumSet.of(Modifier.STATIC, Modifier.PUBLIC, Modifier.FINAL);
+        } else {
+            return EnumSet.noneOf(Modifier.class);
+        }
 
-  @Override
-  public boolean isStatic ()
-  {
-    return getModifiers().isStatic();
-  }
+    }
 
-  @Override
-  public boolean isTransient ()
-  {
-    return getModifiers().isTransient();
-  }
+    TypeBodyImpl getParentTypeBody() {
+        return (TypeBodyImpl) getParentNode();
+    }
 
-  @Override
-  public boolean isVolatile ()
-  {
-    return getModifiers().isVolatile();
-  }
+    TypeDeclarationImpl getDeclaringType() {
+        if (getParentTypeBody() != null) {
+            return getParentTypeBody().getParentTypeDeclaration();
+        } else {
+            return null;
+        }
+    }
 
-  @Override
-  public void setFinal ()
-  {
-    getModifiers().setModifier(Modifier.FINAL);
-  }
+    @Override
+    public ModifiersImpl getModifiers() {
+        return modifiers.get();
+    }
 
-  @Override
-  public void setStatic ()
-  {
-    getModifiers().setModifier(Modifier.STATIC);
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
 
-  @Override
-  public void setTransient ()
-  {
-    getModifiers().setModifier(Modifier.TRANSIENT);
-  }
+    @Override
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-  @Override
-  public void setVolatile ()
-  {
-    getModifiers().setModifier(Modifier.VOLATILE);
-  }
+    @Override
+    public TypeImpl getType() {
+        return type.get();
+    }
 
-  @Override
-  public String toString ()
-  {
-    return "" + getEnclosingTypeDeclaration() + "." + getName();
-  }
+    @Override
+    public TypeImpl setType(final Type type) {
+        this.type.set((TypeImpl) type);
+        return (TypeImpl) type;
+    }
 
+    @Override
+    public ExpressionImpl getInitialValue() {
+        return initialValue.get();
+    }
+
+    @Override
+    public ExpressionImpl setInitialValue(final Expression initialValue) {
+        this.initialValue.set((ExpressionImpl) initialValue);
+        return (ExpressionImpl) initialValue;
+    }
+
+    private String name;
+    private final ChildNode<ModifiersImpl> modifiers = new ChildNode<ModifiersImpl>(this);
+    private final ChildNode<TypeImpl> type = new ChildNode<TypeImpl>(this);
+    private final ChildNode<ExpressionImpl> initialValue = new ChildNode<ExpressionImpl>(this);
+
+    @Override
+    public FieldAccessImpl asExpression() {
+        return getAST().createFieldAccess(this);
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return getModifiers().isPublic() ?
+               Visibility.PUBLIC :
+               getModifiers().isProtected() ?
+               Visibility.PROTECTED :
+               getModifiers().isPrivate() ? Visibility.PRIVATE : Visibility.DEFAULT;
+    }
+
+    @Override
+    public void setVisibility(final Visibility visibility) {
+        switch (visibility) {
+            case PUBLIC:
+                getModifiers().setModifier(Modifier.PUBLIC);
+                getModifiers().clearModifier(Modifier.PROTECTED);
+                getModifiers().clearModifier(Modifier.PRIVATE);
+                break;
+            case PROTECTED:
+                getModifiers().clearModifier(Modifier.PUBLIC);
+                getModifiers().setModifier(Modifier.PROTECTED);
+                getModifiers().clearModifier(Modifier.PRIVATE);
+                break;
+            case DEFAULT:
+                getModifiers().clearModifier(Modifier.PUBLIC);
+                getModifiers().clearModifier(Modifier.PROTECTED);
+                getModifiers().clearModifier(Modifier.PRIVATE);
+                break;
+            case PRIVATE:
+                getModifiers().clearModifier(Modifier.PUBLIC);
+                getModifiers().clearModifier(Modifier.PROTECTED);
+                getModifiers().setModifier(Modifier.PRIVATE);
+                break;
+        }
+    }
+
+    @Override
+    public boolean isFinal() {
+        return getModifiers().isFinal();
+    }
+
+    @Override
+    public boolean isStatic() {
+        return getModifiers().isStatic();
+    }
+
+    @Override
+    public boolean isTransient() {
+        return getModifiers().isTransient();
+    }
+
+    @Override
+    public boolean isVolatile() {
+        return getModifiers().isVolatile();
+    }
+
+    @Override
+    public void setFinal() {
+        getModifiers().setModifier(Modifier.FINAL);
+    }
+
+    @Override
+    public void setStatic() {
+        getModifiers().setModifier(Modifier.STATIC);
+    }
+
+    @Override
+    public void setTransient() {
+        getModifiers().setModifier(Modifier.TRANSIENT);
+    }
+
+    @Override
+    public void setVolatile() {
+        getModifiers().setModifier(Modifier.VOLATILE);
+    }
+
+    @Override
+    public String toString() {
+        return getEnclosingTypeDeclaration() + "." + getName();
+    }
 
 }

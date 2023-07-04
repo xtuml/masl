@@ -1,6 +1,24 @@
-//
-// UK Crown Copyright (c) 2011. All Rights Reserved.
-//
+/*
+ ----------------------------------------------------------------------------
+ (c) 2005-2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ The copyright of this Software is vested in the Crown
+ and the Software is the property of the Crown.
+ ----------------------------------------------------------------------------
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ ----------------------------------------------------------------------------
+ Classification: UK OFFICIAL
+ ----------------------------------------------------------------------------
+ */
 package org.xtuml.masl.javagen.ast.def;
 
 import org.xtuml.masl.javagen.ast.ASTNode;
@@ -8,45 +26,42 @@ import org.xtuml.masl.javagen.ast.expr.Expression;
 import org.xtuml.masl.javagen.ast.expr.MethodInvocation;
 import org.xtuml.masl.javagen.ast.types.Type;
 
+public interface Method extends TypeMember, Callable, GenericItem, Throwing, ASTNode {
 
-public interface Method
-    extends TypeMember, Callable, GenericItem, Throwing, ASTNode
-{
+    Modifiers getModifiers();
 
-  Modifiers getModifiers ();
+    String getName();
 
-  String getName ();
+    void setName(String name);
 
-  void setName ( String name );
+    Type getReturnType();
 
-  Type getReturnType ();
+    Type setReturnType(Type type);
 
-  Type setReturnType ( Type type );
+    void setStatic();
 
-  void setStatic ();
+    void setAbstract();
 
-  void setAbstract ();
+    void setFinal();
 
-  void setFinal ();
+    void setSynchronized();
 
-  void setSynchronized ();
+    void setNative();
 
-  void setNative ();
+    void setStrictFp();
 
-  void setStrictFp ();
+    boolean isStatic();
 
-  boolean isStatic ();
+    boolean isAbstract();
 
-  boolean isAbstract ();
+    boolean isFinal();
 
-  boolean isFinal ();
+    boolean isSynchronized();
 
-  boolean isSynchronized ();
+    boolean isNative();
 
-  boolean isNative ();
+    boolean isStrictFp();
 
-  boolean isStrictFp ();
-
-  MethodInvocation call ( Expression... args );
+    MethodInvocation call(Expression... args);
 
 }
