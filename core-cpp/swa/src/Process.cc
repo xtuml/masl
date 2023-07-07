@@ -177,7 +177,7 @@ namespace SWA
     if ( it == domainLookup.end() )
     {
       int id = domains.size();
-      domains.push_back(Domain(id,name,false));        
+      domains.push_back(Domain(id,name,true));        
       domainLookup.insert(DomainLookup::value_type(name,id));
       return domains.back();
     }

@@ -26,7 +26,7 @@ namespace SWA
       const std::string& getName() const { return name; }
 
       bool isInterface() const { return interface; }
-      void setInterface( bool interface ) { this->interface = false; }
+      void setInterface( bool interface ) { this->interface = interface; }
 
 
       typedef boost::function<void()> Scenario;
