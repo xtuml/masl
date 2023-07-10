@@ -107,6 +107,7 @@ import org.xtuml.masl.metamodelImpl.expression.LiteralExpression;
 import org.xtuml.masl.metamodelImpl.expression.EnumerateLiteral;
 import org.xtuml.masl.metamodelImpl.name.Name;
 import org.xtuml.masl.metamodelImpl.name.NameLookup;
+import org.xtuml.masl.metamodelImpl.name.UncheckedNameLookup;
 import org.xtuml.masl.metamodelImpl.object.AttributeDeclaration;
 import org.xtuml.masl.metamodelImpl.object.IdentifierDeclaration;
 import org.xtuml.masl.metamodelImpl.object.ObjectDeclaration;
@@ -1334,8 +1335,10 @@ returns [RelationshipDeclaration.Reference ref]
 
 pragmaList
 returns [ PragmaList pragmas ]
+scope NameScope;
 @init
 {
+  $NameScope::lookup = new UncheckedNameLookup();
   List<PragmaDefinition> list = new ArrayList<PragmaDefinition>();
 }
                               : ( pragma                    { list.add($pragma.def); }
