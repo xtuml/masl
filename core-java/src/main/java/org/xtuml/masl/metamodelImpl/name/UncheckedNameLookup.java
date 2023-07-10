@@ -1,6 +1,12 @@
 //
 // File: UncheckedNameLookup.java
 //
+// In some contexts, it is necessary to reference an element by name that is
+// defined in the scope (e.g. pragma values). In these cases, an unchecked name
+// lookup can be used which is guaranteed to return a name. If a real name is
+// not found in the scope, an unknown name is returned whose references resolve
+// to a literal string containing the name itself.
+//
 package org.xtuml.masl.metamodelImpl.name;
 
 import org.xtuml.masl.metamodelImpl.error.AlreadyDefined;
