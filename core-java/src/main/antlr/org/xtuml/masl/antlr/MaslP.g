@@ -792,8 +792,7 @@ pragma                        : PRAGMA pragmaName
                                                                                                 pragmaValue*)
                               ;
 
-pragmaValue                   : identifier
-                              | literal
+pragmaValue                   : constExpression
                               ;
 
 pragmaName                    : identifier                                                -> ^( PRAGMA_NAME

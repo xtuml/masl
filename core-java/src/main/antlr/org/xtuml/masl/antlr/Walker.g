@@ -103,8 +103,11 @@ import org.xtuml.masl.metamodelImpl.expression.StructureAggregate;
 import org.xtuml.masl.metamodelImpl.expression.ThisLiteral;
 import org.xtuml.masl.metamodelImpl.expression.TypeNameExpression;
 import org.xtuml.masl.metamodelImpl.expression.UnaryExpression;
+import org.xtuml.masl.metamodelImpl.expression.LiteralExpression;
+import org.xtuml.masl.metamodelImpl.expression.EnumerateLiteral;
 import org.xtuml.masl.metamodelImpl.name.Name;
 import org.xtuml.masl.metamodelImpl.name.NameLookup;
+import org.xtuml.masl.metamodelImpl.name.UncheckedNameLookup;
 import org.xtuml.masl.metamodelImpl.object.AttributeDeclaration;
 import org.xtuml.masl.metamodelImpl.object.IdentifierDeclaration;
 import org.xtuml.masl.metamodelImpl.object.ObjectDeclaration;
@@ -1332,8 +1335,10 @@ returns [RelationshipDeclaration.Reference ref]
 
 pragmaList
 returns [ PragmaList pragmas ]
+scope NameScope;
 @init
 {
+  $NameScope::lookup = new UncheckedNameLookup();
   List<PragmaDefinition> list = new ArrayList<PragmaDefinition>();
 }
                               : ( pragma                    { list.add($pragma.def); }
@@ -1355,19 +1360,39 @@ returns [PragmaDefinition def]
 
 pragmaValue
 returns [ String value ]
-                              : identifier                  { $value = $identifier.name; }
-                              | literalExpression           {
-                                                              if ( $literalExpression.exp instanceof StringLiteral ) 
+                              : expression             {
+                                                              LiteralExpression literalValue = $expression.exp.evaluate();
+                                                              if ( literalValue instanceof StringLiteral ) 
                                                               {
-                                                                $value = ((StringLiteral)$literalExpression.exp).getValue();
+                                                                $value = ((StringLiteral)literalValue).getValue();
                                                               }
-                                                              else if ( $literalExpression.exp instanceof CharacterLiteral ) 
+                                                              else if ( literalValue instanceof CharacterLiteral ) 
                                                               {
-                                                                $value = "" + ((CharacterLiteral)$literalExpression.exp).getValue();
+                                                                $value = "" + ((CharacterLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof TimestampLiteral )
+                                                              {
+                                                                $value = "" + ((TimestampLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof BooleanLiteral )
+                                                              {
+                                                                $value = "" + ((BooleanLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof RealLiteral )
+                                                              {
+                                                                $value = "" + ((RealLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof IntegerLiteral )
+                                                              {
+                                                                $value = "" + ((IntegerLiteral)literalValue).getValue();
+                                                              }
+                                                              else if ( literalValue instanceof EnumerateLiteral )
+                                                              {
+                                                                $value = "" + ((EnumerateLiteral)literalValue).getValue();
                                                               }
                                                               else
                                                               {
-                                                               $value = $literalExpression.text;
+                                                               $value = $expression.text;
                                                               }
                                                             }
                               ;
