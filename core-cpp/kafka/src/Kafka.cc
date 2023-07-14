@@ -10,8 +10,9 @@
 
 namespace Kafka {
 
-const char *const BrokersOption = "-kafka-broker-list";
-const char *const GroupIdOption = "-kafka-group-id";
+const char *const BrokersOption   = "-kafka-broker-list";
+const char *const GroupIdOption   = "-kafka-group-id";
+const char *const NamespaceOption = "-kafka-namespace";
 
 bool startup() {
   if (ProcessHandler::getInstance().hasRegisteredServices()) {
@@ -27,6 +28,7 @@ struct Init {
     // register command line arguments
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokersOption, std::string("Kafka Brokers"), true, "brokerList", true, false));
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(GroupIdOption, std::string("Kafka Group ID"), false, "groupId", true, false));
+    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(NamespaceOption, std::string("Kafka Topic Namespace"), false, "namespace", true, false));
 
     SWA::Process::getInstance().registerStartedListener(&startup);
   }
