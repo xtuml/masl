@@ -35,7 +35,8 @@ std::vector<std::string> ProcessHandler::getTopicNames() {
 }
 
 std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
-  return SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
+  static const std::string namespace = SWA::CommandLine::getInstance().getOption(NamespaceOption, "default");
+  return namespace + "." + SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
 }
 
 ProcessHandler &ProcessHandler::getInstance() {
