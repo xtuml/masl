@@ -46,7 +46,7 @@ public class TaggedArgument implements Argument
     else
     {
       return tag.getText() + "\t" +
-             args.stream().map(Argument::getText).collect(Collectors.joining("\n\t", "\n\t", ""));
+             args.stream().map(Argument::getText).sorted().collect(Collectors.joining("\n\t", "\n\t", ""));
     }
   }
 
