@@ -48,6 +48,7 @@ public class Std {
     private final static CodeFile iteratorInc = system.createSystemHeader("iterator");
     private final static CodeFile algorithmInc = system.createSystemHeader("algorithm");
     private final static CodeFile tupleInc = system.createSystemHeader("tuple");
+    private final static CodeFile memoryInc = system.createSystemHeader("memory");
 
     /**
      * The <code>::std</code> namespace
@@ -114,6 +115,12 @@ public class Std {
         final Function makePair = new Function("make_pair", std, utilityInc);
         final FunctionCall makePairCall = makePair.asFunctionCall(first.asExpression(), second.asExpression());
         return makePairCall;
+    }
+
+    public final static Class shared_ptr (final TypeUsage type) {
+        final Class ret = new Class("shared_ptr", std, memoryInc);
+        ret.addTemplateSpecialisation(type);
+        return ret;
     }
 
     /**
