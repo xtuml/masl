@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(MaslCore VERSION 0.1)
 
-set (CMAKE_CXX_STANDARD 14)
+set (CMAKE_CXX_STANDARD 11)
 
 list(APPEND CMAKE_PREFIX_PATH /opt/poco)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-common)
