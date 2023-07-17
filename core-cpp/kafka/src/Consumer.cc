@@ -81,7 +81,7 @@ void Consumer::handleMessages() {
       BufferedInputStream buf(msg.second.begin(), msg.second.end());
 
       // get the service invoker
-      std::function<void()> service = ProcessHandler::getInstance().getServiceHandler(msg.first).getInvoker(buf);
+      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.first).getInvoker(buf);
 
       // run the service
       service();

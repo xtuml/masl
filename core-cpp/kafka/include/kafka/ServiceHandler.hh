@@ -7,10 +7,12 @@
 
 namespace Kafka {
 
+typedef std::function<void()> Callable;
+
 class ServiceHandler {
 public:
-  virtual std::function<void()> getInvoker(BufferedInputStream &buf) const {
-    return std::function<void()>();
+  virtual Callable getInvoker(BufferedInputStream &buf) const {
+    return Callable();
   }
   virtual ~ServiceHandler();
 };

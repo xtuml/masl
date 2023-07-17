@@ -1,5 +1,8 @@
 #include "kafka/ProcessHandler.hh"
 
+#include "kafka/Kafka.hh"
+
+#include "swa/CommandLine.hh"
 #include "swa/Process.hh"
 #include "swa/ProgramError.hh"
 
@@ -35,8 +38,8 @@ std::vector<std::string> ProcessHandler::getTopicNames() {
 }
 
 std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
-  static const std::string namespace = SWA::CommandLine::getInstance().getOption(NamespaceOption, "default");
-  return namespace + "." + SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
+  static const std::string ns = SWA::CommandLine::getInstance().getOption(NamespaceOption, "default");
+  return ns + "." + SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
 }
 
 ProcessHandler &ProcessHandler::getInstance() {
