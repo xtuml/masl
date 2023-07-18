@@ -48,7 +48,7 @@ jobs:
         id: compiler_meta
         uses: docker/metadata-action@v4
         with:
-          images: levistarrett/masl-compiler_meta
+          images: levistarrett/masl-compiler
       - name: Build and push compiler
         uses: docker/build-push-action@v3
         with:
