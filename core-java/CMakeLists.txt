@@ -3,7 +3,8 @@
 #
 set(INSTALL_LIB_DIR     lib                         CACHE PATH "Installation directory for libraries")
 
-execute_process ( COMMAND gradle -PbuildDir=${CMAKE_CURRENT_BINARY_DIR} installDist
+message("Build Java")
+execute_process ( COMMAND ./gradlew -PbuildDir=${CMAKE_CURRENT_BINARY_DIR} installDist
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
 add_custom_target ( masl-core )

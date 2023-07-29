@@ -1,4 +1,4 @@
 //
 // UK Crown Copyright (c) 2016. All Rights Reserved.
 //
-rootProject.name = 'masl-core'
+rootProject.name = 'masl-codegen'

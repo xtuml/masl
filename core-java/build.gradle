@@ -10,17 +10,19 @@ plugins {
 
 description = 'Core MASL Parser'
 
-mainClassName = 'org.xtuml.masl.Main'
+application {
+    mainClass = 'org.xtuml.masl.Main'
+}
 
 repositories {
     mavenCentral()
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
-
 java {
     withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 dependencies {
@@ -34,7 +36,7 @@ sourcesJar.dependsOn(generateGrammarSource)
 
 jar {
     manifest {
-        attributes 'Main-Class' : mainClassName,
-                   'Class-Path' : configurations.compileClasspath.collect { it.getName() }.join(' ')
+        attributes 'Main-Class' : application.mainClass
+        attributes 'Class-Path' : configurations.compileClasspath.collect { it.getName() }.join(' ')
     }
 }

@@ -39,3 +39,5 @@ add_subdirectory(backlogMonitor)
 add_subdirectory(eventCollector)
 
 simple_package_config()
+install(FILES cmake/Masl.cmake cmake/MaslCodeGen.cmake cmake/FindSimpleAdd.cmake DESTINATION lib/cmake )
+install(DIRECTORY cmake/simpleadd DESTINATION lib/cmake )
