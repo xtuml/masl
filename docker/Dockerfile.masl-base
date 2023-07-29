@@ -1,60 +1,21 @@
 # base image
-FROM ubuntu:16.04 AS base-stage
+FROM levistarrett/masl-dev AS base-stage
 
-# set up environment variables
-ENV LD_LIBRARY_PATH=/opt/masl/lib:/opt/poco/lib
-ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8 -Djava.libary.path=${LD_LIBRARY_PATH}"
+WORKDIR /working/core-cpp
+COPY core-cpp .
+RUN conan create . --build=missing && conan cache clean "*"
 
-# install prerequisites
-RUN apt-get update && apt-get install -y gcc g++ pkg-config cmake ninja-build libsqlite3-dev libboost-all-dev libssl-dev uuid-dev wget
+WORKDIR /working/core-java
+COPY core-java .
+RUN conan create . --build=missing && conan cache clean "*"
 
-# build sources
-FROM base-stage AS build-stage
+WORKDIR /working/inspector
+COPY inspector .
+RUN conan create . --build=missing && conan cache clean "*"
 
-# install prerequisites
-RUN apt-get install -y gradle openjdk-8-jdk
-
-# install poco
-ADD http://pocoproject.org/releases/poco-1.7.3/poco-1.7.3-all.tar.gz poco-1.7.3-all.tar.gz
-RUN tar xzf poco-1.7.3-all.tar.gz
-RUN /bin/bash -c "cd poco-1.7.3-all && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/poco"
-RUN /bin/bash -c "cd poco-1.7.3-all && ninja install"
-
-# build MASL SWA and code generator
-COPY core-cpp /root/masl/core-cpp
-COPY core-java /root/masl/core-java
-COPY CMakeLists.txt /root/masl/CMakeLists.txt
-RUN /bin/bash -c "cd /root/masl && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/masl"
-RUN mkdir -p /root/masl/core-java/install/masl-core/lib
-RUN /bin/bash -c "cd /root/masl && ninja install"
-
-# build utils
-COPY utils /root/masl/utils
-RUN /bin/bash -c "export JAVA_HOME=\$(dirname \$(dirname \$(dirname \$(readlink -f \$(which java))))) && cd /root/masl/utils && cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/masl"
-RUN /bin/bash -c "cd /root/masl/utils && ninja install"
-
-# download openjdk-11
-ADD https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-linux-x64.tar.gz /scratch/openjdk-11-amd64
-ADD https://aka.ms/download-jdk/microsoft-jdk-11.0.14.9.1-linux-aarch64.tar.gz /scratch/openjdk-11-arm64
-
-# install stage
-FROM base-stage AS install-stage
-
-# install openjdk-11
-# this must be done after building the compiler itself because there are some
-# incompatibilities with OpenJDK11 during the build only
-ARG TARGETARCH
-COPY --from=build-stage /scratch/openjdk-11-$TARGETARCH /scratch/openjdk-11-$TARGETARCH
-RUN mkdir -p /usr/lib/jvm && tar xzf /scratch/openjdk-11-$TARGETARCH -C /usr/lib/jvm/
-ADD docker/install-java.sh /tmp/install-java.sh
-RUN /bin/bash /tmp/install-java.sh
+WORKDIR /working/utils
+COPY utils .
+RUN conan create . --build=missing && conan cache clean "*"
 
 # create workspace
-WORKDIR /root
-
-# copy the libs and bins
-COPY --from=build-stage /opt/masl /opt/masl
-COPY --from=build-stage /opt/poco /opt/poco
-
-# update path
-ENV PATH=$PATH:/opt/masl/bin
+WORKDIR /work

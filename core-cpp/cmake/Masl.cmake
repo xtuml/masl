@@ -31,6 +31,8 @@ include(MaslCodeGen)
 include(add_masl_codegen.cmake)
 ")
 
+message ("************ Hello! **************")
+
 configure_file(${MASL_DIR}/CMakeLists.txt.in ${MASL_DIR}/CMakeLists.txt @ONLY)
 
 file(WRITE ${MASL_DIR}/add_masl_codegen.cmake "")

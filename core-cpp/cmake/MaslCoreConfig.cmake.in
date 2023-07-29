@@ -36,5 +36,6 @@ if ( NOT nlohmann_json_FOUND )
     find_package(nlohmann_json CONFIG QUIET REQUIRED)
 endif()
 
-
 include(${CMAKE_CURRENT_LIST_DIR}/MaslCoreTargets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/Masl.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/FindSimpleAdd.cmake)

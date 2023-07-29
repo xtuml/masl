@@ -19,12 +19,9 @@ RUN echo tools.cmake.cmaketoolchain:generator=Ninja >> /root/.conan2/global.conf
 FROM base-stage AS conan-install
 
 # create workspace
-WORKDIR /toolchain
+WORKDIR /working
 
-COPY conanfile.txt .
-RUN conan install . --build=missing --deployer=full_deploy
-
-FROM base-stage
-COPY --from=conan-install /toolchain /toolchain
+COPY core-cpp/conanfile.py .
+RUN conan install . --build=missing && conan cache clean "*"
 
 WORKDIR /work
