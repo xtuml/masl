@@ -26,4 +26,6 @@ domain Environment is
   //! given a value, false otherwise. 
   function isset ( name : in variable_name ) return anonymous boolean;
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");

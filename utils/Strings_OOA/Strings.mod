@@ -455,4 +455,6 @@ domain Strings is
 
     function encodeBase64 ( rawData : in anonymous sequence of byte ) return anonymous string;
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");

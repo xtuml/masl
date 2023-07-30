@@ -32,5 +32,7 @@ domain Logger is
   public service printLoggers();
 
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");
 

@@ -28,42 +28,14 @@ class ConanFile(conan.ConanFile):
     channel = 'stable'
     requires = (
             "masl_core/[>=0.1]@xtuml/stable",
-            "masl_codegen/[>=0.1]@xtuml/stable"
+            "libuuid/[>=1.0.3]",
             )
 
-    generators = ("CMakeDeps",
-                  "CMakeToolchain",
-                  "VirtualBuildEnv",
-                  "VirtualRunEnv")
+    tool_requires = (
+        "masl_codegen/[>=0.1]@xtuml/stable",
+    )
 
-    settings = "os", "compiler", "build_type", "arch"
+    python_requires = 'masl_conan/[>=0.1]@xtuml/stable'
+    python_requires_extend = 'masl_conan.MaslConanHelper'
 
-
-    def layout(self):
-        cmake_layout(self)
-
-    exports_sources= ( "CMakeLists.txt",
-                       "*_OOA/*")
-
-    def build(self):
-        cmakelists=textwrap.dedent('''\
-        cmake_minimum_required(VERSION 3.27.1)
-        project(masl_utils)
-        ''')
-        for src_file in ( glob.glob(os.path.join(self.source_folder,'**','*.mod')) +
-                          glob.glob(os.path.join(self.source_folder,'**','*.prj'))):
-            path,file = os.path.split(src_file)
-            name, type = os.path.splitext(file)
-            self.run(f'masl-codegen -output generated/{name} -{type[1:]} {src_file}')
-            cmakelists += f'add_subdirectory({self.build_folder}/generated/{name})\n'
-
-
-        save(self,'generated/CMakeLists.txt', cmakelists)
-
-        cmake = CMake(self)
-        cmake.configure(build_script_folder=os.path.join(self.build_folder,'generated'))
-        cmake.build()
-
-    def package(self):
-        cmake = CMake(self)
-        cmake.install()
+    exports_sources= ( "*_OOA/*")

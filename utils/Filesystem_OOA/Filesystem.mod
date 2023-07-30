@@ -280,4 +280,6 @@ domain Filesystem is
   //! Returns the filename component of the supplied file name.
   public function get_basename ( file_name : in filename ) return filename;
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");

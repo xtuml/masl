@@ -258,9 +258,6 @@ public class Masl {
         } else {
             final Domain domain = parseModel(ifaceFile);
             domain.setInterface(true);
-            if (domain.getPragmas().hasPragma(PragmaList.BUILD_SET)) {
-                BuildSet.addBuildSet(domain, new BuildSet(domain.getPragmas().getValue(PragmaList.BUILD_SET)));
-            }
             return domain;
         }
     }
@@ -284,11 +281,7 @@ public class Masl {
             new SemanticError(SemanticErrorCode.ModelNotFound, Position.getPosition(domainName), domainName).report();
             return null;
         } else {
-            final Domain domain = parseModel(modelFile);
-            if (domain.getPragmas().hasPragma(PragmaList.BUILD_SET)) {
-                BuildSet.addBuildSet(domain, new BuildSet(domain.getPragmas().getValue(PragmaList.BUILD_SET)));
-            }
-            return domain;
+            return parseModel(modelFile);
         }
     }
 

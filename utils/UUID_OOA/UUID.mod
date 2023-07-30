@@ -16,4 +16,6 @@ domain UUID is
 
   function extract_raw ( formatted : in formatted_uuid ) return raw_uuid;
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");

@@ -117,4 +117,6 @@ domain Test is
 
   end object;
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");

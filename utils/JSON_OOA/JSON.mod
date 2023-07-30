@@ -84,4 +84,6 @@ domain JSON is
   public service to_json(val: in timestamp) return JSONElement; pragma filename("to_json_timestamp.svc");
   public service to_json(val: in duration) return JSONElement; pragma filename("to_json_duration.svc");
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");
