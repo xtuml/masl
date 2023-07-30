@@ -15,3 +15,5 @@ rules.ninja
 /install
 install_manifest.txt
 .idea/
+
+CMakeUserPresets.json

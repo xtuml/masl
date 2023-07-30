@@ -13,4 +13,6 @@ domain JSONValidation is
   private service create_validation_error(keyword_location: in anonymous string, instance_location: in anonymous string, error_message: in anonymous string, suberrors: in JSON::JSONArray) return JSON::JSONElement; pragma filename("create_validation_error_with_suberrors.svc");
   private service create_validation_annotation(schema_location: in anonymous string, instance_location: in anonymous string, keyword: in anonymous string, result: in JSON::JSONElement) return JSON::JSONElement;
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");

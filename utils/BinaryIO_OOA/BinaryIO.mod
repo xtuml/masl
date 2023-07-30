@@ -432,4 +432,6 @@ domain BinaryIO is
                         length : in anonymous integer )
                         return      anonymous sequence of anonymous byte;
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");

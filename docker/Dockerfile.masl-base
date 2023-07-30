@@ -1,6 +1,10 @@
 # base image
 FROM levistarrett/masl-dev AS base-stage
 
+WORKDIR /working/conan-helper
+COPY conan-helper .
+RUN conan create . --build=missing && conan cache clean "*"
+
 WORKDIR /working/core-cpp
 COPY core-cpp .
 RUN conan create . --build=missing && conan cache clean "*"

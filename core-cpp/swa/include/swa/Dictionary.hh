@@ -104,6 +104,9 @@ namespace SWA
       Value& operator[] ( const Key& key ) { return data[key]; }
       const Value& operator[] ( const Key& key ) const { return data[key]; }
 
+      bool operator== ( const Dictionary& rhs ) const { return std::map<Key, Value>(begin(), end()) == std::map<Key, Value>(rhs.begin(), rhs.end()); }
+      bool operator< ( const Dictionary& rhs ) const { return std::map<Key, Value>(begin(), end()) < std::map<Key, Value>(rhs.begin(), rhs.end()); }
+
       friend void to_json(nlohmann::json& json, const SWA::Dictionary<Key,Value>& v ){
           json = v.data;
       }

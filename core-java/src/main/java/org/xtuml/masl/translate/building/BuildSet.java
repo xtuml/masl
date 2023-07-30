@@ -21,17 +21,15 @@
  */
 package org.xtuml.masl.translate.building;
 
-import com.google.common.collect.ImmutableSet;
 import org.xtuml.masl.CommandLine;
 import org.xtuml.masl.cppgen.TextFile;
 import org.xtuml.masl.metamodel.domain.Domain;
 import org.xtuml.masl.metamodel.project.Project;
+import org.xtuml.masl.metamodelImpl.common.PragmaList;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BuildSet {
 
@@ -43,24 +41,25 @@ public class BuildSet {
     private final static boolean CONDITIONAL_FLUSH = false;
 
     public static BuildSet getBuildSet(final Domain domain) {
-
-        domainBuildSets.putIfAbsent(domain, new BuildSet(null));
+        domainBuildSets.computeIfAbsent(
+                domain,
+                k -> new BuildSet(k.getPragmas().hasPragma(PragmaList.BUILD_SET)
+                ? k.getPragmas().getValue(PragmaList.BUILD_SET)
+                : k.getName()));
 
         return domainBuildSets.get(domain);
     }
 
     public static BuildSet getBuildSet(final Project project) {
-        projectBuildSets.putIfAbsent(project, new BuildSet(null));
+
+        projectBuildSets.computeIfAbsent(
+                project,
+                k -> new BuildSet(k.getPragmas().hasPragma(PragmaList.BUILD_SET)
+                        ? k.getPragmas().getValue(PragmaList.BUILD_SET)
+                        : k.getProjectName())
+                );
 
         return projectBuildSets.get(project);
-    }
-
-    public static void addBuildSet(final Project project, final BuildSet buildSet) {
-        projectBuildSets.put(project, buildSet);
-    }
-
-    public static void addBuildSet(final Domain domain, final BuildSet buildSet) {
-        domainBuildSets.put(domain, buildSet);
     }
 
     static private void waitForThreads(final List<Thread> activeThreads, final boolean flushThreads) {
@@ -204,7 +203,7 @@ public class BuildSet {
                 final Writer
                         fileWriter =
                         new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),
-                                                                  StandardCharsets.ISO_8859_1));
+                                StandardCharsets.ISO_8859_1));
                 fileWriter.write(newCode.toString());
                 fileWriter.flush();
                 fileWriter.close();

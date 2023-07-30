@@ -196,4 +196,6 @@ domain Regex is
   //! Tokenizes the source string into a sequence of strings using the specified separator to denote boundaries between tokens.
   function tokenize ( source : in anonymous string, separator : in regex ) return anonymous sequence of anonymous string;
 
-end domain; pragma build_set("UtilityDomains");
+end domain;
+pragma service_domain(true);
+pragma build_set("UtilityDomains");
