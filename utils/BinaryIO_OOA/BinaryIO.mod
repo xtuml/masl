@@ -434,4 +434,3 @@ domain BinaryIO is
 
 end domain;
 pragma service_domain(true);
-pragma build_set("UtilityDomains");

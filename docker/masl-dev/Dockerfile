@@ -16,12 +16,12 @@ RUN pip install conan
 RUN conan profile detect
 RUN sed -i "s/compiler\.cppstd=gnu17/compiler.cppstd=20/g" $(conan profile path default)
 RUN echo tools.cmake.cmaketoolchain:generator=Ninja >> /root/.conan2/global.conf
-FROM base-stage AS conan-install
+RUN echo core.cache:storage_path=/conan-cache >> /root/.conan2/global.conf
+RUN conan remote add xtuml http://conan-server:9300
 
-# create workspace
-WORKDIR /working
+COPY os-files/ /
 
-COPY core-cpp/conanfile.py .
-RUN conan install . --build=missing && conan cache clean "*"
+VOLUME /conan-cache
 
 WORKDIR /work
+

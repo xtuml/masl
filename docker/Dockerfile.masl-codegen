@@ -1,0 +1,5 @@
+# base image
+FROM levistarrett/masl-base:latest
+
+WORKDIR /work
+ENTRYPOINT exec masl-codegen
