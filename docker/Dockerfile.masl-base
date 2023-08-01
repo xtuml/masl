@@ -1,25 +1,41 @@
 # base image
-FROM levistarrett/masl-dev AS base-stage
+FROM levistarrett/masl-dev AS build-stage
+
+WORKDIR /working
+COPY conan-helper conan-helper
+COPY core-cpp core-cpp
+COPY core-java core-java
+COPY inspector inspector
+COPY utils utils
 
 WORKDIR /working/conan-helper
-COPY conan-helper .
 RUN conan create . --build=missing && conan cache clean "*"
 
 WORKDIR /working/core-cpp
-COPY core-cpp .
 RUN conan create . --build=missing && conan cache clean "*"
 
 WORKDIR /working/core-java
-COPY core-java .
 RUN conan create . --build=missing && conan cache clean "*"
 
 WORKDIR /working/inspector
-COPY inspector .
 RUN conan create . --build=missing && conan cache clean "*"
 
 WORKDIR /working/utils
-COPY utils .
 RUN conan create . --build=missing && conan cache clean "*"
+
+FROM levistarrett/masl-dev
+COPY --from=build-stage /conan-cache /conan-cache
+
+WORKDIR /run-env
+COPY docker/env_conanfile.py conanfile.py
+RUN conan install .
+
+COPY docker/env_shell env_shell
+RUN echo source /run-env/conanbuild.sh >> ~/.bashrc
+RUN echo source /run-env/conanrun.sh >> ~/.bashrc
+SHELL ["/run-env/env_shell" ]
+
 
 # create workspace
 WORKDIR /work
+ENTRYPOINT /bin/bash -c

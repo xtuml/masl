@@ -16,7 +16,6 @@
 
 import conan
 from conan.tools.cmake import CMake, cmake_layout
-from conan.tools.files import copy
 import os
 
 class ConanFile(conan.ConanFile):
@@ -37,7 +36,8 @@ class ConanFile(conan.ConanFile):
     generators = ("CMakeDeps",
                   "CMakeToolchain",
                   "VirtualBuildEnv",
-                  "VirtualRunEnv")
+                  "VirtualRunEnv",
+                  )
 
     settings = "os", "compiler", "build_type", "arch"
 
@@ -75,3 +75,7 @@ class ConanFile(conan.ConanFile):
     def package_info(self):
         self.cpp_info.set_property("cmake_find_mode", "none")
         self.cpp_info.builddirs.append(os.path.join('lib', 'cmake'))
+        for d in self.cpp_info.bindirs:
+            self.runenv_info.append_path("PATH",os.path.join(self.package_folder,d))
+        for d in self.cpp_info.libdirs:
+            self.runenv_info.append_path("LD_LIBRARY_PATH",os.path.join(self.package_folder,d))

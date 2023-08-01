@@ -24,6 +24,7 @@ class ConanFile(conan.ConanFile):
     version = "0.1"
     user = 'xtuml'
     channel = 'stable'
+    package_type = 'application'
 
     settings = 'build_type'
 
@@ -51,4 +52,4 @@ class ConanFile(conan.ConanFile):
         copy(self,"*",src=os.path.join(self.build_folder, 'install/masl-codegen/lib'), dst=os.path.join(self.package_folder,"lib"))
 
     def package_info(self):
-        self.buildenv_info.append_path("PATH",os.path.join(self.package_folder,"bin"))
+        self.buildenv_info.append_path("PATH","bin")

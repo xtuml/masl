@@ -183,6 +183,10 @@ class MaslConanHelper():
         self.cpp_info.set_property("cmake_find_mode", "none")
         self.cpp_info.builddirs.append(os.path.join('lib', 'cmake'))
         for inc in self.cpp_info.includedirs:
-            self.buildenv_info.append('MASL_DOMAINPATH', os.path.join(inc, 'masl'), )
+            self.buildenv_info.append('MASL_DOMAINPATH', os.path.join(self.package_folder, inc, 'masl'), )
         for res in self.cpp_info.resdirs:
-            self.buildenv_info.append('MASL_SRCPATH', os.path.join(res, 'masl-src'), )
+            self.runenv_info.append('MASL_SRCPATH', os.path.join(self.package_folder, res, 'masl-src'), )
+        for d in self.cpp_info.bindirs:
+            self.runenv_info.append_path("PATH",os.path.join(self.package_folder,d))
+        for d in self.cpp_info.libdirs:
+            self.runenv_info.append_path("LD_LIBRARY_PATH",os.path.join(self.package_folder,d))
