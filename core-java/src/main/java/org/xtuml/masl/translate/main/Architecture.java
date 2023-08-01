@@ -6,7 +6,9 @@
 package org.xtuml.masl.translate.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.xtuml.masl.cppgen.BinaryExpression;
 import org.xtuml.masl.cppgen.BinaryOperator;
@@ -37,6 +39,26 @@ public final class Architecture
   public static BuildSet buildSet = new BuildSet("MaslCore");
 
   public final static Library  library           = new Library("swa").inBuildSet(buildSet);
+
+  public final static Map<String, String> eventRegistrationFunctions = new HashMap<>();
+
+  static
+  {
+    eventRegistrationFunctions.put("startup",           "registerStartupListener");
+    eventRegistrationFunctions.put("initialising",      "registerInitialisingListener");
+    eventRegistrationFunctions.put("initialised",       "registerInitialisedListener");
+    eventRegistrationFunctions.put("started",           "registerStartedListener");
+    eventRegistrationFunctions.put("preschedules",      "registerPreSchedulesListener");
+    eventRegistrationFunctions.put("preschedule",       "registerPreScheduleListener");
+    eventRegistrationFunctions.put("postschedule",      "registerPostScheduleListener");
+    eventRegistrationFunctions.put("nextschedulephase", "registerNextSchedulePhaseListener");
+    eventRegistrationFunctions.put("postschedules",     "registerPostSchedulesListener");
+    eventRegistrationFunctions.put("threadstarted",     "registerThreadStartedListener");
+    eventRegistrationFunctions.put("threadcompleting",  "registerThreadCompletingListener");
+    eventRegistrationFunctions.put("threadcompleted",   "registerThreadCompletedListener");
+    eventRegistrationFunctions.put("threadaborted",     "registerThreadAbortedListener");
+    eventRegistrationFunctions.put("shutdown",          "registerShutdownListener");
+  }
 
   public static class DynamicSingleton
   {
@@ -698,9 +720,13 @@ public final class Architecture
     return overrider;
   }
 
-  public final static Expression registerInitialialisingListener ( final Expression function )
+  public final static Expression registerProcessListener ( final String event, final Expression function )
   {
-    return new Function("registerInitialisingListener").asFunctionCall(process, false, function);
+    if (!eventRegistrationFunctions.containsKey(event))
+    {
+      throw new IllegalArgumentException("Unrecognised process lifecycle event: " + event);
+    }
+    return new Function(eventRegistrationFunctions.get(event)).asFunctionCall(process, false, function);
   }
 
   public final static Class listenerConnection = Boost.signalConnection;
@@ -717,13 +743,7 @@ public final class Architecture
 
   public final static Expression registerStartupService ( final Expression callback )
   {
-    return new Function("registerInitialisedListener").asFunctionCall(process,
-                                                                      false,
-                                                                      Boost.bind.asFunctionCall(runService
-                                                                                                          .asFunctionPointer(),
-                                                                                                Boost.ref.asFunctionCall(process),
-                                                                                                callback,
-                                                                                                Literal.EMPTY_STRING));
+    return registerProcessListener("initialised", callback);
   }
 
   public final static Expression getDomainId ( final Expression domainName )

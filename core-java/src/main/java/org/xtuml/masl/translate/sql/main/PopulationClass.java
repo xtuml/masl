@@ -1567,7 +1567,7 @@ public class PopulationClass
     final Expression BoostBindInitFnCall = Boost.bind.asFunctionCall(new Expression[]
       { initFnCall.asFunctionPointer(), BoostBindGetPopFnCall });
 
-    final Expression regInitFnCall = Architecture.registerInitialialisingListener(BoostBindInitFnCall);
+    final Expression regInitFnCall = Architecture.registerProcessListener("initialising", BoostBindInitFnCall);
 
     final Variable initialised = populationClass.createStaticVariable(populationAttributes,
                                                                       "initialised",
