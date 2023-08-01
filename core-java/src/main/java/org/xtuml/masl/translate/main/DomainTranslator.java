@@ -55,6 +55,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
     private static final String signalHandlerPragma = "signal_handler";
     private static final String startupPragma = "startup";
+    private static final String processListenerPragma = "process_listener";
 
     public static DomainTranslator getInstance(final Domain domain) {
         return getInstance(DomainTranslator.class, domain);
@@ -288,6 +289,13 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
             if (service.getParameters().size() == 0 &&
                 service.getDeclarationPragmas().getPragmaValues(startupPragma) != null) {
                 initialiseDomain.getCode().appendExpression(Architecture.registerStartupService(fnPtr));
+            }
+
+            final List<String> events = service.getDeclarationPragmas().getPragmaValues(processListenerPragma);
+            if (service.getParameters().size() == 0 && events != null) {
+                for (final String event : events) {
+                    initialiseDomain.getCode().appendExpression(Architecture.registerProcessListener(event, fnPtr));
+                }
             }
 
         }
