@@ -1633,7 +1633,7 @@ public class PopulationClass implements GeneratedClass {
                 BoostBindInitFnCall =
                 Boost.bind.asFunctionCall(initFnCall.asFunctionPointer(), BoostBindGetPopFnCall);
 
-        final Expression regInitFnCall = Architecture.registerInitialialisingListener(BoostBindInitFnCall);
+        final Expression regInitFnCall = Architecture.registerProcessListener("initialising", BoostBindInitFnCall, false);
 
         final Variable
                 initialised =
