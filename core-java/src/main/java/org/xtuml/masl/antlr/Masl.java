@@ -57,7 +57,7 @@ public class Masl {
     public static final String PROJECT_DEF_EXTENSION = ".prj";
     public static final String DOMAIN_MODEL_EXTENSION = ".mod";
     public static final String DOMAIN_DEPENDENT_EXTENSION = ".dep";
-    public static final String DOMAIN_DIRECTORY_EXTENSION = "_OOA";
+    public static final List<String> DOMAIN_DIRECTORY_EXTENSION = List.of("", "_OOA","-masl");
 
     private static final String DOMAIN_INTERFACE_EXTENSION = ".int";
 
@@ -114,8 +114,11 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
+            System.out.println("Parsing domain service " + service.getQualifiedName());
             service.setFileHash(getMd5Sum(file));
             new Walker(this, file).domainServiceDefinition(service);
+        } else {
+            System.out.println("Domain service " + service.getQualifiedName() + " not found");
         }
     }
 
@@ -125,8 +128,11 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
+            System.out.println("Parsing domain terminator service " + service.getQualifiedName());
             service.setFileHash(getMd5Sum(file));
             new Walker(this, file).terminatorServiceDefinition(service);
+        } else {
+            System.out.println("Domain terminator service " + service.getQualifiedName() + " not found");
         }
     }
 
@@ -136,8 +142,11 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
+            System.out.println("Parsing object service " + service.getQualifiedName());
             service.setFileHash(getMd5Sum(file));
             new Walker(this, file).objectServiceDefinition(service);
+        } else {
+            System.out.println("Object service " + service.getQualifiedName() + " not found");
         }
     }
 
@@ -147,8 +156,11 @@ public class Masl {
 
         // Check file for current directory or fully qualified.
         if (file.canRead()) {
+            System.out.println("Parsing state " + state.getQualifiedName());
             state.setFileHash(getMd5Sum(file));
             new Walker(this, file).stateDefinition(state);
+        } else {
+            System.out.println("State " + state.getQualifiedName() + " not found");
         }
     }
 
@@ -176,7 +188,7 @@ public class Masl {
     }
 
     public Project parseProject(final File prjFile) throws RecognitionException, IOException {
-        System.out.println("Parsing project");
+        System.out.println("Parsing project " + prjFile.getPath());
 
         final long millis = System.currentTimeMillis();
         sourceDir = prjFile.getParentFile();
@@ -196,7 +208,7 @@ public class Masl {
     }
 
     public Domain parseInterface(final File modFile) throws RecognitionException, IOException {
-        System.err.println("Parsing interface");
+        System.err.println("Parsing interface " + modFile.getPath());
         final long millis = System.currentTimeMillis();
 
         sourceDir = modFile.getParentFile();
@@ -221,7 +233,7 @@ public class Masl {
     }
 
     public Domain parseDomain(final File modFile) throws RecognitionException, IOException {
-        System.err.println("Parsing model");
+        System.err.println("Parsing domain " + modFile.getPath());
         final long millis = System.currentTimeMillis();
 
         sourceDir = modFile.getParentFile();
@@ -310,19 +322,21 @@ public class Masl {
 
         if (foundFile == null) {
             for (final String currentPath : domainPaths) {
-                final File
-                        file =
-                        new File(currentPath +
-                                 System.getProperty("file.separator") +
-                                 domainName +
-                                 DOMAIN_DIRECTORY_EXTENSION +
-                                 System.getProperty("file.separator") +
-                                 fileName);
-                if (file.canRead()) {
-                    foundFile = file;
-                    break;
+                for ( final String ext : DOMAIN_DIRECTORY_EXTENSIONS ) {
+                    final File
+                            file =
+                            new File(currentPath +
+                                    System.getProperty("file.separator") +
+                                    domainName +
+                                    ext +
+                                    System.getProperty("file.separator") +
+                                    fileName);
+                    if (file.canRead()) {
+                        foundFile = file;
+                        break;
+                    }
                 }
-            }
+             }
         }
 
         // As a last resort, type looking at the same level as the current directory
