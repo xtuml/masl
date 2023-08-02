@@ -15,11 +15,13 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 3
 RUN pip install conan
 RUN conan profile detect
 RUN sed -i "s/compiler\.cppstd=gnu17/compiler.cppstd=20/g" $(conan profile path default)
-RUN echo tools.cmake.cmaketoolchain:generator=Ninja >> /root/.conan2/global.conf
+RUN echo "[options]\n*:shared=True" >> $(conan profile path default)
+#RUN echo tools.cmake.cmaketoolchain:generator=Ninja >> /root/.conan2/global.conf
 RUN echo core.cache:storage_path=/conan-cache >> /root/.conan2/global.conf
 RUN conan remote add xtuml http://conan-server:9300
 
 COPY os-files/ /
+COPY conan-files/ /root/.conan2/
 
 VOLUME /conan-cache
 

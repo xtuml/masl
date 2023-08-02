@@ -1,13 +1,15 @@
 #!/bin/bash
 
-( cd docker/conan-server && docker build -t xtuml/conan-server . )
-( cd docker/masl-dev && docker build -t xtuml/masl-dev . )
+base_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-docker stop conan-server
-docker rm conan-server
-docker run --detach --name conan-server --network conan-server --mount source=ConanServer,target=/conan-data xtuml/conan-server
+function masl-dev {
+  docker compose -f ${base_dir}/docker/docker-compose.yml run --rm -v $PWD:/work command "$@"
+}
 
-docker run --rm --network conan-server --mount source=ConanCache,target=/conan-cache --mount type=bind,target=/work,source=$PWD/conan-helper xtuml/masl-dev conan-publish
-docker run --rm --network conan-server --mount source=ConanCache,target=/conan-cache --mount type=bind,target=/work,source=$PWD/core-cpp xtuml/masl-dev conan-publish
-docker run --rm --network conan-server --mount source=ConanCache,target=/conan-cache --mount type=bind,target=/work,source=$PWD/core-java xtuml/masl-dev conan-publish
-docker run --rm --network conan-server --mount source=ConanCache,target=/conan-cache --mount type=bind,target=/work,source=$PWD/utils xtuml/masl-dev conan-publish
+( cd docker && docker compose build )
+
+( cd conan-helper && masl-dev conan-publish )
+( cd core-cpp && masl-dev conan-publish )
+( cd core-java && masl-dev conan-publish )
+( cd utils && masl-dev conan-publish )
+( cd inspector && masl-dev conan-publish )
