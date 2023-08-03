@@ -21,7 +21,5 @@ RUN conan profile detect && \
 
 COPY os-files/ /
 
-VOLUME /conan-cache
-
 WORKDIR /work
 

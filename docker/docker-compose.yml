@@ -41,3 +41,12 @@ services:
     profiles:
       - run
 
+  masl-populate:
+    build:
+      context: ..
+      dockerfile: docker/masl-populate/Dockerfile
+    depends_on:
+      - conan-server
+    profiles:
+      - populate
+

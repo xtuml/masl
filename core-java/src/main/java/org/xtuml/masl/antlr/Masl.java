@@ -57,7 +57,7 @@ public class Masl {
     public static final String PROJECT_DEF_EXTENSION = ".prj";
     public static final String DOMAIN_MODEL_EXTENSION = ".mod";
     public static final String DOMAIN_DEPENDENT_EXTENSION = ".dep";
-    public static final List<String> DOMAIN_DIRECTORY_EXTENSION = List.of("", "_OOA","-masl");
+    public static final List<String> DOMAIN_DIRECTORY_EXTENSIONS = List.of("", "_OOA","-masl");
 
     private static final String DOMAIN_INTERFACE_EXTENSION = ".int";
 
@@ -339,7 +339,6 @@ public class Masl {
              }
         }
 
-        // As a last resort, type looking at the same level as the current directory
         if (foundFile == null) {
             final File file = new File(sourceDir.getParentFile() + System.getProperty("file.separator") + fileName);
             if (file.canRead()) {
@@ -348,16 +347,18 @@ public class Masl {
         }
 
         if (foundFile == null) {
-            final File
-                    file =
-                    new File(sourceDir.getParentFile() +
-                             System.getProperty("file.separator") +
-                             domainName +
-                             DOMAIN_DIRECTORY_EXTENSION +
-                             System.getProperty("file.separator") +
-                             fileName);
-            if (file.canRead()) {
-                foundFile = file;
+            for ( final String ext : DOMAIN_DIRECTORY_EXTENSIONS ) {
+                final File
+                        file =
+                        new File(sourceDir.getParentFile() +
+                                 System.getProperty("file.separator") +
+                                 domainName +
+                                 ext +
+                                 System.getProperty("file.separator") +
+                                 fileName);
+                if (file.canRead()) {
+                    foundFile = file;
+                }
             }
         }
 
