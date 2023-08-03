@@ -17,7 +17,7 @@ services:
         source: ConanServer
         target: /conan-data
 
-  command:
+  masl-dev:
     build:
       context: masl-dev
     depends_on:
@@ -28,4 +28,16 @@ services:
         target: /conan-cache
     profiles:
       - tools
+
+  masl-run:
+    build:
+      context: masl-run
+    depends_on:
+      - conan-server
+    volumes:
+      - type: volume
+        source: ConanCache
+        target: /conan-cache
+    profiles:
+      - run
 
