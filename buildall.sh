@@ -3,7 +3,7 @@
 base_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function masl-dev {
-  docker compose -f ${base_dir}/docker/docker-compose.yml run --rm -v $PWD:/work command "$@"
+  docker compose -f ${base_dir}/docker/docker-compose.yml run --rm -v $PWD:/work masl-dev "$@"
 }
 
 ( cd docker && docker compose build )

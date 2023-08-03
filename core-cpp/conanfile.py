@@ -28,7 +28,7 @@ class ConanFile(conan.ConanFile):
                 "poco/[>=1.12]",
                 "fmt/[>=10.0]",
                 "nlohmann_json/[>=3.11.2]",
-                "boost/[>=1.82]",
+                "boost/[>=1.80]",
                 "sqlite3/[>=3.41]",
                 "libuuid/[>=1.0]"
                 )
