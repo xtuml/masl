@@ -13,3 +13,5 @@ function masl-dev {
 ( cd core-java && masl-dev conan-publish )
 ( cd utils && masl-dev conan-publish )
 ( cd inspector && masl-dev conan-publish )
+( cd examples/petrol && masl-dev conan-publish )
+( cd examples/calculator && masl-dev conan-publish )

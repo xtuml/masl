@@ -1,0 +1,4 @@
+project {{name}}_proc is
+    domain {{name}} is
+    end domain;
+end project;
