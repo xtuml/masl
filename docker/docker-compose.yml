@@ -6,6 +6,7 @@ volumes:
 
 services:
   conan-server:
+    image: xtuml/conan-server
     build:
       context: conan-server
     stop_signal: SIGINT
@@ -18,6 +19,7 @@ services:
         target: /conan-data
 
   masl-dev:
+    image: xtuml/masl-dev
     build:
       context: masl-dev
     depends_on:
@@ -28,8 +30,10 @@ services:
         target: /conan-cache
     profiles:
       - tools
+      - all
 
   masl-run:
+    image: xtuml/masl-run
     build:
       context: masl-run
     depends_on:
@@ -42,6 +46,7 @@ services:
       - run
 
   masl-populate:
+    image: xtuml/masl-populate
     build:
       context: ..
       dockerfile: docker/masl-populate/Dockerfile
@@ -49,4 +54,5 @@ services:
       - conan-server
     profiles:
       - populate
+      - all
 
