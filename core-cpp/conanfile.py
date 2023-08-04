@@ -30,7 +30,8 @@ class ConanFile(conan.ConanFile):
                 "nlohmann_json/[>=3.11.2]",
                 "boost/[>=1.80]",
                 "sqlite3/[>=3.41]",
-                "libuuid/[>=1.0]"
+                "libuuid/[>=1.0]",
+                "expat/[>=2.5.0]",
                 )
 
     generators = ("CMakeDeps",
