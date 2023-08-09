@@ -1,4 +1,4 @@
-FROM xtuml/masl-dev as base
+FROM levistarrett/masl-dev as base
 
 COPY ../conan-helper conan-helper
 COPY ../core-cpp core-cpp
@@ -18,7 +18,7 @@ RUN conan remote remove xtuml && \
     conan list --graph=create_utils.json --graph-binaries=build --format=json > pkglist_utils.json && \
     conan list --graph=create_inspector.json --graph-binaries=build --format=json > pkglist_inspector.json
 
-FROM xtuml/masl-dev as publish
+FROM levistarrett/masl-dev as publish
 COPY --from=base /conan-cache /conan-cache
 COPY --from=base /work/pkglist_*.json .
 COPY docker/masl-populate/publish.sh .

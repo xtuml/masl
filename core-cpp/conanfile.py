@@ -24,16 +24,6 @@ class ConanFile(conan.ConanFile):
     user = 'xtuml'
     channel = 'stable'
 
-    requires = ("openssl/[>=3.1]",
-                "poco/[>=1.12]",
-                "fmt/[>=10.0]",
-                "nlohmann_json/[>=3.11.2]",
-                "boost/[>=1.80]",
-                "sqlite3/[>=3.41]",
-                "libuuid/[>=1.0]",
-                "expat/[>=2.5.0]",
-                )
-
     generators = ("CMakeDeps",
                   "CMakeToolchain",
                   "VirtualBuildEnv",
@@ -44,6 +34,17 @@ class ConanFile(conan.ConanFile):
 
     def layout(self):
         cmake_layout(self)
+
+    def requirements(self):
+        self.requires("openssl/3.1.1")
+        self.requires("poco/1.12.4")
+        self.requires("fmt/10.0.0")
+        self.requires("nlohmann_json/3.11.2")
+        self.requires("boost/1.82.0")
+        self.requires("sqlite3/3.42.0", force=True) # Poco is asking for 3.41.2
+        self.requires("libuuid/1.0.3")
+        self.requires("expat/2.5.0")
+
 
     exports_sources= ( "CMakeLists.txt",
                        "asn1/*",
