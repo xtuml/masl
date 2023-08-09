@@ -1,7 +1,8 @@
-name: xtuml
+name: masl
 volumes:
   ConanServer:
   ConanCache:
+
 
 services:
   conan-server:
@@ -22,7 +23,7 @@ services:
       context: masl-dev
     depends_on:
       conan-server:
-          condition: service_healthy
+        condition: service_healthy
     volumes:
       - type: volume
         source: ConanCache
@@ -30,20 +31,6 @@ services:
     profiles:
       - tools
       - all
-
-  masl-run:
-    image: levistarrett/masl-run
-    build:
-      context: masl-run
-    depends_on:
-      conan-server:
-        condition: service_healthy
-    volumes:
-      - type: volume
-        source: ConanCache
-        target: /conan-cache
-    profiles:
-      - run
 
   masl-populate:
     image: levistarrett/masl-populate
@@ -56,4 +43,3 @@ services:
     profiles:
       - populate
       - all
-
