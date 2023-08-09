@@ -1,6 +1,0 @@
-# base image
-FROM levistarrett/masl-base:latest
-
-# build script
-COPY docker/build-masl.sh /usr/local/bin/build-masl.sh
-ENTRYPOINT ["/usr/local/bin/build-masl.sh"]

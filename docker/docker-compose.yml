@@ -1,15 +1,13 @@
-version: '3.8'
-name: xtuml-masl
+name: xtuml
 volumes:
   ConanServer:
   ConanCache:
 
 services:
   conan-server:
-    image: xtuml/conan-server
+    image: levistarrett/conan-server
     build:
       context: conan-server
-    stop_signal: SIGINT
     restart: unless-stopped
     ports:
       - 9300:9300
@@ -19,11 +17,12 @@ services:
         target: /conan-data
 
   masl-dev:
-    image: xtuml/masl-dev
+    image: levistarrett/masl-dev
     build:
       context: masl-dev
     depends_on:
-      - conan-server
+      conan-server:
+          condition: service_healthy
     volumes:
       - type: volume
         source: ConanCache
@@ -33,11 +32,12 @@ services:
       - all
 
   masl-run:
-    image: xtuml/masl-run
+    image: levistarrett/masl-run
     build:
       context: masl-run
     depends_on:
-      - conan-server
+      conan-server:
+        condition: service_healthy
     volumes:
       - type: volume
         source: ConanCache
@@ -46,12 +46,13 @@ services:
       - run
 
   masl-populate:
-    image: xtuml/masl-populate
+    image: levistarrett/masl-populate
     build:
       context: ..
       dockerfile: docker/masl-populate/Dockerfile
     depends_on:
-      - conan-server
+      conan-server:
+        condition: service_healthy
     profiles:
       - populate
       - all

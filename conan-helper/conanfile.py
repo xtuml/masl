@@ -89,7 +89,7 @@ class MaslGen(object):
 
 
 class MaslConanHelper():
-    exports_sources = 'src/*', 'schedule/*', 'config/*'
+    exports_sources = 'src/*', 'masl/*', 'schedule/*', 'config/*'
     generators = 'CMakeDeps', 'CMakeToolchain', 'VirtualBuildEnv', 'VirtualRunEnv'
     settings = 'os', 'compiler', 'build_type', 'arch'
 
@@ -102,15 +102,18 @@ class MaslConanHelper():
 
     def requirements(self):
         if 'masl_codegen' not in ( r.ref.name for r in self.requires.values()):
-            self.tool_requires('masl_codegen/[>0.1]@xtuml/stable',visible=True)
+            self.tool_requires(f'masl_codegen/0.1@xtuml/stable',visible=True)
         if 'masl_core' not in ( r.ref.name for r in self.requires.values()):
-            self.requires('masl_core/[>0.1]@xtuml/stable')
+            self.requires(f'masl_core/0.1@xtuml/stable')
 
     def masl_src_roots(self):
-        if os.path.exists(os.path.join(self.source_folder, 'src')):
-            return  [os.path.join(self.source_folder, 'src')]
-        else:
-            return [self.source_folder]
+        src_roots = []
+        for sub in ['src', 'masl']:
+            if os.path.exists(os.path.join(self.source_folder, sub)):
+                src_roots.append(os.path.join(self.source_folder, sub))
+        if not src_roots:
+            src_roots = [self.source_folder]
+        return src_roots
 
     def masl_src(self):
         all = [glob.glob(os.path.join(root, '**', '*.mod'), recursive=True) +

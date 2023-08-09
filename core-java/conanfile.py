@@ -26,14 +26,6 @@ class ConanFile(conan.ConanFile):
     channel = 'stable'
     package_type = 'application'
 
-    settings = 'build_type'
-
-    generators = ("VirtualBuildEnv",
-                  "VirtualRunEnv")
-
-    def layout(self):
-        cmake_layout(self)
-
     exports_sources= ( "CMakeLists.txt",
                        "gradle/*",
                        "src/*",

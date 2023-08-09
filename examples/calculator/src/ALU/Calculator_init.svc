@@ -12,4 +12,10 @@ begin
   link this R1 disp;
   link this R2 mem;
   link mem R3 disp using op;
+
+  declare
+      uuid: UUID::formatted_uuid := UUID::generate_formatted();
+  begin
+  end;
+
 end service;
