@@ -9,7 +9,7 @@ begin
     schema_errors: JSON::JSONArray;
     result: JSON::JSONObject;
   begin
-    metaschema_text := Filesystem::read_file(#PROP["metaschema"]#);
+    metaschema_text := Filesystem::read_file(Environment::getenv(Environment::variable_name("JSON_META_SCHEMA_PATH")));
     metaschema := JSON::parse(metaschema_text);
     schema_result := validate(schema, metaschema, metaschema, "#", "#", defs);
     erase schema_result["annotations"];
