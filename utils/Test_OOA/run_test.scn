@@ -42,6 +42,7 @@ begin
     testResult: JSON::JSONObject;
     t0: timestamp;
     t1: timestamp;
+    output_dir: string := "test_results";
     filename: string;
   begin
 
@@ -108,7 +109,10 @@ begin
     end if;
 
     // Output the results
-    filename := "test_results/" & testName & "-results.json";
+    if not Filesystem::file_exists(Filesystem::filename(output_dir)) then
+      Filesystem::create_directory(Filesystem::filename(output_dir));
+    end if;
+    filename := output_dir & "/" & testName & "-results.json";
     Filesystem::write_file(Filesystem::filename(filename), JSON::dump(testResult));
 
   end;
