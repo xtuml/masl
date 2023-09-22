@@ -42,6 +42,7 @@ class ConanFile(conan.ConanFile):
         self.requires("nlohmann_json/3.11.2")
         self.requires("boost/1.82.0", force=True) # CppKafka is asking for 1.81.0
         self.requires("sqlite3/3.42.0", force=True) # Poco is asking for 3.41.2
+        self.requires("zlib/1.3", force=True) # Poco is asking for 1.2.13
         self.requires("libuuid/1.0.3")
         self.requires("expat/2.5.0")
         self.requires("librdkafka/2.0.2")
