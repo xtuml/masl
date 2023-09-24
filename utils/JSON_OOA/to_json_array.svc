@@ -2,8 +2,6 @@ public service JSON::to_json(json_array: in JSONArray) return JSONElement is
 json_element: JSONElement;
 begin
   json_element.kind := Array;
-  for val in json_array loop
-    json_element.data.arr := json_element.data.arr & dump(val);
-  end loop;
+  json_element.data.arr := json_array;
   return json_element;
 end service;

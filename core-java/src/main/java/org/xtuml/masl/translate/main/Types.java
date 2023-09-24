@@ -42,11 +42,11 @@ public class Types {
     private Types() {
     }
 
-    private final Map<TypeDeclaration, TypeUsage> types = new HashMap<>();
-    private final Map<TypeDeclaration, EnumerationTranslator> enums = new HashMap<>();
-    private final Map<TypeDeclaration, Structure> structs = new HashMap<>();
+    private final Map<TypeDeclaration, TypeUsage> types = new LinkedHashMap<>();
+    private final Map<TypeDeclaration, EnumerationTranslator> enums = new LinkedHashMap<>();
+    private final Map<TypeDeclaration, Structure> structs = new LinkedHashMap<>();
 
-    TypeUsage defineType(final TypeDeclaration declaration) {
+    TypeUsage declareType(final TypeDeclaration declaration) {
         TypeUsage result = types.get(declaration);
         if (result != null) {
             return result;
@@ -122,9 +122,17 @@ public class Types {
         return result;
     }
 
-    /**
-     * @return
-     */
+    void defineType(final TypeDeclaration declaration) {
+        var struct = structs.get(declaration);
+        if ( struct != null ) {
+            struct.addDefinitionToHeader();
+        }
+    }
+
+
+        /**
+         * @return
+         */
     public CodeFile getSourceFile(final TypeDeclaration declaration) {
         CodeFile sourceFile = null;
         final TypeDefinition definition = declaration.getTypeDefinition();
@@ -227,7 +235,7 @@ public class Types {
     }
 
     private TypeUsage getUserDefinedType(final UserDefinedType type) {
-        return defineType(type.getTypeDeclaration());
+        return declareType(type.getTypeDeclaration());
     }
 
 }

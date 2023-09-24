@@ -127,6 +127,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         this.typesCodeFile = interfaceLibrary.createBodyFile("Inspector_types" + Mangler.mangleFile(domain));
         this.privateTypesCodeFile = library.createBodyFile("Inspector_private_types" + Mangler.mangleFile(domain));
 
+
         for (final TypeDeclaration type : domain.getTypes()) {
             final CodeFile
                     codeFile =
@@ -135,8 +136,10 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                     privateTypesCodeFile;
             if (type.getTypeDefinition() instanceof StructureType) {
                 Function writer = addStructureWriter((StructureType) type.getTypeDefinition());
+                codeFile.addFunctionDeclaration(writer);
                 codeFile.addFunctionDefinition(writer);
                 Function reader = addStructureReader((StructureType) type.getTypeDefinition());
+                codeFile.addFunctionDeclaration(reader);
                 codeFile.addFunctionDefinition(reader);
             } else if (type.getTypeDefinition() instanceof EnumerateType) {
                 Function writer = addEnumerationWriter((EnumerateType) type.getTypeDefinition());

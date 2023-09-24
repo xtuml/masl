@@ -42,10 +42,7 @@ namespace masld_JSON
         for (int i = index + 1, j = 0; j < token.size; j++) {
           std::string key = jsmn_get_text(json_string, tokens[i]);
           std::string val = jsmn_get_text(json_string, tokens[i+1]);
-          if (tokens[i+1].type == JSMN_STRING) {
-            val = "\"" + val + "\"";  // add double quotes around literal strings
-          }
-          json_element.set_masla_data().set_masla_obj().setValue(key) = val;
+          json_element.set_masla_data().set_masla_obj().setValue(key) = parse_token(i+1,tokens,val);
           i += get_total_size(i, tokens);
         }
         break;
@@ -54,10 +51,7 @@ namespace masld_JSON
         // loop through all subtokens. do not navigate grandchildren.
         for (int i = index + 1, j = 0; j < token.size; j++) {
           std::string val = jsmn_get_text(json_string, tokens[i]);
-          if (tokens[i].type == JSMN_STRING) {
-            val = "\"" + val + "\"";  // add double quotes around literal strings
-          }
-          json_element.set_masla_data().set_masla_arr() += val;
+          json_element.set_masla_data().get_masla_arr()[j] = parse_token(i,tokens,val);
           i += get_total_size(i, tokens);
         }
         break;

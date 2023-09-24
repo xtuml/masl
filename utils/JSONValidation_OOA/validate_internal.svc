@@ -315,7 +315,7 @@ begin
               begin
                 for annotation_element in annotations loop
                   annotation := JSON::get_object(annotation_element);
-                  if JSON::get_string(annotation["instanceLocation"]) = instance_path and 
+                  if JSON::get_string(annotation["instanceLocation"]) = instance_path and
                       ( JSON::get_string(annotation["keyword"]) = "properties" or
                         JSON::get_string(annotation["keyword"]) = "patternProperties" or
                         JSON::get_string(annotation["keyword"]) = "additionalProperties" ) then
@@ -474,7 +474,7 @@ begin
     when JSON::Boolean =>
       if not JSON::get_boolean(schema_element) then
         errors := errors & create_validation_error(schema_path, instance_path, "Schema always fails validation");
-      end if;  
+      end if;
 
     when others => raise program_error("Unexpected schema type: " & schema_element.kind'image);
 

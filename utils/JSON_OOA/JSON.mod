@@ -5,6 +5,14 @@ domain JSON is
   //! The valid JSON types. A distinction is made between 'real' and 'integer' numbers.
   public type JSONType is enum ( Object, Array, String, Real, Integer, Boolean, Null );
 
+  public type JSONElement;
+
+  //! A 'JSONObject' is a map of string keys to instances of the 'JSONElement' structure.
+  public type JSONObject is dictionary of JSONElement;
+
+  //! A 'JSONObject' is an ordered sequence of instances of the 'JSONElement' structure.
+  public type JSONArray is sequence of JSONElement;
+
   //! This structure represents the data within a single JSON value. It is
   //! intended to be used as a 'union' -- that is only one of the 6 fields
   //! should be set for any given value. The value of the other 5 fields has no
@@ -15,8 +23,8 @@ domain JSON is
   //! values. The values are JSON encoded strings which must be parsed before
   //! they can be used.
   public type JSONData is structure
-    obj: dictionary;
-    arr: sequence of string;
+    obj: JSONObject;
+    arr: JSONArray;
     str: string;
     real: real;
     int: integer;
@@ -33,11 +41,6 @@ domain JSON is
     raw: string;
   end structure;
 
-  //! A 'JSONObject' is a map of string keys to instances of the 'JSONElement' structure.
-  public type JSONObject is dictionary of JSONElement;
-
-  //! A 'JSONObject' is an ordered sequence of instances of the 'JSONElement' structure.
-  public type JSONArray is sequence of JSONElement;
 
   //! This service parses a JSON string and returns a single instance of
   //! 'JSONElement' representing the top-level element of the JSON string. If

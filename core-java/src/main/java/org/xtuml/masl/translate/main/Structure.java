@@ -45,7 +45,6 @@ public class Structure {
         name = Mangler.mangleName(declaration);
         namespace = DomainNamespace.get(domain);
         clazz = new Class(name, namespace);
-        headerFile.addClassDeclaration(clazz);
         type = new TypeUsage(clazz);
 
         typedefs = clazz.createDeclarationGroup("Types");
@@ -83,6 +82,11 @@ public class Structure {
         translateStreamOperator();
 
     }
+
+    public void addDefinitionToHeader() {
+        headerFile.addClassDeclaration(clazz);
+    }
+
 
     public CodeFile getBodyFile() {
         return bodyFile;

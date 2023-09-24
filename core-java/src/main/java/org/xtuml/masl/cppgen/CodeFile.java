@@ -233,6 +233,14 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
         return writer.toString();
     }
 
+    private Namespace getParentNonClassNamespace(Namespace ns) {
+        if ( ns instanceof Class.ClassNamespace) {
+            return getParentNonClassNamespace(ns.getParentNamespace());
+        } else {
+            return ns;
+        }
+    }
+
     /**
      * Writes the code for this code file to the supplied Writer. The code
      * consists of any required include files, any forward
@@ -275,7 +283,7 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
             if (!includes.containsAll(fwdDec.getUsageIncludes())) {
                 // open and close namespaces as required to get to the one for the
                 // current declaration
-                final Namespace declarationNamespace = fwdDec.getParentNamespace();
+                final Namespace declarationNamespace = getParentNonClassNamespace(fwdDec.getParentNamespace());
                 indentLevel = Namespace.openDeclaration(writer, indentLevel, currentNamespace, declarationNamespace);
 
                 // Set the current namespace to the one for the declaration we're about
@@ -292,7 +300,7 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
         for (final Declaration dec : declarations) {
             // open and close namespaces as required to get to the one for the current
             // declaration
-            final Namespace declarationNamespace = dec.getParentNamespace();
+            final Namespace declarationNamespace = getParentNonClassNamespace(dec.getParentNamespace());
             indentLevel = Namespace.openDeclaration(writer, indentLevel, currentNamespace, declarationNamespace);
 
             // Set the current namespace to the one for the declaration we're about to
@@ -308,7 +316,7 @@ public final class CodeFile extends ReferencedFile implements Comparable<CodeFil
         for (final Definition def : definitions) {
             // open and close namespaces as required to get to the one for the current
             // declaration
-            final Namespace declarationNamespace = def.getParentNamespace();
+            final Namespace declarationNamespace = getParentNonClassNamespace(def.getParentNamespace());
             indentLevel = Namespace.openDeclaration(writer, indentLevel, currentNamespace, declarationNamespace);
 
             // Set the current namespace to the one for the declaration we're about to
