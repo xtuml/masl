@@ -21,8 +21,7 @@ RUN source /opt/rh/gcc-toolset-12/enable && conan profile detect && \
 
 COPY os-files/ /
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD /bin/bash
 WORKDIR /work
-
-ENTRYPOINT ["scl", "run", "gcc-toolset-12" ]
-CMD ["/bin/bash"]
 
