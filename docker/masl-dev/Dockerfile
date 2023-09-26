@@ -23,5 +23,6 @@ COPY os-files/ /
 
 WORKDIR /work
 
-ENTRYPOINT scl run gcc-toolset-12 /bin/bash
+ENTRYPOINT ["scl", "run", "gcc-toolset-12" ]
+CMD ["/bin/bash"]
 
