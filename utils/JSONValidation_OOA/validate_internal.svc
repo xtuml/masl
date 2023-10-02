@@ -43,6 +43,7 @@ begin
                 schema_errors: JSON::JSONArray;
                 defs: JSON::JSONObject;
               begin
+                // TODO make nested schemas more efficient
                 subschema := JSON::parse(Filesystem::read_file(Filesystem::filename(ref_string)));
                 schema_result := validate(subschema, metaschema, metaschema, "#", "#", defs);
                 if not JSON::get_boolean(schema_result["valid"]) then
