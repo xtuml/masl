@@ -4,7 +4,7 @@ begin
   case json_element.kind is
 
     when Object =>
-      
+
       declare
         json_fields: sequence of string;
       begin
@@ -21,14 +21,19 @@ begin
 
     when Array =>
 
-      if pretty then
-        // Dump each value.
-        return "[\n  " & Strings::replace_all(Strings::join(dump(json_element.data.arr,pretty), ",\n"), "\n", "\n  ") & "\n]";
-      else
-        // each value is stored as a JSON string -- simply append it
-        return "[" & Strings::join(dump(json_element.data.arr,pretty), ",") & "]";
-    return "";
-      end if;
+      declare
+        json_elements: sequence of string;
+      begin
+        for el in json_element.data.arr loop
+          // Dump each value.
+          json_elements := json_elements & dump(el, pretty);
+        end loop;
+        if pretty then
+          return "[\n  " & Strings::replace_all(Strings::join(json_elements, ",\n"), "\n", "\n  ") & "\n]";
+        else
+          return "[" & Strings::join(json_elements, ",") & "]";
+        end if;
+      end;
 
     when String =>
 
