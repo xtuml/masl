@@ -38,20 +38,18 @@ namespace masld_JSON
     switch (token.type) {
       case JSMN_OBJECT:
         json_element.set_masla_kind() = maslt_JSONType::masle_Object;
-        // loop through all subtokens. do not navigate grandchildren.
+        // loop through and parse all subtokens
         for (int i = index + 1, j = 0; j < token.size; j++) {
           std::string key = jsmn_get_text(json_string, tokens[i]);
-          std::string val = jsmn_get_text(json_string, tokens[i+1]);
-          json_element.set_masla_data().set_masla_obj().setValue(key) = parse_token(i+1,tokens,val);
+          json_element.set_masla_data().set_masla_obj().setValue(key) = parse_token(i+1,tokens,json_string);
           i += get_total_size(i, tokens);
         }
         break;
       case JSMN_ARRAY:
         json_element.set_masla_kind() = maslt_JSONType::masle_Array;
-        // loop through all subtokens. do not navigate grandchildren.
+        // loop through and parse all subtokens
         for (int i = index + 1, j = 0; j < token.size; j++) {
-          std::string val = jsmn_get_text(json_string, tokens[i]);
-          json_element.set_masla_data().get_masla_arr()[j] = parse_token(i,tokens,val);
+          json_element.set_masla_data().get_masla_arr()[j] = parse_token(i,tokens,json_string);
           i += get_total_size(i, tokens);
         }
         break;
