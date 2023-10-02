@@ -49,7 +49,7 @@ namespace masld_JSON
         json_element.set_masla_kind() = maslt_JSONType::masle_Array;
         // loop through and parse all subtokens
         for (int i = index + 1, j = 0; j < token.size; j++) {
-          json_element.set_masla_data().get_masla_arr()[j] = parse_token(i,tokens,json_string);
+          json_element.set_masla_data().set_masla_arr() += parse_token(i,tokens,json_string);
           i += get_total_size(i, tokens);
         }
         break;
