@@ -38,7 +38,6 @@ domain JSON is
   public type JSONElement is structure
     kind: JSONType := Null;
     data: JSONData;
-    raw: string;
   end structure;
 
 
@@ -54,7 +53,10 @@ domain JSON is
   public service dump(json_array: in JSONArray) return anonymous string; pragma filename("dump_array.svc");
   public service dump(json_array: in JSONArray, pretty: in anonymous boolean) return anonymous string; pragma filename("dump_array_pretty.svc");
   public service dump(json_element: in JSONElement) return anonymous string; pragma filename("dump_element.svc");
-  public service dump(json_element: in JSONElement, pretty: in anonymous boolean) return anonymous string; pragma filename("dump_element_pretty.svc");
+  public service dump(json_element: in JSONElement, pretty: in anonymous boolean) return anonymous string;
+
+  public service pointer(json_element: in JSONElement, json_pointer : in string ) return JSONElement;
+  public service patch(json_element: in JSONElement, patch : in JSONElement ) return JSONElement;
 
   //! These services abstract the process of extracting a specific type from an
   //! instance of 'JSONElement'. If the 'kind' field of the given element does

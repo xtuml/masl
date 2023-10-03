@@ -1,8 +1,4 @@
 public service JSON::get_raw_string(json_element: in JSONElement) return string is
 begin
-  if json_element.raw /= "" then
-    return json_element.raw;
-  else
-    return dump(json_element);
-  end if;
+  return dump(json_element);
 end service;
