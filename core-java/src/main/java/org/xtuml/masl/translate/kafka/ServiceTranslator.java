@@ -27,6 +27,7 @@ import org.xtuml.masl.metamodel.common.ParameterDefinition;
 import org.xtuml.masl.metamodel.domain.DomainService;
 import org.xtuml.masl.metamodel.type.BasicType;
 import org.xtuml.masl.metamodel.type.TypeDefinition.ActualType;
+import org.xtuml.masl.metamodelImpl.common.PragmaDefinition;
 import org.xtuml.masl.translate.main.Architecture;
 import org.xtuml.masl.translate.main.DomainServiceTranslator;
 import org.xtuml.masl.translate.main.Mangler;
@@ -130,8 +131,12 @@ class ServiceTranslator
     function.setReturnType(domainTranslator.getTypes().getType(service.getReturnType()));
 
     // create output buffer
-    Variable stream = new Variable(new TypeUsage(Kafka.bufferedOutputStream), "buffer");
+    final Variable stream = new Variable(new TypeUsage(Kafka.bufferedOutputStream), "buffer");
     function.getCode().appendStatement(new VariableDefinitionStatement(stream));
+
+    // create partition key buffer
+    final Variable partKey = new Variable(new TypeUsage(Kafka.bufferedOutputStream), "part_key");
+    function.getCode().appendStatement(new VariableDefinitionStatement(partKey));
 
     // handle parameters
     for ( final ParameterDefinition param : service.getParameters() )
@@ -139,6 +144,13 @@ class ServiceTranslator
       final ParameterTranslator paramTrans = new ParameterTranslator(param, function);
       final Expression writeExpr = new BinaryExpression(stream.asExpression(), BinaryOperator.LEFT_SHIFT, paramTrans.getVariable().asExpression());
       function.getCode().appendStatement(new ExpressionStatement(writeExpr));
+
+      if ( service.getDeclarationPragmas().hasPragma(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA) &&
+          service.getDeclarationPragmas().getPragmaValues(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA).contains(param.getName()) )
+      {
+        final Expression keyWriteExpr = new BinaryExpression(partKey.asExpression(), BinaryOperator.LEFT_SHIFT, paramTrans.getVariable().asExpression());
+        function.getCode().appendStatement(new ExpressionStatement(keyWriteExpr));
+      }
     }
 
     // call publisher
@@ -146,7 +158,7 @@ class ServiceTranslator
     final Function publishFunc = new Function("publish");
     final Expression domainId = new Function("getId").asFunctionCall(new Function("getDomain").asFunctionCall(Architecture.process, false, Literal.createStringLiteral(domainTranslator.getDomain().getName())), false);
     final Expression serviceId = domainTranslator.getMainTranslator().getServiceTranslator(service).getServiceId();
-    final Expression publishExpr = publishFunc.asFunctionCall(producer, false, domainId, serviceId, stream.asExpression());
+    final Expression publishExpr = publishFunc.asFunctionCall(producer, false, domainId, serviceId, stream.asExpression(), partKey.asExpression());
     function.getCode().appendStatement(new ExpressionStatement(publishExpr));
 
     // add function to file
