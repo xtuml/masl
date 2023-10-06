@@ -44,7 +44,7 @@ namespace masld_JSON {
                 break;
             case nlohmann::json::value_t::boolean:
                 result.set_masla_kind() = maslt_JSONType::masle_Boolean;
-                j.get_to(result.set_masla_data().set_masla_int());
+                j.get_to(result.set_masla_data().set_masla_bool());
                 break;
             case nlohmann::json::value_t::null:
                 result.set_masla_kind() = maslt_JSONType::masle_Null;
@@ -64,7 +64,7 @@ namespace masld_JSON {
             }
             case maslt_JSONType::index_masle_Array: {
                 nlohmann::json result;
-                for ( const auto& [k,v] : element.get_masla_data().get_masla_obj()) {
+                for ( const auto& v : element.get_masla_data().get_masla_arr()) {
                     result.emplace_back(make_json(v));
                 }
                 return result;
@@ -84,7 +84,7 @@ namespace masld_JSON {
 
     maslt_JSONElement masls_parse(const ::SWA::String &maslp_json_string) {
         try {
-            nlohmann::json j(maslp_json_string.s_str());
+            nlohmann::json j = nlohmann::json::parse(maslp_json_string.s_str());
             return make_masl_element(j);
         } catch (const nlohmann::json::exception &e) {
             throw maslex_JSONException(e.what());
@@ -96,7 +96,7 @@ namespace masld_JSON {
         return j.dump(pretty?2:-1);
     }
 
-    maslt_JSONElement pointer(const maslt_JSONElement& maslp_json_element, const ::SWA::String &maslp_json_pointer) {
+    maslt_JSONElement masls_pointer(const maslt_JSONElement& maslp_json_element, const ::SWA::String &maslp_json_pointer) {
         try {
             return make_masl_element(make_json(maslp_json_element)[nlohmann::json::json_pointer(maslp_json_pointer.s_str())]);
         } catch (const nlohmann::json::exception &e) {
@@ -104,7 +104,7 @@ namespace masld_JSON {
         }
     }
 
-    maslt_JSONElement patch(const maslt_JSONElement& maslp_json_element, const maslt_JSONElement& maslp_patch) {
+    maslt_JSONElement masls_patch(const maslt_JSONElement& maslp_json_element, const maslt_JSONElement& maslp_patch) {
         try {
             auto doc = make_json(maslp_json_element);
             doc.merge_patch(make_json(maslp_patch));
