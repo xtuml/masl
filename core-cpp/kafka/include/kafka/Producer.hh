@@ -12,7 +12,7 @@ class Producer {
 
 public:
   Producer();
-  void publish(int domainId, int serviceId, BufferedOutputStream &buf);
+  void publish(int domainId, int serviceId, BufferedOutputStream &buf, BufferedOutputStream &partKey);
   static Producer &getInstance();
 
 private:
