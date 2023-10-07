@@ -1,0 +1,10 @@
+public service JSON::to_json(val: in anonymous sequence of anonymous string) return JSONElement is
+json_element: JSONElement;
+begin
+  json_element.kind := Array;
+  for i in val'range loop
+     json_element.data.arr[i].kind := String;
+     json_element.data.arr[i].data.str := val[i];
+  end loop;
+  return json_element;
+end service;

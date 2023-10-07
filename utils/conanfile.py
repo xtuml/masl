@@ -34,6 +34,7 @@ class ConanFile(conan.ConanFile):
         self.requires(f"masl_core/{self.version}@xtuml/stable")
         self.requires("libuuid/1.0.3")
         self.tool_requires(f"masl_codegen/{self.version}@xtuml/stable")
+        self.test_requires('gtest/1.14.0')
 
     def package(self):
         super().package()

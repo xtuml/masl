@@ -1,3 +1,25 @@
+/*
+ * ----------------------------------------------------------------------------
+ * (c) 2023 - CROWN OWNED COPYRIGHT. All rights reserved.
+ * The copyright of this Software is vested in the Crown
+ * and the Software is the property of the Crown.
+ * ----------------------------------------------------------------------------
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ----------------------------------------------------------------------------
+ * Classification: UK OFFICIAL
+ * ----------------------------------------------------------------------------
+ */
+
 //
 // File: __JSON__parse.cc
 //
@@ -104,6 +126,14 @@ namespace masld_JSON {
         }
     }
 
+    maslt_JSONElement masls_overload1_pointer(const SWA::String& maslp_json_string, const ::SWA::String &maslp_json_pointer) {
+        try {
+            return make_masl_element(nlohmann::json::parse(maslp_json_string.s_str())[nlohmann::json::json_pointer(maslp_json_pointer.s_str())]);
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
     maslt_JSONElement masls_patch(const maslt_JSONElement& maslp_json_element, const maslt_JSONElement& maslp_patch) {
         try {
             auto doc = make_json(maslp_json_element);
@@ -113,4 +143,16 @@ namespace masld_JSON {
             throw maslex_JSONException(e.what());
         }
     }
+
+    maslt_JSONElement masls_overload1_patch(const SWA::String& maslp_json_string, const SWA::String& maslp_patch_string) {
+        try {
+            auto doc = nlohmann::json::parse(maslp_json_string.s_str());
+            auto patch = nlohmann::json::parse(maslp_patch_string.s_str());
+            doc.merge_patch(patch);
+            return make_masl_element(doc);
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
 }
