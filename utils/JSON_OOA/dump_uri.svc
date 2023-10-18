@@ -1,0 +1,4 @@
+public service JSON::dump(document: in URI) return anonymous string is
+begin
+  return dump(document, false);
+end service;

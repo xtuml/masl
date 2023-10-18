@@ -200,13 +200,13 @@ begin
         // validate 'enum'
         if schema'contains("enum") and schema["enum"].kind = JSON::Array and (JSON::get_array(schema["enum"])'get_unique intersection input)'length = 0 then
           errors := errors & create_validation_error(schema_path & "/enum", instance_path,
-            "Value '" & JSON::get_raw_string(input) & "' is not defined in enum");
+            "Value '" & JSON::dump(input) & "' is not defined in enum");
         end if;
 
         // validate 'const'
         if schema'contains("const") and (schema["const"]) /= input then
           errors := errors & create_validation_error(schema_path & "/const", instance_path,
-            "Value '" & JSON::get_raw_string(input) & "' does not match const");
+            "Value '" & JSON::dump(input) & "' does not match const");
         end if;
 
         // type-specific validation
@@ -277,13 +277,13 @@ begin
             // validate 'maxProperties'
             if schema'contains("maxProperties") and JSON::get_object(input)'keys'length > JSON::get_integer(schema["maxProperties"]) then
               errors := errors & create_validation_error(schema_path & "/maxProperties", instance_path,
-                "Object properties count " & JSON::get_object(input)'keys'length'image & " exceeds maximum count of " & JSON::get_raw_string(schema["maxProperties"]));
+                "Object properties count " & JSON::get_object(input)'keys'length'image & " exceeds maximum count of " & JSON::dump(schema["maxProperties"]));
             end if;
 
             // validate 'minProperties'
             if schema'contains("minProperties") and JSON::get_object(input)'keys'length < JSON::get_integer(schema["minProperties"]) then
               errors := errors & create_validation_error(schema_path & "/minProperties", instance_path,
-                "Object properties count " & JSON::get_object(input)'keys'length'image & " is less than the minimum count of " & JSON::get_raw_string(schema["minProperties"]));
+                "Object properties count " & JSON::get_object(input)'keys'length'image & " is less than the minimum count of " & JSON::dump(schema["minProperties"]));
             end if;
 
             // validate 'required'
@@ -372,13 +372,13 @@ begin
             // validate 'maxItems'
             if schema'contains("maxItems") and JSON::get_array(input)'length > JSON::get_integer(schema["maxItems"]) then
               errors := errors & create_validation_error(schema_path & "/maxItems", instance_path,
-                "Array item count " & JSON::get_array(input)'length'image & " exceeds maximum count of " & JSON::get_raw_string(schema["maxItems"]));
+                "Array item count " & JSON::get_array(input)'length'image & " exceeds maximum count of " & JSON::dump(schema["maxItems"]));
             end if;
 
             // validate 'minItems'
             if schema'contains("minItems") and JSON::get_array(input)'length < JSON::get_integer(schema["minItems"]) then
               errors := errors & create_validation_error(schema_path & "/minItems", instance_path,
-                "Array item count " & JSON::get_array(input)'length'image & " is less than the minimum count of " & JSON::get_raw_string(schema["minItems"]));
+                "Array item count " & JSON::get_array(input)'length'image & " is less than the minimum count of " & JSON::dump(schema["minItems"]));
             end if;
 
             // validate 'uniqueItems'
@@ -393,13 +393,13 @@ begin
             // validate 'maxLength'
             if schema'contains("maxLength") and JSON::get_string(input)'length > JSON::get_integer(schema["maxLength"]) then
               errors := errors & create_validation_error(schema_path & "/maxLength", instance_path,
-                "String '" & JSON::get_string(input) & "' exceeds the maximum length of " & JSON::get_raw_string(schema["maxLength"]));
+                "String '" & JSON::get_string(input) & "' exceeds the maximum length of " & JSON::dump(schema["maxLength"]));
             end if;
 
             // validate 'minLength'
             if schema'contains("minLength") and JSON::get_string(input)'length < JSON::get_integer(schema["minLength"]) then
               errors := errors & create_validation_error(schema_path & "/minLength", instance_path,
-                "String '" & JSON::get_string(input) & "' is less than the minimum length of " & JSON::get_raw_string(schema["minLength"]));
+                "String '" & JSON::get_string(input) & "' is less than the minimum length of " & JSON::dump(schema["minLength"]));
             end if;
 
             // validate 'pattern'
@@ -437,7 +437,7 @@ begin
               begin
                 if Math::modf(JSON::get_real(input) / JSON::get_real(schema["multipleOf"]), integral_part) /= 0 then
                   errors := errors & create_validation_error(schema_path & "/multipleOf", instance_path,
-                    "Number '" & JSON::get_raw_string(input) & "' is not a multiple of '" & JSON::get_raw_string(schema["multipleOf"]) & "'");
+                    "Number '" & JSON::dump(input) & "' is not a multiple of '" & JSON::dump(schema["multipleOf"]) & "'");
                 end if;
               end;
             end if;
@@ -445,25 +445,25 @@ begin
             // validate 'maximum'
             if schema'contains("maximum") and JSON::get_real(input) > JSON::get_real(schema["maximum"]) then
               errors := errors & create_validation_error(schema_path & "/maximum", instance_path,
-                "Number '" & JSON::get_raw_string(input) & "' exceeds maximum of '" & JSON::get_raw_string(schema["maximum"]) & "'");
+                "Number '" & JSON::dump(input) & "' exceeds maximum of '" & JSON::dump(schema["maximum"]) & "'");
             end if;
 
             // validate 'exclusiveMaximum'
             if schema'contains("exclusiveMaximum") and JSON::get_real(input) >= JSON::get_real(schema["exclusiveMaximum"]) then
               errors := errors & create_validation_error(schema_path & "/exclusiveMaximum", instance_path,
-                "Number '" & JSON::get_raw_string(input) & "' exceeds exclusive maximum of '" & JSON::get_raw_string(schema["exclusiveMaximum"]) & "'");
+                "Number '" & JSON::dump(input) & "' exceeds exclusive maximum of '" & JSON::dump(schema["exclusiveMaximum"]) & "'");
             end if;
 
             // validate 'minimum'
             if schema'contains("minimum") and JSON::get_real(input) < JSON::get_real(schema["minimum"]) then
               errors := errors & create_validation_error(schema_path & "/minimum", instance_path,
-                "Number '" & JSON::get_raw_string(input) & "' is less than minimum of '" & JSON::get_raw_string(schema["minimum"]) & "'");
+                "Number '" & JSON::dump(input) & "' is less than minimum of '" & JSON::dump(schema["minimum"]) & "'");
             end if;
 
             // validate 'exclusiveMinimum'
             if schema'contains("exclusiveMinimum") and JSON::get_real(input) <= JSON::get_real(schema["exclusiveMinimum"]) then
               errors := errors & create_validation_error(schema_path & "/exclusiveMinimum", instance_path,
-                "Number '" & JSON::get_raw_string(input) & "' exceeds exclusive minimum of '" & JSON::get_raw_string(schema["exclusiveMinimum"]) & "'");
+                "Number '" & JSON::dump(input) & "' exceeds exclusive minimum of '" & JSON::dump(schema["exclusiveMinimum"]) & "'");
             end if;
 
           when others => null;  // No validation on other types
