@@ -1,0 +1,10 @@
+public service JSON::to_json(val: in anonymous dictionary of anonymous string) return JSONElement is
+json_element: JSONElement;
+begin
+  json_element.kind := Object;
+  for k in val'keys loop
+     json_element.data.obj[k].kind := String;
+     json_element.data.obj[k].data.str := val[k];
+  end loop;
+  return json_element;
+end service;

@@ -2,10 +2,7 @@ public service JSON::get_array(json_element: in JSONElement) return JSONArray is
 json_array: JSONArray;
 begin
   if json_element.kind = Array then
-    for val in json_element.data.arr loop
-      json_array := json_array & parse(val);
-    end loop;
-    return json_array;
+    return json_element.data.arr;
   else
     raise JSONException("JSON element is not an array");
   end if;

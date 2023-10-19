@@ -32,16 +32,14 @@ import org.xtuml.masl.metamodel.domain.DomainTerminator;
 import org.xtuml.masl.metamodel.exception.ExceptionDeclaration;
 import org.xtuml.masl.metamodel.object.ObjectDeclaration;
 import org.xtuml.masl.metamodel.relationship.RelationshipDeclaration;
-import org.xtuml.masl.metamodel.type.TypeDeclaration;
+import org.xtuml.masl.metamodel.type.*;
 import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
 import org.xtuml.masl.translate.building.BuildSet;
 import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.main.object.ObjectTranslator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Alias("Main")
 @Default
@@ -448,8 +446,35 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         }
     }
 
+    private void addType(List<TypeDeclaration> orderedTypes, TypeDeclaration declaration ) {
+        // Make sure any structure element types that need a full definition (ie not in a collection)
+        // are defined first.
+        if ( orderedTypes.contains(declaration)) return;
+        if ( declaration.getTypeDefinition() instanceof StructureType st ) {
+            for ( TypeDefinition defn : st.getElements().stream().map(StructureElement::getType).toList()) {
+                while ( defn instanceof UserDefinedType) {
+                    defn = defn.getDefinedType();
+                }
+                var decl = defn.getTypeDeclaration();
+                if ( domain.getTypes().contains(decl)) {
+                    addType(orderedTypes, decl);
+                }
+            }
+        }
+        orderedTypes.add(declaration);
+    }
+
     private void addTypes() {
-        for (final TypeDeclaration declaration : domain.getTypes()) {
+        List<TypeDeclaration> orderedTypes = new ArrayList<>();
+
+        for ( final TypeDeclaration declaration: domain.getTypes() ) {
+            addType(orderedTypes,declaration);
+        }
+
+        for (final TypeDeclaration declaration : orderedTypes) {
+            types.declareType(declaration);
+        }
+        for (final TypeDeclaration declaration : orderedTypes) {
             types.defineType(declaration);
         }
     }

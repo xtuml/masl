@@ -1,4 +1,4 @@
-public service JSON::to_json(val: in duration) return JSONElement is
+public service JSON::to_json(val: in anonymous duration) return JSONElement is
 begin
   return to_json(val'image);
 end service;

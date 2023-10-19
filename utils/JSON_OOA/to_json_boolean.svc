@@ -1,4 +1,4 @@
-public service JSON::to_json(val: in boolean) return JSONElement is
+public service JSON::to_json(val: in anonymous boolean) return JSONElement is
 json_element: JSONElement;
 begin
   json_element.kind := Boolean;

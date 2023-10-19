@@ -38,8 +38,12 @@ class TypeTranslator
     {
       if ( type.getTypeDefinition() instanceof StructureType )
       {
-        codeFile.addFunctionDefinition(addStructureWriter((StructureType)type.getTypeDefinition()));
-        codeFile.addFunctionDefinition(addStructureReader((StructureType)type.getTypeDefinition()));
+        var writer = addStructureWriter((StructureType)type.getTypeDefinition());
+        codeFile.addFunctionDeclaration(writer);
+        codeFile.addFunctionDefinition(writer);
+        Function reader = addStructureReader((StructureType) type.getTypeDefinition());
+        codeFile.addFunctionDeclaration(reader);
+        codeFile.addFunctionDefinition(reader);
       }
       else if ( type.getTypeDefinition() instanceof EnumerateType )
       {
