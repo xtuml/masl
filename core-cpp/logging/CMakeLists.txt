@@ -18,7 +18,7 @@
 # Classification: UK OFFICIAL
 # ----------------------------------------------------------------------------
 
-find_package(Poco CONFIG REQUIRED QUIET)
+find_package(Poco CONFIG REQUIRED QUIET COMPONENTS XML Foundation)
 find_package(Boost CONFIG REQUIRED QUIET)
 
 simple_add_shared_library(
@@ -28,7 +28,8 @@ simple_add_shared_library(
            Logger.cc         
            XMLExtractor.cc   
   LINKS   
-           Poco::Poco
+           Poco::Foundation
+           Poco::XML
            Boost::boost
   INCLUDES 
            logging/Logger.hh 

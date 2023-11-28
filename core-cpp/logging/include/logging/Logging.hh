@@ -48,6 +48,27 @@ namespace Logging
   inline void critical               ( const std::string& message ) { Logger::getInstance().critical    (message); }     
   inline void fatal                  ( const std::string& message ) { Logger::getInstance().fatal       (message); }     
 
+  inline bool traceEnabled           ( const std::string& log ) { return Logger::getInstance().traceEnabled(log); }
+  inline bool debugEnabled           ( const std::string& log ) { return Logger::getInstance().debugEnabled(log); }
+  inline bool infoEnabled            ( const std::string& log ) { return Logger::getInstance().informationEnabled(log); }
+  inline bool informationEnabled     ( const std::string& log ) { return Logger::getInstance().informationEnabled(log); }
+  inline bool noticeEnabled          ( const std::string& log ) { return Logger::getInstance().noticeEnabled(log); }
+  inline bool warningEnabled         ( const std::string& log ) { return Logger::getInstance().warningEnabled(log); }
+  inline bool errorEnabled           ( const std::string& log ) { return Logger::getInstance().errorEnabled(log); }
+  inline bool criticalEnabled        ( const std::string& log ) { return Logger::getInstance().criticalEnabled(log); }
+  inline bool fatalEnabled           ( const std::string& log ) { return Logger::getInstance().fatalEnabled(log); }
+
+  inline bool traceEnabled           () { return Logger::getInstance().traceEnabled(); }
+  inline bool debugEnabled           () { return Logger::getInstance().debugEnabled(); }
+  inline bool infoEnabled            () { return Logger::getInstance().informationEnabled(); }
+  inline bool informationEnabled     () { return Logger::getInstance().informationEnabled(); }
+  inline bool noticeEnabled          () { return Logger::getInstance().noticeEnabled(); }
+  inline bool warningEnabled         () { return Logger::getInstance().warningEnabled(); }
+  inline bool errorEnabled           () { return Logger::getInstance().errorEnabled(); }
+  inline bool criticalEnabled        () { return Logger::getInstance().criticalEnabled(); }
+  inline bool fatalEnabled           () { return Logger::getInstance().fatalEnabled(); }
+
+
 }
 
 #endif

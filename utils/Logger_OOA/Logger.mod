@@ -29,8 +29,28 @@ domain Logger is
 
   public service setLogLevel( priority : in Priority );
   public service setLogLevel( logger : in anonymous string, priority : in Priority );
-  public service printLoggers();
 
+  public service enabled ( priority : in Priority ) return boolean;
+  public service traceEnabled()       return boolean;
+  public service debugEnabled()       return boolean;
+  public service informationEnabled() return boolean;
+  public service noticeEnabled()      return boolean;
+  public service warningEnabled()     return boolean;
+  public service errorEnabled()       return boolean;
+  public service criticalEnabled()    return boolean;
+  public service fatalEnabled()       return boolean;
+
+  public service enabled            ( priority : in Priority, logger : in anonymous string ) return boolean;
+  public service traceEnabled       ( logger : in anonymous string ) return boolean;
+  public service debugEnabled       ( logger : in anonymous string ) return boolean;
+  public service informationEnabled ( logger : in anonymous string ) return boolean;
+  public service noticeEnabled      ( logger : in anonymous string ) return boolean;
+  public service warningEnabled     ( logger : in anonymous string ) return boolean;
+  public service errorEnabled       ( logger : in anonymous string ) return boolean;
+  public service criticalEnabled    ( logger : in anonymous string ) return boolean;
+  public service fatalEnabled       ( logger : in anonymous string ) return boolean;
+
+  public service printLoggers();
 
 end domain;
 pragma service_domain(true);
