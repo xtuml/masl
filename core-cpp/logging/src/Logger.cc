@@ -101,6 +101,10 @@ namespace Logging
   void Logger::critical    ( const std::string& log, const std::string& message ) const { Poco::Logger::get(log).critical   (message); };
   void Logger::fatal       ( const std::string& log, const std::string& message ) const { Poco::Logger::get(log).fatal      (message); };
 
+  bool Logger::enabled ( const std::string& log, Priority priority ) const {
+      return Poco::Logger::get(log).is(getPocoLevel(priority));
+  }
+
   void Logger::printLoggers() const
   {
     std::vector<std::string> names;

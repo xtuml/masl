@@ -154,7 +154,6 @@ namespace masld_Logger
     Logging::fatal ( maslp_message.s_str() );
   }
 
-
   void masls_overload1_fatal ( const ::SWA::String& maslp_logger,
                                const ::SWA::String& maslp_message )
   {
@@ -199,6 +198,51 @@ namespace masld_Logger
     Logging::Logger::getInstance().printLoggers();
   }
 
+  bool masls_enabled ( const maslt_Priority& maslp_priority ) {
+      switch ( maslp_priority.getIndex() )
+      {
+          case maslt_Priority::index_masle_Trace      : Logging::Logger::getInstance().enabled(Logging::Logger::Trace      ); break;
+          case maslt_Priority::index_masle_Debug      : Logging::Logger::getInstance().enabled(Logging::Logger::Debug      ); break;
+          case maslt_Priority::index_masle_Information: Logging::Logger::getInstance().enabled(Logging::Logger::Information); break;
+          case maslt_Priority::index_masle_Notice     : Logging::Logger::getInstance().enabled(Logging::Logger::Notice     ); break;
+          case maslt_Priority::index_masle_Warning    : Logging::Logger::getInstance().enabled(Logging::Logger::Warning    ); break;
+          case maslt_Priority::index_masle_Error      : Logging::Logger::getInstance().enabled(Logging::Logger::Error      ); break;
+          case maslt_Priority::index_masle_Critical   : Logging::Logger::getInstance().enabled(Logging::Logger::Critical   ); break;
+          case maslt_Priority::index_masle_Fatal      : Logging::Logger::getInstance().enabled(Logging::Logger::Fatal      ); break;
+      }
 
+  }
+  bool masls_traceEnabled      () { return Logging::traceEnabled      (); }
+  bool masls_debugEnabled      () { return Logging::debugEnabled      (); }
+  bool masls_informationEnabled() { return Logging::informationEnabled(); }
+  bool masls_noticeEnabled     () { return Logging::noticeEnabled     (); }
+  bool masls_warningEnabled    () { return Logging::warningEnabled    (); }
+  bool masls_errorEnabled      () { return Logging::errorEnabled      (); }
+  bool masls_criticalEnabled   () { return Logging::criticalEnabled   (); }
+  bool masls_fatalEnabled      () { return Logging::fatalEnabled      (); }
+
+    bool masls_overload1_enabled ( const maslt_Priority& maslp_priority, const ::SWA::String&  maslp_logger ) {
+        switch ( maslp_priority.getIndex() )
+        {
+            case maslt_Priority::index_masle_Trace      : Logging::Logger::getInstance().enabled(maslp_logger.s_str(), Logging::Logger::Trace      ); break;
+            case maslt_Priority::index_masle_Debug      : Logging::Logger::getInstance().enabled(maslp_logger.s_str(), Logging::Logger::Debug      ); break;
+            case maslt_Priority::index_masle_Information: Logging::Logger::getInstance().enabled(maslp_logger.s_str(), Logging::Logger::Information); break;
+            case maslt_Priority::index_masle_Notice     : Logging::Logger::getInstance().enabled(maslp_logger.s_str(), Logging::Logger::Notice     ); break;
+            case maslt_Priority::index_masle_Warning    : Logging::Logger::getInstance().enabled(maslp_logger.s_str(), Logging::Logger::Warning    ); break;
+            case maslt_Priority::index_masle_Error      : Logging::Logger::getInstance().enabled(maslp_logger.s_str(), Logging::Logger::Error      ); break;
+            case maslt_Priority::index_masle_Critical   : Logging::Logger::getInstance().enabled(maslp_logger.s_str(), Logging::Logger::Critical   ); break;
+            case maslt_Priority::index_masle_Fatal      : Logging::Logger::getInstance().enabled(maslp_logger.s_str(), Logging::Logger::Fatal      ); break;
+        }
+
+    }
+
+  bool masls_overload1_traceEnabled      (const ::SWA::String&  maslp_logger) { return Logging::traceEnabled      (maslp_logger.s_str()); }
+  bool masls_overload1_debugEnabled      (const ::SWA::String&  maslp_logger) { return Logging::debugEnabled      (maslp_logger.s_str()); }
+  bool masls_overload1_informationEnabled(const ::SWA::String&  maslp_logger) { return Logging::informationEnabled(maslp_logger.s_str()); }
+  bool masls_overload1_noticeEnabled     (const ::SWA::String&  maslp_logger) { return Logging::noticeEnabled     (maslp_logger.s_str()); }
+  bool masls_overload1_warningEnabled    (const ::SWA::String&  maslp_logger) { return Logging::warningEnabled    (maslp_logger.s_str()); }
+  bool masls_overload1_errorEnabled      (const ::SWA::String&  maslp_logger) { return Logging::errorEnabled      (maslp_logger.s_str()); }
+  bool masls_overload1_criticalEnabled   (const ::SWA::String&  maslp_logger) { return Logging::criticalEnabled   (maslp_logger.s_str()); }
+  bool masls_overload1_fatalEnabled      (const ::SWA::String&  maslp_logger) { return Logging::fatalEnabled      (maslp_logger.s_str()); }
 
 }

@@ -68,6 +68,27 @@ namespace Logging
       void critical    ( const std::string& message ) const { critical   (defaultLog,message); }
       void fatal       ( const std::string& message ) const { fatal      (defaultLog,message); }
 
+      bool enabled             (const std::string& log, Priority priority) const;
+
+      bool traceEnabled       (const std::string& log) const { return enabled(log,Trace); }
+      bool debugEnabled       (const std::string& log) const { return enabled(log,Debug); }
+      bool informationEnabled (const std::string& log) const { return enabled(log,Information); }
+      bool noticeEnabled      (const std::string& log) const { return enabled(log,Notice); }
+      bool warningEnabled     (const std::string& log) const { return enabled(log,Warning); }
+      bool errorEnabled       (const std::string& log) const { return enabled(log,Error); }
+      bool criticalEnabled    (const std::string& log) const { return enabled(log,Critical); }
+      bool fatalEnabled       (const std::string& log) const { return enabled(log,Fatal); }
+
+      bool enabled            (Priority priority) const { return enabled (defaultLog,priority); }
+      bool traceEnabled       () const { return traceEnabled      (defaultLog); }
+      bool debugEnabled       () const { return debugEnabled      (defaultLog); }
+      bool informationEnabled () const { return informationEnabled(defaultLog); }
+      bool noticeEnabled      () const { return noticeEnabled     (defaultLog); }
+      bool warningEnabled     () const { return warningEnabled    (defaultLog); }
+      bool errorEnabled       () const { return errorEnabled      (defaultLog); }
+      bool criticalEnabled    () const { return criticalEnabled   (defaultLog); }
+      bool fatalEnabled       () const { return fatalEnabled      (defaultLog); }
+
     private:
       Logger();
       ~Logger();

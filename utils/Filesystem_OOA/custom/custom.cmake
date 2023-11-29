@@ -5,5 +5,4 @@ target_sources( Filesystem PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Filesystem_services
 
 find_package(OpenSSL)
 
-target_include_directories(Filesystem SYSTEM PRIVATE ${OPENSSL_INCLUDE_DIR} )
-target_link_libraries(Filesystem PUBLIC ${OPENSSL_SSL_LIBRARY} )
+target_link_libraries(Filesystem PUBLIC openssl::openssl )
