@@ -33,6 +33,7 @@ class ConanFile(conan.ConanFile):
     def requirements(self):
         self.requires(f"masl_core/{self.version}@xtuml/stable")
         self.requires("libuuid/1.0.3")
+        self.requires("nlohmann_json/3.11.2")
         self.tool_requires(f"masl_codegen/{self.version}@xtuml/stable")
 
     def package(self):

@@ -50,8 +50,6 @@ domain Logger is
   public service criticalEnabled    ( logger : in anonymous string ) return boolean;
   public service fatalEnabled       ( logger : in anonymous string ) return boolean;
 
-  public service printLoggers();
-
 end domain;
 pragma service_domain(true);
 
