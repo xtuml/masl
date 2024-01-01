@@ -187,13 +187,6 @@ bool Database::openDiskBasedDb (const bool iIsColdStart)
        if (iIsColdStart == true){
            unlink(dbName_.c_str());
        }
-       else{
-          if (!std::ifstream(dbName_.c_str())){
-             // Database is warm starting but the 
-             // specified database file does not exist. 
-             throw SqliteException(::boost::make_tuple("Failed to warm start  :",dbName_,"-",strerror(errno)));
-          }
-       }
 
        // This method can be called multiple times, therefore make sure any open
        // database is closed before attemtping to initialise the new one.
@@ -204,7 +197,7 @@ bool Database::openDiskBasedDb (const bool iIsColdStart)
            throw SqliteException(::boost::make_tuple("Failed to open SQLITE database :",dbName_,"-",sqlite3_errmsg(database_)));
        }
 
-       if(iIsColdStart == true){
+       if(isEmpty()){
           schema_  = ::SQL::Schema::singleton().getSchema();
           if(executeStatement(schema_) == false){
              throw SqliteException(::boost::make_tuple("Failed to create schema for",dbName_,":",sqlite3_errmsg(database_)));
@@ -483,6 +476,15 @@ bool Database::executeStatement (const std::string& iStatement)
 
 // ***********************************************************************
 // ***********************************************************************
+bool Database::isEmpty() {
+        std::string schemaQuery("SELECT count(*) FROM SQLITE_MASTER WHERE type='table';");
+        ResultSet masterSchemaResult;
+        if (executeQuery(schemaQuery,masterSchemaResult) == false){
+            throw SqliteException(std::string("Schema::hasSchema : failed to execute query on master table - ") + getCurrentError());
+        }
+        return masterSchemaResult.getRow(0)[0] == "0";
+    }
+
 void Database::validateSchema(const ::SQL::Schema::TableDefinitionType& tableDefinitions)
 {
     std::string schemaQuery("SELECT name, sql FROM SQLITE_MASTER WHERE type='table';");

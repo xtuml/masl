@@ -20,7 +20,7 @@ import os
 
 class ConanFile(conan.ConanFile):
     name = "masl_core"
-    version = "4.1.1"
+    version = "4.2.2"
     user = 'xtuml'
     channel = 'stable'
 

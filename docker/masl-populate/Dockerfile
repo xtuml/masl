@@ -5,7 +5,7 @@ COPY ../core-cpp core-cpp
 COPY ../core-java core-java
 COPY ../inspector inspector
 COPY ../utils utils
-RUN conan remote remove xtuml && \
+RUN source /opt/rh/gcc-toolset-12/enable &&  conan remote remove xtuml && \
   conan create conan-helper --format=json --build=missing "$@" > create_helper.json && \
   conan create core-cpp  --format=json --build=missing "$@" > create_core-cpp.json && \
   conan create core-java  --format=json --build=missing "$@" > create_core-java.json && \

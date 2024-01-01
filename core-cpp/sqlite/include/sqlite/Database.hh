@@ -208,7 +208,14 @@ class Database : public ::SQL::Database
      // *****************************************************************
      bool executeStatement (const std::string& iStatement);
 
-     // *****************************************************************
+    // *****************************************************************
+    //! Check whether the db has any tables created
+    //! throws SqliteException if an error occurs
+    //! @return true if no tables found
+    // *****************************************************************
+    bool isEmpty ();
+
+    // *****************************************************************
      //! Check that the schema read from the database matchs the table
      //! definitions
      //! throws SqliteException if a table mis-match is detected.

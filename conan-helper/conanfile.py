@@ -14,7 +14,7 @@ import textwrap
 
 class ConanFile(conan.ConanFile):
     name = 'masl_conan'
-    version = '4.1.1'
+    version = '4.2.2'
     user = 'xtuml'
     channel = 'stable'
 
@@ -102,9 +102,9 @@ class MaslConanHelper():
 
     def requirements(self):
         if 'masl_codegen' not in ( r.ref.name for r in self.requires.values()):
-            self.tool_requires(f'masl_codegen/4.1.1@xtuml/stable',visible=True)
+            self.tool_requires(f'masl_codegen/4.2.2@xtuml/stable',visible=True)
         if 'masl_core' not in ( r.ref.name for r in self.requires.values()):
-            self.requires(f'masl_core/4.1.1@xtuml/stable')
+            self.requires(f'masl_core/4.2.2@xtuml/stable')
 
     def masl_src_roots(self):
         src_roots = []

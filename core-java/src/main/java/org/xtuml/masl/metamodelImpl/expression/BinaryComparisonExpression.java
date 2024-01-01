@@ -26,6 +26,9 @@ import org.xtuml.masl.metamodelImpl.error.SemanticError;
 import org.xtuml.masl.metamodelImpl.error.SemanticErrorCode;
 import org.xtuml.masl.metamodelImpl.type.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class BinaryComparisonExpression extends BinaryExpression {
 
     public BinaryComparisonExpression(Expression lhs, final OperatorRef operator, Expression rhs) throws SemanticError {
@@ -37,8 +40,10 @@ public class BinaryComparisonExpression extends BinaryExpression {
         setLhs(lhs);
         setRhs(rhs);
 
-        checkOperand(getLhs().getType(), getLhs().getPosition());
-        checkOperand(getRhs().getType(), getRhs().getPosition());
+
+        Set<BasicType> checked = new HashSet<>();
+        checkOperand(getLhs().getType(), getLhs().getPosition(),checked);
+        checkOperand(getRhs().getType(), getRhs().getPosition(),checked);
 
         if (!(getLhs().getType().isAssignableFrom(getRhs()) || getRhs().getType().isAssignableFrom(getLhs()))) {
             throw new SemanticError(SemanticErrorCode.OperatorOperandsNotCompatible,
@@ -50,7 +55,14 @@ public class BinaryComparisonExpression extends BinaryExpression {
 
     }
 
-    private void checkOperand(final BasicType opType, final Position position) throws SemanticError {
+    private void checkOperand(final BasicType opType, final Position position, Set<BasicType> checked) throws SemanticError {
+
+        // Keep a track of what we've already checked in case of recursive types.
+        if ( checked.contains(opType)) {
+            return;
+        } else {
+            checked.add(opType);
+        }
 
         if (!(RealType.createAnonymous().isConvertibleFrom(opType) ||
               DurationType.createAnonymous().isConvertibleFrom(opType) ||
@@ -61,13 +73,13 @@ public class BinaryComparisonExpression extends BinaryExpression {
                opType.getPrimitiveType().getDefinedType() instanceof EnumerateType))) {
             if (opType.getPrimitiveType() instanceof AnonymousStructure struct) {
                 for (final BasicType elt : struct.getElements()) {
-                    checkOperand(elt, position);
+                    checkOperand(elt, position,checked);
                 }
             } else if (opType.getPrimitiveType() instanceof SequenceType) {
-                checkOperand(opType.getContainedType(), position);
+                checkOperand(opType.getContainedType(), position,checked);
             } else if (opType.getPrimitiveType() instanceof DictionaryType) {
-                checkOperand(((DictionaryType) opType.getPrimitiveType()).getKeyType(), position);
-                checkOperand(((DictionaryType) opType.getPrimitiveType()).getValueType(), position);
+                checkOperand(((DictionaryType) opType.getPrimitiveType()).getKeyType(), position,checked);
+                checkOperand(((DictionaryType) opType.getPrimitiveType()).getValueType(), position,checked);
             } else if (!((getOperator() == Operator.EQUAL || getOperator() == Operator.NOT_EQUAL) &&
                          (AnyInstanceType.createAnonymous().isConvertibleFrom(opType)) ||
                          BooleanType.createAnonymous().isConvertibleFrom(opType))) {

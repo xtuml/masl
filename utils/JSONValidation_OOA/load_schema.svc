@@ -1,0 +1,35 @@
+public service JSONValidation::load_schema(schema_path: in anonymous string) return Schema is
+metaschema: JSON::JSONElement;
+json_string: string;
+json_schema: JSON::JSONElement;
+begin
+
+  // parse the schema
+  json_string := Filesystem::read_file(schema_path);
+  json_schema := JSON::parse(json_string);
+
+  // validate the schema against the metaschema
+  declare
+    metaschema_text: string;
+    defs: JSON::JSONObject;
+    schema_result: JSON::JSONObject;
+    schema_errors: JSON::JSONArray;
+    result: JSON::JSONObject;
+  begin
+    metaschema_text := Filesystem::read_file(Environment::getenv(Environment::variable_name("JSON_META_SCHEMA_PATH")));
+    metaschema := JSON::parse(metaschema_text);
+    schema_result := validate(json_schema, metaschema, metaschema, "#", "#", defs);
+    erase schema_result["annotations"];
+    if not JSON::get_boolean(schema_result["valid"]) then
+      result["valid"] := JSON::to_json(false);
+      result["error"] := JSON::to_json("Schema does not validate against metaschema: " & Environment::getenv(Environment::variable_name("JSON_META_SCHEMA_PATH")));
+      schema_errors := JSON::to_json(schema_result);
+      result["errors"] := JSON::to_json(schema_errors);
+      raise program_error(JSON::dump(result));
+    end if;
+  end;
+
+  // return the schema
+  return (metaschema, json_schema);
+
+end service;

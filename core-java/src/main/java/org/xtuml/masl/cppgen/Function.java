@@ -118,12 +118,12 @@ public class Function {
             }
 
             if (isCast) {
-                definition.write(name + " " + returnType.getQualifiedName(getParentNamespace()) + " (");
+                definition.write(getQualifiedName(currentNamespace) + " " + returnType.getQualifiedName(getParentNamespace()) + " (");
             } else {
                 if (returnType != null) {
                     definition.write(returnType.getQualifiedName(getParentNamespace()) + " ");
                 }
-                definition.write(name + " (");
+                definition.write(getQualifiedName(currentNamespace) + " (");
             }
 
             Variable.writeParameterDeclaration(definition, parameters, getParentNamespace());
@@ -208,7 +208,7 @@ public class Function {
             if (returnType != null) {
                 definition.write(returnType.getQualifiedName(getParentNamespace()) + " ");
             }
-            definition.write(name + " (");
+            definition.write(getQualifiedName(currentNamespace) + " (");
 
             Variable.writeParameterDeclaration(definition, parameters, getParentNamespace());
 

@@ -1,8 +1,4 @@
 public service JSONValidation::validate(input: in JSON::JSONElement, schema_path: in anonymous string) return JSON::JSONObject is
-json_string: string;
-json_schema: JSON::JSONElement;
 begin
-  json_string := Filesystem::read_file(schema_path);
-  json_schema := JSON::parse(json_string);
-  return validate(input, json_schema);
+  return validate(input, load_schema(schema_path));
 end service;

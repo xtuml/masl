@@ -22,10 +22,10 @@ from conan.tools.files import copy
 
 class ConanFile(conan.ConanFile):
     name = "masl_utils"
-    version = "4.1.1"
+    version = "4.2.2"
     user = 'xtuml'
     channel = 'stable'
-    python_requires = 'masl_conan/4.1.1@xtuml/stable'
+    python_requires = 'masl_conan/4.2.2@xtuml/stable'
     python_requires_extend = 'masl_conan.MaslConanHelper'
 
     exports_sources = "*_OOA/*"
@@ -35,6 +35,7 @@ class ConanFile(conan.ConanFile):
         self.requires("libuuid/1.0.3")
         self.requires("nlohmann_json/3.11.2")
         self.tool_requires(f"masl_codegen/{self.version}@xtuml/stable")
+        self.test_requires('gtest/1.14.0')
 
     def package(self):
         super().package()
