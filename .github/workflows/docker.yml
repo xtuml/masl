@@ -1,8 +1,8 @@
-name: Build Docker
+name: Build Docker MASL Image
 on:
   workflow_dispatch:
   release:
-    types: [ published ]
+    types: [published]
 
 jobs:
   masl_dev:
@@ -17,114 +17,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Generate docker metadata
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: levistarrett/masl-dev
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:docker/masl-dev"
           platforms: linux/arm64,linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-
-  conan_server:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Generate docker metadata
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: levistarrett/conan-server
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          context: "{{defaultContext}}:docker/conan-server"
-          platforms: linux/arm64,linux/amd64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-
-  build_masl_populate:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - buildjet-4vcpu-ubuntu-2204
-          - buildjet-4vcpu-ubuntu-2204-arm
-    runs-on: ${{ matrix.os }}
-    needs:
-      - masl_dev
-    steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Generate docker metadata
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: levistarrett/masl-populate
-      - name: Build and push
-        id: build
-        uses: docker/build-push-action@v3
-        with:
-          file: "docker/masl-populate/Dockerfile"
-          labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=levistarrett/masl-populate,push-by-digest=true,name-canonical=true,push=true
-      - name: Export digest
-        run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
-      - name: Upload digest
-        uses: actions/upload-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests/*
-          if-no-files-found: error
-          retention-days: 1
-
-  merge_masl_populate:
-    runs-on: ubuntu-latest
-    needs:
-      - build_masl_populate
-    steps:
-      - name: Download digests
-        uses: actions/download-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Generate docker metadata
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: levistarrett/masl-populate
-      - name: Create manifest list and push
-        working-directory: /tmp/digests
-        run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf 'levistarrett/masl-populate@sha256:%s ' *)
-      - name: Inspect image
-        run: |
-          docker buildx imagetools inspect levistarrett/masl-populate:${{ steps.meta.outputs.version }}
+          tags: latest

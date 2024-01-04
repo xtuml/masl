@@ -1,0 +1,22 @@
+name: Build and Publish MASL Artifacts
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build_and_publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - buildjet-4vcpu-ubuntu-2204
+          - buildjet-4vcpu-ubuntu-2204-arm
+    runs-on: ${{ matrix.os }}
+    env:
+      ARTIFACTORY_USERNAME: build_server
+      ARTIFACTORY_TOKEN: ${{ secrets.ARTIFACTORY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and Publish
+        run: ./buildall.sh
