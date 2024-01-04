@@ -6,7 +6,7 @@ RUN dnf update -y && dnf clean all && \
     dnf --enablerepo=crb install -y python3.11 python3.11-pip gcc-toolset-12-gcc-c++ java-17-openjdk ninja-build perl jq && \
     alternatives --install /usr/bin/python python /usr/bin/python3.11 3 &&\
     alternatives --install /usr/bin/pip pip /usr/bin/pip3.11 3 &&\
-    pip install --upgrade pip conan cmake yq && \
+    pip install --upgrade pip conan cmake yq gitpython && \
     dnf clean all
 
 # Configure conan

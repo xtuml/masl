@@ -10,11 +10,12 @@ from conan.tools.cmake import CMake, cmake_layout
 import glob
 import os
 import textwrap
+import git
 
 
 class ConanFile(conan.ConanFile):
     name = 'masl_conan'
-    version = '4.2.2'
+    version = ver[1:] if (ver := git.Repo(search_parent_directories=True).git.describe('--tags')).startswith('v') else ver
     user = 'xtuml'
     channel = 'stable'
 
