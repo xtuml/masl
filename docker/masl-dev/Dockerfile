@@ -17,7 +17,7 @@ RUN source /opt/rh/gcc-toolset-12/enable && conan profile detect && \
     echo core.cache:storage_path=/conan-cache >> /root/.conan2/global.conf && \
     yq -Y ".os.Linux += {\"glibc\": [ $(seq -f '"2.%.0f"' -s, 5 40) ] }" /root/.conan2/settings.yml > /root/.conan2/settings.yml.tmp && \
     mv /root/.conan2/settings.yml.tmp /root/.conan2/settings.yml && \
-    conan remote add xtuml http://conan-server:9300
+    conan remote add xtuml https://artifactory.onefact.net/artifactory/api/conan/conan
 
 COPY os-files/ /
 

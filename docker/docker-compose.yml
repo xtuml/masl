@@ -1,45 +1,16 @@
 name: masl
 volumes:
-  ConanServer:
   ConanCache:
 
-
 services:
-  conan-server:
-    image: levistarrett/conan-server
-    build:
-      context: conan-server
-    restart: unless-stopped
-    ports:
-      - 9300:9300
-    volumes:
-      - type: volume
-        source: ConanServer
-        target: /conan-data
-
   masl-dev:
-    image: levistarrett/masl-dev
+    image: levistarrett/masl-dev:latest
     build:
       context: masl-dev
-    depends_on:
-      conan-server:
-        condition: service_healthy
     volumes:
       - type: volume
         source: ConanCache
         target: /conan-cache
     profiles:
       - tools
-      - all
-
-  masl-populate:
-    image: levistarrett/masl-populate
-    build:
-      context: ..
-      dockerfile: docker/masl-populate/Dockerfile
-    depends_on:
-      conan-server:
-        condition: service_healthy
-    profiles:
-      - populate
       - all
