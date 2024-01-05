@@ -1,5 +1,0 @@
-#!/bin/bash
-echo MY SHELL
-source /run-env/conanrun.sh
-source /run-env/conanbuild.sh
-/bin/bash -c "$*"
