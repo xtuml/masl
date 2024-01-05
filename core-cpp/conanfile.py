@@ -20,7 +20,7 @@ import os
 
 class ConanFile(conan.ConanFile):
     name = "masl_core"
-    version = "4.2.2"
+    version = ver[1:] if (ver := os.environ['MASL_VERSION']).startswith('v') else ver
     user = 'xtuml'
     channel = 'stable'
 

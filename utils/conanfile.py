@@ -22,7 +22,7 @@ from conan.tools.files import copy
 
 class ConanFile(conan.ConanFile):
     name = "masl_utils"
-    version = "4.2.2"
+    version = ver[1:] if (ver := os.environ['MASL_VERSION']).startswith('v') else ver
     user = 'xtuml'
     channel = 'stable'
     python_requires = 'masl_conan/4.2.2@xtuml/stable'
