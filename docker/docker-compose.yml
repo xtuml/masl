@@ -1,6 +1,7 @@
 name: masl
 volumes:
   ConanCache:
+    name: ConanCache
 
 services:
   masl-dev:

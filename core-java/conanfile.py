@@ -21,7 +21,6 @@ import os
 
 class ConanFile(conan.ConanFile):
     name = "masl_codegen"
-    version = ver[1:] if (ver := os.environ['MASL_VERSION']).startswith('v') else ver
     user = 'xtuml'
     channel = 'stable'
     package_type = 'application'

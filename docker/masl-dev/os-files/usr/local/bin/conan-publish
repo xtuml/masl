@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 pid=$$
-conan create . --format=json --build=missing "$@" >/tmp/${name}_create.json
+conan create . --version ${MASL_VERSION} --format=json --build=missing "$@" >/tmp/${name}_create.json
 conan list --graph=/tmp/${name}_create.json --graph-binaries=build --format=json >/tmp/${name}_pkglist.json
 (conan remote login -p ${ARTIFACTORY_TOKEN} xtuml ${ARTIFACTORY_USERNAME} &&
 	conan upload --list=/tmp/${name}_pkglist.json -r=xtuml -c) ||
