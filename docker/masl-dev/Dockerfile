@@ -3,7 +3,9 @@ FROM rockylinux:9 AS base-stage
 
 # Install stuff
 RUN dnf update -y && dnf clean all && \
-  dnf --enablerepo=crb install -y python3.11 python3.11-pip gcc-toolset-12-gcc-c++ java-17-openjdk ninja-build perl jq && \
+  dnf --enablerepo=crb install -y python3.11 python3.11-pip gcc-toolset-12-gcc-c++ java-17-openjdk ninja-build perl jq libnsl2-devel && \
+  alternatives --install /usr/bin/g++ g++ /opt/rh/gcc-toolset-12/root/usr/bin/g++ 12 && \
+  alternatives --install /usr/bin/gcc gcc /opt/rh/gcc-toolset-12/root/usr/bin/gcc 12 && \
   alternatives --install /usr/bin/python python /usr/bin/python3.11 3 &&\
   alternatives --install /usr/bin/pip pip /usr/bin/pip3.11 3 &&\
   pip install --upgrade pip conan cmake yq && \

@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 pid=$$
-conan create . --version ${MASL_VERSION} --format=json --build=missing "$@" >/tmp/${name}_create.json
-conan list --graph=/tmp/${name}_create.json --graph-binaries=build --format=json >/tmp/${name}_pkglist.json
+conan create . --version ${MASL_VERSION} --format=json --build=missing "$@" >/tmp/${pid}_create.json
+conan list --graph=/tmp/${pid}_create.json --graph-binaries=build --format=json >/tmp/${pid}_pkglist.json
 (conan remote login -p ${ARTIFACTORY_TOKEN} xtuml ${ARTIFACTORY_USERNAME} &&
-	conan upload --list=/tmp/${name}_pkglist.json -r=xtuml -c) ||
+	conan upload --list=/tmp/${pid}_pkglist.json -r=xtuml -c) ||
 	echo "$(tput setaf 1)Could not log in to remote server. Check that ARTIFACTORY_USERNAME and ARTIFACTORY_TOKEN are set.$(tput sgr0)"
-rm /tmp/${name}_*
+rm /tmp/${pid}_*

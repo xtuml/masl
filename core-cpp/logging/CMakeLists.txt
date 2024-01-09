@@ -18,29 +18,28 @@
 # Classification: UK OFFICIAL
 # ----------------------------------------------------------------------------
 
-find_package(Poco CONFIG REQUIRED QUIET COMPONENTS XML Foundation)
-find_package(Boost CONFIG REQUIRED QUIET)
+find_package(fmt CONFIG REQUIRED)
+find_package(log4cplus CONFIG REQUIRED)
 
-simple_add_shared_library(
+simple_add_interface_library(
   NAME     logging           
-  SOURCES 
-           FilterChannel.cc  
-           Logger.cc         
-           XMLExtractor.cc   
-  LINKS   
-           Poco::Foundation
-           Poco::XML
-           Boost::boost
-  INCLUDES 
-           logging/Logger.hh 
-           logging/Logging.hh 
+  LINKS
+        fmt::fmt
+        log4cplus::log4cplus
+  INCLUDES
+           logging/log.hh
   EXPORT   MaslCore
   )
 
+
+simple_add_executable(
+        NAME logging-example
+        SOURCES example.cc
+        LINKS logging
+)
+
 install (
   FILES 
-    share/full_example.xml
-    share/simple_example.xml
-    share/configuration.xsd
+    share/logging-example.properties
   DESTINATION share/logging
 )

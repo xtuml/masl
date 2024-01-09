@@ -37,7 +37,8 @@ class ConanFile(conan.ConanFile):
     def requirements(self):
         self.requires("openssl/3.1.1")
         self.requires("poco/1.12.4")
-        self.requires("fmt/10.0.0")
+        self.requires("fmt/10.1.1")
+        self.requires("log4cplus/2.1.0")
         self.requires("nlohmann_json/3.11.2", transitive_headers=True)
         self.requires("boost/1.82.0", force=True) # CppKafka is asking for 1.81.0
         self.requires("sqlite3/3.42.0", force=True) # Poco is asking for 3.41.2
@@ -47,6 +48,7 @@ class ConanFile(conan.ConanFile):
         self.requires("librdkafka/2.0.2")
         self.requires("cppkafka/0.4.0")
 
+    default_options = {'log4cplus/*:unicode': False}
 
     exports_sources= ( "CMakeLists.txt",
                        "asn1/*",
