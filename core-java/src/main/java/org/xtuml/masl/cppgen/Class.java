@@ -99,7 +99,7 @@ public final class Class extends Type {
 
         @Override
         void writeDeclaration(final Writer writer, final String indent, final Namespace currentNamespace) throws
-                                                                                                          IOException {
+                IOException {
             writeComment(writer, indent, currentNamespace);
             if (templateParameters.size() == 0 && templateSpecialisations.size() > 0) {
                 writer.write(indent + "template<>\n");
@@ -111,14 +111,14 @@ public final class Class extends Type {
             }
 
             writer.write(TextUtils.formatList(templateParamNames, indent + "template<", ", ", ">\n") +
-                         indent +
-                         "class " +
-                         getQualifiedName(currentNamespace));
+                    indent +
+                    "class " +
+                    getQualifiedName(currentNamespace));
             TextUtils.formatList(writer,
-                                 superclasses,
-                                 "\n" + indent + TextUtils.getIndent() + ": ",
-                                 ",\n" + indent + TextUtils.getIndent() + "  ",
-                                 "");
+                    superclasses,
+                    "\n" + indent + TextUtils.getIndent() + ": ",
+                    ",\n" + indent + TextUtils.getIndent() + "  ",
+                    "");
 
             writer.write("\n" + indent + "{\n\n");
 
@@ -129,7 +129,7 @@ public final class Class extends Type {
 
         @Override
         void writeForwardDeclaration(final Writer writer, final String indent, final Namespace currentNamespace) throws
-                                                                                                                 IOException {
+                IOException {
             writer.write(indent + "class " + getQualifiedName(currentNamespace) + ";\n");
         }
 
@@ -187,6 +187,21 @@ public final class Class extends Type {
 
     }
 
+    public class ClassNamespace extends Namespace {
+        public ClassNamespace(final String name) {
+            super(name);
+        }
+
+        public ClassNamespace(final String name, final Namespace parentNamespace) {
+            super(name, parentNamespace);
+        }
+
+        @Override
+        public String getQualifiedName(final Namespace currentNamespace) {
+            return Class.this.getQualifiedName(currentNamespace);
+        }
+    }
+
     /**
      * Constructs a class in the global namespace
      * <p>
@@ -221,13 +236,7 @@ public final class Class extends Type {
      */
     public Class(final String name, final Namespace parentNamespace) {
         super(name, parentNamespace);
-        thisNamespace = new Namespace(name) {
-
-            @Override
-            public String getQualifiedName(final Namespace currentNamespace) {
-                return Class.this.getQualifiedName(currentNamespace);
-            }
-        };
+        thisNamespace = new ClassNamespace(name);
         setParentNamespace(parentNamespace);
     }
 
@@ -964,10 +973,10 @@ public final class Class extends Type {
         final String endTemplate = params.size() > 0 && ((params.get(params.size() - 1)).endsWith(">")) ? " >" : ">";
 
         return typenameQualifier +
-               super.getQualifiedName(currentNamespace) +
-               (params.isEmpty() && forceSpecialization ?
-                "<>" :
-                TextUtils.formatList(params, startTemplate, ",", endTemplate));
+                super.getQualifiedName(currentNamespace) +
+                (params.isEmpty() && forceSpecialization ?
+                        "<>" :
+                        TextUtils.formatList(params, startTemplate, ",", endTemplate));
     }
 
     @Override
@@ -1002,7 +1011,7 @@ public final class Class extends Type {
      * @throws IOException
      */
     void writeChildDeclarations(final Writer writer, final String indent, final Namespace currentNamespace) throws
-                                                                                                            IOException {
+            IOException {
         for (final DeclarationGroup group : declarationGroups) {
             group.write(writer, indent, currentNamespace);
         }

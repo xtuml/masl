@@ -5,6 +5,14 @@ domain JSON is
   //! The valid JSON types. A distinction is made between 'real' and 'integer' numbers.
   public type JSONType is enum ( Object, Array, String, Real, Integer, Boolean, Null );
 
+  public type JSONElement;
+
+  //! A 'JSONObject' is a map of string keys to instances of the 'JSONElement' structure.
+  public type JSONObject is dictionary of JSONElement;
+
+  //! A 'JSONObject' is an ordered sequence of instances of the 'JSONElement' structure.
+  public type JSONArray is sequence of JSONElement;
+
   //! This structure represents the data within a single JSON value. It is
   //! intended to be used as a 'union' -- that is only one of the 6 fields
   //! should be set for any given value. The value of the other 5 fields has no
@@ -15,8 +23,8 @@ domain JSON is
   //! values. The values are JSON encoded strings which must be parsed before
   //! they can be used.
   public type JSONData is structure
-    obj: dictionary;
-    arr: sequence of string;
+    obj: JSONObject;
+    arr: JSONArray;
     str: string;
     real: real;
     int: integer;
@@ -30,14 +38,7 @@ domain JSON is
   public type JSONElement is structure
     kind: JSONType := Null;
     data: JSONData;
-    raw: string;
   end structure;
-
-  //! A 'JSONObject' is a map of string keys to instances of the 'JSONElement' structure.
-  public type JSONObject is dictionary of JSONElement;
-
-  //! A 'JSONObject' is an ordered sequence of instances of the 'JSONElement' structure.
-  public type JSONArray is sequence of JSONElement;
 
   //! This service parses a JSON string and returns a single instance of
   //! 'JSONElement' representing the top-level element of the JSON string. If
@@ -51,7 +52,13 @@ domain JSON is
   public service dump(json_array: in JSONArray) return anonymous string; pragma filename("dump_array.svc");
   public service dump(json_array: in JSONArray, pretty: in anonymous boolean) return anonymous string; pragma filename("dump_array_pretty.svc");
   public service dump(json_element: in JSONElement) return anonymous string; pragma filename("dump_element.svc");
-  public service dump(json_element: in JSONElement, pretty: in anonymous boolean) return anonymous string; pragma filename("dump_element_pretty.svc");
+  public service dump(json_element: in JSONElement, pretty: in anonymous boolean) return anonymous string;
+
+  public service pointer(json_element: in JSONElement, json_pointer : in anonymous string ) return JSONElement;
+  public service pointer(json_string: in anonymous string, json_pointer : in anonymous string ) return JSONElement;
+
+  public service patch(json_element: in JSONElement, patch : in JSONElement ) return JSONElement;
+  public service patch(json_string: in anonymous string, patch : in anonymous string ) return JSONElement;
 
   //! These services abstract the process of extracting a specific type from an
   //! instance of 'JSONElement'. If the 'kind' field of the given element does
@@ -77,12 +84,14 @@ domain JSON is
   // to convert the nested structures back to a JSON string for storage.
   public service to_json(json_object: in JSONObject) return JSONElement; pragma filename("to_json_object.svc");
   public service to_json(json_array: in JSONArray) return JSONElement; pragma filename("to_json_array.svc");
-  public service to_json(val: in string) return JSONElement; pragma filename("to_json_string.svc");
-  public service to_json(val: in real) return JSONElement; pragma filename("to_json_real.svc");
-  public service to_json(val: in integer) return JSONElement; pragma filename("to_json_integer.svc");
-  public service to_json(val: in boolean) return JSONElement; pragma filename("to_json_boolean.svc");
-  public service to_json(val: in timestamp) return JSONElement; pragma filename("to_json_timestamp.svc");
-  public service to_json(val: in duration) return JSONElement; pragma filename("to_json_duration.svc");
+  public service to_json(val: in anonymous string) return JSONElement; pragma filename("to_json_string.svc");
+  public service to_json(val: in anonymous real) return JSONElement; pragma filename("to_json_real.svc");
+  public service to_json(val: in anonymous integer) return JSONElement; pragma filename("to_json_integer.svc");
+  public service to_json(val: in anonymous boolean) return JSONElement; pragma filename("to_json_boolean.svc");
+  public service to_json(val: in anonymous timestamp) return JSONElement; pragma filename("to_json_timestamp.svc");
+  public service to_json(val: in anonymous duration) return JSONElement; pragma filename("to_json_duration.svc");
+  public service to_json(val: in anonymous sequence of anonymous string) return JSONElement; pragma filename("to_json_seq_of_string.svc");
+  public service to_json(val: in anonymous dictionary of anonymous string) return JSONElement; pragma filename("to_json_dict_of_string.svc");
 
 end domain;
 pragma service_domain(true);

@@ -21,7 +21,6 @@ import os
 
 class ConanFile(conan.ConanFile):
     name = "masl_inspector"
-    version = "4.1.1"
     user = 'xtuml'
     channel = 'stable'
 

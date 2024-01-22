@@ -45,7 +45,10 @@ public class Structure {
         name = Mangler.mangleName(declaration);
         namespace = DomainNamespace.get(domain);
         clazz = new Class(name, namespace);
-        headerFile.addClassDeclaration(clazz);
+
+        // Make sure that users know where we are declared, but don't actually add
+        // in until later, so recursive structures get added in the right order.
+        clazz.addDeclaredIn(headerFile);
         type = new TypeUsage(clazz);
 
         typedefs = clazz.createDeclarationGroup("Types");
@@ -83,6 +86,11 @@ public class Structure {
         translateStreamOperator();
 
     }
+
+    public void addDefinitionToHeader() {
+        headerFile.addClassDeclaration(clazz);
+    }
+
 
     public CodeFile getBodyFile() {
         return bodyFile;

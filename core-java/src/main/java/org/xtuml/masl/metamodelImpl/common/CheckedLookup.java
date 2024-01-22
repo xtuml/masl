@@ -28,7 +28,7 @@ import java.util.*;
 
 public class CheckedLookup<T extends Positioned> implements Iterable<T> {
 
-    private final Map<String, T> lookup = new HashMap<>();
+    private final Map<String, T> lookup = new LinkedHashMap<>();
     private final List<T> list = new ArrayList<>();
 
     private final Named parent;

@@ -1,4 +1,4 @@
-public service JSON::to_json(val: in integer) return JSONElement is
+public service JSON::to_json(val: in anonymous integer) return JSONElement is
 json_element: JSONElement;
 begin
   json_element.kind := Integer;
