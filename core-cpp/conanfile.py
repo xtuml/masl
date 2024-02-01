@@ -44,7 +44,6 @@ class ConanFile(conan.ConanFile):
         self.requires("zlib/1.3", force=True) # Poco is asking for 1.2.13
         self.requires("libuuid/1.0.3")
         self.requires("expat/2.5.0")
-        self.requires("librdkafka/2.0.2")
         self.requires("cppkafka/0.4.0")
 
 
