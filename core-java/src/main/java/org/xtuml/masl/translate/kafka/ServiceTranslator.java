@@ -174,6 +174,35 @@ class ServiceTranslator
     registrationVar.setStatic(true);
     codeFile.addVariableDefinition(registrationVar);
 
-   }
+  }
+
+  void addCustomTopicName(final CodeFile codeFile) {
+    if (service.getDeclarationPragmas().getPragmaValues(DomainTranslator.KAFKA_TOPIC_PRAGMA).size() == 1) {
+      final String topicNameString = service.getDeclarationPragmas().getPragmaValues(DomainTranslator.KAFKA_TOPIC_PRAGMA).get(0);
+      if (!isBoolean(topicNameString) && !isNumeric(topicNameString)) {
+        final Expression processHandler = Kafka.processHandlerClass.callStaticFunction("getInstance");
+        final Expression domainId = new Function("getId").asFunctionCall(new Function("getDomain").asFunctionCall(Architecture.process, false, Literal.createStringLiteral(domainTranslator.getDomain().getName())), false);
+        final Expression serviceId = domainTranslator.getMainTranslator().getServiceTranslator(service).getServiceId();
+        final Expression topicName = Literal.createStringLiteral(topicNameString);
+        final Function setTopicNameFunc = new Function("setCustomTopicName");
+        final Expression setTopicName = setTopicNameFunc.asFunctionCall(processHandler, false, domainId, serviceId, topicName);
+        final Variable topicNameSet = new Variable(new TypeUsage(FundamentalType.BOOL), Mangler.mangleName(service) + "_topic_name_set", new Namespace(""), setTopicName);
+        codeFile.addVariableDefinition(topicNameSet);
+      }
+    }
+  }
+
+  private boolean isBoolean(final String value) {
+    return "true".equals(value) || "false".equals(value);
+  }
+
+  private boolean isNumeric(final String value) {
+    try {
+      double d = Double.parseDouble(value);
+      return true;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
 
 }

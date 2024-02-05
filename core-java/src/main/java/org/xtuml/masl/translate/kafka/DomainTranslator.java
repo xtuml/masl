@@ -74,6 +74,12 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
       serviceTranslator.addServiceHandler(consumerCodeFile);
     }
 
+    // handle custom topics (consumer)
+    for (final ServiceTranslator serviceTranslator : serviceTranslators)
+    {
+      serviceTranslator.addCustomTopicName(consumerCodeFile);
+    }
+
     // add topic registrations
     for (final ServiceTranslator serviceTranslator : serviceTranslators)
     {
@@ -84,6 +90,12 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
     for (final ServiceTranslator serviceTranslator : serviceTranslators)
     {
       serviceTranslator.addPublisher(publisherCodeFile);
+    }
+
+    // handle custom topics (publisher)
+    for (final ServiceTranslator serviceTranslator : serviceTranslators)
+    {
+      serviceTranslator.addCustomTopicName(publisherCodeFile);
     }
 
     // process type readers/writers
