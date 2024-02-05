@@ -34,7 +34,7 @@ public:
 private:
   MessageQueue messageQueue;
 
-  void handleMessages();
+  void handleMessage();
 };
 
 } // namespace Kafka
