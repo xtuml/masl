@@ -38,8 +38,13 @@ std::vector<std::string> ProcessHandler::getTopicNames() {
 }
 
 std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
-  static const std::string ns = SWA::CommandLine::getInstance().getOption(NamespaceOption, "default");
-  return ns + "." + SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
+  static const std::string ns = SWA::CommandLine::getInstance().getOption(NamespaceOption);
+  if (ns.empty()) {
+    return SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
+  } else {
+    return ns + "." + SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
+  }
+
 }
 
 ProcessHandler &ProcessHandler::getInstance() {
