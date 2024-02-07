@@ -1,6 +1,7 @@
 #ifndef Kafka_Consumer_HH
 #define Kafka_Consumer_HH
 
+#include "cppkafka/consumer.h"
 #include "cppkafka/message.h"
 
 #include <condition_variable>
@@ -35,6 +36,8 @@ private:
   MessageQueue messageQueue;
 
   void handleMessage();
+
+  void createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics);
 };
 
 } // namespace Kafka
