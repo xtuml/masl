@@ -61,7 +61,7 @@ void Consumer::run() {
 
   // create a signal listener
   SWA::RealTimeSignalListener listener(
-      [this](int pid, int uid) { this->handleMessage(); },
+      [this](int pid, int uid) { this->handleMessages(); },
       SWA::Process::getInstance().getActivityMonitor());
 
   // Now run the dispatcher, providing a callback to handle messages, one to
@@ -77,22 +77,22 @@ void Consumer::run() {
   );
 }
 
-void Consumer::handleMessage() {
-  // handle the next message in the queue
-  try {
-    // dequeue the message
-    Message msg = messageQueue.dequeue();
+void Consumer::handleMessages() {
+  // drain the message queue
+  if (!messageQueue.empty()) {
+    std::vector<Message> msgs = messageQueue.dequeue_all();
+    for (auto it = msgs.begin(); it != msgs.end(); it++) {
+      Message msg = *it;
 
-    // create an input stream for the parameter data
-    BufferedInputStream buf(msg.second.begin(), msg.second.end());
+      // create an input stream for the parameter data
+      BufferedInputStream buf(msg.second.begin(), msg.second.end());
 
-    // get the service invoker
-    Callable service = ProcessHandler::getInstance().getServiceHandler(msg.first).getInvoker(buf);
+      // get the service invoker
+      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.first).getInvoker(buf);
 
-    // run the service
-    service();
-  } catch (std::out_of_range &e) {
-    // the queue is empty
+      // run the service
+      service();
+    }
   }
 }
 
@@ -187,6 +187,16 @@ Message MessageQueue::dequeue() {
   Message msg = queue.front();
   queue.pop();
   return msg;
+}
+
+std::vector<Message> MessageQueue::dequeue_all() {
+  std::lock_guard<std::mutex> lock(mutex);
+  std::vector<Message> result;
+  while (!queue.empty()) {
+    result.push_back(queue.front());
+    queue.pop();
+  }
+  return result;
 }
 
 } // namespace Kafka
