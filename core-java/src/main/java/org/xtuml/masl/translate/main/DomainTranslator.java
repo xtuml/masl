@@ -40,6 +40,7 @@ import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.main.object.ObjectTranslator;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Alias("Main")
 @Default
@@ -407,7 +408,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         servicesEnum = new EnumerationType("ServiceIds", DomainNamespace.get(domain));
         interfaceDomainHeader.addEnumerateDeclaration(servicesEnum);
 
-        for (final DomainService service : domain.getServices()) {
+        for (final DomainService service : domain.getServices().stream().sorted(Comparator.comparing(DomainService::getName)).collect(Collectors.toList())) {
             final String enumName = "serviceId_" + Mangler.mangleName(service);
             final Enumerator serviceId = servicesEnum.addEnumerator(enumName, null);
 
