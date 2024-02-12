@@ -18,6 +18,8 @@
 
 namespace Kafka {
 
+const size_t MessageQueue::MAX_CAPACITY{1000};
+
 void Consumer::run() {
 
   // Get command line options
@@ -37,10 +39,11 @@ void Consumer::run() {
 
   // Construct the configuration
   cppkafka::Configuration config = {{"metadata.broker.list", brokers},
-                                    {"group.id", groupId}};
+                                    {"group.id", groupId},
+                                    { "enable.auto.commit", false }};
 
   // Create the consumer
-  cppkafka::Consumer consumer(config);
+  consumer = std::make_shared<cppkafka::Consumer>(config);
 
   // create topics if they don't already exist
   createTopics(consumer, ProcessHandler::getInstance().getTopicNames());
@@ -49,54 +52,61 @@ void Consumer::run() {
   SWA::delay(SWA::Duration::fromMillis(100));
 
   // Subscribe to topics
-  consumer.subscribe(ProcessHandler::getInstance().getTopicNames());
-
-  // Create a consumer dispatcher
-  cppkafka::ConsumerDispatcher dispatcher(consumer);
-
-  // Stop processing on SIGINT
-  // TODO set up lifecycle event to stop dispatcher
-  SWA::Process::getInstance().registerShutdownListener(
-      [&]() { dispatcher.stop(); });
+  consumer->subscribe(ProcessHandler::getInstance().getTopicNames());
 
   // create a signal listener
   SWA::RealTimeSignalListener listener(
-      [this](int pid, int uid) { this->handleMessages(); },
+      [this](int pid, int uid) { this->handleMessage(); },
       SWA::Process::getInstance().getActivityMonitor());
 
-  // Now run the dispatcher, providing a callback to handle messages, one to
-  // handle errors and another one to handle EOF on a partition
-  dispatcher.run(
-      // Callback executed whenever a new message is consumed
-      [&](cppkafka::Message msg) {
-        // Queue the message to be handled on the main thread
-        messageQueue.enqueue(msg);
-        listener.queueSignal();
-      }
-      // TODO error handling
-  );
-}
+  bool running_ = true;
 
-void Consumer::handleMessages() {
-  // drain the message queue
-  if (!messageQueue.empty()) {
-    std::vector<Message> msgs = messageQueue.dequeue_all();
-    for (auto it = msgs.begin(); it != msgs.end(); it++) {
-      Message msg = *it;
+  // stop polling when the architecture shuts down
+  SWA::Process::getInstance().registerShutdownListener([&running_]() { running_ = false; });
 
-      // create an input stream for the parameter data
-      BufferedInputStream buf(msg.second.begin(), msg.second.end());
+  while (running_) {
 
-      // get the service invoker
-      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.first).getInvoker(buf);
+    // poll messages from broker
+    MessageQueue::size_type max_batch = MessageQueue::MAX_CAPACITY - messageQueue.size();
+    std::vector<cppkafka::Message> msgs = consumer->poll_batch(max_batch, std::chrono::milliseconds(100));
 
-      // run the service
-      service();
+    // TODO handle errors (msg.get_error())
+
+    // queue the messages
+    messageQueue.enqueue(msgs);
+
+    // send signals to the architecture for each new message
+    for (std::vector<cppkafka::Message>::size_type i = 0; i < msgs.size(); i++) {
+      listener.queueSignal();
     }
+
   }
+
 }
 
-void Consumer::createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics) {
+void Consumer::handleMessage() {
+
+  // handle the next message in the queue
+  cppkafka::Message msg = messageQueue.dequeue();
+
+  // TODO maybe this is the right spot to handle errors and check conditions on the msg instance?
+
+  // create an input stream for the parameter data
+  const cppkafka::Buffer &data = msg.get_payload();
+  std::vector<unsigned char> vec(data.begin(), data.end());
+  BufferedInputStream buf(vec.begin(), vec.end());
+
+  // get the service invoker
+  Callable service = ProcessHandler::getInstance().getServiceHandler(msg.get_topic()).getInvoker(buf);
+
+  // run the service
+  service();
+
+  // commit offset
+  consumer->commit(msg);
+}
+
+void Consumer::createTopics(std::shared_ptr<cppkafka::Consumer> consumer, std::vector<std::string> topics) {
   // TODO clean up error handling in this routine
   for (auto it = topics.begin(); it != topics.end(); it++) {
 
@@ -104,7 +114,7 @@ void Consumer::createTopics(cppkafka::Consumer& consumer, std::vector<std::strin
     int partition_cnt = 1;
     int replication_factor = 1;
 
-    rd_kafka_t *rk = consumer.get_handle();
+    rd_kafka_t *rk = consumer->get_handle();
     rd_kafka_NewTopic_t *newt[1];
     const size_t newt_cnt = 1;
     rd_kafka_AdminOptions_t *options;
@@ -171,32 +181,36 @@ Consumer &Consumer::getInstance() {
   return instance;
 }
 
-void MessageQueue::enqueue(cppkafka::Message &msg) {
-  const cppkafka::Buffer &data = msg.get_payload();
-  std::vector<unsigned char> vec(data.begin(), data.end());
-  std::lock_guard<std::mutex> lock(mutex);
-  queue.push(std::make_pair(msg.get_topic(), vec));
-  cond.notify_one();
+void MessageQueue::enqueue(std::vector<cppkafka::Message> &msgs) {
+  if (msgs.size() > 0) {
+    if (size() + msgs.size() <= MAX_CAPACITY) {
+      std::lock_guard<std::mutex> lock(mutex);
+      for (auto it = msgs.begin(); it != msgs.end(); it++) {
+        transferQueue.push(std::move(*it));
+      }
+    } else {
+      throw std::length_error("No space left in queue.");
+    }
+  }
 }
 
-Message MessageQueue::dequeue() {
-  std::lock_guard<std::mutex> lock(mutex);
-  if (queue.empty()) {
+cppkafka::Message MessageQueue::dequeue() {
+  // transfer a batch of messages if necessary
+  if ((internalQueue.empty() && !transferQueue.empty()) || transferQueue.size() > (MAX_CAPACITY / 2)) {
+    std::lock_guard<std::mutex> lock(mutex);
+    while (!transferQueue.empty()) {
+      internalQueue.push(std::move(transferQueue.front()));
+      transferQueue.pop();
+    }
+  }
+  // pop the next message in line
+  if (!internalQueue.empty()) {
+    cppkafka::Message msg = std::move(internalQueue.front());
+    internalQueue.pop();
+    return msg;
+  } else {
     throw std::out_of_range("Queue is empty");
   }
-  Message msg = queue.front();
-  queue.pop();
-  return msg;
-}
-
-std::vector<Message> MessageQueue::dequeue_all() {
-  std::lock_guard<std::mutex> lock(mutex);
-  std::vector<Message> result;
-  while (!queue.empty()) {
-    result.push_back(queue.front());
-    queue.pop();
-  }
-  return result;
 }
 
 } // namespace Kafka

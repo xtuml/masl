@@ -4,7 +4,6 @@
 #include "cppkafka/consumer.h"
 #include "cppkafka/message.h"
 
-#include <condition_variable>
 #include <mutex>
 #include <queue>
 #include <string>
@@ -13,19 +12,19 @@
 
 namespace Kafka {
 
-typedef std::pair<std::string, std::vector<unsigned char>> Message;
-
 class MessageQueue {
 public:
-  void enqueue(cppkafka::Message &msg);
-  Message dequeue();
-  std::vector<Message> dequeue_all();
-  bool empty() { return queue.empty(); }
+  static const size_t MAX_CAPACITY;
+  typedef typename std::queue<cppkafka::Message>::size_type size_type;
+  void enqueue(std::vector<cppkafka::Message> &msgs);
+  cppkafka::Message dequeue();
+  bool empty() { return !(internalQueue.empty() && transferQueue.empty()); };
+  MessageQueue::size_type size() { return internalQueue.size() + transferQueue.size(); };
 
 private:
-  std::queue<Message> queue;
+  std::queue<cppkafka::Message> internalQueue;
+  std::queue<cppkafka::Message> transferQueue;
   mutable std::mutex mutex;
-  std::condition_variable cond;
 };
 
 class Consumer {
@@ -36,10 +35,11 @@ public:
 
 private:
   MessageQueue messageQueue;
+  std::shared_ptr<cppkafka::Consumer> consumer;
 
-  void handleMessages();
+  void handleMessage();
 
-  void createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics);
+  void createTopics(std::shared_ptr<cppkafka::Consumer> consumer, std::vector<std::string> topics);
 };
 
 } // namespace Kafka
