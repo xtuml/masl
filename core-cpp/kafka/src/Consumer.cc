@@ -9,6 +9,7 @@
 #include "swa/Process.hh"
 #include "swa/ProgramError.hh"
 #include "swa/RealTimeSignalListener.hh"
+#include "swa/parse.hh"
 
 #include "cppkafka/buffer.h"
 #include "cppkafka/configuration.h"
@@ -18,12 +19,16 @@
 
 namespace Kafka {
 
-const size_t MessageQueue::MAX_CAPACITY{1000};
+const char *const MaxCapacityOptionDefault = "1000";
+const char *const BatchSizeOptionDefault   = "1000";
+const char *const PollDelayOptionDefault   = "100";
 
 void Consumer::run() {
 
   // Get command line options
   const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
+  const size_t batch_size = SWA::parse<uint32_t>(SWA::CommandLine::getInstance().getOption(BatchSizeOption, BatchSizeOptionDefault));
+  const std::chrono::milliseconds poll_delay(SWA::parse<uint32_t>(SWA::CommandLine::getInstance().getOption(PollDelayOption, PollDelayOptionDefault)));
 
   std::string groupId;
   if (SWA::CommandLine::getInstance().optionPresent(GroupIdOption)) {
@@ -67,8 +72,8 @@ void Consumer::run() {
   while (running_) {
 
     // poll messages from broker
-    MessageQueue::size_type max_batch = MessageQueue::MAX_CAPACITY - messageQueue.size();
-    std::vector<cppkafka::Message> msgs = consumer->poll_batch(max_batch, std::chrono::milliseconds(100));
+    MessageQueue::size_type max_batch = messageQueue.capacity() - messageQueue.size();
+    std::vector<cppkafka::Message> msgs = consumer->poll_batch(std::min(max_batch, batch_size), poll_delay);
 
     // TODO handle errors (msg.get_error())
 
@@ -177,16 +182,17 @@ void Consumer::createTopics(std::shared_ptr<cppkafka::Consumer> consumer, std::v
 }
 
 Consumer &Consumer::getInstance() {
-  static Consumer instance;
+  const size_t max_capacity = SWA::parse<uint32_t>(SWA::CommandLine::getInstance().getOption(MaxCapacityOption, MaxCapacityOptionDefault));
+  static Consumer instance(max_capacity);
   return instance;
 }
 
 void MessageQueue::enqueue(std::vector<cppkafka::Message> &msgs) {
   if (msgs.size() > 0) {
-    if (size() + msgs.size() <= MAX_CAPACITY) {
+    if (size() + msgs.size() <= capacity()) {
       std::lock_guard<std::mutex> lock(mutex);
       for (auto it = msgs.begin(); it != msgs.end(); it++) {
-        transferQueue.push(std::move(*it));
+        transferQueue.push_back(std::move(*it));
       }
     } else {
       throw std::length_error("No space left in queue.");
@@ -196,17 +202,17 @@ void MessageQueue::enqueue(std::vector<cppkafka::Message> &msgs) {
 
 cppkafka::Message MessageQueue::dequeue() {
   // transfer a batch of messages if necessary
-  if ((internalQueue.empty() && !transferQueue.empty()) || transferQueue.size() > (MAX_CAPACITY / 2)) {
+  if ((internalQueue.empty() && !transferQueue.empty()) || transferQueue.size() > (capacity() / 2)) {
     std::lock_guard<std::mutex> lock(mutex);
     while (!transferQueue.empty()) {
-      internalQueue.push(std::move(transferQueue.front()));
-      transferQueue.pop();
+      internalQueue.push_back(std::move(transferQueue.front()));
+      transferQueue.pop_front();
     }
   }
   // pop the next message in line
   if (!internalQueue.empty()) {
     cppkafka::Message msg = std::move(internalQueue.front());
-    internalQueue.pop();
+    internalQueue.pop_front();
     return msg;
   } else {
     throw std::out_of_range("Queue is empty");
