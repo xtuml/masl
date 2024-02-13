@@ -10,12 +10,13 @@
 
 namespace Kafka {
 
-const char *const BrokersOption     = "-kafka-broker-list";
-const char *const GroupIdOption     = "-kafka-group-id";
-const char *const NamespaceOption   = "-kafka-namespace";
-const char *const MaxCapacityOption = "-kafka-max-capacity";
-const char *const BatchSizeOption   = "-kafka-batch-size";
-const char *const PollDelayOption   = "-kafka-poll-delay";
+const char *const BrokersOption         = "-kafka-broker-list";
+const char *const GroupIdOption         = "-kafka-group-id";
+const char *const NamespaceOption       = "-kafka-namespace";
+const char *const MaxCapacityOption     = "-kafka-max-capacity";
+const char *const BatchSizeOption       = "-kafka-batch-size";
+const char *const PollDelayOption       = "-kafka-poll-delay";
+const char *const DebugStatisticsOption = "-kafka-debug";
 
 bool startup() {
   if (ProcessHandler::getInstance().hasRegisteredServices()) {
@@ -35,6 +36,7 @@ struct Init {
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(MaxCapacityOption, std::string("Kafka Max Pending Event Capacity"), false, "maxCapacity", true, false));
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BatchSizeOption, std::string("Kafka Polling Batch Size"), false, "batchSize", true, false));
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PollDelayOption, std::string("Kafka Polling Delay Duration (ms)"), false, "pollDelay", true, false));
+    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(DebugStatisticsOption, std::string("Publish Kafka Debug Statistics"), false, "", false, false));
 
     SWA::Process::getInstance().registerStartedListener(&startup);
   }

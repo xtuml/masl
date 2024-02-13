@@ -13,8 +13,10 @@
 
 #include "cppkafka/buffer.h"
 #include "cppkafka/configuration.h"
+#include "cppkafka/producer.h"
 #include "cppkafka/utils/consumer_dispatcher.h"
 
+#include <nlohmann/json.hpp>
 #include <uuid/uuid.h>
 
 namespace Kafka {
@@ -29,6 +31,7 @@ void Consumer::run() {
   const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
   const size_t batch_size = SWA::parse<uint32_t>(SWA::CommandLine::getInstance().getOption(BatchSizeOption, BatchSizeOptionDefault));
   const std::chrono::milliseconds poll_delay(SWA::parse<uint32_t>(SWA::CommandLine::getInstance().getOption(PollDelayOption, PollDelayOptionDefault)));
+  const bool publish_debug = SWA::CommandLine::getInstance().optionPresent(DebugStatisticsOption);
 
   std::string groupId;
   if (SWA::CommandLine::getInstance().optionPresent(GroupIdOption)) {
@@ -69,7 +72,18 @@ void Consumer::run() {
   // stop polling when the architecture shuts down
   SWA::Process::getInstance().registerShutdownListener([&running_]() { running_ = false; });
 
+  // create a producer for stats
+  cppkafka::MessageBuilder builder("SWA_debug_stats");
+  cppkafka::Producer producer(config);
+  uuid_t producer_uuid;
+  uuid_generate(producer_uuid);
+  char producer_formatted[37];
+  uuid_unparse(producer_uuid, producer_formatted);
+  std::string producer_id = std::string(producer_formatted);
+
   while (running_) {
+
+    auto t0 = std::chrono::high_resolution_clock::now();
 
     // poll messages from broker
     MessageQueue::size_type max_batch = messageQueue.capacity() - messageQueue.size();
@@ -83,6 +97,21 @@ void Consumer::run() {
     // send signals to the architecture for each new message
     for (std::vector<cppkafka::Message>::size_type i = 0; i < msgs.size(); i++) {
       listener.queueSignal();
+    }
+
+    // publish stats
+    if (publish_debug) {
+      auto t1 = std::chrono::high_resolution_clock::now();
+      auto d = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0);
+      nlohmann::json j;
+      j["name"] = SWA::Process::getInstance().getName();
+      j["producer_id"] = producer_id;
+      j["duration"] = d.count();
+      j["num_msgs_polled"] = msgs.size();
+      j["msg_queue_size"] = messageQueue.size();
+      std::string json_string = j.dump();
+      builder.payload(json_string);
+      producer.produce(builder);
     }
 
   }
