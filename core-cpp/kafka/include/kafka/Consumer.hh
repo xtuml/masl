@@ -23,7 +23,7 @@ public:
   cppkafka::Message dequeue();
 
   bool empty() { return !(internalQueue.empty() && transferQueue.empty()); }
-  MessageQueue::size_type size() { return internalQueue.size() + transferQueue.size(); }
+  MessageQueue::size_type size() { return std::min(internalQueue.size() + transferQueue.size(), max_capacity); }
   size_t capacity() { return max_capacity; }
 
 private:

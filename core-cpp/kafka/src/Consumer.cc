@@ -218,8 +218,8 @@ Consumer &Consumer::getInstance() {
 
 void MessageQueue::enqueue(std::vector<cppkafka::Message> &msgs) {
   if (msgs.size() > 0) {
+    std::lock_guard<std::mutex> lock(mutex);
     if (size() + msgs.size() <= capacity()) {
-      std::lock_guard<std::mutex> lock(mutex);
       for (auto it = msgs.begin(); it != msgs.end(); it++) {
         transferQueue.push_back(std::move(*it));
       }
