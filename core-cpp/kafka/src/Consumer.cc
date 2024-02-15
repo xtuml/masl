@@ -8,30 +8,21 @@
 #include "swa/Duration.hh"
 #include "swa/Process.hh"
 #include "swa/ProgramError.hh"
-#include "swa/RealTimeSignalListener.hh"
+#include "swa/Timestamp.hh"
 #include "swa/parse.hh"
 
 #include "cppkafka/buffer.h"
 #include "cppkafka/configuration.h"
-#include "cppkafka/producer.h"
-#include "cppkafka/utils/consumer_dispatcher.h"
 
-#include <nlohmann/json.hpp>
 #include <uuid/uuid.h>
 
 namespace Kafka {
 
 const char *const MaxCapacityOptionDefault = "1000";
-const char *const BatchSizeOptionDefault   = "1000";
-const char *const PollDelayOptionDefault   = "100";
-
 void Consumer::run() {
 
   // Get command line options
   const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
-  const size_t batch_size = SWA::parse<uint32_t>(SWA::CommandLine::getInstance().getOption(BatchSizeOption, BatchSizeOptionDefault));
-  const std::chrono::milliseconds poll_delay(SWA::parse<uint32_t>(SWA::CommandLine::getInstance().getOption(PollDelayOption, PollDelayOptionDefault)));
-  const bool publish_debug = SWA::CommandLine::getInstance().optionPresent(DebugStatisticsOption);
 
   std::string groupId;
   if (SWA::CommandLine::getInstance().optionPresent(GroupIdOption)) {
@@ -51,10 +42,10 @@ void Consumer::run() {
                                     { "enable.auto.commit", false }};
 
   // Create the consumer
-  consumer = std::make_shared<cppkafka::Consumer>(config);
+  consumer = std::make_unique<cppkafka::Consumer>(config);
 
   // create topics if they don't already exist
-  createTopics(consumer, ProcessHandler::getInstance().getTopicNames());
+  createTopics(ProcessHandler::getInstance().getTopicNames());
 
   // short delay to avoid race conditions if other processes initiated topic creation
   SWA::delay(SWA::Duration::fromMillis(100));
@@ -62,66 +53,21 @@ void Consumer::run() {
   // Subscribe to topics
   consumer->subscribe(ProcessHandler::getInstance().getTopicNames());
 
-  // create a signal listener
-  SWA::RealTimeSignalListener listener(
-      [this](int pid, int uid) { this->handleMessage(); },
-      SWA::Process::getInstance().getActivityMonitor());
-
-  bool running_ = true;
-
-  // stop polling when the architecture shuts down
-  SWA::Process::getInstance().registerShutdownListener([&running_]() { running_ = false; });
-
-  // create a producer for stats
-  cppkafka::MessageBuilder builder("SWA_debug_stats");
-  cppkafka::Producer producer(config);
-  uuid_t producer_uuid;
-  uuid_generate(producer_uuid);
-  char producer_formatted[37];
-  uuid_unparse(producer_uuid, producer_formatted);
-  std::string producer_id = std::string(producer_formatted);
-
-  while (running_) {
-
-    auto t0 = std::chrono::high_resolution_clock::now();
-
-    // poll messages from broker
-    MessageQueue::size_type max_batch = messageQueue.capacity() - messageQueue.size();
-    std::vector<cppkafka::Message> msgs = consumer->poll_batch(std::min(max_batch, batch_size), poll_delay);
-
-    // TODO handle errors (msg.get_error())
-
-    // queue the messages
-    messageQueue.enqueue(msgs);
-
-    // send signals to the architecture for each new message
-    for (std::vector<cppkafka::Message>::size_type i = 0; i < msgs.size(); i++) {
-      listener.queueSignal();
-    }
-
-    // publish stats
-    if (publish_debug) {
-      auto t1 = std::chrono::high_resolution_clock::now();
-      auto d = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0);
-      nlohmann::json j;
-      j["name"] = SWA::Process::getInstance().getName();
-      j["producer_id"] = producer_id;
-      j["duration"] = d.count();
-      j["num_msgs_polled"] = msgs.size();
-      j["msg_queue_size"] = messageQueue.size();
-      std::string json_string = j.dump();
-      builder.payload(json_string);
-      producer.produce(builder);
-    }
-
-  }
+  // schedule the polling timer
+  timer.schedule(SWA::Timestamp::now(), SWA::Duration::fromMillis(10));
 
 }
 
-void Consumer::handleMessage() {
-
+void Consumer::handleSignal() {
   // handle the next message in the queue
-  cppkafka::Message msg = messageQueue.dequeue();
+  cppkafka::Message msg = std::move(messageQueue.front());
+  messageQueue.pop_front();
+
+  // if the message queue is empty, trigger a poll as soon as possible
+  if (messageQueue.empty()) {
+    timer.cancel();
+    timer.schedule(SWA::Timestamp::now(), SWA::Duration::fromMillis(10));
+  }
 
   // TODO maybe this is the right spot to handle errors and check conditions on the msg instance?
 
@@ -140,7 +86,20 @@ void Consumer::handleMessage() {
   consumer->commit(msg);
 }
 
-void Consumer::createTopics(std::shared_ptr<cppkafka::Consumer> consumer, std::vector<std::string> topics) {
+void Consumer::pollMessages() {
+  if (messageQueue.size() < (messageQueue.capacity() / 2)) {
+    // poll a batch of messages. do not wait.
+    std::vector<cppkafka::Message> msgs = consumer->poll_batch(messageQueue.capacity() - messageQueue.size(), std::chrono::milliseconds::zero());
+
+    // queue the messages for handling by the architecture
+    for (auto it = msgs.begin(); it != msgs.end(); it++) {
+      messageQueue.push_back(std::move(*it));
+      msgListener.queueSignal();
+    }
+  }
+}
+
+void Consumer::createTopics(std::vector<std::string> topics) {
   // TODO clean up error handling in this routine
   for (auto it = topics.begin(); it != topics.end(); it++) {
 
@@ -214,38 +173,6 @@ Consumer &Consumer::getInstance() {
   const size_t max_capacity = SWA::parse<uint32_t>(SWA::CommandLine::getInstance().getOption(MaxCapacityOption, MaxCapacityOptionDefault));
   static Consumer instance(max_capacity);
   return instance;
-}
-
-void MessageQueue::enqueue(std::vector<cppkafka::Message> &msgs) {
-  if (msgs.size() > 0) {
-    std::lock_guard<std::mutex> lock(mutex);
-    if (size() + msgs.size() <= capacity()) {
-      for (auto it = msgs.begin(); it != msgs.end(); it++) {
-        transferQueue.push_back(std::move(*it));
-      }
-    } else {
-      throw std::length_error("No space left in queue.");
-    }
-  }
-}
-
-cppkafka::Message MessageQueue::dequeue() {
-  // transfer a batch of messages if necessary
-  if ((internalQueue.empty() && !transferQueue.empty()) || transferQueue.size() > (capacity() / 2)) {
-    std::lock_guard<std::mutex> lock(mutex);
-    while (!transferQueue.empty()) {
-      internalQueue.push_back(std::move(transferQueue.front()));
-      transferQueue.pop_front();
-    }
-  }
-  // pop the next message in line
-  if (!internalQueue.empty()) {
-    cppkafka::Message msg = std::move(internalQueue.front());
-    internalQueue.pop_front();
-    return msg;
-  } else {
-    throw std::out_of_range("Queue is empty");
-  }
 }
 
 } // namespace Kafka
