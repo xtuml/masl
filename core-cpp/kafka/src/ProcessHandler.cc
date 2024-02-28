@@ -37,9 +37,29 @@ std::vector<std::string> ProcessHandler::getTopicNames() {
   return topicNames;
 }
 
+bool ProcessHandler::setCustomTopicName(int domainId, int serviceId, std::string topicName) {
+  std::pair<int, int> key (domainId, serviceId);
+  customTopicNames.insert(TopicMap::value_type(key, topicName));
+  return true;
+}
+
 std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
-  static const std::string ns = SWA::CommandLine::getInstance().getOption(NamespaceOption, "default");
-  return ns + "." + SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
+  std::string name = "";
+
+  // get the base name
+  std::pair<int, int> key (domainId, serviceId);
+  if (customTopicNames.contains(key)) {
+    name = customTopicNames[key];
+  } else {
+    name = SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
+  }
+
+  // add the namespace if applicable
+  static const std::string ns = SWA::CommandLine::getInstance().getOption(NamespaceOption);
+  if (!ns.empty()) {
+    name = ns + "." + name;
+  }
+  return name;
 }
 
 ProcessHandler &ProcessHandler::getInstance() {

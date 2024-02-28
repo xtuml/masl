@@ -1,6 +1,7 @@
 #ifndef Kafka_Consumer_HH
 #define Kafka_Consumer_HH
 
+#include "cppkafka/consumer.h"
 #include "cppkafka/message.h"
 
 #include <condition_variable>
@@ -18,6 +19,8 @@ class MessageQueue {
 public:
   void enqueue(cppkafka::Message &msg);
   Message dequeue();
+  std::vector<Message> dequeue_all();
+  bool empty() { return queue.empty(); }
 
 private:
   std::queue<Message> queue;
@@ -34,7 +37,9 @@ public:
 private:
   MessageQueue messageQueue;
 
-  void handleMessage();
+  void handleMessages();
+
+  void createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics);
 };
 
 } // namespace Kafka

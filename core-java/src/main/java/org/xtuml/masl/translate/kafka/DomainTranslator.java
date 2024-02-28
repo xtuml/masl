@@ -19,6 +19,9 @@ import org.xtuml.masl.translate.main.Mangler;
 public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
 {
 
+  public static final String KAFKA_TOPIC_PRAGMA = "kafka_topic";
+  public static final String KAFKA_PARTITION_KEY_PRAGMA = "kafka_partition_key";
+
   private final org.xtuml.masl.translate.main.DomainTranslator mainTranslator;
   private final Namespace domainNamespace;
   private final Library library;
@@ -61,7 +64,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
 
     // create service translators
     final List<ServiceTranslator> serviceTranslators = domain.getServices().stream()
-      .filter(service -> service.getDeclarationPragmas().hasPragma("kafka_topic") && !service.isFunction() && !service.isExternal() && !service.isScenario())
+      .filter(service -> service.getDeclarationPragmas().hasPragma(KAFKA_TOPIC_PRAGMA) && !service.isFunction() && !service.isExternal() && !service.isScenario())
       .map(service -> new ServiceTranslator(service, this)).collect(Collectors.toList());
 
 
@@ -69,6 +72,12 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
     for (final ServiceTranslator serviceTranslator : serviceTranslators)
     {
       serviceTranslator.addServiceHandler(consumerCodeFile);
+    }
+
+    // handle custom topics (consumer)
+    for (final ServiceTranslator serviceTranslator : serviceTranslators)
+    {
+      serviceTranslator.addCustomTopicName(consumerCodeFile);
     }
 
     // add topic registrations
@@ -81,6 +90,12 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
     for (final ServiceTranslator serviceTranslator : serviceTranslators)
     {
       serviceTranslator.addPublisher(publisherCodeFile);
+    }
+
+    // handle custom topics (publisher)
+    for (final ServiceTranslator serviceTranslator : serviceTranslators)
+    {
+      serviceTranslator.addCustomTopicName(publisherCodeFile);
     }
 
     // process type readers/writers

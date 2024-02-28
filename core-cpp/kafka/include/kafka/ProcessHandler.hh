@@ -23,13 +23,20 @@ public:
 
   bool hasRegisteredServices() { return serviceLookup.size() > 0; }
 
-  static std::string getTopicName(int domainId, int serviceId);
+  bool setCustomTopicName(int domainId, int serviceId, std::string topicName);
+
+  std::string getTopicName(int domainId, int serviceId);
 
   static ProcessHandler &getInstance();
 
+
+
 private:
   typedef std::map<std::string, std::shared_ptr<ServiceHandler>> ServiceLookup;
+  typedef std::map<std::pair<int, int>, std::string> TopicMap;
+
   ServiceLookup serviceLookup;
+  TopicMap customTopicNames;
 };
 
 } // namespace Kafka
