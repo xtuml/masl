@@ -35,6 +35,8 @@ class ConanFile(conan.ConanFile):
         self.requires("nlohmann_json/3.11.2")
         self.tool_requires(f"masl_codegen/{self.version}@xtuml/stable")
         self.test_requires('gtest/1.14.0')
+        self.requires("openssl/3.1.1")
+        self.requires('xxhash/0.8.2')
 
     def package(self):
         super().package()
