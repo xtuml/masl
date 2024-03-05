@@ -3,7 +3,8 @@
 #include "Hash_OOA/__Hash_services.hh"
 #include <boost/algorithm/hex.hpp>
 #include <boost/make_shared.hpp>
-#include <sstream>
+#include <cstdio>
+#include <fstream>
 
 using namespace masld_Hash;
 
@@ -37,10 +38,18 @@ TEST_P(TestHash,String) {
     EXPECT_EQ(masls_overload1_hash(GetParam().algorithm,input),from_hex(GetParam().hash));
 }
 
-TEST_P(TestHash,File) {
-    SWA::Device device{boost::make_shared<std::ostringstream>(input)};
+TEST_P(TestHash,Stream) {
+    SWA::Device device{boost::make_shared<std::istringstream>(input)};
     EXPECT_EQ(masls_overload2_hash(GetParam().algorithm,device),from_hex(GetParam().hash));
+}
 
+TEST_P(TestHash,File) {
+    std::string fname = std::tmpnam(nullptr);
+    std::ofstream ofile{fname};
+    ofile << input << std::flush;
+    SWA::Device device{boost::make_shared<std::ifstream>(fname)};
+    EXPECT_EQ(masls_overload2_hash(GetParam().algorithm,device),from_hex(GetParam().hash));
+    unlink(fname.c_str());
 }
 
 TEST_P(TestHash,HMACBytes) {
@@ -54,7 +63,16 @@ TEST_P(TestHash,HMACString) {
 }
 
 TEST_P(TestHash,HMACFile) {
-    SWA::Device device{boost::make_shared<std::ostringstream>(input)};
+    std::string fname = std::tmpnam(nullptr);
+    std::ofstream ofile{fname};
+    ofile << input << std::flush;
+    SWA::Device device{boost::make_shared<std::ifstream>(fname)};
+    EXPECT_EQ(masls_overload2_hmac(GetParam().algorithm,to_bytes(key),device),from_hex(GetParam().hmac));
+    unlink(fname.c_str());
+
+}
+TEST_P(TestHash,HMACStream) {
+    SWA::Device device{boost::make_shared<std::istringstream>(input)};
     EXPECT_EQ(masls_overload2_hmac(GetParam().algorithm,to_bytes(key),device),from_hex(GetParam().hmac));
 }
 
