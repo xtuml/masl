@@ -8,7 +8,7 @@
 #include <fmt/chrono.h>
 #include "swa/CommandLine.hh"
 #include "kafka/Kafka.hh"
-
+#include <sstream>
 
 namespace Kafka {
     class KafkaAppender : public log4cplus::Appender {
@@ -26,17 +26,9 @@ namespace Kafka {
         }
 
         void append(const log4cplus::spi::InternalLoggingEvent &event) override {
-            std::string message = nlohmann::json(
-                    {
-                            {"timestamp", fmt::format("{:%FT%TZ}", event.getTimestamp())},
-                            {"logger",    event.getLoggerName()},
-                            {"level",     log4cplus::getLogLevelManager().toString(event.getLogLevel())},
-                            {"file",      event.getFile()},
-                            {"function",  event.getFunction()},
-                            {"line",      event.getLine()},
-                            {"message",   event.getMessage()},
-                    }
-            ).dump();
+            std::ostringstream output;
+            layout->formatAndAppend(output,event);
+            std::string message = output.str();
             producer.produce(messageBuilder.payload(message));
         }
 

@@ -6,6 +6,8 @@
 #include "Logger_OOA/__Logger_services.hh"
 #include "Logger_OOA/__Logger_types.hh"
 #include "swa/String.hh"
+#include "swa/Stack.hh"
+#include "swa/NameFormatter.hh"
 #include "logging/log.hh"
 
 using namespace xtuml::logging;
@@ -21,92 +23,83 @@ namespace masld_Logger
   const bool localServiceRegistration_masls_fatal = interceptor_masls_fatal::instance().registerLocal( &masls_fatal );
   const bool localServiceRegistration_masls_setLogLevel = interceptor_masls_setLogLevel::instance().registerLocal( &masls_setLogLevel );
 
+  Logger::Level get_level( const maslt_Priority& maslp_priority) {
+      const static std::array<Logger::Level, 6> level_lookup = {
+              Logger::Level::TRACE,
+              Logger::Level::DEBUG,
+              Logger::Level::INFO,
+              Logger::Level::WARN,
+              Logger::Level::ERROR,
+              Logger::Level::FATAL,
+      };
+
+      return level_lookup[static_cast<std::size_t>(maslp_priority.getIndex())];
+  }
+
   void masls_log ( const maslt_Priority& maslp_priority,
                              const ::SWA::String&  maslp_logger,
                              const ::SWA::String&  maslp_message )
   {
-    switch ( maslp_priority.getIndex() )
-    {
-      case maslt_Priority::index_masle_Trace      : masls_trace      (maslp_logger,maslp_message); break;
-      case maslt_Priority::index_masle_Debug      : masls_debug      (maslp_logger,maslp_message); break;
-      case maslt_Priority::index_masle_Information: masls_information(maslp_logger,maslp_message); break;
-      case maslt_Priority::index_masle_Warning    : masls_warning    (maslp_logger,maslp_message); break;
-      case maslt_Priority::index_masle_Error      : masls_error      (maslp_logger,maslp_message); break;
-      case maslt_Priority::index_masle_Fatal      : masls_fatal      (maslp_logger,maslp_message); break;
-    }
+      auto logger =   Logger{fmt::runtime(maslp_logger.s_str())};
+      const auto& stack_frame = ::SWA::Stack::getInstance().top();
+      auto file_name = ::SWA::NameFormatter::formatFileName(stack_frame);
+      auto name = ::SWA::NameFormatter::formatStackFrame(stack_frame,false);
+      logger.log_raw(get_level(maslp_priority),maslp_message.s_str(),file_name,stack_frame.getLine(),name);
   }
-
 
   void masls_trace ( const ::SWA::String& maslp_logger,
                                const ::SWA::String& maslp_message )
   {
-      Logger{fmt::runtime(maslp_logger.s_str())}.trace(fmt::runtime(maslp_message.s_str()));
+      masls_log(maslt_Priority::masle_Trace,maslp_logger, maslp_message);
   }
 
   void masls_debug ( const ::SWA::String& maslp_logger,
                                const ::SWA::String& maslp_message )
   {
-      Logger{fmt::runtime(maslp_logger.s_str())}.debug (fmt::runtime(maslp_message.s_str()) );
+      masls_log(maslt_Priority::masle_Debug,maslp_logger, maslp_message);
   }
 
 
   void masls_information ( const ::SWA::String& maslp_logger,
                                      const ::SWA::String& maslp_message )
   {
-      Logger{fmt::runtime(maslp_logger.s_str())}.info (fmt::runtime(maslp_message.s_str()) );
+      masls_log(maslt_Priority::masle_Information,maslp_logger, maslp_message);
   }
 
   void masls_warning ( const ::SWA::String& maslp_logger,
                                  const ::SWA::String& maslp_message )
   {
-      Logger{fmt::runtime(maslp_logger.s_str())}.warn (fmt::runtime(maslp_message.s_str()) );
+      masls_log(maslt_Priority::masle_Warning,maslp_logger, maslp_message);
   }
 
   void masls_error ( const ::SWA::String& maslp_logger,
                                const ::SWA::String& maslp_message )
   {
-      Logger{fmt::runtime(maslp_logger.s_str())}.error (fmt::runtime(maslp_message.s_str()) );
+      masls_log(maslt_Priority::masle_Error,maslp_logger, maslp_message);
   }
 
   void masls_fatal ( const ::SWA::String& maslp_logger,
                                const ::SWA::String& maslp_message )
   {
-      Logger{fmt::runtime(maslp_logger.s_str())}.fatal (fmt::runtime(maslp_message.s_str()) );
+      masls_log(maslt_Priority::masle_Fatal,maslp_logger, maslp_message);
 
   }
-  
+
   void masls_setLogLevel ( const ::SWA::String&  maslp_logger,
                                      const maslt_Priority& maslp_priority )
   {
-    switch ( maslp_priority.getIndex() )
-    {
-      case maslt_Priority::index_masle_Trace      : Logger{fmt::runtime(maslp_logger.s_str())}.set_level(Logger::Level::TRACE ); break;
-      case maslt_Priority::index_masle_Debug      : Logger{fmt::runtime(maslp_logger.s_str())}.set_level(Logger::Level::DEBUG ); break;
-      case maslt_Priority::index_masle_Information: Logger{fmt::runtime(maslp_logger.s_str())}.set_level(Logger::Level::INFO  ); break;
-      case maslt_Priority::index_masle_Warning    : Logger{fmt::runtime(maslp_logger.s_str())}.set_level(Logger::Level::WARN  ); break;
-      case maslt_Priority::index_masle_Error      : Logger{fmt::runtime(maslp_logger.s_str())}.set_level(Logger::Level::ERROR ); break;
-      case maslt_Priority::index_masle_Fatal      : Logger{fmt::runtime(maslp_logger.s_str())}.set_level(Logger::Level::FATAL ); break;
-    }
+      Logger{fmt::runtime(maslp_logger.s_str())}.set_level(get_level(maslp_priority));
   }
 
-bool masls_enabled ( const maslt_Priority& maslp_priority, const ::SWA::String&  maslp_logger ) {
-    switch ( maslp_priority.getIndex() )
-    {
-        case maslt_Priority::index_masle_Trace      : return Logger{fmt::runtime(maslp_logger.s_str())}.trace_enabled(); break;
-        case maslt_Priority::index_masle_Debug      : return Logger{fmt::runtime(maslp_logger.s_str())}.debug_enabled(); break;
-        case maslt_Priority::index_masle_Information: return Logger{fmt::runtime(maslp_logger.s_str())}.info_enabled();  break;
-        case maslt_Priority::index_masle_Warning    : return Logger{fmt::runtime(maslp_logger.s_str())}.warn_enabled();  break;
-        case maslt_Priority::index_masle_Error      : return Logger{fmt::runtime(maslp_logger.s_str())}.error_enabled(); break;
-        case maslt_Priority::index_masle_Fatal      : return Logger{fmt::runtime(maslp_logger.s_str())}.fatal_enabled(); break;
-    }
+  bool masls_enabled ( const maslt_Priority& maslp_priority, const ::SWA::String&  maslp_logger ) {
+    return Logger{fmt::runtime(maslp_logger.s_str())}.enabled(get_level(maslp_priority));
+  }
 
-}
-
-  bool masls_traceEnabled      (const ::SWA::String&  maslp_logger) { return Logger{fmt::runtime(maslp_logger.s_str())}.trace_enabled(); }
-  bool masls_debugEnabled      (const ::SWA::String&  maslp_logger) { return Logger{fmt::runtime(maslp_logger.s_str())}.debug_enabled(); }
-  bool masls_informationEnabled(const ::SWA::String&  maslp_logger) { return Logger{fmt::runtime(maslp_logger.s_str())}.info_enabled();  }
-  bool masls_warningEnabled    (const ::SWA::String&  maslp_logger) { return Logger{fmt::runtime(maslp_logger.s_str())}.warn_enabled();  }
-  bool masls_errorEnabled      (const ::SWA::String&  maslp_logger) { return Logger{fmt::runtime(maslp_logger.s_str())}.error_enabled(); }
-  bool masls_fatalEnabled      (const ::SWA::String&  maslp_logger) { return Logger{fmt::runtime(maslp_logger.s_str())}.fatal_enabled(); }
+  bool masls_traceEnabled      (const ::SWA::String&  maslp_logger) { return masls_enabled(maslt_Priority::masle_Trace, maslp_logger); }
+  bool masls_debugEnabled      (const ::SWA::String&  maslp_logger) { return masls_enabled(maslt_Priority::masle_Debug, maslp_logger); }
+  bool masls_informationEnabled(const ::SWA::String&  maslp_logger) { return masls_enabled(maslt_Priority::masle_Information, maslp_logger);  }
+  bool masls_warningEnabled    (const ::SWA::String&  maslp_logger) { return masls_enabled(maslt_Priority::masle_Warning, maslp_logger);  }
+  bool masls_errorEnabled      (const ::SWA::String&  maslp_logger) { return masls_enabled(maslt_Priority::masle_Error, maslp_logger); }
+  bool masls_fatalEnabled      (const ::SWA::String&  maslp_logger) { return masls_enabled(maslt_Priority::masle_Fatal, maslp_logger); }
 
 }
