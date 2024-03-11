@@ -162,10 +162,10 @@ namespace SWA
       std::string name;
       switch ( type )
       {
-          case StackFrame::DomainService:     return formatDomainServiceName(domainId,actionId);
-          case StackFrame::TerminatorService: return formatTerminatorServiceName(domainId,objectId,actionId);
-          case StackFrame::ObjectService:     return formatObjectServiceName(domainId,objectId,actionId);
-          case StackFrame::StateAction:       return formatStateName(domainId,objectId,actionId);
+          case StackFrame::DomainService:     return formatDomainServiceFileName(domainId,actionId);
+          case StackFrame::TerminatorService: return formatTerminatorServiceFileName(domainId,objectId,actionId);
+          case StackFrame::ObjectService:     return formatObjectServiceFileName(domainId,objectId,actionId);
+          case StackFrame::StateAction:       return formatStateFileName(domainId,objectId,actionId);
           default:                            return "<unknown>";
       }
   }
