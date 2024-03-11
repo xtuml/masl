@@ -25,12 +25,12 @@ namespace masld_Logger
 
   Logger::Level get_level( const maslt_Priority& maslp_priority) {
       const static std::array<Logger::Level, 6> level_lookup = {
-              Logger::Level::TRACE,
-              Logger::Level::DEBUG,
-              Logger::Level::INFO,
-              Logger::Level::WARN,
-              Logger::Level::ERROR,
               Logger::Level::FATAL,
+              Logger::Level::ERROR,
+              Logger::Level::WARN,
+              Logger::Level::INFO,
+              Logger::Level::DEBUG,
+              Logger::Level::TRACE,
       };
 
       return level_lookup[static_cast<std::size_t>(maslp_priority.getIndex())];
