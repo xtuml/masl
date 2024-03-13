@@ -16,7 +16,7 @@ Producer::Producer() {
   prod = std::unique_ptr<cppkafka::Producer>(new cppkafka::Producer(config));
 }
 
-void Producer::publish(int domainId, int serviceId, BufferedOutputStream &buf, BufferedOutputStream &partKey) {
+void Producer::publish(int domainId, int serviceId, std::string data, std::string partKey) {
   // find/create a message builder
   std::shared_ptr<cppkafka::MessageBuilder> msgBuilder;
   TopicLookup::iterator entry = topicLookup.find(std::make_pair(domainId, serviceId));
@@ -30,12 +30,12 @@ void Producer::publish(int domainId, int serviceId, BufferedOutputStream &buf, B
   }
 
   // set the partion key
-  if (partKey.begin() != partKey.end()) {
-    msgBuilder->key(cppkafka::Buffer(partKey.begin(), partKey.end()));
+  if (!partKey.empty()) {
+    msgBuilder->key(partKey);
   }
 
   // Set the payload on this builder
-  msgBuilder->payload(cppkafka::Buffer(buf.begin(), buf.end()));
+  msgBuilder->payload(data);
 
   // Produce the message
   prod->produce(*msgBuilder);

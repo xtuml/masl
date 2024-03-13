@@ -1,6 +1,5 @@
 #include "kafka/Consumer.hh"
 
-#include "kafka/BufferedIO.hh"
 #include "kafka/Kafka.hh"
 #include "kafka/ProcessHandler.hh"
 
@@ -69,6 +68,7 @@ void Consumer::run() {
   dispatcher.run(
       // Callback executed whenever a new message is consumed
       [&](cppkafka::Message msg) {
+
         // Queue the message to be handled on the main thread
         messageQueue.enqueue(msg);
         listener.queueSignal();
@@ -84,11 +84,8 @@ void Consumer::handleMessages() {
     for (auto it = msgs.begin(); it != msgs.end(); it++) {
       Message msg = *it;
 
-      // create an input stream for the parameter data
-      BufferedInputStream buf(msg.second.begin(), msg.second.end());
-
       // get the service invoker
-      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.first).getInvoker(buf);
+      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.first).getInvoker(std::string(msg.second.begin(), msg.second.end()));
 
       // run the service
       service();
