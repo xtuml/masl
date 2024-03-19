@@ -346,6 +346,26 @@ namespace SWA
         return ProcessMetaData::getProcess().getDomain(domainId).getObject(objectId).getEvent(eventId).getName();
       }
 
+      std::string getDomainServiceFileName ( int domainId, int serviceId ) const
+      {
+          return ProcessMetaData::getProcess().getDomain(domainId).getService(serviceId).getFileName();
+      }
+
+      std::string getTerminatorServiceFileName ( int domainId, int terminatorId, int serviceId ) const
+      {
+          return ProcessMetaData::getProcess().getDomain(domainId).getTerminator(terminatorId).getService(serviceId).getFileName();
+      }
+
+      std::string getObjectServiceFileName ( int domainId, int objectId, int serviceId ) const
+      {
+          return ProcessMetaData::getProcess().getDomain(domainId).getObject(objectId).getService(serviceId).getFileName();
+      }
+
+      std::string getStateFileName ( int domainId, int objectId, int stateId ) const
+      {
+          return ProcessMetaData::getProcess().getDomain(domainId).getObject(objectId).getState(stateId).getFileName();
+      }
+
       int getEventParentObjectId ( int domainId, int objectId, int eventId ) const
       {
         return ProcessMetaData::getProcess().getDomain(domainId).getObject(objectId).getEvent(eventId).getParentObjectId();

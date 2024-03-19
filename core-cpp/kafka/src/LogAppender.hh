@@ -15,7 +15,7 @@ namespace Kafka {
         log4cplus::SharedAppenderPtr createObject(const log4cplus::helpers::Properties &props) override;
 
     private:
-        std::string name = "KafkaAppender";
+        std::string name = "xtuml::KafkaAppender";
     };
 
 

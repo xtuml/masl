@@ -20,12 +20,15 @@
 
 find_package(fmt CONFIG REQUIRED)
 find_package(log4cplus CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
-simple_add_interface_library(
+simple_add_shared_library(
   NAME     logging           
+  SOURCES  log.cc
   LINKS
         fmt::fmt
         log4cplus::log4cplus
+        nlohmann_json::nlohmann_json
   INCLUDES
            logging/log.hh
   EXPORT   MaslCore

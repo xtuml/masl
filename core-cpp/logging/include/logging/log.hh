@@ -132,6 +132,10 @@ namespace xtuml::logging {
             log_impl(Level::FATAL, message.location(), message, fmt::make_format_args(args...));
         }
 
+        void log_raw(Level level, const std::string& message,  const std::string& file_name, int line, const std::string& function_name ) {
+             impl_.log(convert_level(level), message, file_name.c_str(), line, function_name.c_str());
+        }
+
         bool enabled(Level level) const {
             return impl_.isEnabledFor(convert_level(level));
         }
@@ -163,6 +167,7 @@ namespace xtuml::logging {
         void set_level ( Level level ) {
             impl_.setLogLevel(convert_level(level));
         }
+
 
     private:
         static constexpr log4cplus::LogLevel
