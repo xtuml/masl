@@ -5,6 +5,8 @@
 //
 #include "Logger_OOA/__Logger_services.hh"
 #include "Logger_OOA/__Logger_types.hh"
+#include "Format_OOA/__Format_services.hh"
+#include "Format_OOA/__Format_types.hh"
 #include "swa/String.hh"
 #include "swa/Stack.hh"
 #include "swa/NameFormatter.hh"
@@ -46,6 +48,16 @@ namespace masld_Logger
       auto name = ::SWA::NameFormatter::formatStackFrame(stack_frame,false);
       logger.log_raw(get_level(maslp_priority),maslp_message.s_str(),file_name,stack_frame.getLine(),name);
   }
+    void masls_overload1_log ( const maslt_Priority& maslp_priority,
+                               const ::SWA::String&  maslp_logger,
+                               const ::SWA::String&  maslp_message,
+                                const masld_Format::maslt_Arguments& maslp_args )
+  {
+      auto logger =  Logger{fmt::runtime(maslp_logger.s_str())};
+      if ( logger.enabled(get_level(maslp_priority)) ) {
+        masls_log(maslp_priority,maslp_logger, masld_Format::masls_format(maslp_message,maslp_args));
+      }
+  }
 
   void masls_trace ( const ::SWA::String& maslp_logger,
                                const ::SWA::String& maslp_message )
@@ -53,10 +65,24 @@ namespace masld_Logger
       masls_log(maslt_Priority::masle_Trace,maslp_logger, maslp_message);
   }
 
-  void masls_debug ( const ::SWA::String& maslp_logger,
+    void masls_overload1_trace ( const ::SWA::String& maslp_logger,
+                                const ::SWA::String& maslp_message,
+                               const masld_Format::maslt_Arguments& maslp_args )
+  {
+      masls_overload1_log(maslt_Priority::masle_Trace,maslp_logger, maslp_message, maslp_args );
+  }
+
+    void masls_debug ( const ::SWA::String& maslp_logger,
                                const ::SWA::String& maslp_message )
   {
       masls_log(maslt_Priority::masle_Debug,maslp_logger, maslp_message);
+  }
+
+    void masls_overload1_debug ( const ::SWA::String& maslp_logger,
+                                const ::SWA::String& maslp_message,
+                                const masld_Format::maslt_Arguments& maslp_args )
+  {
+      masls_overload1_log(maslt_Priority::masle_Debug,maslp_logger, maslp_message, maslp_args);
   }
 
 
@@ -66,10 +92,24 @@ namespace masld_Logger
       masls_log(maslt_Priority::masle_Information,maslp_logger, maslp_message);
   }
 
-  void masls_warning ( const ::SWA::String& maslp_logger,
+    void masls_overload1_information ( const ::SWA::String& maslp_logger,
+                                       const ::SWA::String& maslp_message,
+                                       const masld_Format::maslt_Arguments& maslp_args )
+  {
+      masls_overload1_log(maslt_Priority::masle_Information,maslp_logger, maslp_message, maslp_args);
+  }
+
+    void masls_warning ( const ::SWA::String& maslp_logger,
                                  const ::SWA::String& maslp_message )
   {
       masls_log(maslt_Priority::masle_Warning,maslp_logger, maslp_message);
+  }
+
+    void masls_overload1_warning ( const ::SWA::String& maslp_logger,
+                                       const ::SWA::String& maslp_message,
+                                       const masld_Format::maslt_Arguments& maslp_args )
+  {
+      masls_overload1_log(maslt_Priority::masle_Warning,maslp_logger, maslp_message, maslp_args);
   }
 
   void masls_error ( const ::SWA::String& maslp_logger,
@@ -78,13 +118,26 @@ namespace masld_Logger
       masls_log(maslt_Priority::masle_Error,maslp_logger, maslp_message);
   }
 
-  void masls_fatal ( const ::SWA::String& maslp_logger,
+    void masls_overload1_error ( const ::SWA::String& maslp_logger,
+                                       const ::SWA::String& maslp_message,
+                                       const masld_Format::maslt_Arguments& maslp_args )
+  {
+      masls_overload1_log(maslt_Priority::masle_Error,maslp_logger, maslp_message, maslp_args);
+  }
+
+    void masls_fatal ( const ::SWA::String& maslp_logger,
                                const ::SWA::String& maslp_message )
   {
       masls_log(maslt_Priority::masle_Fatal,maslp_logger, maslp_message);
 
   }
+    void masls_overload1_fatal ( const ::SWA::String& maslp_logger,
+                                       const ::SWA::String& maslp_message,
+                                       const masld_Format::maslt_Arguments& maslp_args )
+  {
+      masls_overload1_log(maslt_Priority::masle_Fatal,maslp_logger, maslp_message, maslp_args );
 
+  }
   void masls_setLogLevel ( const ::SWA::String&  maslp_logger,
                                      const maslt_Priority& maslp_priority )
   {

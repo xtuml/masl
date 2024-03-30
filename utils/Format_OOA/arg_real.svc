@@ -1,0 +1,7 @@
+public service Format::arg(value : in anonymous real ) return Argument is
+    arg: Argument;
+begin
+    arg.kind := ArgumentKind.Real;
+    arg.real := value;
+    return arg;
+end;
