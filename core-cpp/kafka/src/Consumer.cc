@@ -36,7 +36,8 @@ void Consumer::run() {
 
   // Construct the configuration
   cppkafka::Configuration config = {{"metadata.broker.list", brokers},
-                                    {"group.id", groupId}};
+                                    {"group.id", groupId},
+                                    {"enable.auto.commit", false}};
 
   // Create the consumer
   cppkafka::Consumer consumer(config);
@@ -60,7 +61,7 @@ void Consumer::run() {
 
   // create a signal listener
   SWA::RealTimeSignalListener listener(
-      [this](int pid, int uid) { this->handleMessages(); },
+      [this, &consumer](int pid, int uid) { this->handleMessages(consumer); },
       SWA::Process::getInstance().getActivityMonitor());
 
   // Now run the dispatcher, providing a callback to handle messages, one to
@@ -77,18 +78,23 @@ void Consumer::run() {
   );
 }
 
-void Consumer::handleMessages() {
+void Consumer::handleMessages(cppkafka::Consumer& consumer) {
   // drain the message queue
   if (!messageQueue.empty()) {
-    std::vector<Message> msgs = messageQueue.dequeue_all();
+    std::vector<cppkafka::Message> msgs = messageQueue.dequeue_all();
     for (auto it = msgs.begin(); it != msgs.end(); it++) {
-      Message msg = *it;
+      cppkafka::Message msg = std::move(*it);
+
+      // TODO maybe this is the right spot to handle errors and check conditions on the msg instance?
 
       // get the service invoker
-      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.first).getInvoker(std::string(msg.second.begin(), msg.second.end()));
+      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.get_topic()).getInvoker(std::string(msg.get_payload()));
 
       // run the service
       service();
+
+      // commit offset
+      consumer.commit(msg);
     }
   }
 }
@@ -169,28 +175,28 @@ Consumer &Consumer::getInstance() {
 }
 
 void MessageQueue::enqueue(cppkafka::Message &msg) {
-  const cppkafka::Buffer &data = msg.get_payload();
-  std::vector<unsigned char> vec(data.begin(), data.end());
+  /* const cppkafka::Buffer &data = msg.get_payload(); */
+  /* std::vector<unsigned char> vec(data.begin(), data.end()); */
   std::lock_guard<std::mutex> lock(mutex);
-  queue.push(std::make_pair(msg.get_topic(), vec));
+  queue.push(std::move(msg));
   cond.notify_one();
 }
 
-Message MessageQueue::dequeue() {
+cppkafka::Message MessageQueue::dequeue() {
   std::lock_guard<std::mutex> lock(mutex);
   if (queue.empty()) {
     throw std::out_of_range("Queue is empty");
   }
-  Message msg = queue.front();
+  cppkafka::Message msg = std::move(queue.front());
   queue.pop();
   return msg;
 }
 
-std::vector<Message> MessageQueue::dequeue_all() {
+std::vector<cppkafka::Message> MessageQueue::dequeue_all() {
   std::lock_guard<std::mutex> lock(mutex);
-  std::vector<Message> result;
+  std::vector<cppkafka::Message> result;
   while (!queue.empty()) {
-    result.push_back(queue.front());
+    result.push_back(std::move(queue.front()));
     queue.pop();
   }
   return result;
