@@ -104,11 +104,17 @@ public abstract class BasicType extends TypeDefinition implements org.xtuml.masl
         return isAssignableFrom(rhs.resolve(this, allowSeqPromote).getType());
     }
 
-    public final boolean isAssignableFrom(final BasicType rhs) {
-        if (isAnonymousType() || rhs.isAnonymousType()) {
-            return getPrimitiveType().isAssignableFromInner(rhs.getPrimitiveType());
+    @Override
+    public final boolean isAssignableFrom(final org.xtuml.masl.metamodel.type.BasicType type) {
+        if (type instanceof org.xtuml.masl.metamodel.type.BasicType) {
+            final BasicType rhs = (BasicType) type;
+            if (isAnonymousType() || rhs.isAnonymousType()) {
+                return getPrimitiveType().isAssignableFromInner(rhs.getPrimitiveType());
+            } else {
+                return isAssignableFromInner(rhs);
+            }
         } else {
-            return isAssignableFromInner(rhs);
+            return false;
         }
     }
 

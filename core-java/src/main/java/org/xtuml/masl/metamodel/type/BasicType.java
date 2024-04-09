@@ -25,4 +25,6 @@ public interface BasicType extends TypeDefinition {
 
     BasicType getBasicType();
 
+    default boolean isAssignableFrom(BasicType type) { return false; }
+
 }
