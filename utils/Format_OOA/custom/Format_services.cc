@@ -33,9 +33,6 @@ namespace masld_Format
             case maslt_ArgumentKind::index_masle_Integer:
               arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),a.get_masla_int()));
               break;
-            case maslt_ArgumentKind::index_masle_LongInteger:
-              arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),a.get_masla_lint()));
-            break;
             case maslt_ArgumentKind::index_masle_Boolean:
               arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),a.get_masla_bool()));
               break;

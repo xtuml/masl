@@ -4,14 +4,13 @@
 
 domain Format is
 
-    type ArgumentKind is enum ( String, Real, Integer, LongInteger, Boolean, Timestamp, Duration );
+    type ArgumentKind is enum ( String, Real, Integer, Boolean, Timestamp, Duration );
     type Argument is structure
         name: string;
         kind: ArgumentKind;
         str : string;
         real : real;
-        int : integer;
-        lint : long_integer;
+        int : long_integer;
         bool : boolean;
         ts : timestamp;
         dur : duration;
@@ -21,21 +20,19 @@ domain Format is
 
     exception FormatError;
 
-    public service arg(name: in string, value : in string) return Argument; pragma filename("named_arg_str.svc");
-    public service arg(name: in string, value : in real) return Argument; pragma filename("named_arg_real.svc");
-    public service arg(name: in string, value : in integer) return Argument; pragma filename("named_arg_int.svc");
-    public service arg(name: in string, value : in long_integer) return Argument; pragma filename("named_arg_lint.svc");
-    public service arg(name: in string, value : in boolean) return Argument; pragma filename("named_arg_bool.svc");
-    public service arg(name: in string, value : in timestamp) return Argument; pragma filename("named_arg_ts.svc");
-    public service arg(name: in string, value : in duration) return Argument; pragma filename("named_arg_dur.svc");
+    public service arg(name: in string, value : in anonymous string) return Argument; pragma filename("named_arg_str.svc");
+    public service arg(name: in string, value : in anonymous real) return Argument; pragma filename("named_arg_real.svc");
+    public service arg(name: in string, value : in anonymous long_integer) return Argument; pragma filename("named_arg_int.svc");
+    public service arg(name: in string, value : in anonymous boolean) return Argument; pragma filename("named_arg_bool.svc");
+    public service arg(name: in string, value : in anonymous timestamp) return Argument; pragma filename("named_arg_ts.svc");
+    public service arg(name: in string, value : in anonymous duration) return Argument; pragma filename("named_arg_dur.svc");
 
-    public service arg(value : in string) return Argument; pragma filename("arg_str.svc");
-    public service arg(value : in real) return Argument; pragma filename("arg_real.svc");
-    public service arg(value : in integer) return Argument; pragma filename("arg_int.svc");
-    public service arg(value : in long_integer) return Argument; pragma filename("arg_lint.svc");
-    public service arg(value : in boolean) return Argument; pragma filename("arg_bool.svc");
-    public service arg(value : in timestamp) return Argument; pragma filename("arg_ts.svc");
-    public service arg(value : in duration) return Argument; pragma filename("arg_dur.svc");
+    public service arg(value : in anonymous string) return Argument; pragma filename("arg_str.svc");
+    public service arg(value : in anonymous real) return Argument; pragma filename("arg_real.svc");
+    public service arg(value : in anonymous long_integer) return Argument; pragma filename("arg_int.svc");
+    public service arg(value : in anonymous boolean) return Argument; pragma filename("arg_bool.svc");
+    public service arg(value : in anonymous timestamp) return Argument; pragma filename("arg_ts.svc");
+    public service arg(value : in anonymous duration) return Argument; pragma filename("arg_dur.svc");
 
     //! Format a string with placeholder '{}' or '{<id>?:<spec>?}' values replaced with the supplied arguments.
     //! The optional <spec> format specification should conform to https://en.cppreference.com/w/cpp/utility/format/spec.
