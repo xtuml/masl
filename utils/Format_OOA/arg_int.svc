@@ -1,0 +1,7 @@
+public service Format::arg(value : in anonymous long_integer ) return Argument is
+    arg: Argument;
+begin
+    arg.kind := ArgumentKind.Integer;
+    arg.int := value;
+    return arg;
+end;

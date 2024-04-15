@@ -6,11 +6,51 @@
 #include <iomanip>
 #include "Format_OOA/__Format_services.hh"
 #include "Format_OOA/__Format_types.hh"
+#include "Format_OOA/__Format__FormatError.hh"
 #include "swa/Sequence.hh"
 #include "swa/String.hh"
 
+#include <fmt/format.h>
+#include <fmt/ranges.h>
+#include <fmt/chrono.h>
+#include <fmt/args.h>
+
+
 namespace masld_Format
 {
+  ::SWA::String masls_format ( const SWA::String& format_string, const maslt_Arguments& args ) {
+    try {
+      fmt::dynamic_format_arg_store<fmt::format_context> arg_store;
+
+      for ( const auto& a : args ) {
+          switch(a.get_masla_kind().getIndex()) {
+            case maslt_ArgumentKind::index_masle_String:
+              arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),a.get_masla_str().s_str()));
+              break;
+            case maslt_ArgumentKind::index_masle_Real:
+              arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),a.get_masla_real()));
+              break;
+            case maslt_ArgumentKind::index_masle_Integer:
+              arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),a.get_masla_int()));
+              break;
+            case maslt_ArgumentKind::index_masle_Boolean:
+              arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),a.get_masla_bool()));
+              break;
+            case maslt_ArgumentKind::index_masle_Timestamp:
+              arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),std::chrono::sys_time(std::chrono::nanoseconds(a.get_masla_ts().nanosSinceEpoch()))));
+              break;
+            case maslt_ArgumentKind::index_masle_Duration:
+              arg_store.push_back(fmt::arg(a.get_masla_name().c_str(),std::chrono::nanoseconds(a.get_masla_dur().nanos())));
+            break;
+          }
+      }
+      return fmt::vformat(format_string.s_str(),arg_store);
+    } catch ( const fmt::format_error& e ) {
+       throw maslex_FormatError(e.what());
+    }
+
+  }
+
   uint8_t masls_to_ascii ( char maslp_input )
   {
     return static_cast<uint8_t>(maslp_input);

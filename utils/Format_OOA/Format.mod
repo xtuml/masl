@@ -3,6 +3,42 @@
 //
 
 domain Format is
+
+    type ArgumentKind is enum ( String, Real, Integer, Boolean, Timestamp, Duration );
+    type Argument is structure
+        name: string;
+        kind: ArgumentKind;
+        str : string;
+        real : real;
+        int : long_integer;
+        bool : boolean;
+        ts : timestamp;
+        dur : duration;
+    end structure;
+
+    type Arguments is sequence of Argument;
+
+    exception FormatError;
+
+    public service arg(name: in string, value : in anonymous string) return Argument; pragma filename("named_arg_str.svc");
+    public service arg(name: in string, value : in anonymous real) return Argument; pragma filename("named_arg_real.svc");
+    public service arg(name: in string, value : in anonymous long_integer) return Argument; pragma filename("named_arg_int.svc");
+    public service arg(name: in string, value : in anonymous boolean) return Argument; pragma filename("named_arg_bool.svc");
+    public service arg(name: in string, value : in anonymous timestamp) return Argument; pragma filename("named_arg_ts.svc");
+    public service arg(name: in string, value : in anonymous duration) return Argument; pragma filename("named_arg_dur.svc");
+
+    public service arg(value : in anonymous string) return Argument; pragma filename("arg_str.svc");
+    public service arg(value : in anonymous real) return Argument; pragma filename("arg_real.svc");
+    public service arg(value : in anonymous long_integer) return Argument; pragma filename("arg_int.svc");
+    public service arg(value : in anonymous boolean) return Argument; pragma filename("arg_bool.svc");
+    public service arg(value : in anonymous timestamp) return Argument; pragma filename("arg_ts.svc");
+    public service arg(value : in anonymous duration) return Argument; pragma filename("arg_dur.svc");
+
+    //! Format a string with placeholder '{}' or '{<id>?:<spec>?}' values replaced with the supplied arguments.
+    //! The optional <spec> format specification should conform to https://en.cppreference.com/w/cpp/utility/format/spec.
+    //! e.g. Format::format("value of {} = {:3.5f}", (Format::arg("pi"),Format::arg(3.14159265359))) would return "  3.14159".
+    public service format(format_str : in anonymous string, arguments : in Arguments ) return anonymous string;
+
   
     //! Type to specify how a value should be justified within its width. 
     //! 'left' means that it will fill the leftmost position 
@@ -355,6 +391,9 @@ domain Format is
                                              places         : in anonymous integer,
                                              truncate       : in anonymous boolean )
                                              return              anonymous string;
+
+
+    public service examples(); pragma external(1);
 
 end domain;
 pragma service_domain(true);

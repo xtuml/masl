@@ -129,6 +129,7 @@ public abstract class ServiceOverload<T extends Service> extends Name {
                                                                                                             SemanticError {
         final List<T> matches = new ArrayList<>();
         final List<T> exactMatches = new ArrayList<>();
+        final List<T> closeMatches = new ArrayList<>();
         final List<T> nonMatches = new ArrayList<>();
         for (final T service : list) {
             final List<ParameterDefinition> parameters = service.getParameters();
@@ -137,20 +138,28 @@ public abstract class ServiceOverload<T extends Service> extends Name {
                     (type == ServiceType.Function) == service.isFunction() &&
                     service.getParameters().size() == arguments.size();
             boolean exactMatch = match;
+            boolean closeMatch = match;
 
             final Iterator<Expression> argIt = arguments.iterator();
 
             for (int i = 0; match && argIt.hasNext(); ++i) {
                 final Expression arg = argIt.next();
 
+                // There is a way to convert the parameter
                 match = parameters.get(i).getType().isAssignableFrom(arg, true);
-                exactMatch &= parameters.get(i).getType().isAssignableFrom(arg);
+                // There is a way to convert the parameter without sequence promotion
+                closeMatch &= parameters.get(i).getType().isAssignableFrom(arg,false, true);
+                // There is a way to convert the parameter without sequence promotion or relaxing int->real etc.
+                exactMatch &= parameters.get(i).getType().isAssignableFrom(arg, false, false);
             }
 
             if (match) {
                 matches.add(service);
                 if (exactMatch) {
                     exactMatches.add(service);
+                }
+                if ( closeMatch ) {
+                    closeMatches.add(service);
                 }
             } else if ((type == ServiceType.Function) == service.isFunction()) {
                 nonMatches.add(service);
@@ -175,6 +184,8 @@ public abstract class ServiceOverload<T extends Service> extends Name {
         } else if (matches.size() > 1) {
             if (exactMatches.size() == 1) {
                 return exactMatches.get(0);
+            } if ( closeMatches.size() == 1 ) {
+                return closeMatches.get(0);
             } else {
                 final String passedArgs = TextUtils.formatList(arguments, "(", new ArgumentTypeFormatter(), ",", ")");
                 final String
