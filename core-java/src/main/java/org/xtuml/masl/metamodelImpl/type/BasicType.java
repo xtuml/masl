@@ -101,19 +101,27 @@ public abstract class BasicType extends TypeDefinition implements org.xtuml.masl
     }
 
     public final boolean isAssignableFrom(final Expression rhs, final boolean allowSeqPromote) {
-        return isAssignableFrom(rhs.resolve(this, allowSeqPromote).getType());
+        return isAssignableFrom(rhs,allowSeqPromote,true);
     }
 
-    public final boolean isAssignableFrom(final BasicType rhs) {
+    public final boolean isAssignableFrom(final Expression rhs, final boolean allowSeqPromote, boolean allowRelaxed) {
+        return isAssignableFrom(rhs.resolve(this, allowSeqPromote).getType(),allowRelaxed);
+    }
+
+    public final boolean isAssignableFrom(final BasicType rhs, boolean allowRelaxed) {
         if (isAnonymousType() || rhs.isAnonymousType()) {
-            return getPrimitiveType().isAssignableFromInner(rhs.getPrimitiveType());
+            return getPrimitiveType().isAssignableFromInner(rhs.getPrimitiveType(), allowRelaxed);
         } else {
-            return isAssignableFromInner(rhs);
+            return isAssignableFromInner(rhs,allowRelaxed);
         }
     }
 
-    private final boolean isAssignableFromInner(final BasicType rhs) {
-        return this.equals(rhs) || isAssignableFromRelaxation(rhs);
+    public final boolean isAssignableFrom(final BasicType rhs) {
+        return isAssignableFrom(rhs,true);
+    }
+
+    private final boolean isAssignableFromInner(final BasicType rhs, boolean allowRelaxed) {
+        return this.equals(rhs) || (allowRelaxed && isAssignableFromRelaxation(rhs));
     }
 
     protected boolean isAssignableFromRelaxation(final BasicType rhs) {

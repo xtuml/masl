@@ -1,0 +1,31 @@
+public service Format::examples() is
+begin
+    // Single arg
+    console << format("hello {}!\n", arg("world"));
+
+    // String width, align and fill
+    console << format("+{:-^20}+\n", arg(""));
+    console << format("|{: ^20}|\n", arg("in a box"));
+    console << format("+{:-^20}+\n", arg(""));
+
+    // Multiple args
+    console << format("goodbye, {} {}!\n", arg("cruel") & arg("world"));
+    console << format("{} {} {} {}\n", arg("one") & arg(2) & arg(3.0) & arg(true));
+
+    // Number width precision and format
+    console << format("{} {:0>8} 0x{:04x}\n",arg(1) & arg(42) & arg(1024+255));
+    console << format("{} {:f} {:06.3f} {:e}\n", arg("some text") & arg(1.1) & arg(2.2) & arg(3.2));
+
+    // positional args. NB zero-indexed, not 1-indexed like the rest of MASL
+    console << format("{2:.2f} {1:.2f} {0:.2f}\n",arg(1.1) & arg(2.2) & arg(3.3));
+
+    // named args
+    console << format("{three:.2f} {two:.2f} {one:.2f}\n",arg("one",1.1) & arg("two",2.2) & arg("three",3.3));
+
+    // dynamic width/precision
+    for i in 1 .. 10
+    loop
+        console << format("{width:>2}: {value:_^{width}}\n",arg("value","X") & arg("width",i));
+    end loop;
+
+end;

@@ -51,6 +51,14 @@ namespace SWA
       static std::string formatStateName ( int domainId, int objectId, int stateId );
       static std::string formatEventName ( int domainId, int objectId, int eventId );
 
+      static std::string formatFileName ( const ExceptionStackFrame& frame);
+      static std::string formatFileName ( const StackFrame& frame );
+      static std::string formatFileName ( StackFrame::ActionType type, int domainId, int objectId, int actionId );
+      static std::string formatDomainServiceFileName ( int domainId, int serviceId );
+      static std::string formatTerminatorServiceFileName ( int domainId, int terminatorId, int serviceId );
+      static std::string formatObjectServiceFileName ( int domainId, int objectId, int serviceId );
+      static std::string formatStateFileName ( int domainId, int objectId, int stateId );
+
     private:
       static NameFormatter& getInstance();
 
@@ -63,6 +71,13 @@ namespace SWA
       virtual std::string getObjectServiceName ( int domainId, int objectId, int serviceId ) const;
       virtual std::string getStateName ( int domainId, int objectId, int stateId ) const;
       virtual std::string getEventName ( int domainId, int objectId, int eventId ) const;
+
+      virtual std::string getDomainServiceFileName ( int domainId, int serviceId ) const;
+      virtual std::string getTerminatorServiceFileName ( int domainId, int terminatorId, int serviceId ) const;
+      virtual std::string getObjectServiceFileName ( int domainId, int objectId, int serviceId ) const;
+      virtual std::string getStateFileName ( int domainId, int objectId, int stateId ) const;
+
+
       virtual int getEventParentObjectId ( int domainId, int objectId, int eventId ) const;
 
     public:

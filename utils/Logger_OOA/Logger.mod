@@ -7,6 +7,7 @@ domain Logger is
   type Priority is enum ( Fatal, Error, Warning, Information, Debug, Trace );
 
   public service log         ( priority : in Priority, logger : in anonymous string,  message : in anonymous string );
+  public service log         ( priority : in Priority, logger : in anonymous string,  message : in anonymous string, args: in Format::Arguments );
 
   public service trace       ( logger : in anonymous string, message : in anonymous string );
   public service debug       ( logger : in anonymous string, message : in anonymous string );
@@ -14,6 +15,13 @@ domain Logger is
   public service warning     ( logger : in anonymous string, message : in anonymous string );
   public service error       ( logger : in anonymous string, message : in anonymous string );
   public service fatal       ( logger : in anonymous string, message : in anonymous string );
+
+  public service trace       ( logger : in anonymous string, message : in anonymous string, args: in Format::Arguments );
+  public service debug       ( logger : in anonymous string, message : in anonymous string, args: in Format::Arguments );
+  public service information ( logger : in anonymous string, message : in anonymous string, args: in Format::Arguments );
+  public service warning     ( logger : in anonymous string, message : in anonymous string, args: in Format::Arguments );
+  public service error       ( logger : in anonymous string, message : in anonymous string, args: in Format::Arguments );
+  public service fatal       ( logger : in anonymous string, message : in anonymous string, args: in Format::Arguments );
 
   public service setLogLevel( logger : in anonymous string, priority : in Priority );
 

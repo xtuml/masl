@@ -152,5 +152,53 @@ namespace SWA
     return formatObjectName(domainId,getInstance().getEventParentObjectId(domainId,objectId,eventId)) + "." + getInstance().getEventName(domainId,objectId,eventId);
   }
 
+  std::string NameFormatter::formatFileName ( const ExceptionStackFrame& frame) {
+      return formatFileName(frame.getType(),frame.getDomainId(),frame.getObjectId(),frame.getActionId());
+  }
+  std::string NameFormatter::formatFileName ( const StackFrame& frame ) {
+      return formatFileName(frame.getType(),frame.getDomainId(),frame.getObjectId(),frame.getActionId());
+  }
+  std::string NameFormatter::formatFileName ( StackFrame::ActionType type, int domainId, int objectId, int actionId ) {
+      std::string name;
+      switch ( type )
+      {
+          case StackFrame::DomainService:     return formatDomainServiceFileName(domainId,actionId);
+          case StackFrame::TerminatorService: return formatTerminatorServiceFileName(domainId,objectId,actionId);
+          case StackFrame::ObjectService:     return formatObjectServiceFileName(domainId,objectId,actionId);
+          case StackFrame::StateAction:       return formatStateFileName(domainId,objectId,actionId);
+          default:                            return "<unknown>";
+      }
+  }
+
+  std::string NameFormatter::formatDomainServiceFileName ( int domainId, int serviceId ) {
+      return getInstance().getDomainServiceFileName(domainId,serviceId);
+  }
+  std::string NameFormatter::formatTerminatorServiceFileName ( int domainId, int terminatorId, int serviceId ) {
+      return getInstance().getTerminatorServiceFileName(domainId,terminatorId, serviceId);
+  }
+
+  std::string NameFormatter::formatObjectServiceFileName ( int domainId, int objectId, int serviceId ){
+      return getInstance().getObjectServiceFileName(domainId,objectId, serviceId);
+  }
+
+  std::string NameFormatter::formatStateFileName ( int domainId, int objectId, int stateId ) {
+      return getInstance().getStateFileName(domainId,objectId, stateId);
+
+  }
+
+   std::string NameFormatter::getDomainServiceFileName ( int domainId, int serviceId ) const {
+      return "<unknown>";
+  }
+  std::string NameFormatter::getTerminatorServiceFileName ( int domainId, int terminatorId, int serviceId ) const {
+      return "<unknown>";
+  }
+  std::string NameFormatter::getObjectServiceFileName ( int domainId, int objectId, int serviceId ) const {
+      return "<unknown>";
+  }
+  std::string NameFormatter::getStateFileName ( int domainId, int objectId, int stateId ) const {
+      return "<unknown>";
+  }
+
+
 }
 

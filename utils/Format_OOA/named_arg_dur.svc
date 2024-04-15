@@ -1,0 +1,8 @@
+public service Format::arg(name : in anonymous string, value : in anonymous duration ) return Argument is
+    arg: Argument;
+begin
+    arg.name := name;
+    arg.kind := ArgumentKind.Duration;
+    arg.dur := value;
+    return arg;
+end;
