@@ -26,7 +26,6 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
   private final Namespace domainNamespace;
   private final Library library;
   private final Library interfaceLibrary;
-  private final Library typesLibrary;
 
   public static DomainTranslator getInstance ( final Domain domain )
   {
@@ -39,16 +38,13 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
     mainTranslator = org.xtuml.masl.translate.main.DomainTranslator.getInstance(domain);
     domainNamespace = new Namespace(Mangler.mangleName(domain), Kafka.kafkaNamespace);
 
-    typesLibrary = new SharedLibrary(mainTranslator.getLibrary().getName() + "_types_kafka").inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
 
     library = new SharedLibrary(mainTranslator.getLibrary().getName() + "_kafka").inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
-    library.addDependency(typesLibrary);
     library.addDependency(Kafka.library);
     library.addDependency(Kafka.cppkafkaLibrary);
     library.addDependency(Kafka.rdkafkaLibrary);
 
     interfaceLibrary = new SharedLibrary(mainTranslator.getLibrary().getName() + "_if_kafka").inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
-    interfaceLibrary.addDependency(typesLibrary);
     interfaceLibrary.addDependency(Kafka.library);
     interfaceLibrary.addDependency(Kafka.cppkafkaLibrary);
     interfaceLibrary.addDependency(Kafka.rdkafkaLibrary);
@@ -60,7 +56,6 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
     // create code files
     final CodeFile consumerCodeFile = library.createBodyFile("Kafka" + Mangler.mangleFile(domain));
     final CodeFile publisherCodeFile = interfaceLibrary.createBodyFile("Kafka_publishers" + Mangler.mangleFile(domain));
-    final CodeFile typesCodeFile = typesLibrary.createBodyFile("Kafka_types" + Mangler.mangleFile(domain));
 
     // create service translators
     final List<ServiceTranslator> serviceTranslators = domain.getServices().stream()
@@ -96,13 +91,6 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator
     for (final ServiceTranslator serviceTranslator : serviceTranslators)
     {
       serviceTranslator.addCustomTopicName(publisherCodeFile);
-    }
-
-    // process type readers/writers
-    for (final TypeDeclaration type : domain.getTypes())
-    {
-      final TypeTranslator typeTranslator = new TypeTranslator(type, this);
-      typeTranslator.translate(typesCodeFile);
     }
 
   }

@@ -50,4 +50,13 @@ public class NlohmannJson {
         return get.asFunctionCall(j, false, index);
     }
 
+    public static Expression dump(Expression j) {
+        Function dump = new Function("dump");
+        return dump.asFunctionCall(j, false);
+    }
+
+    public static Expression parse(Expression input) {
+        return json.callStaticFunction("parse", input);
+    }
+
 }

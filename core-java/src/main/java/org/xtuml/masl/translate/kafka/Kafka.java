@@ -22,8 +22,6 @@ public class Kafka
   static CodeFile  producerInc               = library.createInterfaceHeader("kafka/Producer.hh");
   static CodeFile  serviceHandlerInc         = library.createInterfaceHeader("kafka/ServiceHandler.hh");
 
-  static Class     bufferedInputStream       = new Class("BufferedInputStream", kafkaNamespace, bufferedIOInc);
-  static Class     bufferedOutputStream      = new Class("BufferedOutputStream", kafkaNamespace, bufferedIOInc);
   static Class     processHandlerClass       = new Class("ProcessHandler", kafkaNamespace, processHandlerInc);
   static Class     producerClass             = new Class("Producer", kafkaNamespace, producerInc);
   static Class     callable                  = new Class("Callable", kafkaNamespace, processHandlerInc);

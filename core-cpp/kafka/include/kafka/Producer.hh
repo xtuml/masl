@@ -1,7 +1,7 @@
 #ifndef Kafka_Producer_HH
 #define Kafka_Producer_HH
 
-#include "BufferedIO.hh"
+#include <nlohmann/json.hpp>
 
 #include "cppkafka/message_builder.h"
 #include "cppkafka/producer.h"
@@ -12,7 +12,7 @@ class Producer {
 
 public:
   Producer();
-  void publish(int domainId, int serviceId, BufferedOutputStream &buf, BufferedOutputStream &partKey);
+  void publish(int domainId, int serviceId, std::string data, std::string partKey);
   static Producer &getInstance();
 
 private:

@@ -13,17 +13,15 @@
 
 namespace Kafka {
 
-typedef std::pair<std::string, std::vector<unsigned char>> Message;
-
 class MessageQueue {
 public:
   void enqueue(cppkafka::Message &msg);
-  Message dequeue();
-  std::vector<Message> dequeue_all();
+  cppkafka::Message dequeue();
+  std::vector<cppkafka::Message> dequeue_all();
   bool empty() { return queue.empty(); }
 
 private:
-  std::queue<Message> queue;
+  std::queue<cppkafka::Message> queue;
   mutable std::mutex mutex;
   std::condition_variable cond;
 };
@@ -37,7 +35,7 @@ public:
 private:
   MessageQueue messageQueue;
 
-  void handleMessages();
+  void handleMessages(cppkafka::Consumer& consumer);
 
   void createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics);
 };
