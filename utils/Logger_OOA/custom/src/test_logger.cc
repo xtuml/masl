@@ -3,8 +3,8 @@
 #include "Logger_OOA/__Logger_types.hh"
 #include "Logger_OOA/__Logger_services.hh"
 #include <log4cplus/log4cplus.h>
-#include <SWA/Stack.hh>
-#include <SWA/Process.hh>
+#include <swa/Stack.hh>
+#include <swa/Process.hh>
 
 class MockAppender : public log4cplus::Appender {
 public:
