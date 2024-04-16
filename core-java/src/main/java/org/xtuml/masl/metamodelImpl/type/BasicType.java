@@ -104,27 +104,25 @@ public abstract class BasicType extends TypeDefinition implements org.xtuml.masl
         return isAssignableFrom(rhs,allowSeqPromote,true);
     }
 
-
     public final boolean isAssignableFrom(final Expression rhs, final boolean allowSeqPromote, boolean allowRelaxed) {
         return isAssignableFrom(rhs.resolve(this, allowSeqPromote).getType(),allowRelaxed);
     }
 
-    @Override
-    public final boolean isAssignableFrom(final org.xtuml.masl.metamodel.type.BasicType type) {
-        if (type instanceof org.xtuml.masl.metamodel.type.BasicType) {
-            final BasicType rhs = (BasicType) type;
-            if (isAnonymousType() || rhs.isAnonymousType()) {
-                return getPrimitiveType().isAssignableFromInner(rhs.getPrimitiveType());
-            } else {
-                return isAssignableFromInner(rhs);
-            }
+    public final boolean isAssignableFrom(final BasicType rhs, boolean allowRelaxed) {
+        if (isAnonymousType() || rhs.isAnonymousType()) {
+            return getPrimitiveType().isAssignableFromInner(rhs.getPrimitiveType(), allowRelaxed);
         } else {
-            return false;
+            return isAssignableFromInner(rhs,allowRelaxed);
         }
     }
 
-    public final boolean isAssignableFrom(final BasicType rhs) {
-        return isAssignableFrom(rhs,true);
+    @Override
+    public final boolean isAssignableFrom(final org.xtuml.masl.metamodel.type.BasicType rhs) {
+        if (rhs instanceof BasicType) {
+            return isAssignableFrom((BasicType) rhs,true);
+        } else {
+            return false;
+        }
     }
 
     private final boolean isAssignableFromInner(final BasicType rhs, boolean allowRelaxed) {
