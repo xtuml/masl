@@ -5,7 +5,7 @@ include(GoogleTest)
 find_package(GTest CONFIG REQUIRED)
 
 target_sources( Hash PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/Hash_services.cc )
-target_link_libraries(Hash PRIVATE openssl::openssl xxHash::xxhash )
+target_link_libraries(Hash PUBLIC openssl::openssl xxHash::xxhash )
 
 
 simple_add_executable(
@@ -20,3 +20,12 @@ simple_add_executable(
 
 gtest_add_tests(TARGET testHash)
 
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/HashExtras.cmake "
+find_package (xxHash REQUIRED)
+")
+
+install (
+        FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/HashExtras.cmake
+        DESTINATION ${INSTALL_LIB_DIR}/cmake/Hash
+)

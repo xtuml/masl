@@ -52,3 +52,4 @@ domain Hash is
     public service hash_xxh3 ( input : in anonymous string ) return long_integer;
 
 end domain;
+pragma service_domain(true);
