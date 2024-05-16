@@ -12,8 +12,8 @@ TEST(Dump,string) {
     input.set_masla_kind() = maslt_JSONType::masle_String;
     input.set_masla_data().set_masla_str() = "hello";
 
-    auto result  = masls_overload4_dump(input).s_str();
-    auto pretty_result  = masls_overload5_dump(input,true).s_str();
+    auto result  = masls_overload6_dump(input).s_str();
+    auto pretty_result  = masls_overload7_dump(input,true).s_str();
     auto expected = R"("hello")"s;
 
     EXPECT_EQ(result,expected);
@@ -26,8 +26,8 @@ TEST(Dump, real) {
     input.set_masla_kind() = maslt_JSONType::masle_Real;
     input.set_masla_data().set_masla_real() = 123.0;
 
-    auto result  = masls_overload4_dump(input).s_str();
-    auto pretty_result  = masls_overload5_dump(input,true).s_str();
+    auto result  = masls_overload6_dump(input).s_str();
+    auto pretty_result  = masls_overload7_dump(input,true).s_str();
     auto expected = R"(123.0)"s;
 
     EXPECT_EQ(result,expected);
@@ -41,8 +41,8 @@ TEST(Dump, integer) {
     input.set_masla_kind() = maslt_JSONType::masle_Integer;
     input.set_masla_data().set_masla_int() = 123;
 
-    auto result  = masls_overload4_dump(input).s_str();
-    auto pretty_result  = masls_overload5_dump(input,true).s_str();
+    auto result  = masls_overload6_dump(input).s_str();
+    auto pretty_result  = masls_overload7_dump(input,true).s_str();
     auto expected = R"(123)"s;
 
     EXPECT_EQ(result,expected);
@@ -55,8 +55,8 @@ TEST(Dump, boolean) {
     input.set_masla_kind() = maslt_JSONType::masle_Boolean;
     input.set_masla_data().set_masla_bool() = true;
 
-    auto result  = masls_overload4_dump(input).s_str();
-    auto pretty_result  = masls_overload5_dump(input,true).s_str();
+    auto result  = masls_overload6_dump(input).s_str();
+    auto pretty_result  = masls_overload7_dump(input,true).s_str();
     auto expected = R"(true)"s;
 
     EXPECT_EQ(result,expected);
@@ -72,8 +72,8 @@ TEST(Dump, object) {
     input.set_masla_data().set_masla_obj()["i"].set_masla_kind() = maslt_JSONType::masle_Integer;
     input.set_masla_data().set_masla_obj()["i"].set_masla_data().set_masla_int() = 4;
 
-    auto result  = masls_overload4_dump(input).s_str();
-    auto pretty_result  = masls_overload5_dump(input,true).s_str();
+    auto result  = masls_overload6_dump(input).s_str();
+    auto pretty_result  = masls_overload7_dump(input,true).s_str();
     auto expected = R"({"i":4,"s":"bbb"})"s;
     auto pretty_expected = R"({
   "i": 4,
@@ -92,8 +92,8 @@ TEST(Dump, array) {
     input.set_masla_data().set_masla_arr().accessExtend(2).set_masla_kind() = maslt_JSONType::masle_String;
     input.set_masla_data().set_masla_arr().accessExtend(2).set_masla_data().set_masla_str() = "two";
 
-    auto result  = masls_overload4_dump(input).s_str();
-    auto pretty_result  = masls_overload5_dump(input,true).s_str();
+    auto result  = masls_overload6_dump(input).s_str();
+    auto pretty_result  = masls_overload7_dump(input,true).s_str();
     auto expected = R"([1,"two"])"s;
     auto pretty_expected = R"([
   1,
@@ -132,8 +132,8 @@ TEST(Dump, deep) {
     o_ax.accessExtend(3).set_masla_kind() = maslt_JSONType::masle_Real;
     o_ax.accessExtend(3).set_masla_data().set_masla_real() = 3.0;
 
-    auto result  = masls_overload4_dump(input).s_str();
-    auto pretty_result  = masls_overload5_dump(input,true).s_str();
+    auto result  = masls_overload6_dump(input).s_str();
+    auto pretty_result  = masls_overload7_dump(input,true).s_str();
     auto expected = R"({"i":4,"o":{"a":["one",2,3.0],"b":true,"r":123.4},"s":"bbb"})"s;
     auto pretty_expected = R"({
   "i": 4,
