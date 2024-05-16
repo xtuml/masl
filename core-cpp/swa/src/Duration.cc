@@ -637,7 +637,7 @@ namespace SWA
         {
           if ( valStr.find_first_not_of('0') == std::string::npos )
           {
-            valStr == "";
+            valStr = "";
           }
         }          
       }
