@@ -5,6 +5,7 @@ from conan.errors import ConanException
 
 from conan.tools.files import save
 from conan.tools.files import copy
+from conan.tools.env import Environment
 from conan.tools.cmake import CMake, cmake_layout
 
 import glob
@@ -126,6 +127,23 @@ class MaslConanHelper():
     def masl_extras(self):
         return []
 
+    def generate(self):
+        env = Environment()
+        env.append("MASL_CODEGEN_OPTS", f"-Dpackage.name={self.name}");
+        env.append("MASL_CODEGEN_OPTS", f"-Dpackage.version={self.version}");
+        env.append("MASL_CODEGEN_OPTS", f"-Dpackage.channel={self.channel}");
+        env.append("MASL_CODEGEN_OPTS", f"-Dpackage.user={self.user}");
+
+        env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{self.name}.version={self.version}");
+        env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{self.name}.channel={self.channel}");
+        env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{self.name}.user={self.user}");
+        for dep in self.dependencies.values():
+            env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{dep.ref.name}.version={dep.ref.version}")
+            env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{dep.ref.name}.channel={dep.ref.channel}")
+            env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{dep.ref.name}.user={dep.ref.user}")
+        envvars = env.vars(self)
+        envvars.save_script("package_vars")
+        
     def build(self):
         extras = self.masl_extras()
         if self.options.test:
