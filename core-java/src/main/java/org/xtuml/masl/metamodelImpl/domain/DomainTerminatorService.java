@@ -155,9 +155,6 @@ public class DomainTerminatorService extends Service
                                            true,
                                            createExpression,
                                            new PragmaList());
-            final CodeBlock code = new CodeBlock(position, true);
-            code.addVariableDefinition(testInstance);
-            super.setCode(code);
         }
 
     }
