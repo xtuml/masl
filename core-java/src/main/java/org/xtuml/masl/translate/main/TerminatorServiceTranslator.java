@@ -62,7 +62,10 @@ public class TerminatorServiceTranslator {
 
         // Create the forwarder function and the domain definition function.
         function = mainClass.createStaticFunction(terminatorServices, name, Visibility.PUBLIC);
+        function.setReturnType(domainTranslator.getTypes().getType(service.getReturnType()));
+
         domainFunction = mainClass.createStaticFunction(domainServices, "domain_" + name, Visibility.PRIVATE);
+        domainFunction.setReturnType(domainTranslator.getTypes().getType(service.getReturnType()));
 
         final List<Expression> forwardArgs = new ArrayList<>();
 
@@ -89,11 +92,10 @@ public class TerminatorServiceTranslator {
         final Expression overrideMember = overrider.asMemberReference(terminatorTranslator.getGetInstance(), false);
 
         // Add main function to forward to the override member
-        final Statement
-                overrideCall =
-                new FunctionObjectCall(new Function("getFunction").asFunctionCall(overrideMember, false),
-                                       forwardArgs).asStatement();
-        function.getCode().appendStatement(overrideCall);
+        final Expression overrideCall = new FunctionObjectCall(
+                new Function("getFunction").asFunctionCall(overrideMember, false),
+                forwardArgs);
+        function.getCode().appendStatement(new ReturnStatement(overrideCall));
         bodyFile.addFunctionDefinition(function);
 
         // Add override registration function
