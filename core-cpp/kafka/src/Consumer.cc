@@ -21,6 +21,7 @@ void Consumer::run() {
 
   // Get command line options
   const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
+  const std::string offsetReset = SWA::CommandLine::getInstance().getOption(OffsetResetOption, "earliest");
 
   std::string groupId;
   if (SWA::CommandLine::getInstance().optionPresent(GroupIdOption)) {
@@ -37,6 +38,7 @@ void Consumer::run() {
   // Construct the configuration
   cppkafka::Configuration config = {{"metadata.broker.list", brokers},
                                     {"group.id", groupId},
+                                    {"auto.offset.reset", offsetReset},
                                     {"enable.auto.commit", false}};
 
   // Create the consumer
