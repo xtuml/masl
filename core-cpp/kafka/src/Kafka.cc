@@ -20,7 +20,7 @@ const char *const OffsetResetOption = "-kafka-offset-reset";
 bool startup() {
   if (ProcessHandler::getInstance().hasRegisteredServices()) {
     // only start the consumer if there are registered services
-    std::thread{[] { Consumer::getInstance().run(); }}.detach();
+    std::thread{[] { ProcessHandler::getInstance().startConsumer(); }}.detach();
   }
 
   return true;

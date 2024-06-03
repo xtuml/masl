@@ -1,6 +1,7 @@
 #include "kafka/ProcessHandler.hh"
 
 #include "kafka/Kafka.hh"
+#include "kafka/Consumer.hh"
 
 #include "swa/CommandLine.hh"
 #include "swa/Process.hh"
@@ -60,6 +61,11 @@ std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
     name = ns + "." + name;
   }
   return name;
+}
+
+void ProcessHandler::startConsumer() {
+  Consumer consumer(getTopicNames());
+  consumer.run();
 }
 
 ProcessHandler &ProcessHandler::getInstance() {

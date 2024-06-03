@@ -27,6 +27,8 @@ public:
 
   std::string getTopicName(int domainId, int serviceId);
 
+  void startConsumer();
+
   static ProcessHandler &getInstance();
 
 

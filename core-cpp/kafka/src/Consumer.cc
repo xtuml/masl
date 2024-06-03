@@ -17,8 +17,7 @@
 
 namespace Kafka {
 
-void Consumer::run() {
-
+Consumer::Consumer(std::vector<std::string> topics) {
   // Get command line options
   const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
   const std::string offsetReset = SWA::CommandLine::getInstance().getOption(OffsetResetOption, "earliest");
@@ -42,19 +41,21 @@ void Consumer::run() {
                                     {"enable.auto.commit", false}};
 
   // Create the consumer
-  cppkafka::Consumer consumer(config);
+  consumer = std::unique_ptr<cppkafka::Consumer>(new cppkafka::Consumer(config));
 
   // create topics if they don't already exist
-  createTopics(consumer, ProcessHandler::getInstance().getTopicNames());
+  createTopics(ProcessHandler::getInstance().getTopicNames());
 
   // short delay to avoid race conditions if other processes initiated topic creation
   SWA::delay(SWA::Duration::fromMillis(100));
 
   // Subscribe to topics
-  consumer.subscribe(ProcessHandler::getInstance().getTopicNames());
+  consumer->subscribe(ProcessHandler::getInstance().getTopicNames());
+}
 
+void Consumer::run() {
   // Create a consumer dispatcher
-  cppkafka::ConsumerDispatcher dispatcher(consumer);
+  cppkafka::ConsumerDispatcher dispatcher(*consumer);
 
   // Stop processing on SIGINT
   // TODO set up lifecycle event to stop dispatcher
@@ -63,7 +64,7 @@ void Consumer::run() {
 
   // create a signal listener
   SWA::RealTimeSignalListener listener(
-      [this, &consumer](int pid, int uid) { this->handleMessages(consumer); },
+      [this](int pid, int uid) { this->handleMessages(); },
       SWA::Process::getInstance().getActivityMonitor());
 
   // Now run the dispatcher, providing a callback to handle messages, one to
@@ -80,7 +81,7 @@ void Consumer::run() {
   );
 }
 
-void Consumer::handleMessages(cppkafka::Consumer& consumer) {
+void Consumer::handleMessages() {
   // drain the message queue
   if (!messageQueue.empty()) {
     std::vector<cppkafka::Message> msgs = messageQueue.dequeue_all();
@@ -96,12 +97,12 @@ void Consumer::handleMessages(cppkafka::Consumer& consumer) {
       service();
 
       // commit offset
-      consumer.commit(msg);
+      consumer->commit(msg);
     }
   }
 }
 
-void Consumer::createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics) {
+void Consumer::createTopics(std::vector<std::string> topics) {
   // TODO clean up error handling in this routine
   for (auto it = topics.begin(); it != topics.end(); it++) {
 
@@ -109,7 +110,7 @@ void Consumer::createTopics(cppkafka::Consumer& consumer, std::vector<std::strin
     int partition_cnt = 1;
     int replication_factor = 1;
 
-    rd_kafka_t *rk = consumer.get_handle();
+    rd_kafka_t *rk = consumer->get_handle();
     rd_kafka_NewTopic_t *newt[1];
     const size_t newt_cnt = 1;
     rd_kafka_AdminOptions_t *options;
@@ -169,11 +170,6 @@ void Consumer::createTopics(cppkafka::Consumer& consumer, std::vector<std::strin
     rd_kafka_NewTopic_destroy(newt[0]);
 
   }
-}
-
-Consumer &Consumer::getInstance() {
-  static Consumer instance;
-  return instance;
 }
 
 void MessageQueue::enqueue(cppkafka::Message &msg) {

@@ -29,15 +29,16 @@ private:
 class Consumer {
 
 public:
+  Consumer(std::vector<std::string> topics);
   void run();
-  static Consumer &getInstance();
 
 private:
   MessageQueue messageQueue;
+  std::unique_ptr<cppkafka::Consumer> consumer;
 
-  void handleMessages(cppkafka::Consumer& consumer);
+  void handleMessages();
 
-  void createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics);
+  void createTopics(std::vector<std::string> topics);
 };
 
 } // namespace Kafka
