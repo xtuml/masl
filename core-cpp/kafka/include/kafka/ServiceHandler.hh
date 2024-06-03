@@ -10,7 +10,7 @@ typedef std::function<void()> Callable;
 
 class ServiceHandler {
 public:
-  virtual Callable getInvoker(std::string data) const {
+  virtual Callable getInvoker(std::vector<std::uint8_t> data) const {
     return Callable();
   }
   virtual ~ServiceHandler();

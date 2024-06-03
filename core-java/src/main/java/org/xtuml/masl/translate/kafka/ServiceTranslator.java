@@ -71,7 +71,7 @@ class ServiceTranslator
     final DeclarationGroup functions = invokerClass.createDeclarationGroup();
     final Function constructor = invokerClass.createConstructor(functions, Visibility.PUBLIC);
     constructor.declareInClass(true);
-    final Expression paramData = constructor.createParameter(new TypeUsage(Std.string), "param_data").asExpression();
+    final Expression paramData = constructor.createParameter(new TypeUsage(Std.vector(new TypeUsage(Std.uint8))), "param_data").asExpression();
 
     // create invoker function
     final Function invoker = invokerClass.createMemberFunction(functions, "operator()", Visibility.PUBLIC);
@@ -97,7 +97,7 @@ class ServiceTranslator
           paramType.getBasicType().getActualType() == ActualType.DEVICE || paramType.getBasicType().getActualType() == ActualType.ANY_INSTANCE))
       {
         final Variable arg = invokerClass.createMemberVariable(vars, Mangler.mangleName(param), type, Visibility.PRIVATE);
-        Expression paramAccess = paramData;
+        Expression paramAccess = Std.string.callConstructor(new Function("begin").asFunctionCall(paramData, false), new Function("end").asFunctionCall(paramData, false));
         if (!noParseJson) {
           paramAccess = NlohmannJson.get(service.getParameters().size() > 1 ? new ArrayAccess(paramJson.asExpression(), Literal.createStringLiteral(param.getName())) : paramJson.asExpression(), type);
         }
@@ -124,7 +124,7 @@ class ServiceTranslator
     codeFile.addClassDeclaration(invokerClass);
 
     // add implementation of 'getInvoker' to the file
-    final Expression paramData2 = getInvoker.createParameter(new TypeUsage(Std.string), "param_data").asExpression();
+    final Expression paramData2 = getInvoker.createParameter(new TypeUsage(Std.vector(new TypeUsage(Std.uint8))), "param_data").asExpression();
     getInvoker.getCode().appendStatement(new ReturnStatement(invokerClass.callConstructor(paramData2)));
     codeFile.addFunctionDefinition(getInvoker);
 

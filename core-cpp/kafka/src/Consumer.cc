@@ -90,7 +90,7 @@ void Consumer::handleMessages(cppkafka::Consumer& consumer) {
       // TODO maybe this is the right spot to handle errors and check conditions on the msg instance?
 
       // get the service invoker
-      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.get_topic()).getInvoker(std::string(msg.get_payload()));
+      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.get_topic()).getInvoker(std::vector<uint8_t>(msg.get_payload()));
 
       // run the service
       service();
