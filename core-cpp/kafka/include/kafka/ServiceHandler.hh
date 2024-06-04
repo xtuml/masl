@@ -1,8 +1,9 @@
 #ifndef Kafka_ServiceHandler_HH
 #define Kafka_ServiceHandler_HH
 
-#include <nlohmann/json.hpp>
+#include <cstdint>
 #include <functional>
+#include <vector>
 
 namespace Kafka {
 

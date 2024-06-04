@@ -30,7 +30,6 @@ import org.xtuml.masl.metamodel.common.ParameterDefinition;
 import org.xtuml.masl.metamodel.domain.DomainService;
 import org.xtuml.masl.metamodel.type.BasicType;
 import org.xtuml.masl.metamodel.type.TypeDefinition.ActualType;
-import org.xtuml.masl.metamodelImpl.common.PragmaDefinition;
 import org.xtuml.masl.metamodelImpl.type.StringType;
 import org.xtuml.masl.translate.main.Architecture;
 import org.xtuml.masl.translate.main.DomainServiceTranslator;
@@ -233,7 +232,7 @@ class ServiceTranslator
 
   private boolean isNumeric(final String value) {
     try {
-      double d = Double.parseDouble(value);
+      Double.parseDouble(value);
       return true;
     } catch (NumberFormatException e) {
       return false;

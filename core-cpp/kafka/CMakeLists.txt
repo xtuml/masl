@@ -9,6 +9,7 @@ simple_add_shared_library (
   NAME      Kafka
   SOURCES
             Consumer.cc
+            DataConsumer.cc
             Kafka.cc
             ProcessHandler.cc
             Producer.cc
@@ -24,6 +25,7 @@ simple_add_shared_library (
   EXPORT    MaslCore
   INCLUDES
             kafka/Consumer.hh
+            kafka/DataConsumer.hh
             kafka/Kafka.hh
             kafka/ProcessHandler.hh
             kafka/Producer.hh

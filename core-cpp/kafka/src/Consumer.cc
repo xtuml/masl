@@ -18,6 +18,16 @@
 namespace Kafka {
 
 Consumer::Consumer(std::vector<std::string> topics) {
+  initialize(topics);
+}
+
+Consumer::Consumer(std::string topic) {
+  std::vector<std::string> topics;
+  topics.push_back(topic);
+  initialize(topics);
+}
+
+void Consumer::initialize(std::vector<std::string> topics) {
   // Get command line options
   const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
   const std::string offsetReset = SWA::CommandLine::getInstance().getOption(OffsetResetOption, "earliest");
@@ -44,13 +54,13 @@ Consumer::Consumer(std::vector<std::string> topics) {
   consumer = std::unique_ptr<cppkafka::Consumer>(new cppkafka::Consumer(config));
 
   // create topics if they don't already exist
-  createTopics(ProcessHandler::getInstance().getTopicNames());
+  createTopics(topics);
 
   // short delay to avoid race conditions if other processes initiated topic creation
   SWA::delay(SWA::Duration::fromMillis(100));
 
   // Subscribe to topics
-  consumer->subscribe(ProcessHandler::getInstance().getTopicNames());
+  consumer->subscribe(topics);
 }
 
 void Consumer::run() {
@@ -99,6 +109,17 @@ void Consumer::handleMessages() {
       // commit offset
       consumer->commit(msg);
     }
+  }
+}
+
+bool Consumer::consumeOne(DataConsumer& dataConsumer) {
+  cppkafka::Message msg = consumer->poll();
+  if (msg) {
+    dataConsumer.accept(std::vector<uint8_t>(msg.get_payload()));
+    consumer->commit(msg);
+    return true;
+  } else {
+    return false;
   }
 }
 
