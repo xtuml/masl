@@ -1,8 +1,6 @@
 #ifndef Kafka_Producer_HH
 #define Kafka_Producer_HH
 
-#include <nlohmann/json.hpp>
-
 #include "cppkafka/message_builder.h"
 #include "cppkafka/producer.h"
 
