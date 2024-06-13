@@ -4,6 +4,8 @@
 #include "cppkafka/consumer.h"
 #include "cppkafka/message.h"
 
+#include "DataConsumer.hh"
+
 #include <condition_variable>
 #include <mutex>
 #include <queue>
@@ -29,15 +31,18 @@ private:
 class Consumer {
 
 public:
+  Consumer(std::string topic);
+  Consumer(std::vector<std::string> topics);
+  bool consumeOne(DataConsumer& dataConsumer);
   void run();
-  static Consumer &getInstance();
 
 private:
   MessageQueue messageQueue;
+  std::unique_ptr<cppkafka::Consumer> consumer;
 
-  void handleMessages(cppkafka::Consumer& consumer);
-
-  void createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics);
+  void initialize(std::vector<std::string> topics);
+  void handleMessages();
+  void createTopics(std::vector<std::string> topics);
 };
 
 } // namespace Kafka

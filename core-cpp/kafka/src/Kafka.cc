@@ -12,14 +12,15 @@
 
 namespace Kafka {
 
-const char *const BrokersOption   = "-kafka-broker-list";
-const char *const GroupIdOption   = "-kafka-group-id";
-const char *const NamespaceOption = "-kafka-namespace";
+const char *const BrokersOption     = "-kafka-broker-list";
+const char *const GroupIdOption     = "-kafka-group-id";
+const char *const NamespaceOption   = "-kafka-namespace";
+const char *const OffsetResetOption = "-kafka-offset-reset";
 
 bool startup() {
   if (ProcessHandler::getInstance().hasRegisteredServices()) {
     // only start the consumer if there are registered services
-    std::thread{[] { Consumer::getInstance().run(); }}.detach();
+    std::thread{[] { ProcessHandler::getInstance().startConsumer(); }}.detach();
   }
 
   return true;
@@ -35,6 +36,7 @@ struct Init {
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokersOption, std::string("Kafka Brokers"), true, "brokerList", true, false));
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(GroupIdOption, std::string("Kafka Group ID"), false, "groupId", true, false));
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(NamespaceOption, std::string("Kafka Topic Namespace"), false, "namespace", true, false));
+    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(OffsetResetOption, std::string("Consumer Offset Reset Policy"), false, "offset", true, false));
 
     SWA::Process::getInstance().registerStartedListener(&startup);
   }

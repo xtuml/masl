@@ -16,7 +16,7 @@ Producer::Producer() {
   prod = std::unique_ptr<cppkafka::Producer>(new cppkafka::Producer(config));
 }
 
-void Producer::publish(int domainId, int serviceId, std::string data, std::string partKey) {
+void Producer::publish(int domainId, int serviceId, cppkafka::Buffer& data, cppkafka::Buffer& partKey) {
   // find/create a message builder
   std::shared_ptr<cppkafka::MessageBuilder> msgBuilder;
   TopicLookup::iterator entry = topicLookup.find(std::make_pair(domainId, serviceId));
@@ -30,7 +30,7 @@ void Producer::publish(int domainId, int serviceId, std::string data, std::strin
   }
 
   // set the partion key
-  if (!partKey.empty()) {
+  if (partKey.begin() != partKey.end()) {
     msgBuilder->key(partKey);
   }
 
@@ -39,6 +39,18 @@ void Producer::publish(int domainId, int serviceId, std::string data, std::strin
 
   // Produce the message
   prod->produce(*msgBuilder);
+}
+
+void Producer::publish(int domainId, int serviceId, std::vector<std::uint8_t> data, std::vector<std::uint8_t> partKey) {
+  cppkafka::Buffer dataBuffer = cppkafka::Buffer(data);
+  cppkafka::Buffer keyBuffer = cppkafka::Buffer(partKey);
+  publish(domainId, serviceId, dataBuffer, keyBuffer);
+}
+
+void Producer::publish(int domainId, int serviceId, std::string data, std::string partKey) {
+  cppkafka::Buffer dataBuffer = cppkafka::Buffer(data);
+  cppkafka::Buffer keyBuffer = cppkafka::Buffer(partKey);
+  publish(domainId, serviceId, dataBuffer, keyBuffer);
 }
 
 Producer &Producer::getInstance() {

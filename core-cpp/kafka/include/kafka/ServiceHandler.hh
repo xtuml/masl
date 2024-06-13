@@ -1,8 +1,9 @@
 #ifndef Kafka_ServiceHandler_HH
 #define Kafka_ServiceHandler_HH
 
-#include <nlohmann/json.hpp>
+#include <cstdint>
 #include <functional>
+#include <vector>
 
 namespace Kafka {
 
@@ -10,7 +11,7 @@ typedef std::function<void()> Callable;
 
 class ServiceHandler {
 public:
-  virtual Callable getInvoker(std::string data) const {
+  virtual Callable getInvoker(std::vector<std::uint8_t> data) const {
     return Callable();
   }
   virtual ~ServiceHandler();

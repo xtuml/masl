@@ -17,10 +17,20 @@
 
 namespace Kafka {
 
-void Consumer::run() {
+Consumer::Consumer(std::vector<std::string> topics) {
+  initialize(topics);
+}
 
+Consumer::Consumer(std::string topic) {
+  std::vector<std::string> topics;
+  topics.push_back(topic);
+  initialize(topics);
+}
+
+void Consumer::initialize(std::vector<std::string> topics) {
   // Get command line options
   const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
+  const std::string offsetReset = SWA::CommandLine::getInstance().getOption(OffsetResetOption, "earliest");
 
   std::string groupId;
   if (SWA::CommandLine::getInstance().optionPresent(GroupIdOption)) {
@@ -37,22 +47,25 @@ void Consumer::run() {
   // Construct the configuration
   cppkafka::Configuration config = {{"metadata.broker.list", brokers},
                                     {"group.id", groupId},
+                                    {"auto.offset.reset", offsetReset},
                                     {"enable.auto.commit", false}};
 
   // Create the consumer
-  cppkafka::Consumer consumer(config);
+  consumer = std::unique_ptr<cppkafka::Consumer>(new cppkafka::Consumer(config));
 
   // create topics if they don't already exist
-  createTopics(consumer, ProcessHandler::getInstance().getTopicNames());
+  createTopics(topics);
 
   // short delay to avoid race conditions if other processes initiated topic creation
   SWA::delay(SWA::Duration::fromMillis(100));
 
   // Subscribe to topics
-  consumer.subscribe(ProcessHandler::getInstance().getTopicNames());
+  consumer->subscribe(topics);
+}
 
+void Consumer::run() {
   // Create a consumer dispatcher
-  cppkafka::ConsumerDispatcher dispatcher(consumer);
+  cppkafka::ConsumerDispatcher dispatcher(*consumer);
 
   // Stop processing on SIGINT
   // TODO set up lifecycle event to stop dispatcher
@@ -61,7 +74,7 @@ void Consumer::run() {
 
   // create a signal listener
   SWA::RealTimeSignalListener listener(
-      [this, &consumer](int pid, int uid) { this->handleMessages(consumer); },
+      [this](int pid, int uid) { this->handleMessages(); },
       SWA::Process::getInstance().getActivityMonitor());
 
   // Now run the dispatcher, providing a callback to handle messages, one to
@@ -78,7 +91,7 @@ void Consumer::run() {
   );
 }
 
-void Consumer::handleMessages(cppkafka::Consumer& consumer) {
+void Consumer::handleMessages() {
   // drain the message queue
   if (!messageQueue.empty()) {
     std::vector<cppkafka::Message> msgs = messageQueue.dequeue_all();
@@ -88,18 +101,29 @@ void Consumer::handleMessages(cppkafka::Consumer& consumer) {
       // TODO maybe this is the right spot to handle errors and check conditions on the msg instance?
 
       // get the service invoker
-      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.get_topic()).getInvoker(std::string(msg.get_payload()));
+      Callable service = ProcessHandler::getInstance().getServiceHandler(msg.get_topic()).getInvoker(std::vector<uint8_t>(msg.get_payload()));
 
       // run the service
       service();
 
       // commit offset
-      consumer.commit(msg);
+      consumer->commit(msg);
     }
   }
 }
 
-void Consumer::createTopics(cppkafka::Consumer& consumer, std::vector<std::string> topics) {
+bool Consumer::consumeOne(DataConsumer& dataConsumer) {
+  cppkafka::Message msg = consumer->poll();
+  if (msg) {
+    dataConsumer.accept(std::vector<uint8_t>(msg.get_payload()));
+    consumer->commit(msg);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void Consumer::createTopics(std::vector<std::string> topics) {
   // TODO clean up error handling in this routine
   for (auto it = topics.begin(); it != topics.end(); it++) {
 
@@ -107,7 +131,7 @@ void Consumer::createTopics(cppkafka::Consumer& consumer, std::vector<std::strin
     int partition_cnt = 1;
     int replication_factor = 1;
 
-    rd_kafka_t *rk = consumer.get_handle();
+    rd_kafka_t *rk = consumer->get_handle();
     rd_kafka_NewTopic_t *newt[1];
     const size_t newt_cnt = 1;
     rd_kafka_AdminOptions_t *options;
@@ -167,11 +191,6 @@ void Consumer::createTopics(cppkafka::Consumer& consumer, std::vector<std::strin
     rd_kafka_NewTopic_destroy(newt[0]);
 
   }
-}
-
-Consumer &Consumer::getInstance() {
-  static Consumer instance;
-  return instance;
 }
 
 void MessageQueue::enqueue(cppkafka::Message &msg) {

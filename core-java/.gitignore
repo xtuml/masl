@@ -6,3 +6,7 @@ libs
 resources
 scripts
 tmp
+.classpath
+.project
+.settings/
+bin/
