@@ -53,6 +53,14 @@ void Producer::publish(int domainId, int serviceId, std::string data, std::strin
   publish(domainId, serviceId, dataBuffer, keyBuffer);
 }
 
+void Producer::publish(int domainId, int serviceId, std::vector<std::uint8_t> data) {
+  publish(domainId, serviceId, data, std::vector<std::uint8_t>());
+}
+
+void Producer::publish(int domainId, int serviceId, std::string data) {
+  publish(domainId, serviceId, data, "");
+}
+
 Producer &Producer::getInstance() {
   static Producer instance;
   return instance;

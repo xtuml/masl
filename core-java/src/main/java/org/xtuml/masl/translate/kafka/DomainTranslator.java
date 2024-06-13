@@ -60,14 +60,14 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final List<DomainServiceTranslator> domainServiceTranslators = domain.getServices().stream()
                 .filter(service -> service.getDeclarationPragmas().hasPragma(KAFKA_TOPIC_PRAGMA)
                         && !service.isFunction() && !service.isExternal() && !service.isScenario())
-                .map(service -> new DomainServiceTranslator(service, this, consumerCodeFile, publisherCodeFile))
+                .map(service -> new DomainServiceTranslator(service, this, new JsonSerializer(), consumerCodeFile, publisherCodeFile))
                 .collect(Collectors.toList());
 
         // translate domain service handlers
         domainServiceTranslators.forEach(DomainServiceTranslator::translate);
 
         // populate the code for the domain services
-        List<Iterator<Runnable>> domainServiceFilePopulators = domainServiceTranslators.stream()
+        final List<Iterator<Runnable>> domainServiceFilePopulators = domainServiceTranslators.stream()
                 .map(ServiceTranslator::getFilePopulators).map(List::iterator).collect(Collectors.toList());
         while (domainServiceFilePopulators.stream().anyMatch(Iterator::hasNext)) {
             domainServiceFilePopulators.stream().filter(Iterator::hasNext).map(Iterator::next).forEach(Runnable::run);
@@ -78,14 +78,14 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                 .flatMap(terminator -> terminator.getServices().stream())
                 .filter(service -> service.getDeclarationPragmas().hasPragma(KAFKA_TOPIC_PRAGMA) && service.isFunction()
                         && service.getReturnType().isAssignableFrom(BooleanType.createAnonymous()))
-                .map(service -> new DomainTerminatorServiceTranslator(service, this, pollerCodeFile))
+                .map(service -> new DomainTerminatorServiceTranslator(service, this, new JsonSerializer(), pollerCodeFile))
                 .collect(Collectors.toList());
 
         // translate domain terminator service handlers
         terminatorServiceTranslators.forEach(DomainTerminatorServiceTranslator::translate);
 
         // populate the code for the terminator services
-        List<Iterator<Runnable>> terminatorServiceFilePopulators = terminatorServiceTranslators.stream()
+        final List<Iterator<Runnable>> terminatorServiceFilePopulators = terminatorServiceTranslators.stream()
                 .map(ServiceTranslator::getFilePopulators).map(List::iterator).collect(Collectors.toList());
         while (terminatorServiceFilePopulators.stream().anyMatch(Iterator::hasNext)) {
             terminatorServiceFilePopulators.stream().filter(Iterator::hasNext).map(Iterator::next)
@@ -96,4 +96,5 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     Namespace getNamespace() {
         return domainNamespace;
     }
+
 }
