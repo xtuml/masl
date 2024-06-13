@@ -18,10 +18,13 @@ abstract class ServiceTranslator {
 
     private final Service service;
     private final DomainTranslator domainTranslator;
+    private final ParameterSerializer serializer;
 
-    ServiceTranslator(final Service service, final DomainTranslator domainTranslator) {
+    ServiceTranslator(final Service service, final DomainTranslator domainTranslator,
+            final ParameterSerializer serializer) {
         this.service = service;
         this.domainTranslator = domainTranslator;
+        this.serializer = serializer;
     }
 
     abstract void translate();
@@ -34,6 +37,10 @@ abstract class ServiceTranslator {
 
     DomainTranslator getDomainTranslator() {
         return domainTranslator;
+    }
+
+    ParameterSerializer getParameterSerializer() {
+        return serializer;
     }
 
     Namespace getDomainNamespace() {
