@@ -15,12 +15,15 @@ public class Kafka {
     static Library cppkafkaLibrary = new ImportedLibrary("cppkafka");
     static Library rdkafkaLibrary = new ImportedLibrary("rdkafka");
 
+    static CodeFile bufferedIOInc = library.createInterfaceHeader("kafka/BufferedIO.hh");
     static CodeFile processHandlerInc = library.createInterfaceHeader("kafka/ProcessHandler.hh");
     static CodeFile producerInc = library.createInterfaceHeader("kafka/Producer.hh");
     static CodeFile serviceHandlerInc = library.createInterfaceHeader("kafka/ServiceHandler.hh");
     static CodeFile dataConsumerInc = library.createInterfaceHeader("kafka/DataConsumer.hh");
     static CodeFile consumerInc = library.createInterfaceHeader("kafka/Consumer.hh");
 
+    static Class bufferedInputStream = new Class("BufferedInputStream", kafkaNamespace, bufferedIOInc);
+    static Class bufferedOutputStream = new Class("BufferedOutputStream", kafkaNamespace, bufferedIOInc);
     static Class processHandlerClass = new Class("ProcessHandler", kafkaNamespace, processHandlerInc);
     static Class producerClass = new Class("Producer", kafkaNamespace, producerInc);
     static Class callable = new Class("Callable", kafkaNamespace, processHandlerInc);

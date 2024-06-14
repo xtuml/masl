@@ -8,6 +8,7 @@ find_package(nlohmann_json REQUIRED)
 simple_add_shared_library (
   NAME      Kafka
   SOURCES
+            BufferedIO.cc
             Consumer.cc
             DataConsumer.cc
             Kafka.cc
@@ -24,6 +25,7 @@ simple_add_shared_library (
             nlohmann_json::nlohmann_json
   EXPORT    MaslCore
   INCLUDES
+            kafka/BufferedIO.hh
             kafka/Consumer.hh
             kafka/DataConsumer.hh
             kafka/Kafka.hh

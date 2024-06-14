@@ -25,6 +25,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     private final Namespace domainNamespace;
     private final Library library;
     private final Library interfaceLibrary;
+    private final Library typesLibrary;
 
     public static DomainTranslator getInstance(final Domain domain) {
         return getInstance(DomainTranslator.class, domain);
@@ -34,6 +35,9 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         super(domain);
         mainTranslator = org.xtuml.masl.translate.main.DomainTranslator.getInstance(domain);
         domainNamespace = new Namespace(Mangler.mangleName(domain), Kafka.kafkaNamespace);
+
+        typesLibrary = new SharedLibrary(mainTranslator.getLibrary().getName() + "_types_kafka")
+                .inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
 
         library = new SharedLibrary(mainTranslator.getLibrary().getName() + "_kafka")
                 .inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
@@ -55,12 +59,14 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         final CodeFile pollerCodeFile = library.createBodyFile("Kafka_pollers" + Mangler.mangleFile(domain));
         final CodeFile publisherCodeFile = interfaceLibrary
                 .createBodyFile("Kafka_publishers" + Mangler.mangleFile(domain));
+        final CodeFile typesCodeFile = typesLibrary.createBodyFile("Kafka_types" + Mangler.mangleFile(domain));
 
         // create domain service translators
         final List<DomainServiceTranslator> domainServiceTranslators = domain.getServices().stream()
                 .filter(service -> service.getDeclarationPragmas().hasPragma(KAFKA_TOPIC_PRAGMA)
                         && !service.isFunction() && !service.isExternal() && !service.isScenario())
-                .map(service -> new DomainServiceTranslator(service, this, new JsonSerializer(), consumerCodeFile, publisherCodeFile))
+                .map(service -> new DomainServiceTranslator(service, this, new BufferedIOSerializer(), consumerCodeFile,
+                        publisherCodeFile))
                 .collect(Collectors.toList());
 
         // translate domain service handlers
@@ -78,7 +84,8 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
                 .flatMap(terminator -> terminator.getServices().stream())
                 .filter(service -> service.getDeclarationPragmas().hasPragma(KAFKA_TOPIC_PRAGMA) && service.isFunction()
                         && service.getReturnType().isAssignableFrom(BooleanType.createAnonymous()))
-                .map(service -> new DomainTerminatorServiceTranslator(service, this, new JsonSerializer(), pollerCodeFile))
+                .map(service -> new DomainTerminatorServiceTranslator(service, this, new BufferedIOSerializer(),
+                        pollerCodeFile))
                 .collect(Collectors.toList());
 
         // translate domain terminator service handlers
@@ -91,6 +98,21 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
             terminatorServiceFilePopulators.stream().filter(Iterator::hasNext).map(Iterator::next)
                     .forEach(Runnable::run);
         }
+
+        // create type translators
+        final List<TypeTranslator> typeTranslators = domain.getTypes().stream()
+                .map(type -> new TypeTranslator(type, this, typesCodeFile)).collect(Collectors.toList());
+
+        // translate types
+        typeTranslators.forEach(TypeTranslator::translate);
+
+        // populate code for types
+        final List<Iterator<Runnable>> typeFilePopulators = typeTranslators.stream()
+                .map(TypeTranslator::getFilePopulators).map(List::iterator).collect(Collectors.toList());
+        while (typeFilePopulators.stream().anyMatch(Iterator::hasNext)) {
+            typeFilePopulators.stream().filter(Iterator::hasNext).map(Iterator::next).forEach(Runnable::run);
+        }
+
     }
 
     Namespace getNamespace() {
