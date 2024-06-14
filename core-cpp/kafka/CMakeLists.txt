@@ -3,7 +3,6 @@ find_package(RdKafka CONFIG REQUIRED QUIET)
 find_package(libuuid REQUIRED)
 find_package(log4cplus REQUIRED)
 find_package(fmt REQUIRED)
-find_package(nlohmann_json REQUIRED)
 
 simple_add_shared_library (
   NAME      Kafka
@@ -21,7 +20,6 @@ simple_add_shared_library (
             libuuid::libuuid
             fmt::fmt
             log4cplus::log4cplus
-            nlohmann_json::nlohmann_json
   EXPORT    MaslCore
   INCLUDES
             kafka/Consumer.hh

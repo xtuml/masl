@@ -3,7 +3,6 @@
 #include <log4cplus/initializer.h>
 #include <cppkafka/producer.h>
 #include <cppkafka/configuration.h>
-#include <nlohmann/json.hpp>
 #include <fmt/format.h>
 #include <fmt/chrono.h>
 #include "swa/CommandLine.hh"
