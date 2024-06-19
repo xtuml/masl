@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xtuml.masl.cppgen.ArrayAccess;
 import org.xtuml.masl.cppgen.BinaryExpression;
 import org.xtuml.masl.cppgen.BinaryOperator;
 import org.xtuml.masl.cppgen.Class;
@@ -23,13 +22,11 @@ import org.xtuml.masl.cppgen.Std;
 import org.xtuml.masl.cppgen.TypeUsage;
 import org.xtuml.masl.cppgen.TypedefType;
 import org.xtuml.masl.cppgen.Variable;
-import org.xtuml.masl.cppgen.VariableDefinitionStatement;
 import org.xtuml.masl.cppgen.Visibility;
 import org.xtuml.masl.metamodel.common.ParameterDefinition;
 import org.xtuml.masl.metamodel.domain.DomainService;
 import org.xtuml.masl.translate.main.Architecture;
 import org.xtuml.masl.translate.main.Mangler;
-import org.xtuml.masl.translate.main.NlohmannJson;
 import org.xtuml.masl.translate.main.ParameterTranslator;
 import org.xtuml.masl.translate.main.Types;
 
@@ -46,9 +43,9 @@ public class DomainServiceTranslator extends ServiceTranslator {
     private Variable publisherRegisteredVar;
     private Function publishFn;
 
-    DomainServiceTranslator(DomainService service, DomainTranslator domainTranslator, CodeFile consumerCodeFile,
-            CodeFile publisherCodeFile) {
-        super(service, domainTranslator);
+    DomainServiceTranslator(DomainService service, DomainTranslator domainTranslator, ParameterSerializer serializer,
+            CodeFile consumerCodeFile, CodeFile publisherCodeFile) {
+        super(service, domainTranslator, serializer);
         this.consumerCodeFile = consumerCodeFile;
         this.publisherCodeFile = publisherCodeFile;
     }
@@ -99,39 +96,36 @@ public class DomainServiceTranslator extends ServiceTranslator {
         invoker.declareInClass(true);
 
         // if the service has a single string parameter, just pass through
-        final boolean noParseJson = hasSingleStringParameter(getService());
+        final boolean noParse = hasSingleStringParameter(getService());
 
         // handle parameters
         final List<Expression> invokeArgs = new ArrayList<>();
+        final List<Variable> deserializeVars = new ArrayList<>();
         final DeclarationGroup vars = invokerClass.createDeclarationGroup();
-        final Variable paramJson = new Variable(new TypeUsage(NlohmannJson.json), "params",
-                NlohmannJson.parse(paramData));
-        if (!noParseJson && getService().getParameters().stream().map(p -> p.getType().getBasicType())
-                .anyMatch(ServiceTranslator::isTypeSerializable)) {
-            // Only build a JSON object if it will be used
-            constructor.getCode().appendStatement(new VariableDefinitionStatement(paramJson));
-        }
         for (final ParameterDefinition param : getService().getParameters()) {
             final TypeUsage type = Types.getInstance().getType(param.getType());
             if (isTypeSerializable(param.getType().getBasicType())) {
                 final Variable arg = invokerClass.createMemberVariable(vars, Mangler.mangleName(param), type,
                         Visibility.PRIVATE);
-                Expression paramAccess = Std.string.callConstructor(
-                        new Function("begin").asFunctionCall(paramData, false),
-                        new Function("end").asFunctionCall(paramData, false));
-                if (!noParseJson) {
-                    paramAccess = NlohmannJson.get(getService().getParameters().size() > 1
-                            ? new ArrayAccess(paramJson.asExpression(), Literal.createStringLiteral(param.getName()))
-                            : paramJson.asExpression(), type);
-                }
-                constructor.getCode().appendStatement(
-                        new BinaryExpression(arg.asExpression(), BinaryOperator.ASSIGN, paramAccess).asStatement());
+                deserializeVars.add(arg);
                 invokeArgs.add(arg.asExpression());
             } else {
                 final Variable arg = new Variable(type, Mangler.mangleName(param));
                 invoker.getCode().appendStatement(arg.asStatement());
                 invokeArgs.add(arg.asExpression());
             }
+        }
+
+        // add the deserialization code
+        if (noParse) {
+            final Expression paramAccess = Std.string.callConstructor(
+                    new Function("begin").asFunctionCall(paramData, false),
+                    new Function("end").asFunctionCall(paramData, false));
+            constructor.getCode().appendStatement(
+                    new BinaryExpression(deserializeVars.get(0).asExpression(), BinaryOperator.ASSIGN, paramAccess)
+                            .asStatement());
+        } else {
+            getParameterSerializer().deserialize(paramData, deserializeVars, constructor.getCode());
         }
 
         // create the call to the service interceptor
@@ -171,50 +165,42 @@ public class DomainServiceTranslator extends ServiceTranslator {
         publishFn.setReturnType(getDomainTranslator().getTypes().getType(getService().getReturnType()));
 
         // if the service has a single string parameter, just pass through
-        final boolean noParseJson = hasSingleStringParameter(getService());
+        final boolean noParse = hasSingleStringParameter(getService());
 
-        // create output buffer
-        final Variable paramData = new Variable(new TypeUsage(NlohmannJson.json), "param_data");
-        if (!noParseJson) {
-            // Only build a JSON object if it will be used
-            publishFn.getCode().appendStatement(new VariableDefinitionStatement(paramData));
-        }
-
-        // create partition key buffer
-        final Variable partKey = new Variable(new TypeUsage(NlohmannJson.json), "part_key");
+        // determine whether or not to include partition key
         final boolean includePartKey = getService().getParameters().stream().anyMatch(
                 param -> getService().getDeclarationPragmas().hasPragma(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA)
                         && getService().getDeclarationPragmas()
                                 .getPragmaValues(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA)
                                 .contains(param.getName()));
-        if (includePartKey) {
-            publishFn.getCode().appendStatement(new VariableDefinitionStatement(partKey));
-        }
 
         // handle parameters
+        final List<Variable> serializeVars = new ArrayList<>();
+        final List<Variable> serializeKeyVars = new ArrayList<>();
         final Map<ParameterDefinition, ParameterTranslator> paramTranslators = new HashMap<>();
         for (final ParameterDefinition param : getService().getParameters()) {
             final ParameterTranslator paramTrans = new ParameterTranslator(param, publishFn);
             paramTranslators.put(param, paramTrans);
-            final Expression jsonAccess = getService().getParameters().size() > 1
-                    ? new ArrayAccess(paramData.asExpression(), Literal.createStringLiteral(param.getName()))
-                    : paramData.asExpression();
-            final Expression writeExpr = new BinaryExpression(jsonAccess, BinaryOperator.ASSIGN,
-                    paramTrans.getVariable().asExpression());
-            if (!noParseJson) {
-                publishFn.getCode().appendStatement(new ExpressionStatement(writeExpr));
+            if (isTypeSerializable(param.getType().getBasicType())) {
+                serializeVars.add(paramTrans.getVariable());
             }
             if (getService().getDeclarationPragmas().hasPragma(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA)
                     && getService().getDeclarationPragmas().getPragmaValues(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA)
                             .contains(param.getName())) {
-                final Expression keyJsonAccess = getService().getDeclarationPragmas()
-                        .getPragmaValues(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA).size() > 1
-                                ? new ArrayAccess(partKey.asExpression(), Literal.createStringLiteral(param.getName()))
-                                : partKey.asExpression();
-                final Expression keyWriteExpr = new BinaryExpression(keyJsonAccess, BinaryOperator.ASSIGN,
-                        paramTrans.getVariable().asExpression());
-                publishFn.getCode().appendStatement(new ExpressionStatement(keyWriteExpr));
+                serializeKeyVars.add(paramTrans.getVariable());
             }
+        }
+
+        // serialize the data
+        Expression paramData = null;
+        if (!noParse) {
+            paramData = getParameterSerializer().serialize(serializeVars, publishFn.getCode());
+        }
+
+        // serialize the partition key
+        Expression keyData = null;
+        if (includePartKey) {
+            keyData = getParameterSerializer().serialize(serializeKeyVars, publishFn.getCode());
         }
 
         // call publisher
@@ -225,12 +211,18 @@ public class DomainServiceTranslator extends ServiceTranslator {
                         Literal.createStringLiteral(getDomainTranslator().getDomain().getName())), false);
         final Expression serviceId = org.xtuml.masl.translate.main.DomainServiceTranslator
                 .getInstance((DomainService) getService()).getServiceId();
-        final Expression publishExpr = publishFunc.asFunctionCall(producer, false, domainId, serviceId,
-                noParseJson
-                        ? Std.string.callConstructor(
-                                paramTranslators.get(getService().getParameters().get(0)).getVariable().asExpression())
-                        : NlohmannJson.dump(paramData.asExpression()),
-                includePartKey ? NlohmannJson.dump(partKey.asExpression()) : Literal.createStringLiteral(""));
+
+        final List<Expression> publishArgs = new ArrayList<>();
+        publishArgs.add(domainId);
+        publishArgs.add(serviceId);
+        publishArgs.add(noParse
+                ? Std.string.callConstructor(
+                        paramTranslators.get(getService().getParameters().get(0)).getVariable().asExpression())
+                : paramData);
+        if (includePartKey) {
+            publishArgs.add(keyData);
+        }
+        final Expression publishExpr = publishFunc.asFunctionCall(producer, false, publishArgs);
         publishFn.getCode().appendStatement(new ExpressionStatement(publishExpr));
 
         // add service registration
