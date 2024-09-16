@@ -1,0 +1,9 @@
+public service JSON::dump(json_element: in JSONElement, pretty: in anonymous boolean) return anonymous string is
+    uri: URI;
+    result: string;
+begin
+  uri := add_document(json_element);
+  result := dump(uri, pretty);
+  remove_document(uri);
+  return result;
+end service;

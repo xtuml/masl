@@ -140,12 +140,3 @@ TEST(Parse, deep) {
     EXPECT_EQ(o_ax[2].get_masla_data().get_masla_real(),3.0);
 
 }
-
-TEST(dump,string) {
-    maslt_JSONElement input;
-    input.set_masla_kind() = maslt_JSONType::masle_String;
-    input.set_masla_data().set_masla_str() = "hello";
-
-    auto result  = masls_overload4_dump(input);
-    auto expected = R"("string")";
-}
