@@ -38,26 +38,3 @@ deeply.  This is how it works.
 
 See the [Getting Started Guide](Getting_Started.md) to jump into building and
 running masl models.
-
-## Building the compiler
-
-#### Prerequisites (from clean Ubuntu 16.04 install, should work fine with Oracle JDK8 too)
-```
-sudo apt-get update
-sudo apt-get install gcc g++ pkg-config cmake ninja-build libsqlite3-dev libboost-all-dev libssl-dev uuid-dev gradle openjdk-8-jdk wget
-```
-
-#### Unfortunately apt-get install libpoco-dev doesn't install cmake bindings, so build from source
-```
-wget http://pocoproject.org/releases/poco-1.7.3/poco-1.7.3-all.tar.gz
-tar xzf poco-1.7.3-all.tar.gz
-cd poco-1.7.3-all
-cmake . -G Ninja
-sudo ninja install
-```
-
-#### Build MASL
-```
-cmake . -G Ninja -DCMAKE_INSTALL_PREFIX=${PWD}/install
-ninja install
-```
