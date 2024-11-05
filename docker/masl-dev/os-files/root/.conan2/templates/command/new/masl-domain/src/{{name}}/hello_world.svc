@@ -1,4 +1,4 @@
-service {{name}}::hello_world() is
+private service {{name}}::hello_world() is
 begin
    console << "Hello, World!\n" << flush;
 end service;

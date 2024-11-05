@@ -2,7 +2,7 @@
 // UK Crown Copyright (c) 2016. All rights reserved.
 //
 
-//! ATTENDENT Enables Pump 2
+//! ATTENDANT Enables Pump 2
 private service PSC::ATTENDANT_Enables_Pump_2_2 () is
 
 begin

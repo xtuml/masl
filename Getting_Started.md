@@ -5,65 +5,73 @@
 1. [Docker](https://docs.docker.com/get-docker/)
 2. OpenJDK 8 or higher
 
+### `masl-dev` docker image
+
+MASL builds use a publicly available docker image for building. Use the
+following command to run this image:
+
+  ```
+  docker compose -f docker/docker-compose.yml run -v ${PWD}:/work -p 20000:20000 -p 30000:30000 -p 40000:40000 masl-dev <command>
+  ```
+
+It is recommended to alias this command in your shell to make usage easier:
+
+  ```
+  alias masl-dev='docker compose -f <root_of_repository>/docker/docker-compose.yml run -v ${PWD}:/work -p 20000:20000 -p 30000:30000 -p 40000:40000 masl-dev'
+  ```
+
+NOTE: Be sure to replace `<root_of_repository>` with the absolute path to the
+location of your cloned `masl` repository to ensure the alias works from any
+working directory.
+
+NOTE: The rest of this document will assume this alias has been set up.
+
 ### Additional Windows requirements
 
 1. [Git for Windows](https://gitforwindows.org/)
 
-## Building the example projects
+## Building the calculator example project
 
 1. Open a shell (git-bash on Windows) and change directories to the
    `examples/calculator/` directory. 
 2. Build project with:
    ```
-   ./build-masl.sh
+   masl-dev conan build . --options test=True
    ```
 
-## Running the example projects
+## Running the calculator example project
 
 1. Open a shell (git-bash on Windows) and change directories to the
-   `examples/calculator/` directory. 
+   `examples/calculator/` directory.
 2. To launch the compiled executable within the docker container, execute the
    following:
    ```
-   docker run -it -v /$PWD:/workspace levistarrett/masl-exe bin/calculator_transient
-   ```
-   On Windows:
-   ```
-   winpty docker run -it -v /$PWD:/workspace levistarrett/masl-exe bin/calculator_transient
+   masl-dev ./build/Release/bin/calculator_transient -postinit schedule/test.sch
    ```
 
-The process will launch, but nothing will happen until there's an external
-stimulus and the event queue will just idly wait.  To explore further, launch
-with inspector enabled.
+The process will launch and execute a series of predefined test scenarios
+before exiting.
 
 ### Launching with inspector
 
 1. Open a shell (git-bash on Windows) and change directories to the
    `examples/calculator/` directory. 
-2. To launch the compiled executable with inspector enabled, execute the following:
+
+2. To launch the compiled executable with inspector enabled, execute the following command to create a new shell inside a `masl-dev` container:
    ```
-   docker run -it -p 20000:20000 -p 30000:30000 -p 40000:40000 -v /$PWD:/workspace levistarrett/masl-exe bin/calculator_transient -util Inspector -inspector-port 0
-   ```
-   On Windows:
-   ```
-   winpty docker run -it -p 20000:20000 -p 30000:30000 -p 40000:40000 -v /$PWD:/workspace levistarrett/masl-exe bin/calculator_transient -util Inspector -inspector-port 0
+   masl-dev
    ```
 
-The `-p` docker parameters cause the ports 20000, 30000, and 40000 to be opened
-between the host operating system and the process running within container.
-Inpsector uses 3 TCP ports for various parts of its communication protocol. The
-`-util Inspector` flag tells the generated executable to dynamically load the
-inspector libraries and the `-inspector-port 0` tells the executable to listen
-on the base ports (20000, 30000, and 40000) with an offset of 0.
+3. Run the following commands inside the container:
+   ```
+   source build/Release/generators/conanrun.sh 
+   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/work/build/Release/lib/
+   ./build/Release/bin/calculator_transient -util Inspector -inspector-port 0
+   ```
 
-_NOTE: The commands to launch MASL executables can be long and clumsy. To streamline things, an alias command can be added to your shell configuration:_
-
-```
-alias masl-exe="docker run -it -p 20000:20000 -p 30000:30000 -p 40000:40000 -v /\$PWD:/workspace levistarrett/masl-exe"
-
-# Now, run the executable with:
-masl-exe bin/calculator_transient -util Inspector -inspector-port 0
-```
+The `-util Inspector` flag tells the generated executable to dynamically load
+the inspector libraries and the `-inspector-port 0` tells the executable to
+listen on the base ports (20000, 30000, and 40000) with an offset of 0.
 
 ### Running inspector
 
@@ -81,6 +89,51 @@ actions and more.
 In the calculator model, try executing some of the "testcase" scenarios from
 the "scenarios" tab. Observe the output that is printed in the same shell where
 you launched inspector.
+
+## Building the compiler
+
+### Rebuilding the `masl-dev` image
+
+If build environment dependencies change, or changes are made to the Conan
+templates, it is necessary to rebuild the `masl-dev` image itself. Use the
+following command:
+
+  ```
+  docker compose -f docker/docker-compose.yml build masl-dev
+  ```
+
+### Building the compiler and software architecture
+
+To rebuild the code generator and software architecture, simply run the
+following command from the root of the repository:
+
+  ```
+  ./buildall.sh
+  ```
+
+This will rebuild and publish all the projects in the repository. During the
+build you will see an error message that looks like this:
+
+  ```
+  ERROR: Exiting with code: 2
+  Could not log in to remote server. Check that ARTIFACTORY_USERNAME and ARTIFACTORY_TOKEN are set.
+  ```
+
+This message is normal and simply indicates that the build is not authenticated
+to be published to the public artifact server. The artifacts are still
+published to the local cache.
+
+To build a single component of the repository independently, navigate to the
+corresponding source folder and run the following command:
+
+  ```
+  cd core-cpp/
+  masl-dev conan-publish --version=$(git describe --tags)
+  ```
+
+When iteratively testing changes to the code generator or software
+architecture, be sure your `conanfile.py` references the latest versions of the
+dependencies or you will not see the effects of your changes.
 
 ## MASL langauge reference
 
