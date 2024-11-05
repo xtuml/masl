@@ -36,7 +36,7 @@ NOTE: The rest of this document will assume this alias has been set up.
    `examples/calculator/` directory. 
 2. Build project with:
    ```
-   masl-dev conan build . --options test=True
+   masl-dev conan build . --options test=True --version=$(git describe --tags)
    ```
 
 ## Running the calculator example project

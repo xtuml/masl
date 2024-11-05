@@ -2,7 +2,6 @@ import conan
 
 class ConanFile(conan.ConanFile):
     name = "calculator-masl"
-    version = "0.1"
     user = "xtuml"
     channel = "stable"
     python_requires = 'masl_conan/[>=0.1]@xtuml/stable'
