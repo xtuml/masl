@@ -90,6 +90,33 @@ In the calculator model, try executing some of the "testcase" scenarios from
 the "scenarios" tab. Observe the output that is printed in the same shell where
 you launched inspector.
 
+## Using the built in MASL templates
+
+The `masl-dev` container has the capability to create new MASL projects from templates
+
+### Creating a new MASL standalone domain
+
+  ```
+  masl-dev conan new masl-domain -d name="MyDomain"
+  masl-dev conan build .
+  ```
+
+### Creating a new MASL domain & project pair
+
+  ```
+  masl-dev conan new masl-pair -d name="MyApp"
+  masl-dev conan build .
+  ```
+
+### Publish a package to the server for later use
+
+  ```
+  masl-dev conan-publish
+  ```
+
+NOTE: The `ARTIFACTORY_USERNAME` and `ARTIFACTORY_TOKEN` environment variables
+must be set to publish artifacts to the remote server.
+
 ## Building the compiler
 
 ### Rebuilding the `masl-dev` image
