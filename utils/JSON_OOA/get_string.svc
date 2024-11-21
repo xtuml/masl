@@ -1,4 +1,4 @@
-public service JSON::get_string(json_element: in JSONElement) return string is
+public service JSON::get_string(json_element: in JSONElement) return anonymous string is
 begin
   if json_element.kind = String then
     return json_element.data.str;

@@ -5,9 +5,9 @@
 using namespace masld_JSON;
 using namespace std::literals;
 
-TEST(Pointer,string) {
+TEST(Pointer,element) {
 
-    auto doc = R"(
+    auto doc = masls_overload2_add_document(R"(
         {
             "a" : "aaa",
             "b" : {
@@ -15,17 +15,17 @@ TEST(Pointer,string) {
                 "c" : "ccc"
             }
         }
-    )"s;
+    )"s);
 
-    auto result = masls_overload4_dump(masls_overload1_pointer(doc,"/b/c")).s_str();
+    auto result = masls_overload6_dump(masls_pointer(doc,"/b/c")).s_str();
 
     EXPECT_EQ(result,R"("ccc")"s);
 
 }
 
-TEST(Pointer,element) {
+TEST(Pointer,string) {
 
-    auto doc = masls_parse(R"(
+    auto doc = masls_overload2_add_document(R"(
             {
                 "a" : "aaa",
                 "b" : {
@@ -35,8 +35,59 @@ TEST(Pointer,element) {
             }
         )"s);
 
-    auto result = masls_overload4_dump(masls_pointer(doc,"/b/c")).s_str();
+    auto result = masls_pointer_string(doc,"/b/c").s_str();
 
-    EXPECT_EQ(result,R"("ccc")"s);
+    EXPECT_EQ(result,"ccc"s);
+}
+TEST(Pointer,real) {
+
+    auto doc = masls_overload2_add_document(R"(
+                    {
+                        "a" : "aaa",
+                        "b" : {
+                            "b" : "bbb",
+                            "c" : 123.0
+                        }
+                    }
+                )"s);
+
+    auto result = masls_pointer_real(doc,"/b/c");
+
+    EXPECT_EQ(result,123);
+}
+
+TEST(Pointer,integer) {
+
+    auto doc = masls_overload2_add_document(R"(
+                {
+                    "a" : "aaa",
+                    "b" : {
+                        "b" : "bbb",
+                        "c" : 123
+                    }
+                }
+            )"s);
+
+    auto result = masls_pointer_integer(doc,"/b/c");
+
+    EXPECT_EQ(result,123);
+}
+
+
+TEST(Pointer,boolean) {
+
+    auto doc = masls_overload2_add_document(R"(
+                    {
+                        "a" : "aaa",
+                        "b" : {
+                            "b" : "bbb",
+                            "c" : true
+                        }
+                    }
+                )"s);
+
+    auto result = masls_pointer_boolean(doc,"/b/c");
+
+    EXPECT_EQ(result,true);
 }
 

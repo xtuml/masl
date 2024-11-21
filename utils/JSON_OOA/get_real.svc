@@ -1,4 +1,4 @@
-public service JSON::get_real(json_element: in JSONElement) return real is
+public service JSON::get_real(json_element: in JSONElement) return anonymous real is
 begin
   if json_element.kind = Real then
     return json_element.data.real;

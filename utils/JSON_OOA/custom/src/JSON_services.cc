@@ -1,158 +1,334 @@
-/*
- * ----------------------------------------------------------------------------
- * (c) 2023 - CROWN OWNED COPYRIGHT. All rights reserved.
- * The copyright of this Software is vested in the Crown
- * and the Software is the property of the Crown.
- * ----------------------------------------------------------------------------
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ----------------------------------------------------------------------------
- * Classification: UK OFFICIAL
- * ----------------------------------------------------------------------------
- */
-
-//
-// File: __JSON__parse.cc
-//
 #include "JSON_OOA/__JSON__JSONException.hh"
 #include "JSON_OOA/__JSON_services.hh"
 #include "JSON_OOA/__JSON_types.hh"
 #include "swa/String.hh"
 #include "swa/parse.hh"
 #include "swa/console.hh"
+#include "swa/Device.hh"
 #include <nlohmann/json.hpp>
-#include <string.h>
-#include <stdio.h>
+#include <fstream>
+#include "DocumentStore.hh"
+
+#include "helpers.hh"
+#include "schema.hh"
 
 namespace masld_JSON {
 
-    maslt_JSONElement make_masl_element(const nlohmann::json &j) {
-        maslt_JSONElement result;
-        switch (j.type()) {
-            case nlohmann::json::value_t::object:
-                result.set_masla_kind() = maslt_JSONType::masle_Object;
-                for (const auto &[key, value]: j.items()) {
-                    result.set_masla_data().set_masla_obj()[key] = make_masl_element(value);
-                }
-                break;
-            case nlohmann::json::value_t::array:
-                result.set_masla_kind() = maslt_JSONType::masle_Array;
-                for (const auto &[key, value]: j.items()) {
-                    result.set_masla_data().set_masla_arr() += make_masl_element(value);
-                }
-                break;
-            case nlohmann::json::value_t::string:
-                result.set_masla_kind() = maslt_JSONType::masle_String;
-                j.get_to(result.set_masla_data().set_masla_str());
-                break;
-            case nlohmann::json::value_t::number_float:
-                result.set_masla_kind() = maslt_JSONType::masle_Real;
-                j.get_to(result.set_masla_data().set_masla_real());
-                break;
-            case nlohmann::json::value_t::number_integer:
-                [[fallthrough]]
-            case nlohmann::json::value_t::number_unsigned:
-                result.set_masla_kind() = maslt_JSONType::masle_Integer;
-                j.get_to(result.set_masla_data().set_masla_int());
-                break;
-            case nlohmann::json::value_t::boolean:
-                result.set_masla_kind() = maslt_JSONType::masle_Boolean;
-                j.get_to(result.set_masla_data().set_masla_bool());
-                break;
-            case nlohmann::json::value_t::null:
-                result.set_masla_kind() = maslt_JSONType::masle_Null;
-                break;
-        }
-        return result;
+    DocumentStore &store() {
+        static DocumentStore instance;
+        return instance;
+
     }
 
-    nlohmann::json make_json(const maslt_JSONElement& element) {
-        switch ( element.get_masla_kind().getIndex() ) {
-            case maslt_JSONType::index_masle_Object: {
-                nlohmann::json result;
-                for (const auto &[k, v]: element.get_masla_data().get_masla_obj()) {
-                    result[k.s_str()] = make_json(v);
-                }
-                return result;
-            }
-            case maslt_JSONType::index_masle_Array: {
-                nlohmann::json result;
-                for ( const auto& v : element.get_masla_data().get_masla_arr()) {
-                    result.emplace_back(make_json(v));
-                }
-                return result;
-            }
-            case maslt_JSONType::index_masle_String:
-                return element.get_masla_data().get_masla_str();
-            case maslt_JSONType::index_masle_Real:
-                return element.get_masla_data().get_masla_real();
-            case maslt_JSONType::index_masle_Integer:
-                return element.get_masla_data().get_masla_int();
-            case maslt_JSONType::index_masle_Boolean:
-                return element.get_masla_data().get_masla_bool();
-            default:
-                return {};
-        }
+    ValidatorStore &validators() {
+        static ValidatorStore instance{store()};
+        return instance;
     }
 
-    maslt_JSONElement masls_parse(const ::SWA::String &maslp_json_string) {
+    namespace {
+        nlohmann::json get_document(const maslt_URI &key) {
+            return store().get_document(key.s_str());
+        }
+
+        nlohmann::json get_document(const maslt_URI &key, const SWA::String &pointer) {
+            return store().get_document(key.s_str())[nlohmann::json::json_pointer(pointer.s_str())];
+        }
+
+        void add_document(const maslt_URI &key, nlohmann::json doc) {
+            store().register_document(key.s_str(), std::move(doc));
+        }
+
+        SWA::String add_document(nlohmann::json doc) {
+            return store().register_document(std::move(doc));
+        }
+
+        void remove_document(const maslt_URI &key) {
+            store().deregister_document(key.s_str());
+        }
+
+    }
+
+    void masls_add_document(const maslt_URI &key,
+                            const ::SWA::String &document) {
         try {
-            nlohmann::json j = nlohmann::json::parse(maslp_json_string.s_str());
+            add_document(key, nlohmann::json::parse(document.s_str()));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    const bool localServiceRegistration_masls_add_document = interceptor_masls_add_document::instance().registerLocal(
+            &masls_add_document);
+
+    void masls_overload1_add_document(const maslt_URI &key,
+                                      const maslt_JSONElement &document) {
+        try {
+            add_document(key, make_json(document));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    const bool localServiceRegistration_masls_overload1_add_document = interceptor_masls_overload1_add_document::instance().registerLocal(
+            &masls_overload1_add_document);
+
+    maslt_URI masls_overload2_add_document(const ::SWA::String &document) {
+        try {
+            return add_document(nlohmann::json::parse(document.s_str()));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    maslt_URI masls_overload3_add_document(const maslt_JSONElement &document) {
+        try {
+            return add_document(make_json(document));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+
+    void masls_add_subdocument(const maslt_URI &key,
+                               const maslt_URI &document,
+                               const maslt_JSONPointer &pointer) {
+        try {
+            add_document(key, get_document(document, pointer));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    const bool localServiceRegistration_masls_add_subdocument = interceptor_masls_add_subdocument::instance().registerLocal(
+            &masls_add_subdocument);
+
+    maslt_URI masls_overload1_add_subdocument(const maslt_URI &document,
+                                              const maslt_JSONPointer &pointer) {
+        try {
+            return add_document(get_document(document, pointer));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    void masls_load_document(const maslt_URI &key,
+                             const ::SWA::String &path) {
+        try {
+            store().register_document(key.s_str(), nlohmann::json::parse(std::ifstream(path.s_str())));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    const bool localServiceRegistration_masls_load_document = interceptor_masls_load_document::instance().registerLocal(
+            &masls_load_document);
+
+
+    maslt_URI masls_overload1_load_document(const ::SWA::String &path) {
+        try {
+            return store().register_document(nlohmann::json::parse(std::ifstream(path.s_str())));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    void masls_overload2_load_document(const maslt_URI &key,
+                                       const ::SWA::Device &input) {
+        try {
+            if (!input.getInputStream()) {
+                throw SWA::IOError("Input Device Invalid");
+            }
+            store().register_document(key.s_str(), nlohmann::json::parse(*input.getInputStream()));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    const bool localServiceRegistration_masls_overload2_load_document = interceptor_masls_overload2_load_document::instance().registerLocal(
+            &masls_overload2_load_document);
+
+    maslt_URI masls_overload3_load_document(const ::SWA::Device &input) {
+        try {
+            if (!input.getInputStream()) {
+                throw SWA::IOError("Input Device Invalid");
+            }
+            return store().register_document(nlohmann::json::parse(*input.getInputStream()));
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    bool masls_has_document(const maslt_URI &key) {
+        return store().has_document(key.s_str());
+    }
+
+    maslt_JSONElement masls_get_document(const maslt_URI &key) {
+        return make_masl_element(get_document(key));
+    }
+
+    ::SWA::Sequence <maslt_URI> masls_list_documents(const maslt_URI &key) {
+        return SWA::Sequence<maslt_URI>(store().list_documents());
+    }
+
+    void masls_remove_document(const maslt_URI &key) {
+        remove_document(key);
+    }
+
+
+    const bool localServiceRegistration_masls_remove_document = interceptor_masls_remove_document::instance().registerLocal(
+            &masls_remove_document);
+
+    maslt_SchemaValidationResult masls_register_schema(const maslt_URI &id) {
+        try {
+            maslt_SchemaValidationResult masl_result;
+            auto result = validators().register_schema(id);
+            masl_result.set_masla_valid() = result.valid();
+            std::transform(std::begin(result.errors()), std::end(result.errors()), std::back_inserter(masl_result.set_masla_errors()),
+                           [](auto err) { return maslt_SchemaValidationError{err.first.to_string(), err.second}; });
+            return masl_result;
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+
+    }
+
+    void masls_deregister_schema(const maslt_URI &id) {
+        validators().deregister_schema(id);
+    }
+
+    const bool localServiceRegistration_masls_deregister_schema = interceptor_masls_deregister_schema::instance().registerLocal(
+            &masls_deregister_schema);
+
+
+    maslt_SchemaValidationResult masls_validate(const maslt_URI &document,
+                                                const maslt_URI &schema,
+                                                bool patch_defaults) {
+        try {
+            const auto& validator = validators().get_validator(schema);
+            const auto& doc = store().get_document(document);
+            const auto& result = validator.validate(doc);
+            maslt_SchemaValidationResult masl_result;
+            masl_result.set_masla_valid() = result.valid();
+            std::transform(std::begin(result.errors()), std::end(result.errors()), std::back_inserter(masl_result.set_masla_errors()),
+                           [](auto err) { return maslt_SchemaValidationError{err.first.to_string(), err.second}; });
+            if ( result.valid()) {
+                if ( patch_defaults ) {
+                    add_document(document,doc.patch(result.patch()));
+                }
+            }
+            return masl_result;
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+
+    }
+
+    maslt_JSONElement masls_parse(const ::SWA::String &json_string) {
+        try {
+            nlohmann::json j = nlohmann::json::parse(json_string.s_str());
             return make_masl_element(j);
         } catch (const nlohmann::json::exception &e) {
             throw maslex_JSONException(e.what());
         }
     }
 
-    ::SWA::String masls_overload5_dump(const maslt_JSONElement& maslp_json_element, bool pretty ) {
-        nlohmann::json j = make_json(maslp_json_element);
-        return j.dump(pretty?2:-1);
-    }
-
-    maslt_JSONElement masls_pointer(const maslt_JSONElement& maslp_json_element, const ::SWA::String &maslp_json_pointer) {
+    ::SWA::String masls_overload1_dump(const maslt_URI &document, bool pretty) {
         try {
-            return make_masl_element(make_json(maslp_json_element)[nlohmann::json::json_pointer(maslp_json_pointer.s_str())]);
+            nlohmann::json j = store().get_document(document.s_str());
+            return j.dump(pretty ? 2 : -1);
         } catch (const nlohmann::json::exception &e) {
             throw maslex_JSONException(e.what());
         }
     }
 
-    maslt_JSONElement masls_overload1_pointer(const SWA::String& maslp_json_string, const ::SWA::String &maslp_json_pointer) {
+    maslt_JSONElement masls_pointer(const maslt_URI &document, const ::SWA::String &json_pointer) {
         try {
-            return make_masl_element(nlohmann::json::parse(maslp_json_string.s_str())[nlohmann::json::json_pointer(maslp_json_pointer.s_str())]);
+            return make_masl_element(store().get_document(document.s_str())[nlohmann::json::json_pointer(
+                    json_pointer.s_str())]);
         } catch (const nlohmann::json::exception &e) {
             throw maslex_JSONException(e.what());
         }
     }
 
-    maslt_JSONElement masls_patch(const maslt_JSONElement& maslp_json_element, const maslt_JSONElement& maslp_patch) {
+    SWA::String masls_pointer_string(const maslt_URI &document, const ::SWA::String &json_pointer) {
         try {
-            auto doc = make_json(maslp_json_element);
-            doc.merge_patch(make_json(maslp_patch));
-            return make_masl_element(doc);
+            return store().get_document(document.s_str())[nlohmann::json::json_pointer(
+                    json_pointer.s_str())].get<SWA::String>();
         } catch (const nlohmann::json::exception &e) {
             throw maslex_JSONException(e.what());
         }
     }
 
-    maslt_JSONElement masls_overload1_patch(const SWA::String& maslp_json_string, const SWA::String& maslp_patch_string) {
+    double masls_pointer_real(const maslt_URI &document, const ::SWA::String &json_pointer) {
         try {
-            auto doc = nlohmann::json::parse(maslp_json_string.s_str());
-            auto patch = nlohmann::json::parse(maslp_patch_string.s_str());
-            doc.merge_patch(patch);
-            return make_masl_element(doc);
+            return store().get_document(document.s_str())[nlohmann::json::json_pointer(
+                    json_pointer.s_str())].get<double>();
         } catch (const nlohmann::json::exception &e) {
             throw maslex_JSONException(e.what());
         }
     }
+
+    std::int64_t masls_pointer_integer(const maslt_URI &document, const ::SWA::String &json_pointer) {
+        try {
+            return store().get_document(document.s_str())[nlohmann::json::json_pointer(
+                    json_pointer.s_str())].get<std::int64_t>();
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    bool masls_pointer_boolean(const maslt_URI &document, const ::SWA::String &json_pointer) {
+        try {
+            return store().get_document(document.s_str())[nlohmann::json::json_pointer(
+                    json_pointer.s_str())].get<bool>();
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    maslt_JSONElement
+    masls_overload1_pointer(const SWA::String &json_string, const ::SWA::String &json_pointer) {
+        try {
+            return make_masl_element(nlohmann::json::parse(json_string.s_str())[nlohmann::json::json_pointer(
+                    json_pointer.s_str())]);
+        } catch (const nlohmann::json::exception &e) {
+            throw maslex_JSONException(e.what());
+        }
+    }
+
+    maslt_URI masls_add_patch(const maslt_URI &target,
+                              const maslt_URI &patch) {
+        auto doc = get_document(target);
+        doc.patch_inplace(get_document(patch));
+        return add_document(doc);
+    }
+
+    void masls_patch(const maslt_URI &target,
+                     const maslt_URI &patch) {
+        auto doc = get_document(target);
+        doc.patch_inplace(get_document(patch));
+        add_document(target, doc);
+    }
+
+    const bool localServiceRegistration_masls_patch = interceptor_masls_patch::instance().registerLocal(
+            &masls_patch);
+
+    maslt_URI masls_add_merge_patch(const maslt_URI &target,
+                                    const maslt_URI &patch) {
+        auto doc = get_document(target);
+        doc.merge_patch(get_document(patch));
+        return add_document(doc);
+    }
+
+    void masls_merge_patch(const maslt_URI &target,
+                           const maslt_URI &patch) {
+        auto doc = get_document(target);
+        doc.merge_patch(get_document(patch));
+        add_document(target, doc);
+    }
+
+    const bool localServiceRegistration_masls_merge_patch = interceptor_masls_merge_patch::instance().registerLocal(
+            &masls_merge_patch);
+
 
 }

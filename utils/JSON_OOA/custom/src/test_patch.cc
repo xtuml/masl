@@ -5,35 +5,36 @@
 using namespace masld_JSON;
 using namespace std::literals;
 
-TEST(Patch,string_string) {
+TEST(MergePatch,inplace) {
 
-    auto doc1 = R"(
+    auto doc = masls_overload2_add_document(R"(
         {
             "a" : "aaa",
             "b" : "bbb",
             "c" : "ccc"
         }
-    )"s;
+    )"s);
 
-    auto doc2 = R"(
+    auto patch = masls_overload2_add_document(R"(
             {
-                "a" : "aaa",
                 "b" : "BBB",
                 "c" : null,
                 "d" : "ddd"
             }
-        )"s;
+        )"s);
 
-    auto result = masls_overload4_dump(masls_overload1_patch(doc1,doc2)).s_str();
+    masls_merge_patch(doc,patch);
+
+    auto result = masls_dump(doc).s_str();
 
     EXPECT_EQ(result,R"({"a":"aaa","b":"BBB","d":"ddd"})"s);
 
 
 }
 
-TEST(Patch,element_element) {
+TEST(MergePatch,add_new) {
 
-    auto doc1 = masls_parse(R"(
+    auto doc = masls_overload2_add_document(R"(
             {
                 "a" : "aaa",
                 "b" : "bbb",
@@ -41,16 +42,71 @@ TEST(Patch,element_element) {
             }
         )"s);
 
-    auto doc2 = masls_parse(R"(
+    auto patch = masls_overload2_add_document(R"(
                 {
-                    "a" : "aaa",
                     "b" : "BBB",
                     "c" : null,
                     "d" : "ddd"
                 }
             )"s);
 
-    auto result = masls_overload4_dump(masls_patch(doc1,doc2)).s_str();
+
+    auto patched = masls_add_merge_patch(doc,patch).s_str();
+    auto result = masls_dump(patched).s_str();
+
+    EXPECT_EQ(result,R"({"a":"aaa","b":"BBB","d":"ddd"})"s);
+
+}
+
+
+TEST(Patch,inplace) {
+
+    auto doc = masls_overload2_add_document(R"(
+            {
+                "a" : "aaa",
+                "b" : "bbb",
+                "c" : "ccc"
+            }
+        )"s);
+
+    auto patch = masls_overload2_add_document(R"(
+                    [
+                        {"op": "replace", "path": "/b", "value": "BBB"},
+                        {"op": "remove", "path": "/c"},
+                        {"op": "add", "path": "/d", "value": "ddd"}
+                    ]
+                )"s);
+
+    masls_patch(doc,patch);
+
+    auto result = masls_dump(doc).s_str();
+
+    EXPECT_EQ(result,R"({"a":"aaa","b":"BBB","d":"ddd"})"s);
+
+
+}
+
+TEST(Patch,add_new) {
+
+    auto doc = masls_overload2_add_document(R"(
+                {
+                    "a" : "aaa",
+                    "b" : "bbb",
+                    "c" : "ccc"
+                }
+            )"s);
+
+    auto patch = masls_overload2_add_document(R"(
+                    [
+                        {"op": "replace", "path": "/b", "value": "BBB"},
+                        {"op": "remove", "path": "/c"},
+                        {"op": "add", "path": "/d", "value": "ddd"}
+                    ]
+                )"s);
+
+
+    auto patched = masls_add_patch(doc,patch).s_str();
+    auto result = masls_dump(patched).s_str();
 
     EXPECT_EQ(result,R"({"a":"aaa","b":"BBB","d":"ddd"})"s);
 

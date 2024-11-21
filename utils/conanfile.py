@@ -33,6 +33,7 @@ class ConanFile(conan.ConanFile):
         self.requires(f"masl_core/{self.version}@xtuml/stable")
         self.requires("libuuid/1.0.3")
         self.requires("nlohmann_json/3.11.2")
+        self.requires("json-schema-validator/2.2.0")
         self.tool_requires(f"masl_codegen/{self.version}@xtuml/stable")
         self.test_requires('gtest/1.14.0')
         self.requires("openssl/3.1.1")
