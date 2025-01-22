@@ -35,17 +35,21 @@ class ConanFile(conan.ConanFile):
         cmake_layout(self)
 
     def requirements(self):
-        self.requires("openssl/3.1.1")
+        self.requires("openssl/3.3.2", transitive_headers=True)
         self.requires("poco/1.12.4")
-        self.requires("fmt/10.1.1")
+        self.requires("fmt/11.0.2", transitive_headers=True)
         self.requires("log4cplus/2.1.0")
         self.requires("nlohmann_json/3.11.2", transitive_headers=True)
-        self.requires("boost/1.82.0", force=True) # CppKafka is asking for 1.81.0
+        self.requires("boost/1.86.0", transitive_headers=True, force=True) # CppKafka is asking for 1.81.0
         self.requires("sqlite3/3.42.0", force=True) # Poco is asking for 3.41.2
         self.requires("zlib/1.3", force=True) # Poco is asking for 1.2.13
         self.requires("libuuid/1.0.3")
-        self.requires("expat/2.5.0")
+        self.requires("expat/2.6.2")
         self.requires("cppkafka/0.4.0")
+        self.requires("asio/1.31.0", transitive_headers=True)
+        self.requires("cyrus-sasl/2.1.28")
+        self.test_requires("gtest/1.15.0")
+        self.requires('cli11/2.4.2')
 
     default_options = {'log4cplus/*:unicode': False}
 
@@ -68,10 +72,14 @@ class ConanFile(conan.ConanFile):
                        "transient/*",
                        )
 
+    def configure(self):
+        self.options["*"].shared = True
+
     def build(self):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+#        cmake.ctest(cli_args=['--output-on-failure'])
 
 
     def package(self):

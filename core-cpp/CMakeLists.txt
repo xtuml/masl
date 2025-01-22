@@ -20,6 +20,9 @@
 
 cmake_minimum_required(VERSION 3.5)
 project(MaslCore)
+
+enable_testing()
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(SimpleAdd REQUIRED)
 
@@ -38,6 +41,7 @@ add_subdirectory(trace)
 add_subdirectory(threadtimer)
 add_subdirectory(backlogMonitor)
 add_subdirectory(eventCollector)
+add_subdirectory(amqp-client)
 
 simple_package_config()
 install(FILES cmake/FindSimpleAdd.cmake DESTINATION lib/cmake )

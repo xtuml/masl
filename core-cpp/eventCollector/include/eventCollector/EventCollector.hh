@@ -180,7 +180,7 @@ namespace EVENTS {
        //! @param timeout  the fire time
        //! @param event    the details of the event
        // ***************************************************************** 
-       virtual void settingTimer ( int timerId, const SWA::Timestamp& timeout, const boost::shared_ptr< ::SWA::Event >& event);
+       virtual void settingTimer ( int timerId, const SWA::Timestamp& timeout, const SWA::Duration& period, const boost::shared_ptr< ::SWA::Event >& event);
 
        // ***************************************************************** 
        //! Report that a thread has been started

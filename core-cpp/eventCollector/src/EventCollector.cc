@@ -338,7 +338,7 @@ void EventCollector::cancellingTimer ( int timerId )
 
 // ***************************************************************
 // ***************************************************************
-void EventCollector::settingTimer ( int timerId, const SWA::Timestamp& timeout, const boost::shared_ptr< ::SWA::Event >& event)
+void EventCollector::settingTimer ( int timerId, const SWA::Timestamp& timeout, const SWA::Duration& period, const boost::shared_ptr< ::SWA::Event >& event)
 {
    std::for_each(eventEncoders.begin(),eventEncoders.end(),::boost::bind(&EventEncoder::writeTimerSet,_1,processContext,timerId));
 }

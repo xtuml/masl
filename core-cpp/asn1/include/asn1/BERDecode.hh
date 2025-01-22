@@ -79,7 +79,7 @@ namespace ASN1
         {
           bool negative = header & signMask;
           uint8_t baseF = ((header & baseMask) == 0x00 ) ? 1 : // base  2 = 2**1
-                          ((header & baseMask) == 0x01 ) ? 3 : // base  8 = 2**3
+                          ((header & baseMask) == 0x10 ) ? 3 : // base  8 = 2**3
                                                            4 ; // base 16 = 2**4
           uint8_t scale = (header & scaleMask) >> 2;
           uint8_t exponentLen = (header & exponentSizeMask) + 1;
