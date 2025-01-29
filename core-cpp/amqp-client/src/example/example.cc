@@ -53,10 +53,16 @@ awaitable<void> main_loop(
 
         auto session = co_await c.open_session();
 
+        std::string topic_prefix = "topic/";
+        std::string queue_prefix = "";
+
         if (use_rabbitmq) {
             auto mgt = co_await RabbitMQManagement::create(session);
             co_await mgt.bind_topic("example.*");
             co_await mgt.detach();
+
+            queue_prefix = "/queues/";
+            topic_prefix = "/exchanges/amq.topic/";
         }
 
         log.info("Session open");
@@ -64,7 +70,7 @@ awaitable<void> main_loop(
 
         auto sender =
             co_await session.open_sender(SenderOptions().name("sender").delivery_mode(DeliveryMode::at_least_once));
-        auto receiver = co_await session.open_receiver("/queues/example.*", ReceiverOptions().name("receiver"));
+        auto receiver = co_await session.open_receiver(queue_prefix + "example.*", ReceiverOptions().name("receiver"));
 
         spawn_cancellable_loop(
             executor,
@@ -80,8 +86,8 @@ awaitable<void> main_loop(
             executor,
             [&]() -> asio::awaitable<void> {
                 auto json = nlohmann::json({{"hello","world"}});
-                co_await sender.send("hello",amqp_asio::messages::Properties{.to = "/exchanges/amq.topic/example.channel"});
-                co_await sender.send_json(json,amqp_asio::messages::Properties{.to = "/exchanges/amq.topic/example.channel"});
+                co_await sender.send("hello",amqp_asio::messages::Properties{.to = topic_prefix + "example.channel"});
+                co_await sender.send_json(json,amqp_asio::messages::Properties{.to = topic_prefix + "example.channel"});
                 asio::steady_timer timer(executor, 1s);
                 co_await timer.async_wait();
                 co_return;
