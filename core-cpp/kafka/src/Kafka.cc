@@ -6,8 +6,6 @@
 #include "swa/CommandLine.hh"
 #include "swa/Process.hh"
 
-#include "LogAppender.hh"
-
 #include <thread>
 
 namespace Kafka {
@@ -28,11 +26,8 @@ bool startup() {
 
 struct Init {
   Init() {
-    // register Kafka log appender
-    log4cplus::spi::getAppenderFactoryRegistry().put(std::make_unique<Kafka::KafkaAppenderFactory>());
 
-
-      // register command line arguments
+    // register command line arguments
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokersOption, std::string("Kafka Brokers"), true, "brokerList", true, false));
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(GroupIdOption, std::string("Kafka Group ID"), false, "groupId", true, false));
     SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(NamespaceOption, std::string("Kafka Topic Namespace"), false, "namespace", true, false));

@@ -13,7 +13,6 @@ simple_add_shared_library (
             ProcessHandler.cc
             Producer.cc
             ServiceHandler.cc
-            LogAppender.cc
   LINKS     swa
             CppKafka::cppkafka
             RdKafka::rdkafka
