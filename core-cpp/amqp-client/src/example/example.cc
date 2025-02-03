@@ -53,7 +53,7 @@ awaitable<void> main_loop(
 
         auto session = co_await c.open_session();
 
-        std::string topic_prefix = "topic/";
+        std::string topic_prefix = "";
         std::string queue_prefix = "";
 
         if (use_rabbitmq) {
@@ -76,7 +76,7 @@ awaitable<void> main_loop(
             executor,
             [&]() -> asio::awaitable<void> {
                 auto delivery = co_await receiver.receive();
-                log.info("Received message {}", nlohmann::json(delivery.message()).dump(2));
+                log.info("Received message {}", delivery.message().as_string());
                 co_await delivery.accept();
             },
             log
