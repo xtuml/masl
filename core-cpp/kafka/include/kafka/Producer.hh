@@ -1,8 +1,7 @@
 #ifndef Kafka_Producer_HH
 #define Kafka_Producer_HH
 
-#include "cppkafka/message_builder.h"
-#include "cppkafka/producer.h"
+#include "amqp_asio/sender.hh"
 
 namespace Kafka {
 
@@ -18,10 +17,7 @@ public:
 
 private:
   typedef std::pair<int, int> ServiceKey;
-  typedef std::map<ServiceKey, std::shared_ptr<cppkafka::MessageBuilder>> TopicLookup;
-  TopicLookup topicLookup;
-  std::unique_ptr<cppkafka::Producer> prod;
-  void publish(int domainId, int serviceId, cppkafka::Buffer& data, cppkafka::Buffer& partKey);
+  amqp_asio::Sender prod;
 };
 
 } // namespace Kafka

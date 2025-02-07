@@ -14,6 +14,7 @@ simple_add_shared_library (
             Producer.cc
             ServiceHandler.cc
   LINKS     swa
+            amqp_asio
             CppKafka::cppkafka
             RdKafka::rdkafka
             libuuid::libuuid

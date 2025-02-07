@@ -52,45 +52,6 @@ simple_add_shared_library(
                 cyrus-sasl::cyrus-sasl
                 nlohmann_json::nlohmann_json
                 logging
-        EXPORT amqp_asio
+        EXPORT MaslCore
         INCLUDES ALL
         )
-
-simple_add_executable(
-        NAME example
-        SOURCES
-                example/example.cc
-        LINKS
-                amqp_asio::amqp_asio
-                CLI11::CLI11        
-)
-
-simple_add_executable(
-        NAME gen_to_tuple
-        SOURCES
-                gen_to_tuple.cc
-        LINKS
-                fmt::fmt
-)
-
-simple_add_executable(
-        NAME tests
-        SOURCES
-                test/test_value_decode.cc 
-                test/test_value_encode.cc
-                test/test_delivery.cc
-                test/test_receiver.cc
-                test/test_sender.cc
-                test/test_tracker.cc
-                test/main.cc
-        LINKS
-                amqp_asio
-                GTest::gtest
-                GTest::gmock
-)
-
-
-add_test(NAME tests COMMAND tests)
-set_tests_properties(tests PROPERTIES TIMEOUT 10)
-
-add_subdirectory(docs/examples)
