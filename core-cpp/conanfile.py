@@ -53,6 +53,7 @@ class ConanFile(conan.ConanFile):
     default_options = {'log4cplus/*:unicode': False}
 
     exports_sources= ( "CMakeLists.txt",
+                       "amqp-client/*",
                        "asn1/*",
                        "backlogMonitor/*",
                        "cmake/*",

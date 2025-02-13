@@ -56,4 +56,12 @@ if ( NOT log4cplus_FOUND )
   find_package(log4cplus CONFIG QUIET REQUIRED)
 endif()
 
+if ( NOT asio_FOUND )
+  find_package(asio CONFIG QUIET REQUIRED)
+endif()
+
+if ( NOT cyrus-sasl_FOUND )
+  find_package(cyrus-sasl CONFIG QUIET REQUIRED)
+endif()
+
 include(${CMAKE_CURRENT_LIST_DIR}/MaslCoreTargets.cmake)

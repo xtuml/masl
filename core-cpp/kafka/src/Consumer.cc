@@ -32,43 +32,21 @@ void Consumer::initialize(std::vector<std::string> topics) {
   const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
   const std::string offsetReset = SWA::CommandLine::getInstance().getOption(OffsetResetOption, "earliest");
 
-  std::string groupId;
-  if (SWA::CommandLine::getInstance().optionPresent(GroupIdOption)) {
-    groupId = SWA::CommandLine::getInstance().getOption(GroupIdOption);
-  } else {
-    // generate a random group ID
-    uuid_t uuid;
-    uuid_generate(uuid);
-    char formatted[37];
-    uuid_unparse(uuid, formatted);
-    groupId = std::string(formatted);
-  }
-
-  // Construct the configuration
-  cppkafka::Configuration config = {{"metadata.broker.list", brokers},
-                                    {"group.id", groupId},
-                                    {"auto.offset.reset", offsetReset},
-                                    {"enable.auto.commit", false}};
-
   // Create the consumer
-  consumer = std::unique_ptr<cppkafka::Consumer>(new cppkafka::Consumer(config));
+  // TODO
 
   // create topics if they don't already exist
   createTopics(topics);
 
-  // short delay to avoid race conditions if other processes initiated topic creation
-  SWA::delay(SWA::Duration::fromMillis(100));
-
   // Subscribe to topics
-  consumer->subscribe(topics);
-}
+  /*consumer->subscribe(topics);*/
 
-void Consumer::run() {
   // Create a consumer dispatcher
-  cppkafka::ConsumerDispatcher dispatcher(*consumer);
+  /*cppkafka::ConsumerDispatcher dispatcher(*consumer);*/
 
   // Stop processing on SIGINT
   // TODO set up lifecycle event to stop dispatcher
+  /*
   SWA::Process::getInstance().registerShutdownListener(
       [&]() { dispatcher.stop(); });
 
@@ -89,6 +67,7 @@ void Consumer::run() {
       }
       // TODO error handling
   );
+  */
 }
 
 void Consumer::handleMessages() {

@@ -17,7 +17,7 @@ Producer::Producer() {
 }
 
 void Producer::publish(int domainId, int serviceId, std::string data, std::string partKey) {
-  co_await prod.send(data,amqp_asio::messages::Properties{.to = "example.channel"});
+  /*co_await prod.send(data,amqp_asio::messages::Properties{.to = "example.channel"});*/
 }
 
 void Producer::publish(int domainId, int serviceId, std::vector<std::uint8_t> data, std::vector<std::uint8_t> partKey) {

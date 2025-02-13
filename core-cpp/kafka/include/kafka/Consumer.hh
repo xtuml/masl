@@ -34,7 +34,6 @@ public:
   Consumer(std::string topic);
   Consumer(std::vector<std::string> topics);
   bool consumeOne(DataConsumer& dataConsumer);
-  void run();
 
 private:
   MessageQueue messageQueue;

@@ -3,6 +3,8 @@
 
 #include "ServiceHandler.hh"
 
+#include <asio/awaitable.hpp>
+#include <asio/io_context.hpp>
 #include <map>
 #include <memory>
 #include <string>
@@ -12,6 +14,10 @@ namespace Kafka {
 
 class ProcessHandler {
 public:
+  ProcessHandler() {};
+  ProcessHandler(const ProcessHandler&) = delete;
+  ProcessHandler& operator=(const ProcessHandler&) = delete;
+
   bool registerServiceHandler(int domainId, int serviceId,
                               std::shared_ptr<ServiceHandler> handler);
 
@@ -27,7 +33,9 @@ public:
 
   std::string getTopicName(int domainId, int serviceId);
 
-  void startConsumer();
+  asio::io_context &getContext();
+
+  asio::awaitable<void> run();
 
   static ProcessHandler &getInstance();
 
@@ -39,6 +47,7 @@ private:
 
   ServiceLookup serviceLookup;
   TopicMap customTopicNames;
+  asio::io_context ctx;
 };
 
 } // namespace Kafka

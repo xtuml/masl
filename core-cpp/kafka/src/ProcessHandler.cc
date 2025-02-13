@@ -3,9 +3,13 @@
 #include "kafka/Kafka.hh"
 #include "kafka/Consumer.hh"
 
+#include "amqp_asio/connection.hh"
+#include "logging/log.hh"
 #include "swa/CommandLine.hh"
 #include "swa/Process.hh"
 #include "swa/ProgramError.hh"
+
+#include <asio/signal_set.hpp>
 
 namespace Kafka {
 
@@ -63,9 +67,52 @@ std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
   return name;
 }
 
-void ProcessHandler::startConsumer() {
-  Consumer consumer(getTopicNames());
-  consumer.run();
+asio::io_context &ProcessHandler::getContext() {
+  return ctx;
+}
+
+asio::awaitable<void> ProcessHandler::run() {
+
+  std::string hostname = "host.docker.internal";
+  std::string port     = "5672";
+  std::string username = "artemis";
+  std::string password = "artemis";
+
+  auto log = xtuml::logging::Logger("amqp_test");
+
+  asio::signal_set signals(ctx, SIGINT, SIGTERM);
+  signals.async_wait([this](auto, auto) {
+      ctx.stop();
+  });
+
+  try {
+      auto executor = co_await asio::this_coro::executor;
+
+      auto conn = amqp_asio::Connection::create_amqp("test-container", executor);
+      co_await conn.open(amqp_asio::ConnectionOptions().hostname(hostname).port(port).sasl_options(
+          amqp_asio::SaslOptions().authname(username).password(password)
+      ));
+
+      log.info("Connection open");
+
+      auto session = co_await conn.open_session();
+
+      log.info("Session open");
+
+      // TODO launch consumers
+
+      // TODO put this in the shutdown lifecycle
+      co_await session.end();
+      co_await conn.close();
+      log.info("Connection closed");
+
+  } catch (std::bad_variant_access &e) {
+      throw std::system_error(make_error_code(std::errc::bad_message));
+  } catch (const std::system_error &e) {
+      fmt::println("Error: {}", e.code().message());
+  }
+  signals.cancel();
+
 }
 
 ProcessHandler &ProcessHandler::getInstance() {
