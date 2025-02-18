@@ -2,13 +2,14 @@
 #define Kafka_Producer_HH
 
 #include "amqp_asio/sender.hh"
+#include "amqp_asio/session.hh"
 
 namespace Kafka {
 
 class Producer {
 
 public:
-  Producer();
+  Producer(amqp_asio::Session &session);
   void publish(int domainId, int serviceId, std::vector<std::uint8_t> data, std::vector<std::uint8_t> partKey);
   void publish(int domainId, int serviceId, std::string data, std::string partKey);
   void publish(int domainId, int serviceId, std::vector<std::uint8_t> data);
@@ -17,7 +18,7 @@ public:
 
 private:
   typedef std::pair<int, int> ServiceKey;
-  amqp_asio::Sender prod;
+  std::shared_ptr<amqp_asio::Sender> prod;
 };
 
 } // namespace Kafka

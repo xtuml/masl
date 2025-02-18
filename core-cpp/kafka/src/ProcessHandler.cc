@@ -4,12 +4,11 @@
 #include "kafka/Consumer.hh"
 
 #include "amqp_asio/connection.hh"
-#include "logging/log.hh"
 #include "swa/CommandLine.hh"
 #include "swa/Process.hh"
 #include "swa/ProgramError.hh"
 
-#include <asio/signal_set.hpp>
+#include <asio/detached.hpp>
 
 namespace Kafka {
 
@@ -67,51 +66,73 @@ std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
   return name;
 }
 
+xtuml::logging::Logger &ProcessHandler::getLog() {
+  return log;
+}
+
 asio::io_context &ProcessHandler::getContext() {
   return ctx;
 }
 
+std::shared_ptr<Producer> ProcessHandler::getProducer() {
+  return producer;
+}
+
 asio::awaitable<void> ProcessHandler::run() {
 
+  // TODO parameterize these with CLI arguments
   std::string hostname = "host.docker.internal";
   std::string port     = "5672";
   std::string username = "artemis";
   std::string password = "artemis";
 
-  auto log = xtuml::logging::Logger("amqp_test");
-
-  asio::signal_set signals(ctx, SIGINT, SIGTERM);
-  signals.async_wait([this](auto, auto) {
-      ctx.stop();
-  });
-
   try {
       auto executor = co_await asio::this_coro::executor;
 
-      auto conn = amqp_asio::Connection::create_amqp("test-container", executor);
+      // create connection
+      auto conn = amqp_asio::Connection::create_amqp("TODO: amqp-bridge", executor);
       co_await conn.open(amqp_asio::ConnectionOptions().hostname(hostname).port(port).sasl_options(
           amqp_asio::SaslOptions().authname(username).password(password)
       ));
-
       log.info("Connection open");
 
+      // open a session
       auto session = co_await conn.open_session();
-
       log.info("Session open");
 
-      // TODO launch consumers
+      // launch consumer
+      if (hasRegisteredServices()) {
+        Consumer consumer(session);
+        consumer.initialize(getTopicNames());
+      }
 
-      // TODO put this in the shutdown lifecycle
-      co_await session.end();
-      co_await conn.close();
-      log.info("Connection closed");
+      // create producer
+      Producer prod(session);
+      producer = std::make_shared<Producer>(prod);
+
+      // Clean up on shutdown
+      SWA::Process::getInstance().registerShutdownListener([&]() {
+        asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
+          try {
+            log.info("LEVI waiting to end session...");
+            co_await session.end();
+            log.info("LEVI waiting to close connection...");
+            co_await conn.close();
+            log.info("Connection closed");
+          } catch (std::bad_variant_access &e) {
+            throw std::system_error(make_error_code(std::errc::bad_message));
+          } catch (const std::system_error &e) {
+            fmt::println("Error: {}", e.code().message());
+          }
+          ctx.stop();
+        }, asio::detached);
+      });
 
   } catch (std::bad_variant_access &e) {
       throw std::system_error(make_error_code(std::errc::bad_message));
   } catch (const std::system_error &e) {
       fmt::println("Error: {}", e.code().message());
   }
-  signals.cancel();
 
 }
 

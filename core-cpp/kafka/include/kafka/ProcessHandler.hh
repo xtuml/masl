@@ -2,6 +2,10 @@
 #define Kafka_ProcessHandler_HH
 
 #include "ServiceHandler.hh"
+#include "Producer.hh"
+
+#include "amqp_asio/sender.hh"
+#include "logging/log.hh"
 
 #include <asio/awaitable.hpp>
 #include <asio/io_context.hpp>
@@ -14,7 +18,7 @@ namespace Kafka {
 
 class ProcessHandler {
 public:
-  ProcessHandler() {};
+  ProcessHandler(): log(xtuml::logging::Logger("amqp-bridge")) {};
   ProcessHandler(const ProcessHandler&) = delete;
   ProcessHandler& operator=(const ProcessHandler&) = delete;
 
@@ -35,6 +39,12 @@ public:
 
   asio::io_context &getContext();
 
+  amqp_asio::Sender &getSender();
+
+  xtuml::logging::Logger &getLog();
+
+  std::shared_ptr<Producer> getProducer();
+
   asio::awaitable<void> run();
 
   static ProcessHandler &getInstance();
@@ -48,6 +58,8 @@ private:
   ServiceLookup serviceLookup;
   TopicMap customTopicNames;
   asio::io_context ctx;
+  std::shared_ptr<Producer> producer;
+  xtuml::logging::Logger log;
 };
 
 } // namespace Kafka

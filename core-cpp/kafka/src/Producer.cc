@@ -6,26 +6,47 @@
 #include "amqp_asio/messages.hh"
 #include "swa/CommandLine.hh"
 
+#include <asio/co_spawn.hpp>
+#include <asio/use_future.hpp>
+#include <future>
+
 namespace Kafka {
 
-Producer::Producer() {
-  const std::string brokers = SWA::CommandLine::getInstance().getOption(BrokersOption);
-  /* TODO
-  cppkafka::Configuration config = {{"metadata.broker.list", brokers}};
-  prod = std::unique_ptr<cppkafka::Producer>(new cppkafka::Producer(config));
-  */
+Producer::Producer(amqp_asio::Session &session) {
+  auto executor = ProcessHandler::getInstance().getContext().get_executor();
+  std::future<amqp_asio::Sender> future = asio::co_spawn(executor, [&]() -> asio::awaitable<amqp_asio::Sender> {
+    auto s = co_await session.open_sender(amqp_asio::SenderOptions().name("TODO: sender").delivery_mode(amqp_asio::DeliveryMode::at_least_once));
+    co_return s;
+  }, asio::use_future);
+  prod = std::make_shared<amqp_asio::Sender>(future.get());
 }
 
 void Producer::publish(int domainId, int serviceId, std::string data, std::string partKey) {
-  /*co_await prod.send(data,amqp_asio::messages::Properties{.to = "example.channel"});*/
+  // TODO do we need both of these signatures? Maybe just JSON...
+  // TODO partKey doesn't do anything?
+  // TODO redo the publish API to take advantage of the fact that sending a nlohmann_json object directly is supported
+  auto executor = ProcessHandler::getInstance().getContext().get_executor();
+  std::future<void> future = asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
+    std::string topicName = ProcessHandler::getInstance().getTopicName(domainId, serviceId);
+    co_await prod->send(data, amqp_asio::messages::Properties{.to = topicName});
+  }, asio::use_future);
+  future.wait();
 }
 
 void Producer::publish(int domainId, int serviceId, std::vector<std::uint8_t> data, std::vector<std::uint8_t> partKey) {
-  /* TODO
-  cppkafka::Buffer dataBuffer = cppkafka::Buffer(data);
-  cppkafka::Buffer keyBuffer = cppkafka::Buffer(partKey);
-  publish(domainId, serviceId, dataBuffer, keyBuffer);
-  */
+  // TODO do we need both of these signatures? Maybe just JSON...
+  // TODO partKey doesn't do anything?
+  // TODO redo the publish API to take advantage of the fact that sending a nlohmann_json object directly is supported
+  std::vector<std::byte> payload(data.size());
+  for (size_t i = 0; i < data.size(); ++i) {
+    payload[i] = static_cast<std::byte>(data[i]);
+  }
+  auto executor = ProcessHandler::getInstance().getContext().get_executor();
+  std::future<void> future = asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
+    std::string topicName = ProcessHandler::getInstance().getTopicName(domainId, serviceId);
+    co_await prod->send(payload, amqp_asio::messages::Properties{.to = topicName});
+  }, asio::use_future);
+  future.wait();
 }
 
 void Producer::publish(int domainId, int serviceId, std::vector<std::uint8_t> data) {
@@ -37,8 +58,8 @@ void Producer::publish(int domainId, int serviceId, std::string data) {
 }
 
 Producer &Producer::getInstance() {
-  static Producer instance;
-  return instance;
+  // TODO temporary hack to avoid chaning code generation
+  return *(ProcessHandler::getInstance().getProducer());
 }
 
 } // namespace Kafka

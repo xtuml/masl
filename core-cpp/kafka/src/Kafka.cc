@@ -22,12 +22,10 @@ bool startup() {
     try {
         auto& ctx = ProcessHandler::getInstance().getContext();
         auto ex = ctx.get_executor();
-        // log.info("Running"); TODO
         asio::co_spawn(ex, ProcessHandler::getInstance().run(), asio::detached);
         ctx.run();
         return true;
     } catch (std::exception &e) {
-        // log.error("Exception: {}", e); TODO
         return false;
     }
   }}.detach();
