@@ -10,6 +10,8 @@
 
 #include <asio/detached.hpp>
 
+using namespace std::literals;
+
 namespace Kafka {
 
 bool ProcessHandler::registerServiceHandler(
@@ -74,8 +76,12 @@ asio::io_context &ProcessHandler::getContext() {
   return ctx;
 }
 
-std::shared_ptr<Producer> ProcessHandler::getProducer() {
-  return producer;
+amqp_asio::Sender ProcessHandler::getSender() {
+  return sender;
+}
+
+amqp_asio::Session ProcessHandler::getSession() {
+  return session;
 }
 
 asio::awaitable<void> ProcessHandler::run() {
@@ -85,6 +91,16 @@ asio::awaitable<void> ProcessHandler::run() {
   std::string port     = "5672";
   std::string username = "artemis";
   std::string password = "artemis";
+
+  // configure logging
+  // TODO
+  std::string filename = "./logconfig.properties";
+  std::fstream file{filename};
+  if (file) {
+    xtuml::logging::Logger::load_config(filename, 1s);
+  } else {
+    xtuml::logging::Logger{""}.error("Error opening log config: {}", filename);
+  }
 
   try {
       auto executor = co_await asio::this_coro::executor;
@@ -97,18 +113,18 @@ asio::awaitable<void> ProcessHandler::run() {
       log.info("Connection open");
 
       // open a session
-      auto session = co_await conn.open_session();
+      session = co_await conn.open_session();
       log.info("Session open");
 
       // launch consumer
       if (hasRegisteredServices()) {
-        Consumer consumer(session);
+        Consumer consumer;
         consumer.initialize(getTopicNames());
       }
 
       // create producer
-      Producer prod(session);
-      producer = std::make_shared<Producer>(prod);
+      sender = co_await session.open_sender(amqp_asio::SenderOptions().name("TODO: sender").delivery_mode(amqp_asio::DeliveryMode::at_least_once));
+      log.info("Sender created");
 
       // Clean up on shutdown
       SWA::Process::getInstance().registerShutdownListener([&]() {
@@ -133,6 +149,8 @@ asio::awaitable<void> ProcessHandler::run() {
   } catch (const std::system_error &e) {
       fmt::println("Error: {}", e.code().message());
   }
+
+  log.info("Initialization complete");
 
 }
 

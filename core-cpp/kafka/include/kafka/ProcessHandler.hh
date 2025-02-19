@@ -2,9 +2,9 @@
 #define Kafka_ProcessHandler_HH
 
 #include "ServiceHandler.hh"
-#include "Producer.hh"
 
 #include "amqp_asio/sender.hh"
+#include "amqp_asio/session.hh"
 #include "logging/log.hh"
 
 #include <asio/awaitable.hpp>
@@ -39,11 +39,11 @@ public:
 
   asio::io_context &getContext();
 
-  amqp_asio::Sender &getSender();
+  amqp_asio::Sender getSender();
+
+  amqp_asio::Session getSession();
 
   xtuml::logging::Logger &getLog();
-
-  std::shared_ptr<Producer> getProducer();
 
   asio::awaitable<void> run();
 
@@ -58,8 +58,10 @@ private:
   ServiceLookup serviceLookup;
   TopicMap customTopicNames;
   asio::io_context ctx;
-  std::shared_ptr<Producer> producer;
   xtuml::logging::Logger log;
+
+  amqp_asio::Sender sender;
+  amqp_asio::Session session;
 };
 
 } // namespace Kafka

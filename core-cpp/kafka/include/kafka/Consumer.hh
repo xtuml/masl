@@ -33,7 +33,6 @@ private:
 class Consumer {
 
 public:
-  Consumer(amqp_asio::Session& session) : session(session) {}
   bool consumeOne(DataConsumer& dataConsumer);
   void initialize(std::vector<std::string> topics);
   void initialize(std::string topic) {
@@ -44,7 +43,6 @@ public:
 
 private:
   MessageQueue messageQueue;
-  amqp_asio::Session session;
   void handleMessages();
 };
 

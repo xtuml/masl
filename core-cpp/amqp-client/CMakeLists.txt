@@ -55,3 +55,12 @@ simple_add_shared_library(
         EXPORT MaslCore
         INCLUDES ALL
         )
+
+simple_add_executable(
+        NAME example
+        SOURCES
+                example/example.cc
+        LINKS
+                MaslCore::amqp_asio
+                CLI11::CLI11        
+)

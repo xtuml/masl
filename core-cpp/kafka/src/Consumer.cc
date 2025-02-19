@@ -32,19 +32,26 @@ void Consumer::initialize(std::vector<std::string> topics) {
 
     asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
 
-      auto receiver = co_await session.open_receiver(topic, amqp_asio::ReceiverOptions().name("TODO: receiver"));
+      log.info("LEVI91");
+      auto receiver = co_await ProcessHandler::getInstance().getSession().open_receiver(topic, amqp_asio::ReceiverOptions().name("TODO: receiver"));
+      log.info("LEVI92");
       amqp_asio::spawn_cancellable_loop(
-            executor,
-            [&]() -> asio::awaitable<void> {
-                // Queue the message to be handled on the main thread
-                auto delivery = co_await receiver.receive();
-                log.info("Received message {}", delivery.message().as_string());
-                TaggedMessage msg(topic, delivery);
-                messageQueue.enqueue(msg);
-                listener.queueSignal();
-            },
-            log
-        );
+        executor,
+        [&]() -> asio::awaitable<void> {
+          log.info("LEVI93");
+          // Queue the message to be handled on the main thread
+          auto delivery = co_await receiver.receive();
+          log.info("LEVI94");
+          log.info("Received message {}", delivery.message().as_string());
+          TaggedMessage msg(topic, delivery);
+          log.info("LEVI95");
+          messageQueue.enqueue(msg);
+          log.info("LEVI96");
+          listener.queueSignal();
+          log.info("LEVI97");
+        },
+        log
+      );
 
 
 
