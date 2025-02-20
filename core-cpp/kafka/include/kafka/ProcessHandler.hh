@@ -2,6 +2,7 @@
 #define Kafka_ProcessHandler_HH
 
 #include "ServiceHandler.hh"
+#include "Consumer.hh"
 
 #include "amqp_asio/sender.hh"
 #include "amqp_asio/session.hh"
@@ -62,6 +63,7 @@ private:
 
   amqp_asio::Sender sender;
   amqp_asio::Session session;
+  Consumer consumer;
 };
 
 } // namespace Kafka

@@ -118,7 +118,6 @@ asio::awaitable<void> ProcessHandler::run() {
 
       // launch consumer
       if (hasRegisteredServices()) {
-        Consumer consumer;
         consumer.initialize(getTopicNames());
       }
 

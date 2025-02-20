@@ -7,7 +7,6 @@
 #include "swa/Duration.hh"
 #include "swa/Process.hh"
 #include "swa/ProgramError.hh"
-#include "swa/RealTimeSignalListener.hh"
 
 #include <asio/co_spawn.hpp>
 #include <asio/spawn.hpp>
@@ -21,7 +20,7 @@ void Consumer::initialize(std::vector<std::string> topics) {
   auto log = ProcessHandler::getInstance().getLog();
 
   // create a signal listener
-  SWA::RealTimeSignalListener listener(
+  listener = std::make_unique<SWA::RealTimeSignalListener>(
       [this](int pid, int uid) { this->handleMessages(); },
       SWA::Process::getInstance().getActivityMonitor());
 
@@ -32,12 +31,13 @@ void Consumer::initialize(std::vector<std::string> topics) {
 
     asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
 
-      log.info("LEVI91");
+      log.info("LEVI91.0");
       auto receiver = co_await ProcessHandler::getInstance().getSession().open_receiver(topic, amqp_asio::ReceiverOptions().name("TODO: receiver"));
       log.info("LEVI92");
+      /*
       amqp_asio::spawn_cancellable_loop(
         executor,
-        [&]() -> asio::awaitable<void> {
+        [this, receiver, &log, &topic] () mutable -> asio::awaitable<void> {
           log.info("LEVI93");
           // Queue the message to be handled on the main thread
           auto delivery = co_await receiver.receive();
@@ -47,13 +47,12 @@ void Consumer::initialize(std::vector<std::string> topics) {
           log.info("LEVI95");
           messageQueue.enqueue(msg);
           log.info("LEVI96");
-          listener.queueSignal();
+          listener->queueSignal();
           log.info("LEVI97");
         },
         log
       );
-
-
+      */
 
     }, asio::detached);
 

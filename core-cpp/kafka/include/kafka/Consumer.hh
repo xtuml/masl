@@ -5,6 +5,7 @@
 
 #include "amqp_asio/session.hh"
 #include "amqp_asio/spawn.hh"
+#include "swa/RealTimeSignalListener.hh"
 
 #include <condition_variable>
 #include <mutex>
@@ -44,6 +45,7 @@ public:
 private:
   MessageQueue messageQueue;
   void handleMessages();
+  std::unique_ptr<SWA::RealTimeSignalListener> listener;
 };
 
 } // namespace Kafka
