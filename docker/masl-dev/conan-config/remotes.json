@@ -1,13 +1,8 @@
 {
   "remotes": [
     {
-      "name": "conancenter",
-      "url": "https://center2.conan.io",
-      "verify_ssl": true
-    },
-    {
       "name": "xtuml",
-      "url": "https://artifactory.onefact.net/artifactory/api/conan/conan",
+      "url": "https://artifactory.onefact.net/artifactory/api/conan/conan-testing",
       "verify_ssl": true
     }
   ]

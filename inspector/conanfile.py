@@ -15,29 +15,31 @@
 #  ----------------------------------------------------------------------------
 
 import conan
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake
 from conan.tools.files import copy
+from conan.tools.layout import basic_layout
 import os
 
 class ConanFile(conan.ConanFile):
     name = "masl_inspector"
     user = 'xtuml'
-    channel = 'stable'
-
-    settings = 'build_type'
-
-    generators = ("VirtualBuildEnv",
-                  "VirtualRunEnv")
+    version = '1.0'
 
     def layout(self):
-        cmake_layout(self)
+        basic_layout(self)
+
+    package_type = 'application'
+    
+    license = "Apache-2.0"
+    url = "https://github.com/xtuml/masl"
+    description = "xtUML Masl Inspector/Debugger"
+    topics = ("xtuml", "masl", "inspector")
 
     exports_sources= ( "CMakeLists.txt",
                        "gradle/*",
                        "src/*",
                        "bin/*",
                        "gradlew",
-                       "gradlew.bat",
                        "build.gradle",
                        "settings.gradle")
 

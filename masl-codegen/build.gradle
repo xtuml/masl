@@ -1,0 +1,37 @@
+//
+// UK Crown Copyright (c) 2016. All Rights Reserved.
+//
+
+plugins {
+    id 'antlr'
+    id 'application'
+    id 'java'
+}
+
+description = 'Core MASL Parser'
+
+application {
+    applicationName = 'masl-codegen'
+    mainClass = 'org.xtuml.masl.Main'
+    applicationDefaultJvmArgs = ['-Djava.awt.headless=true']
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+dependencies {
+    antlr           'org.antlr:antlr:3.5.2'
+    runtimeOnly     'org.antlr:antlr-runtime:[3.5.2,)'
+    implementation     'com.google.guava:guava:[33.4.0-jre,)'
+    implementation     'com.fasterxml.jackson.core:jackson-databind:[2.18.2,)'
+    testImplementation 'junit:junit:[4.13.2,)'
+}
+
+sourcesJar.dependsOn(generateGrammarSource)

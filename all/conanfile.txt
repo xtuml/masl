@@ -1,0 +1,41 @@
+[requires]
+xtuml_cmake_helpers/[>=1.0 <2]@xtuml
+xtuml_logging/[>=1.0 <2]@xtuml
+xtuml_swa/[>=1.0 <2]@xtuml
+xtuml_amqp_client/[>=1.0 <2]@xtuml
+xtuml_asn1/[>=1.0 <2]@xtuml
+xtuml_sockets/[>=1.0 <2]@xtuml
+xtuml_transient/[>=1.0 <2]@xtuml
+xtuml_sql/[>=1.0 <2]@xtuml
+xtuml_sqlite/[>=1.0 <2]@xtuml
+xtuml_kafka/[>=1.0 <2]@xtuml
+xtuml_metadata/[>=1.0 <2]@xtuml
+xtuml_inspector_server/[>=1.0 <2]@xtuml
+xtuml_thread_timer/[>=1.0 <2]@xtuml
+xtuml_code_coverage/[>=1.0 <2]@xtuml
+xtuml_backlog_monitor/[>=1.0 <2]@xtuml
+xtuml_trace/[>=1.0 <2]@xtuml
+xtuml_masl_conan/[>=1.0 <2]@xtuml
+xtuml_masl_codegen/[>=1.0 <2]@xtuml
+masl_assertions/[>=1.0 <2]@xtuml
+masl_binary_io/[>=1.0 <2]@xtuml
+masl_command_line/[>=1.0 <2]@xtuml
+masl_environment/[>=1.0 <2]@xtuml
+masl_filesystem/[>=1.0 <2]@xtuml
+masl_format/[>=1.0 <2]@xtuml
+masl_hash/[>=1.0 <2]@xtuml
+masl_host/[>=1.0 <2]@xtuml
+masl_json/[>=1.0 <2]@xtuml
+masl_json_validation/[>=1.0 <2]@xtuml
+masl_logger/[>=1.0 <2]@xtuml
+masl_math/[>=1.0 <2]@xtuml
+masl_regex/[>=1.0 <2]@xtuml
+masl_schedule/[>=1.0 <2]@xtuml
+masl_strings/[>=1.0 <2]@xtuml
+masl_test/[>=1.0 <2]@xtuml
+masl_uuid/[>=1.0 <2]@xtuml
+masl_examples_petrol/[>=1.0 <2]@xtuml
+masl_examples_calculator/[>=1.0 <2]@xtuml
+
+[layout]
+cmake_layout

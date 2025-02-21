@@ -22,8 +22,8 @@ ENV PKG_CONFIG_PATH=/opt/rh/gcc-toolset-14/root/usr/lib64/pkgconfig
 ENV MANPATH=/opt/rh/gcc-toolset-14/root/usr/share/man
 ENV INFOPATH=/opt/rh/gcc-toolset-14/root/usr/share/info
 
-COPY conan-config conan-config
-RUN conan config install conan-config --type dir && rm -rf conan-config
+COPY conan-config /etc/conan-config
+RUN conan config install /etc/conan-config --type dir
 
 COPY os-files/ /
 

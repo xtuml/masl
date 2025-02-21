@@ -10,7 +10,7 @@ services:
       context: masl-dev
     volumes:
       - type: volume
-        source: ConanCache
+        source: conan-cache
         target: /conan-cache
     profiles:
       - tools

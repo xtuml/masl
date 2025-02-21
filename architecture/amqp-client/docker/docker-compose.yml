@@ -1,0 +1,17 @@
+name: masl
+volumes:
+  ConanCache:
+    name: ConanCache
+
+services:
+  masl-dev:
+    image: levistarrett/masl-dev:${MASL_VERSION:-latest}
+    build:
+      context: masl-dev
+    volumes:
+      - type: volume
+        source: ConanCache
+        target: /conan-cache
+    profiles:
+      - tools
+      - all
