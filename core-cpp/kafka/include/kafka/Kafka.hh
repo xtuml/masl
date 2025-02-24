@@ -3,11 +3,10 @@
 
 namespace Kafka {
 
-extern const char *const BrokersOption;
-extern const char *const GroupIdOption;
-extern const char *const NamespaceOption;
-extern const char *const NamespaceOption;
-extern const char *const OffsetResetOption;
+extern const char *const BrokerOption;
+extern const char *const UsernameOption;
+extern const char *const PasswordOption;
+extern const char *const PortNoOption;
 
 }
 

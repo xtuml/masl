@@ -18,16 +18,11 @@ void Producer::publish(int domainId, int serviceId, std::string data, std::strin
   // TODO redo the publish API to take advantage of the fact that sending a nlohmann_json object directly is supported
   auto log = ProcessHandler::getInstance().getLog();
   auto executor = ProcessHandler::getInstance().getContext().get_executor();
-  log.info("LEVI4");
   std::future<void> future = asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
-    log.info("LEVI5");
     std::string topicName = ProcessHandler::getInstance().getTopicName(domainId, serviceId);
-    log.info("LEVI6");
     co_await ProcessHandler::getInstance().getSender().send(data, amqp_asio::messages::Properties{.to = topicName});
-    log.info("LEVI7");
   }, asio::use_future);
   future.wait();
-  log.info("LEVI7.1");
 }
 
 void Producer::publish(int domainId, int serviceId, std::vector<std::uint8_t> data, std::vector<std::uint8_t> partKey) {
@@ -40,16 +35,11 @@ void Producer::publish(int domainId, int serviceId, std::vector<std::uint8_t> da
     payload[i] = static_cast<std::byte>(data[i]);
   }
   auto executor = ProcessHandler::getInstance().getContext().get_executor();
-  log.info("LEVI8");
   std::future<void> future = asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
-    log.info("LEVI9");
     std::string topicName = ProcessHandler::getInstance().getTopicName(domainId, serviceId);
-    log.info("LEVI10");
     co_await ProcessHandler::getInstance().getSender().send(payload, amqp_asio::messages::Properties{.to = topicName});
-    log.info("LEVI11");
   }, asio::use_future);
   future.wait();
-  log.info("LEVI11.1");
 }
 
 void Producer::publish(int domainId, int serviceId, std::vector<std::uint8_t> data) {

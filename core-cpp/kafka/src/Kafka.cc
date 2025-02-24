@@ -12,10 +12,10 @@
 
 namespace Kafka {
 
-const char *const BrokersOption     = "-kafka-broker-list";
-const char *const GroupIdOption     = "-kafka-group-id";
-const char *const NamespaceOption   = "-kafka-namespace";
-const char *const OffsetResetOption = "-kafka-offset-reset";
+const char *const BrokerOption       = "-activemq-hostname";
+const char *const UsernameOption     = "-activemq-username";
+const char *const PasswordOption     = "-activemq-password";
+const char *const PortNoOption       = "-activemq-port";
 
 bool startup() {
   std::thread{[] { 
@@ -36,10 +36,10 @@ struct Init {
   Init() {
 
     // register command line arguments
-    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokersOption, std::string("Kafka Brokers"), false, "brokerList", true, false));
-    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(GroupIdOption, std::string("Kafka Group ID"), false, "groupId", true, false));
-    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(NamespaceOption, std::string("Kafka Topic Namespace"), false, "namespace", true, false));
-    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(OffsetResetOption, std::string("Consumer Offset Reset Policy"), false, "offset", true, false));
+    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokerOption, std::string("Broker URL"), true, "broker", true, false));
+    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(UsernameOption, std::string("Broker Username"), false, "username", true, false));
+    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PasswordOption, std::string("Broker Password"), false, "password", true, false));
+    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PortNoOption, std::string("Broker Port Number"), false, "port", true, false));
 
     SWA::Process::getInstance().registerStartedListener(&startup);
   }

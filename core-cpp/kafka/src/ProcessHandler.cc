@@ -3,7 +3,6 @@
 #include "kafka/Kafka.hh"
 #include "kafka/Consumer.hh"
 
-#include "amqp_asio/connection.hh"
 #include "swa/CommandLine.hh"
 #include "swa/Process.hh"
 #include "swa/ProgramError.hh"
@@ -60,11 +59,6 @@ std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
     name = SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
   }
 
-  // add the namespace if applicable
-  static const std::string ns = SWA::CommandLine::getInstance().getOption(NamespaceOption);
-  if (!ns.empty()) {
-    name = ns + "." + name;
-  }
   return name;
 }
 
@@ -86,35 +80,24 @@ amqp_asio::Session ProcessHandler::getSession() {
 
 asio::awaitable<void> ProcessHandler::run() {
 
-  // TODO parameterize these with CLI arguments
-  std::string hostname = "host.docker.internal";
-  std::string port     = "5672";
-  std::string username = "artemis";
-  std::string password = "artemis";
-
-  // configure logging
-  // TODO
-  std::string filename = "./logconfig.properties";
-  std::fstream file{filename};
-  if (file) {
-    xtuml::logging::Logger::load_config(filename, 1s);
-  } else {
-    xtuml::logging::Logger{""}.error("Error opening log config: {}", filename);
-  }
+  const std::string hostname = SWA::CommandLine::getInstance().getOption(BrokerOption);
+  const std::string username = SWA::CommandLine::getInstance().getOption(UsernameOption, "artemis");
+  const std::string password = SWA::CommandLine::getInstance().getOption(PasswordOption, "artemis");
+  const std::string port = SWA::CommandLine::getInstance().getOption(PortNoOption, "5672");
 
   try {
       auto executor = co_await asio::this_coro::executor;
 
       // create connection
-      auto conn = amqp_asio::Connection::create_amqp("TODO: amqp-bridge", executor);
+      conn = amqp_asio::Connection::create_amqp("amqp-bridge", executor);
       co_await conn.open(amqp_asio::ConnectionOptions().hostname(hostname).port(port).sasl_options(
           amqp_asio::SaslOptions().authname(username).password(password)
       ));
-      log.info("Connection open");
+      log.debug("Connection open");
 
       // open a session
       session = co_await conn.open_session();
-      log.info("Session open");
+      log.debug("Session open");
 
       // launch consumer
       if (hasRegisteredServices()) {
@@ -122,23 +105,14 @@ asio::awaitable<void> ProcessHandler::run() {
       }
 
       // create producer
-      sender = co_await session.open_sender(amqp_asio::SenderOptions().name("TODO: sender").delivery_mode(amqp_asio::DeliveryMode::at_least_once));
-      log.info("Sender created");
+      sender = co_await session.open_sender(amqp_asio::SenderOptions().name("sender").delivery_mode(amqp_asio::DeliveryMode::at_least_once));
+      log.debug("Sender created");
 
       // Clean up on shutdown
-      SWA::Process::getInstance().registerShutdownListener([&]() {
-        asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
-          try {
-            log.info("LEVI waiting to end session...");
-            co_await session.end();
-            log.info("LEVI waiting to close connection...");
-            co_await conn.close();
-            log.info("Connection closed");
-          } catch (std::bad_variant_access &e) {
-            throw std::system_error(make_error_code(std::errc::bad_message));
-          } catch (const std::system_error &e) {
-            fmt::println("Error: {}", e.code().message());
-          }
+      SWA::Process::getInstance().registerShutdownListener([this, executor]() {
+        asio::co_spawn(executor, [this]() -> asio::awaitable<void> {
+          co_await session.end();
+          co_await conn.close();
           ctx.stop();
         }, asio::detached);
       });
@@ -149,7 +123,7 @@ asio::awaitable<void> ProcessHandler::run() {
       fmt::println("Error: {}", e.code().message());
   }
 
-  log.info("Initialization complete");
+  log.debug("Initialization complete");
 
 }
 

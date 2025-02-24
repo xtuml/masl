@@ -25,38 +25,30 @@ void Consumer::initialize(std::vector<std::string> topics) {
       SWA::Process::getInstance().getActivityMonitor());
 
   // for each topic, create a receiver and spawn a listen loop
+  /*
   for (auto it = topics.begin(); it != topics.end(); it++) {
-    auto topic = *it;
     auto executor = ProcessHandler::getInstance().getContext().get_executor();
 
-    asio::co_spawn(executor, [&]() -> asio::awaitable<void> {
+    asio::co_spawn(executor, [this, topic=*it, log, executor]() -> asio::awaitable<void> {
 
-      log.info("LEVI91.0");
-      auto receiver = co_await ProcessHandler::getInstance().getSession().open_receiver(topic, amqp_asio::ReceiverOptions().name("TODO: receiver"));
-      log.info("LEVI92");
-      /*
+      auto receiver = co_await ProcessHandler::getInstance().getSession().open_receiver(topic, amqp_asio::ReceiverOptions().name("receiver." + topic));
       amqp_asio::spawn_cancellable_loop(
         executor,
-        [this, receiver, &log, &topic] () mutable -> asio::awaitable<void> {
-          log.info("LEVI93");
+        [this, receiver, log, topic] () mutable -> asio::awaitable<void> {
           // Queue the message to be handled on the main thread
           auto delivery = co_await receiver.receive();
-          log.info("LEVI94");
-          log.info("Received message {}", delivery.message().as_string());
+          log.debug("Received message {}", delivery.message().as_string());
           TaggedMessage msg(topic, delivery);
-          log.info("LEVI95");
           messageQueue.enqueue(msg);
-          log.info("LEVI96");
           listener->queueSignal();
-          log.info("LEVI97");
         },
         log
       );
-      */
 
     }, asio::detached);
 
   }
+  */
 
 }
 
@@ -80,7 +72,7 @@ void Consumer::handleMessages() {
 
       // accept delivery
       auto executor = ProcessHandler::getInstance().getContext().get_executor();
-      asio::co_spawn(executor, [&]() -> asio::awaitable<void> { co_await msg.second.accept(); }, asio::detached);
+      asio::co_spawn(executor, [msg]() mutable -> asio::awaitable<void> { co_await msg.second.accept(); }, asio::detached);
     }
   }
 }

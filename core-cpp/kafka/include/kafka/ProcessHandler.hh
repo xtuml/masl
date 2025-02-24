@@ -4,6 +4,7 @@
 #include "ServiceHandler.hh"
 #include "Consumer.hh"
 
+#include "amqp_asio/connection.hh"
 #include "amqp_asio/sender.hh"
 #include "amqp_asio/session.hh"
 #include "logging/log.hh"
@@ -61,6 +62,7 @@ private:
   asio::io_context ctx;
   xtuml::logging::Logger log;
 
+  amqp_asio::Connection conn;
   amqp_asio::Sender sender;
   amqp_asio::Session session;
   Consumer consumer;
