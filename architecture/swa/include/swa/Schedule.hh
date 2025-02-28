@@ -16,27 +16,33 @@
 #include <vector>
 
 namespace SWA {
-class Schedule {
-  public:
-    Schedule(const std::string &name, const std::string &text);
+    class Schedule {
+      public:
+        Schedule(const std::string &name, const std::string &text);
 
-    bool isValid() const { return valid; }
+        bool isValid() const {
+            return valid;
+        }
 
-    const std::string &getName() const { return name; }
+        const std::string &getName() const {
+            return name;
+        }
 
-    typedef std::function<void()> Action;
+        typedef std::function<void()> Action;
 
-    typedef std::vector<Action> Actions;
-    const Actions &getActions() const { return actions; }
+        typedef std::vector<Action> Actions;
+        const Actions &getActions() const {
+            return actions;
+        }
 
-  private:
-    void reportError(int lineNo, const std::string &error);
-    std::string name;
-    std::string text;
-    bool valid;
+      private:
+        void reportError(int lineNo, const std::string &error);
+        std::string name;
+        std::string text;
+        bool valid;
 
-    Actions actions;
-};
+        Actions actions;
+    };
 } // namespace SWA
 
 #endif

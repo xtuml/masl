@@ -17,34 +17,34 @@
 
 namespace SQL {
 
-// *********************************************************************
-//! @brief Factory class to hold the assigner state implementation.
-//!
-//! The assigner state implementation is hidden behide the AssignerStateImpl
-//! interface. This allows the databse implementation to decide on the best
-//! storage stragery based on the database technology. Note that this factory
-//! class takes ownership of the the registered implementation.
-//!
-// *********************************************************************
-class AssignerStateFactory {
-  public:
-    static AssignerStateFactory &singleton();
+    // *********************************************************************
+    //! @brief Factory class to hold the assigner state implementation.
+    //!
+    //! The assigner state implementation is hidden behide the AssignerStateImpl
+    //! interface. This allows the databse implementation to decide on the best
+    //! storage stragery based on the database technology. Note that this factory
+    //! class takes ownership of the the registered implementation.
+    //!
+    // *********************************************************************
+    class AssignerStateFactory {
+      public:
+        static AssignerStateFactory &singleton();
 
-    bool registerImpl(const std::shared_ptr<AssignerStateImpl> &impl);
+        bool registerImpl(const std::shared_ptr<AssignerStateImpl> &impl);
 
-    std::shared_ptr<AssignerStateImpl> &getImpl();
+        std::shared_ptr<AssignerStateImpl> &getImpl();
 
-  private:
-    AssignerStateFactory();
-    ~AssignerStateFactory();
+      private:
+        AssignerStateFactory();
+        ~AssignerStateFactory();
 
-  private:
-    AssignerStateFactory(const AssignerStateFactory &rhs);
-    AssignerStateFactory &operator=(const AssignerStateFactory &rhs);
+      private:
+        AssignerStateFactory(const AssignerStateFactory &rhs);
+        AssignerStateFactory &operator=(const AssignerStateFactory &rhs);
 
-  private:
-    std::shared_ptr<AssignerStateImpl> impl_;
-};
+      private:
+        std::shared_ptr<AssignerStateImpl> impl_;
+    };
 
 } // end namespace SQL
 

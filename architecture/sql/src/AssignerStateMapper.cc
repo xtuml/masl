@@ -19,49 +19,47 @@
 
 namespace SQL {
 
-// *****************************************************************
-// *****************************************************************
-AssignerStateMapper &AssignerStateMapper::singleton() {
-    static AssignerStateMapper instance;
-    return instance;
-}
-
-// *****************************************************************
-// *****************************************************************
-AssignerStateMapper::AssignerStateMapper()
-    : impl_(AssignerStateFactory::singleton().getImpl()) {
-    for (const auto &[key, state] : impl_->initialise()) {
-        cacheAssignerState(key, state);
+    // *****************************************************************
+    // *****************************************************************
+    AssignerStateMapper &AssignerStateMapper::singleton() {
+        static AssignerStateMapper instance;
+        return instance;
     }
-}
 
-// *****************************************************************
-// *****************************************************************
-AssignerStateMapper::~AssignerStateMapper() {}
-
-// *****************************************************************
-// *****************************************************************
-bool AssignerStateMapper::isAssignerSet(const std::string &objectKey) {
-    return assignerStates_.find(objectKey) != assignerStates_.end();
-}
-
-// *****************************************************************
-// *****************************************************************
-void AssignerStateMapper::cacheAssignerState(const std::string &objectKey,
-                                             const int32_t currentState) {
-    assignerStates_[objectKey] = currentState;
-}
-
-// *****************************************************************
-// *****************************************************************
-void AssignerStateMapper::setAssignerState(const std::string &objectKey,
-                                           const int32_t currentState) {
-    if (isAssignerSet(objectKey)) {
-        impl_->updateState(objectKey, currentState);
-    } else {
-        impl_->insertState(objectKey, currentState);
+    // *****************************************************************
+    // *****************************************************************
+    AssignerStateMapper::AssignerStateMapper()
+        : impl_(AssignerStateFactory::singleton().getImpl()) {
+        for (const auto &[key, state] : impl_->initialise()) {
+            cacheAssignerState(key, state);
+        }
     }
-    cacheAssignerState(objectKey, currentState);
-}
+
+    // *****************************************************************
+    // *****************************************************************
+    AssignerStateMapper::~AssignerStateMapper() {}
+
+    // *****************************************************************
+    // *****************************************************************
+    bool AssignerStateMapper::isAssignerSet(const std::string &objectKey) {
+        return assignerStates_.find(objectKey) != assignerStates_.end();
+    }
+
+    // *****************************************************************
+    // *****************************************************************
+    void AssignerStateMapper::cacheAssignerState(const std::string &objectKey, const int32_t currentState) {
+        assignerStates_[objectKey] = currentState;
+    }
+
+    // *****************************************************************
+    // *****************************************************************
+    void AssignerStateMapper::setAssignerState(const std::string &objectKey, const int32_t currentState) {
+        if (isAssignerSet(objectKey)) {
+            impl_->updateState(objectKey, currentState);
+        } else {
+            impl_->insertState(objectKey, currentState);
+        }
+        cacheAssignerState(objectKey, currentState);
+    }
 
 } // namespace SQL

@@ -12,11 +12,11 @@
 
 namespace transient {
 
-EventTimers &EventTimers::getInstance() {
-    static EventTimers instance;
-    return instance;
-}
+    EventTimers &EventTimers::getInstance() {
+        static EventTimers instance;
+        return instance;
+    }
 
-bool registered = EventTimers::registerSingleton(&EventTimers::getInstance);
+    bool registered = EventTimers::registerSingleton(&EventTimers::getInstance);
 
 } // namespace transient

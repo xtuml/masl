@@ -10,35 +10,28 @@
 
 #include "swa/console.hh"
 
-namespace
-{
+namespace {
 
-  struct null_deleter
-  {
-      void operator()(void const *) const
-      {
-      }
-  };
+    struct null_deleter {
+        void operator()(void const *) const {}
+    };
 
+} // namespace
+
+SWA::Device &SWA::console() {
+    static Device console(
+        std::shared_ptr<std::istream>(&::std::cin, null_deleter()),
+        std::shared_ptr<std::ostream>(&::std::cout, null_deleter())
+    );
+    return console;
 }
 
-
-SWA::Device& SWA::console ()
-{
-  static Device console(
-                  std::shared_ptr<std::istream>(&::std::cin,null_deleter()), 
-                  std::shared_ptr<std::ostream>(&::std::cout,null_deleter()));    
-  return console;
+SWA::Device &SWA::error_log() {
+    static Device error_log(std::shared_ptr<std::ostream>(&::std::cerr, null_deleter()));
+    return error_log;
 }
 
-SWA::Device& SWA::error_log ()
-{
-  static Device error_log(std::shared_ptr<std::ostream>(&::std::cerr,null_deleter()));    
-  return error_log;
-}
-
-SWA::Device& SWA::system_log ()
-{
-  static Device system_log(std::shared_ptr<std::ostream>(&::std::clog,null_deleter()));    
-  return system_log;
+SWA::Device &SWA::system_log() {
+    static Device system_log(std::shared_ptr<std::ostream>(&::std::clog, null_deleter()));
+    return system_log;
 }

@@ -15,23 +15,23 @@
 
 namespace SQL {
 
-// *****************************************************************
-//! @brief
-// *****************************************************************
-class WriteOnChangeEnabler {
-  public:
-    explicit WriteOnChangeEnabler(const std::string &objectName);
-    ~WriteOnChangeEnabler();
-    bool isEnabled();
+    // *****************************************************************
+    //! @brief
+    // *****************************************************************
+    class WriteOnChangeEnabler {
+      public:
+        explicit WriteOnChangeEnabler(const std::string &objectName);
+        ~WriteOnChangeEnabler();
+        bool isEnabled();
 
-  private:
-    // prevent copy and assignment
-    WriteOnChangeEnabler(const WriteOnChangeEnabler &rhs);
-    WriteOnChangeEnabler &operator=(const WriteOnChangeEnabler &rhs);
+      private:
+        // prevent copy and assignment
+        WriteOnChangeEnabler(const WriteOnChangeEnabler &rhs);
+        WriteOnChangeEnabler &operator=(const WriteOnChangeEnabler &rhs);
 
-  private:
-    const std::string name;
-};
+      private:
+        const std::string name;
+    };
 
 } // end namespace SQL
 #endif

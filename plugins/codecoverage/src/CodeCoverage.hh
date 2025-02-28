@@ -34,103 +34,124 @@
 
 namespace CodeCoverage {
 
-class CodeCoverage : public SWA::ProcessMonitor::MonitorConnection {
-  public:
-    class StackFrame {
+    class CodeCoverage : public SWA::ProcessMonitor::MonitorConnection {
       public:
-        StackFrame(const SWA::StackFrame &frame);
-        StackFrame(SWA::StackFrame::ActionType type, int domain, int object,
-                   int action, int line);
+        class StackFrame {
+          public:
+            StackFrame(const SWA::StackFrame &frame);
+            StackFrame(SWA::StackFrame::ActionType type, int domain, int object, int action, int line);
 
-        auto operator<=>(const StackFrame &) const = default;
+            auto operator<=>(const StackFrame &) const = default;
 
-        friend std::ostream &operator<<(std::ostream &stream,
-                                        const StackFrame &rhs);
+            friend std::ostream &operator<<(std::ostream &stream, const StackFrame &rhs);
 
-        int getLine() const { return line; }
+            int getLine() const {
+                return line;
+            }
+
+          private:
+            SWA::StackFrame::ActionType type;
+            int domain;
+            int object;
+            int action;
+            int line;
+        };
+
+        class Time {
+          public:
+            Time(const StackFrame &pos);
+            const SWA::Duration &getReal() const {
+                return real;
+            }
+            const SWA::Duration &getUser() const {
+                return user;
+            }
+            const SWA::Duration &getSystem() const {
+                return system;
+            }
+            const StackFrame &getFrame() const {
+                return frame;
+            }
+
+          private:
+            SWA::Duration real;
+            SWA::Duration user;
+            SWA::Duration system;
+            StackFrame frame;
+        };
+
+        class Statistic {
+          public:
+            Statistic();
+            void operator+=(const Time &startTime);
+            int getCount() const {
+                return count;
+            }
+            const SWA::Duration &getReal() const {
+                return real;
+            }
+            const SWA::Duration &getUser() const {
+                return user;
+            }
+            const SWA::Duration &getSystem() const {
+                return system;
+            }
+
+          private:
+            int count;
+            SWA::Duration real;
+            SWA::Duration user;
+            SWA::Duration system;
+        };
+
+      public:
+        static CodeCoverage &getInstance();
+
+        virtual std::string getName() {
+            return "Code Coverage";
+        }
+
+        virtual void startStatement();
+        virtual void endStatement();
+
+        bool initialise();
+
+        void addLineXML(pugi::xml_node &parent, StackFrame frame) const;
+
+        void addServiceXML(
+            pugi::xml_node &parent,
+            const SWA::ServiceMetaData &state,
+            SWA::StackFrame::ActionType type,
+            int domain,
+            int object
+        ) const;
+        void addStateXML(pugi::xml_node &parent, const SWA::StateMetaData &state, int domain, int object) const;
+        void printReport() const;
+        void writeReport(std::ostream &stream) const;
+        void saveReport(const std::string &filename) const;
+        void clearStats() {
+            statistics.clear();
+            startTime = SWA::Timestamp::now();
+            samplingTime = SWA::Duration::zero();
+        }
+        void setActive(bool active);
+        bool isActive() const {
+            return active;
+        }
+
+        CodeCoverage();
+        ~CodeCoverage();
 
       private:
-        SWA::StackFrame::ActionType type;
-        int domain;
-        int object;
-        int action;
-        int line;
+        bool active;
+        SWA::Timestamp startTime;
+        SWA::Duration samplingTime;
+        SWA::Stack &processStack;
+        std::vector<Time> timeStack;
+
+        typedef std::map<StackFrame, Statistic> Statistics;
+        Statistics statistics;
     };
-
-    class Time {
-      public:
-        Time(const StackFrame &pos);
-        const SWA::Duration &getReal() const { return real; }
-        const SWA::Duration &getUser() const { return user; }
-        const SWA::Duration &getSystem() const { return system; }
-        const StackFrame &getFrame() const { return frame; }
-
-      private:
-        SWA::Duration real;
-        SWA::Duration user;
-        SWA::Duration system;
-        StackFrame frame;
-    };
-
-    class Statistic {
-      public:
-        Statistic();
-        void operator+=(const Time &startTime);
-        int getCount() const { return count; }
-        const SWA::Duration &getReal() const { return real; }
-        const SWA::Duration &getUser() const { return user; }
-        const SWA::Duration &getSystem() const { return system; }
-
-      private:
-        int count;
-        SWA::Duration real;
-        SWA::Duration user;
-        SWA::Duration system;
-    };
-
-  public:
-    static CodeCoverage &getInstance();
-
-    virtual std::string getName() { return "Code Coverage"; }
-
-    virtual void startStatement();
-    virtual void endStatement();
-
-    bool initialise();
-
-    void addLineXML(pugi::xml_node& parent, StackFrame frame) const;
-
-    void addServiceXML(pugi::xml_node& parent,
-                       const SWA::ServiceMetaData &state,
-                       SWA::StackFrame::ActionType type, int domain,
-                       int object) const;
-    void addStateXML(pugi::xml_node& parent,
-                     const SWA::StateMetaData &state, int domain,
-                     int object) const;
-    void printReport() const;
-    void writeReport(std::ostream &stream) const;
-    void saveReport(const std::string &filename) const;
-    void clearStats() {
-        statistics.clear();
-        startTime = SWA::Timestamp::now();
-        samplingTime = SWA::Duration::zero();
-    }
-    void setActive(bool active);
-    bool isActive() const { return active; }
-
-    CodeCoverage();
-    ~CodeCoverage();
-
-  private:
-    bool active;
-    SWA::Timestamp startTime;
-    SWA::Duration samplingTime;
-    SWA::Stack &processStack;
-    std::vector<Time> timeStack;
-
-    typedef std::map<StackFrame, Statistic> Statistics;
-    Statistics statistics;
-};
 
 } // namespace CodeCoverage
 

@@ -28,10 +28,7 @@ public class BuildExecutable implements CMakeListsItem {
 
         commands.add(new AddExecutable(name, Utils.getSourcePathArgs(exe.getBodyFiles())));
         commands.add(new TargetLinkLibraries(name, TargetLinkLibraries.Scope.PUBLIC, Utils.getNameArgs(exe.getDependencies())));
-        commands.add(new Command("target_compile_options", exe.getName(),
-                                 "PUBLIC",
-                                 "-fmacro-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=[${CMAKE_PROJECT_NAME}]"));
-        commands.add(new Command("target_include_directories",exe.getName(), "PUBLIC", "include") );
+        commands.add(Utils.addHeaderPath(exe) );
         if ( exe.isExport()) {
             commands.add(new Command("install", "TARGETS", exe.getName()));
         }

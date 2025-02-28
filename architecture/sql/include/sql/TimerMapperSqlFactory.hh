@@ -15,26 +15,26 @@
 
 namespace SQL {
 
-class TimerMapperSql;
-class TimerMapperSqlFactory {
-  public:
-    static TimerMapperSqlFactory &singleton();
+    class TimerMapperSql;
+    class TimerMapperSqlFactory {
+      public:
+        static TimerMapperSqlFactory &singleton();
 
-    bool registerImpl(const std::shared_ptr<TimerMapperSql> &impl);
+        bool registerImpl(const std::shared_ptr<TimerMapperSql> &impl);
 
-    std::shared_ptr<TimerMapperSql> &getImpl();
+        std::shared_ptr<TimerMapperSql> &getImpl();
 
-  private:
-    TimerMapperSqlFactory();
-    ~TimerMapperSqlFactory();
+      private:
+        TimerMapperSqlFactory();
+        ~TimerMapperSqlFactory();
 
-  private:
-    TimerMapperSqlFactory(const TimerMapperSqlFactory &rhs);
-    TimerMapperSqlFactory &operator=(const TimerMapperSqlFactory &rhs);
+      private:
+        TimerMapperSqlFactory(const TimerMapperSqlFactory &rhs);
+        TimerMapperSqlFactory &operator=(const TimerMapperSqlFactory &rhs);
 
-  private:
-    std::shared_ptr<TimerMapperSql> impl_;
-};
+      private:
+        std::shared_ptr<TimerMapperSql> impl_;
+    };
 
 } // end namespace SQL
 

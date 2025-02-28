@@ -10,29 +10,22 @@
 
 #include "swa/Event.hh"
 
-namespace SWA
-{
+namespace SWA {
 
-  Event::Event()
-    : hasDest(false),
-      destInstanceId(),
-      hasSource(false),
-      sourceObjectId(-1),
-      sourceInstanceId() {}
+    Event::Event()
+        : hasDest(false), destInstanceId(), hasSource(false), sourceObjectId(-1), sourceInstanceId() {}
 
-  Event::~Event() {}
+    Event::~Event() {}
 
-  void Event::setSource ( int objectId, IdType instanceId )
-  {
-    hasSource = true;
-    sourceObjectId = objectId;
-    sourceInstanceId = instanceId;
-  }
+    void Event::setSource(int objectId, IdType instanceId) {
+        hasSource = true;
+        sourceObjectId = objectId;
+        sourceInstanceId = instanceId;
+    }
 
-  void Event::setDest ( IdType instanceId )
-  {
-    hasDest = true;
-    destInstanceId = instanceId;
-  }
+    void Event::setDest(IdType instanceId) {
+        hasDest = true;
+        destInstanceId = instanceId;
+    }
 
-}
+} // namespace SWA

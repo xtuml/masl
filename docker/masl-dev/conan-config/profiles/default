@@ -10,3 +10,9 @@ compiler.cppstd=26
 compiler.libcxx={{detect_api.detect_libcxx(compiler, version, compiler_exe)}}
 
 build_type=Release
+
+
+# boost recipe doesn't work with cppstd=26.
+# Downgrade until https://github.com/conan-io/conan-center-index/pull/26030 merged.
+# (built packages are compatible)
+boost/*:compiler.cppstd=23

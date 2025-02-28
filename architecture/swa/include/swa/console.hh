@@ -15,9 +15,9 @@
 
 namespace SWA {
 
-Device &console();
-Device &error_log();
-Device &system_log();
+    Device &console();
+    Device &error_log();
+    Device &system_log();
 
 } // namespace SWA
 

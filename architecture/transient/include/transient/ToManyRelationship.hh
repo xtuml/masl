@@ -15,39 +15,42 @@
 
 namespace transient {
 
-template <class Related> class ToManyRelationship {
-  private:
-    typedef SWA::ObjectPtr<Related> RelatedPtr;
-    typedef std::unordered_set<RelatedPtr> Container;
+    template <class Related>
+    class ToManyRelationship {
+      private:
+        typedef SWA::ObjectPtr<Related> RelatedPtr;
+        typedef std::unordered_set<RelatedPtr> Container;
 
-  public:
-    void link(RelatedPtr rhs) {
-        if (!related.insert(rhs).second)
-            throw SWA::ProgramError("Objects already linked");
-    }
-    void unlink(RelatedPtr rhs) {
-        if (!related.erase(rhs))
-            throw SWA::ProgramError("Objects not linked");
-    }
+      public:
+        void link(RelatedPtr rhs) {
+            if (!related.insert(rhs).second)
+                throw SWA::ProgramError("Objects already linked");
+        }
+        void unlink(RelatedPtr rhs) {
+            if (!related.erase(rhs))
+                throw SWA::ProgramError("Objects not linked");
+        }
 
-    SWA::Set<RelatedPtr> navigate() const {
-        return SWA::Set<RelatedPtr>(related);
-    }
+        SWA::Set<RelatedPtr> navigate() const {
+            return SWA::Set<RelatedPtr>(related);
+        }
 
-    template <class Predicate>
-    SWA::Set<RelatedPtr> navigate(Predicate predicate) const {
-        SWA::Set<RelatedPtr> result;
-        SWA::copy_if(
-            related.begin(), related.end(), result.inserter(),
-            [predicate](auto &&ptr) { return predicate(ptr.deref()); });
-        result.forceUnique();
-        return result;
-    }
+        template <class Predicate>
+        SWA::Set<RelatedPtr> navigate(Predicate predicate) const {
+            SWA::Set<RelatedPtr> result;
+            SWA::copy_if(related.begin(), related.end(), result.inserter(), [predicate](auto &&ptr) {
+                return predicate(ptr.deref());
+            });
+            result.forceUnique();
+            return result;
+        }
 
-    std::size_t count() const { return related.size(); }
+        std::size_t count() const {
+            return related.size();
+        }
 
-  private:
-    Container related;
-};
+      private:
+        Container related;
+    };
 
 } // namespace transient

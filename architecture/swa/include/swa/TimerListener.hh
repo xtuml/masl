@@ -13,36 +13,35 @@
 
 #include "Duration.hh"
 #include "Timestamp.hh"
-#include <functional>
 #include <boost/utility.hpp>
+#include <functional>
 
 namespace SWA {
-class ListenerPriority;
+    class ListenerPriority;
 
-class TimerListener : public boost::noncopyable {
-  public:
-    typedef std::function<void(int)> Callback;
+    class TimerListener : public boost::noncopyable {
+      public:
+        typedef std::function<void(int)> Callback;
 
-    TimerListener(const ListenerPriority &priority, const Callback &callback);
-    ~TimerListener();
+        TimerListener(const ListenerPriority &priority, const Callback &callback);
+        ~TimerListener();
 
-    void schedule(const Timestamp &expiryTime,
-                  const Duration &interval = Duration::zero());
-    void cancel();
+        void schedule(const Timestamp &expiryTime, const Duration &interval = Duration::zero());
+        void cancel();
 
-  private:
-    void timerFired(int32_t overrun);
+      private:
+        void timerFired(int32_t overrun);
 
-    void setTime(const timespec &expiryTime, const timespec &interval);
+        void setTime(const timespec &expiryTime, const timespec &interval);
 
-  private:
-    timer_t timerId;
-    const Callback callback;
+      private:
+        timer_t timerId;
+        const Callback callback;
 
-    Timestamp expiryTime;
-    Duration interval;
-    bool active;
-};
+        Timestamp expiryTime;
+        Duration interval;
+        bool active;
+    };
 
 } // namespace SWA
 

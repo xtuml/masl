@@ -15,19 +15,19 @@
 
 namespace SQLITE {
 
-class Transaction {
-  private:
-    Transaction();
+    class Transaction {
+      private:
+        Transaction();
 
-    void startTransaction(const std::string &name);
-    void committingTransaction();
-    void commitTransaction();
-    void abortTransaction();
+        void startTransaction(const std::string &name);
+        void committingTransaction();
+        void commitTransaction();
+        void abortTransaction();
 
-  public:
-    static Transaction &getInstance();
-    static bool initialise();
-};
+      public:
+        static Transaction &getInstance();
+        static bool initialise();
+    };
 
 } // end namespace SQLITE
 

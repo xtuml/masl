@@ -12,18 +12,16 @@
 
 namespace amqp_asio {
 
-        asio::awaitable<Delivery> Receiver::receive() {
-            co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->receive());
-        }
+    asio::awaitable<Delivery> Receiver::receive() {
+        co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->receive());
+    }
 
-        asio::awaitable<void> Receiver::detach() {
-            co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->detach());
-        }
+    asio::awaitable<void> Receiver::detach() {
+        co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->detach());
+    }
 
-  
-        Receiver::operator bool() const noexcept {
-            return static_cast<bool>(pimpl_);
-        }
-
+    Receiver::operator bool() const noexcept {
+        return static_cast<bool>(pimpl_);
+    }
 
 } // namespace amqp_asio

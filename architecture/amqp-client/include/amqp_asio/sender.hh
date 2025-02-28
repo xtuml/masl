@@ -42,9 +42,21 @@ namespace amqp_asio {
 
         asio::awaitable<Tracker> send(messages::Message message, std::optional<DeliveryMode> mode = {});
 
-        asio::awaitable<Tracker> send(std::vector<std::byte> payload, std::optional<messages::Properties> properties = {}, std::optional<DeliveryMode> mode = {});
-        asio::awaitable<Tracker> send(std::string_view payload, std::optional<messages::Properties> properties = {}, std::optional<DeliveryMode> mode = {});
-        asio::awaitable<Tracker> send_json(const nlohmann::json& payload, std::optional<messages::Properties> properties = {}, std::optional<DeliveryMode> mode = {});
+        asio::awaitable<Tracker> send(
+            std::vector<std::byte> payload,
+            std::optional<messages::Properties> properties = {},
+            std::optional<DeliveryMode> mode = {}
+        );
+        asio::awaitable<Tracker> send(
+            std::string_view payload,
+            std::optional<messages::Properties> properties = {},
+            std::optional<DeliveryMode> mode = {}
+        );
+        asio::awaitable<Tracker> send_json(
+            const nlohmann::json &payload,
+            std::optional<messages::Properties> properties = {},
+            std::optional<DeliveryMode> mode = {}
+        );
 
         asio::awaitable<void> detach();
 

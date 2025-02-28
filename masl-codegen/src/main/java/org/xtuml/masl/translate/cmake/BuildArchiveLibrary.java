@@ -28,15 +28,10 @@ public class BuildArchiveLibrary implements CMakeListsItem {
 
         commands.add(new AddLibrary(name, AddLibrary.Type.STATIC, Utils.getSourcePathArgs(library.getBodyFiles())));
         commands.add(new TargetLinkLibraries(name, TargetLinkLibraries.Scope.PUBLIC, Utils.getNameArgs(library.getDependencies())));
-        commands.add(new Command("target_compile_options", library.getName(),
-                                 "PUBLIC",
-                                 "-fmacro-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=[${CMAKE_PROJECT_NAME}]"));
-        commands.add(new Command("target_include_directories",library.getName(), "PUBLIC", "include") );
+        commands.add(Utils.addHeaderPath(library) );
+
         if ( library.isExport()) {
-            commands.add(new Command("install", "TARGETS", library.getName()));
-            commands.add(new Command("if", "IS_DIRECTORY","${CMAKE_CURRENT_SOURCE_DIR}/include"));
-            commands.add(new Command("install", "DIRECTORY", "include/", "DESTINATION", "${CMAKE_INSTALL_INCLUDEDIR}") );
-            commands.add(new Command("endif"));
+            commands.add(new Command("install", "TARGETS", library.getName(), "FILE_SET", "HEADERS"));
             commands.add(new Command("add_library", library.getParent().getName() + "::" + library.getName(), "ALIAS", library.getName()) );
         }
     }

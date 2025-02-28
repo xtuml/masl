@@ -13,34 +13,29 @@
 
 #include <format>
 
-namespace SWA
-{
-  ExceptionStackFrame::ExceptionStackFrame ( const StackFrame& source )
+namespace SWA {
+    ExceptionStackFrame::ExceptionStackFrame(const StackFrame &source)
         : type(source.getType()),
           domainId(source.getDomainId()),
           objectId(source.getObjectId()),
           actionId(source.getActionId()),
-          line(source.getLine())
-  {
-  }
+          line(source.getLine()) {}
 
-
-
-  void Exception::addStack() const
-  {
-    stackAdded = true;
-    error+= "\n  Stack:\n";
-    int depth = stack.getFrames().size();
-    for ( std::vector<ExceptionStackFrame>::const_reverse_iterator it = stack.getFrames().rbegin(), end = stack.getFrames().rend(); it != end; ++it )
-    {
-      error += std::format("  #{}\t{}\n",depth--, NameFormatter::formatStackFrame(*it));
+    void Exception::addStack() const {
+        stackAdded = true;
+        error += "\n  Stack:\n";
+        int depth = stack.getFrames().size();
+        for (std::vector<ExceptionStackFrame>::const_reverse_iterator it = stack.getFrames().rbegin(),
+                                                                      end = stack.getFrames().rend();
+             it != end;
+             ++it) {
+            error += std::format("  #{}\t{}\n", depth--, NameFormatter::formatStackFrame(*it));
+        }
+        try {
+            std::rethrow_if_nested(*this);
+        } catch (const std::exception &e) {
+            error += std::format("Caused by: {}", e.what());
+        }
     }
-    try {
-      std::rethrow_if_nested(*this);
-    } catch (const std::exception& e) {
-      error += std::format("Caused by: {}",e.what());
-    }
-  }
 
-}
-
+} // namespace SWA

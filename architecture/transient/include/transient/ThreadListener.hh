@@ -14,16 +14,16 @@
 #include <vector>
 
 namespace transient {
-class ThreadListener {
-  public:
-    void addCleanup(const std::function<void()> function);
-    static ThreadListener &getInstance();
-    static bool initialise();
+    class ThreadListener {
+      public:
+        void addCleanup(const std::function<void()> function);
+        static ThreadListener &getInstance();
+        static bool initialise();
 
-  private:
-    ThreadListener();
-    void performCleanup();
-    std::vector<std::function<void()>> cleanupRoutines;
-};
+      private:
+        ThreadListener();
+        void performCleanup();
+        std::vector<std::function<void()>> cleanupRoutines;
+    };
 
 } // namespace transient

@@ -12,33 +12,32 @@
 
 namespace SQL {
 
-// **********************************************************************
-// **********************************************************************
-AssignerStateFactory &AssignerStateFactory::singleton() {
-    static AssignerStateFactory instance;
-    return instance;
-}
+    // **********************************************************************
+    // **********************************************************************
+    AssignerStateFactory &AssignerStateFactory::singleton() {
+        static AssignerStateFactory instance;
+        return instance;
+    }
 
-// **********************************************************************
-// **********************************************************************
-AssignerStateFactory::AssignerStateFactory() {}
+    // **********************************************************************
+    // **********************************************************************
+    AssignerStateFactory::AssignerStateFactory() {}
 
-// **********************************************************************
-// **********************************************************************
-AssignerStateFactory::~AssignerStateFactory() {}
+    // **********************************************************************
+    // **********************************************************************
+    AssignerStateFactory::~AssignerStateFactory() {}
 
-// **********************************************************************
-// **********************************************************************
-bool AssignerStateFactory::registerImpl(
-    const std::shared_ptr<AssignerStateImpl> &impl) {
-    impl_ = impl;
-    return true;
-}
+    // **********************************************************************
+    // **********************************************************************
+    bool AssignerStateFactory::registerImpl(const std::shared_ptr<AssignerStateImpl> &impl) {
+        impl_ = impl;
+        return true;
+    }
 
-// **********************************************************************
-// **********************************************************************
-std::shared_ptr<AssignerStateImpl> &AssignerStateFactory::getImpl() {
-    return impl_;
-}
+    // **********************************************************************
+    // **********************************************************************
+    std::shared_ptr<AssignerStateImpl> &AssignerStateFactory::getImpl() {
+        return impl_;
+    }
 
 } // end namespace SQL

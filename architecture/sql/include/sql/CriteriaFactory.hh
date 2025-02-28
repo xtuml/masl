@@ -17,55 +17,55 @@
 
 namespace SQL {
 
-// *****************************************************************
-// *****************************************************************
-class CloneableCriteria {
-  protected:
-    CloneableCriteria() {}
+    // *****************************************************************
+    // *****************************************************************
+    class CloneableCriteria {
+      protected:
+        CloneableCriteria() {}
 
-  public:
-    virtual ~CloneableCriteria() {}
+      public:
+        virtual ~CloneableCriteria() {}
 
-    virtual std::shared_ptr<CriteriaImpl> clone() const = 0;
+        virtual std::shared_ptr<CriteriaImpl> clone() const = 0;
 
-  private:
-    CloneableCriteria(const CloneableCriteria &rhs);
-    CloneableCriteria &operator=(const CloneableCriteria &rhs);
-};
+      private:
+        CloneableCriteria(const CloneableCriteria &rhs);
+        CloneableCriteria &operator=(const CloneableCriteria &rhs);
+    };
 
-// *****************************************************************
-// *****************************************************************
-class CriteriaFactory {
-  public:
-    // ****************************************************
-    //! Return the single instance of this factory.
-    // ****************************************************
-    static CriteriaFactory &singleton();
+    // *****************************************************************
+    // *****************************************************************
+    class CriteriaFactory {
+      public:
+        // ****************************************************
+        //! Return the single instance of this factory.
+        // ****************************************************
+        static CriteriaFactory &singleton();
 
-    // ****************************************************
-    //! Register the Criteria implementation that should be
-    //! used by the sql framework. Only one registration should
-    //! be undertaken. This factory will take ownership of
-    //! the supplied Criteria instance.
-    // ****************************************************
-    bool registerImpl(const std::shared_ptr<CloneableCriteria> &impl);
+        // ****************************************************
+        //! Register the Criteria implementation that should be
+        //! used by the sql framework. Only one registration should
+        //! be undertaken. This factory will take ownership of
+        //! the supplied Criteria instance.
+        // ****************************************************
+        bool registerImpl(const std::shared_ptr<CloneableCriteria> &impl);
 
-    // ****************************************************
-    //! @return a cloned version of the registered CloneableCriteria instance
-    // ****************************************************
-    std::shared_ptr<CriteriaImpl> newInstance();
+        // ****************************************************
+        //! @return a cloned version of the registered CloneableCriteria instance
+        // ****************************************************
+        std::shared_ptr<CriteriaImpl> newInstance();
 
-  private:
-    CriteriaFactory(const CriteriaFactory &rhs);
-    CriteriaFactory &operator=(const CriteriaFactory &rhs);
+      private:
+        CriteriaFactory(const CriteriaFactory &rhs);
+        CriteriaFactory &operator=(const CriteriaFactory &rhs);
 
-  private:
-    CriteriaFactory();
-    ~CriteriaFactory();
+      private:
+        CriteriaFactory();
+        ~CriteriaFactory();
 
-  private:
-    std::shared_ptr<CloneableCriteria> impl_;
-};
+      private:
+        std::shared_ptr<CloneableCriteria> impl_;
+    };
 
 } // namespace SQL
 

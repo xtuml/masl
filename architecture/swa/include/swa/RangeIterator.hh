@@ -16,74 +16,76 @@
 
 namespace SWA {
 
-// ****************************************************************************
-// Define an iterator class that can be used to iterate
-// over any range without using any values outside that
-// range.
-// ****************************************************************************
-template <class T>
-class RangeIterator
-    : private boost::incrementable<
-          RangeIterator<T>,
-          boost::decrementable<RangeIterator<T>,
-                               boost::equality_comparable<RangeIterator<T>>>> {
-  public:
-    typedef std::bidirectional_iterator_tag iterator_category;
-    typedef ptrdiff_t difference_type;
-    typedef const T value_type;
-    typedef const T &reference;
-    typedef const T *pointer;
+    // ****************************************************************************
+    // Define an iterator class that can be used to iterate
+    // over any range without using any values outside that
+    // range.
+    // ****************************************************************************
+    template <class T>
+    class RangeIterator : private boost::incrementable<
+                              RangeIterator<T>,
+                              boost::decrementable<RangeIterator<T>, boost::equality_comparable<RangeIterator<T>>>> {
+      public:
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef ptrdiff_t difference_type;
+        typedef const T value_type;
+        typedef const T &reference;
+        typedef const T *pointer;
 
-  public:
-    RangeIterator(reference startValue, reference endValue)
-        : currentValue(startValue), endValue(endValue), end(false) {}
+      public:
+        RangeIterator(reference startValue, reference endValue)
+            : currentValue(startValue), endValue(endValue), end(false) {}
 
-    RangeIterator(reference endValue)
-        : currentValue(endValue), endValue(endValue), end(true) {}
+        RangeIterator(reference endValue)
+            : currentValue(endValue), endValue(endValue), end(true) {}
 
-    ~RangeIterator() {}
+        ~RangeIterator() {}
 
-    const RangeIterator &operator++() {
-        // check whether have already reached the end.
-        // If have then nothing more to do.
-        if (!end) {
-            if (currentValue == endValue) {
-                end = true;
-            } else {
-                ++currentValue;
+        const RangeIterator &operator++() {
+            // check whether have already reached the end.
+            // If have then nothing more to do.
+            if (!end) {
+                if (currentValue == endValue) {
+                    end = true;
+                } else {
+                    ++currentValue;
+                }
             }
+            return *this;
         }
-        return *this;
-    }
 
-    const RangeIterator &operator--() {
-        if (end) {
-            end = false;
-            currentValue = endValue;
-        } else {
-            --currentValue;
+        const RangeIterator &operator--() {
+            if (end) {
+                end = false;
+                currentValue = endValue;
+            } else {
+                --currentValue;
+            }
+            return *this;
         }
-        return *this;
-    }
 
-    reference operator*() const { return currentValue; }
-    pointer operator->() const { return &currentValue; }
-
-    bool operator==(const RangeIterator &rhs) const {
-        if (end == true && rhs.end == true) {
-            return true;
+        reference operator*() const {
+            return currentValue;
         }
-        if (end == true || rhs.end == true) {
-            return false;
+        pointer operator->() const {
+            return &currentValue;
         }
-        return currentValue == rhs.currentValue;
-    }
 
-  private:
-    T currentValue;
-    T endValue;
-    bool end;
-};
+        bool operator==(const RangeIterator &rhs) const {
+            if (end == true && rhs.end == true) {
+                return true;
+            }
+            if (end == true || rhs.end == true) {
+                return false;
+            }
+            return currentValue == rhs.currentValue;
+        }
+
+      private:
+        T currentValue;
+        T endValue;
+        bool end;
+    };
 
 } // namespace SWA
 

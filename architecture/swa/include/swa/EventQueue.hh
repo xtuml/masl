@@ -20,21 +20,21 @@
 #include <vector>
 
 namespace SWA {
-class EventQueue {
-  public:
-    void addEvent(const std::shared_ptr<Event> event);
+    class EventQueue {
+      public:
+        void addEvent(const std::shared_ptr<Event> event);
 
-    int processEvents();
-    bool empty();
+        int processEvents();
+        bool empty();
 
-    std::vector<std::shared_ptr<Event>> getEvents() const;
+        std::vector<std::shared_ptr<Event>> getEvents() const;
 
-  private:
-    typedef std::deque<std::shared_ptr<Event>> InnerQueueType;
-    typedef std::map<int, InnerQueueType> QueueType;
+      private:
+        typedef std::deque<std::shared_ptr<Event>> InnerQueueType;
+        typedef std::map<int, InnerQueueType> QueueType;
 
-    QueueType queue;
-};
+        QueueType queue;
+    };
 
 } // namespace SWA
 

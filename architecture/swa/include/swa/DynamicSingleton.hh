@@ -17,36 +17,36 @@
 
 namespace SWA {
 
-template <class Singleton> class DynamicSingleton {
-  public:
-    typedef std::function<Singleton &()> GetterFunction;
+    template <class Singleton>
+    class DynamicSingleton {
+      public:
+        typedef std::function<Singleton &()> GetterFunction;
 
-    static Singleton &getSingleton();
-    static bool registerSingleton(GetterFunction getter);
+        static Singleton &getSingleton();
+        static bool registerSingleton(GetterFunction getter);
 
-  private:
-    static GetterFunction &getSingletonGetter();
-    GetterFunction getter;
-};
+      private:
+        static GetterFunction &getSingletonGetter();
+        GetterFunction getter;
+    };
 
-template <class Singleton>
-bool DynamicSingleton<Singleton>::registerSingleton(GetterFunction getter) {
-    getSingletonGetter() = getter;
-    return true;
-}
+    template <class Singleton>
+    bool DynamicSingleton<Singleton>::registerSingleton(GetterFunction getter) {
+        getSingletonGetter() = getter;
+        return true;
+    }
 
-template <class Singleton>
-typename DynamicSingleton<Singleton>::GetterFunction &
-DynamicSingleton<Singleton>::getSingletonGetter() {
-    static GetterFunction getter;
-    return getter;
-}
+    template <class Singleton>
+    typename DynamicSingleton<Singleton>::GetterFunction &DynamicSingleton<Singleton>::getSingletonGetter() {
+        static GetterFunction getter;
+        return getter;
+    }
 
-template <class Singleton>
-Singleton &DynamicSingleton<Singleton>::getSingleton() {
-    static Singleton &singleton = getSingletonGetter()();
-    return singleton;
-}
+    template <class Singleton>
+    Singleton &DynamicSingleton<Singleton>::getSingleton() {
+        static Singleton &singleton = getSingletonGetter()();
+        return singleton;
+    }
 
 } // namespace SWA
 #endif

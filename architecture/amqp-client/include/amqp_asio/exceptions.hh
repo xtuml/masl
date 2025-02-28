@@ -26,7 +26,15 @@ namespace amqp_asio {
         using std::runtime_error::runtime_error;
     };
 
-    enum class error { UnexpectedMessage = 1, DecodeError, EncodeError, SaslAuthenticationFailed, SaslSystemError, ProtocolMismatch, SessionAttachError };
+    enum class error {
+        UnexpectedMessage = 1,
+        DecodeError,
+        EncodeError,
+        SaslAuthenticationFailed,
+        SaslSystemError,
+        ProtocolMismatch,
+        SessionAttachError
+    };
 
     struct error_category_impl : public std::error_category {
         const char *name() const noexcept override {

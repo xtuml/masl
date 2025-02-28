@@ -18,7 +18,6 @@ class ConanFile(conan.ConanFile):
     exports_sources = "CMakeLists.txt", "src/*", "include/*"
 
     def requirements(self):
-        self.requires("xtuml_cmake_helpers/[>=1.0 <2]@xtuml", visible=False)
         self.requires("xtuml_sql/[>=1 <2]@xtuml", transitive_headers=True)
         self.requires("sqlite3/[>=3.48.0 <4]", transitive_headers=True,transitive_libs=True)
 

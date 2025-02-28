@@ -11,12 +11,11 @@
 #pragma once
 
 #include <asio/awaitable.hpp>
-#include <asio/redirect_error.hpp>
-#include <asio/steady_timer.hpp>
 #include <asio/deferred.hpp>
 #include <asio/error.hpp>
+#include <asio/redirect_error.hpp>
+#include <asio/steady_timer.hpp>
 #include <chrono>
-
 
 namespace amqp_asio {
 
@@ -36,14 +35,14 @@ namespace amqp_asio {
         }
 
         asio::awaitable<void> wait() {
-            if ( cancelled ) {
+            if (cancelled) {
                 throw std::system_error(std::make_error_code(std::errc::operation_canceled));
             }
             std::error_code ec{};
             co_await t.async_wait(asio::redirect_error(asio::deferred, ec));
-            if ( ec != asio::error::operation_aborted) {
+            if (ec != asio::error::operation_aborted) {
                 throw std::system_error(ec);
-            } else if ( cancelled ) {
+            } else if (cancelled) {
                 throw std::system_error(std::make_error_code(std::errc::operation_canceled));
             }
         }

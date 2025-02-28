@@ -26,53 +26,67 @@
 #include <unordered_set>
 
 #include "swa/Event.hh"
-#include "swa/Stack.hh"
 #include "swa/ProcessMonitor.hh"
+#include "swa/Stack.hh"
 
-namespace Trace
-{
+namespace Trace {
 
-  class Trace : public SWA::ProcessMonitor::MonitorConnection
-  {
+    class Trace : public SWA::ProcessMonitor::MonitorConnection {
 
-    public:
-      static Trace& getInstance();
+      public:
+        static Trace &getInstance();
 
-      std::string getName() { return "Trace"; }
+        std::string getName() {
+            return "Trace";
+        }
 
-      void processingEvent ( const std::shared_ptr<SWA::Event>& event );
+        void processingEvent(const std::shared_ptr<SWA::Event> &event);
 
-      void enteredAction();
-      void leavingAction();
+        void enteredAction();
+        void leavingAction();
 
-      void startStatement();
+        void startStatement();
 
-      bool isTraceLines() const { return traceLines; }
-      void setTraceLines( bool flag ) { traceLines = flag; checkConnect(); }
+        bool isTraceLines() const {
+            return traceLines;
+        }
+        void setTraceLines(bool flag) {
+            traceLines = flag;
+            checkConnect();
+        }
 
-      bool isTraceEvents() const { return traceEvents; }
-      void setTraceEvents( bool flag ) { traceEvents = flag; checkConnect(); }
+        bool isTraceEvents() const {
+            return traceEvents;
+        }
+        void setTraceEvents(bool flag) {
+            traceEvents = flag;
+            checkConnect();
+        }
 
-      bool isTraceActions() const { return traceActions; }
-      void setTraceActions( bool flag ) { traceActions = flag; checkConnect(); }
+        bool isTraceActions() const {
+            return traceActions;
+        }
+        void setTraceActions(bool flag) {
+            traceActions = flag;
+            checkConnect();
+        }
 
-      bool initialise();
+        bool initialise();
 
-      Trace();
-      virtual ~Trace();
+        Trace();
+        virtual ~Trace();
 
-    private:
-      void checkConnect();
+      private:
+        void checkConnect();
 
-    private:
-      std::unordered_set<int> domains;
-      bool traceEvents;
-      bool traceActions;
-      bool traceLines;
-      SWA::Stack& processStack;
+      private:
+        std::unordered_set<int> domains;
+        bool traceEvents;
+        bool traceActions;
+        bool traceLines;
+        SWA::Stack &processStack;
+    };
 
-  };
-
-}
+} // namespace Trace
 
 #endif

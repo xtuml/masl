@@ -12,21 +12,23 @@
 #define SWA_ListenerPriority_HH
 
 namespace SWA {
-class ListenerPriority {
-  public:
-    static const ListenerPriority &getMinimum();
-    static const ListenerPriority &getLow();
-    static const ListenerPriority &getNormal();
-    static const ListenerPriority &getHigh();
-    static const ListenerPriority &getMaximum();
+    class ListenerPriority {
+      public:
+        static const ListenerPriority &getMinimum();
+        static const ListenerPriority &getLow();
+        static const ListenerPriority &getNormal();
+        static const ListenerPriority &getHigh();
+        static const ListenerPriority &getMaximum();
 
-    int getValue() const { return priority; }
+        int getValue() const {
+            return priority;
+        }
 
-  private:
-    ListenerPriority(int priority);
-    ListenerPriority(const ListenerPriority &low, const ListenerPriority &high);
-    int priority;
-};
+      private:
+        ListenerPriority(int priority);
+        ListenerPriority(const ListenerPriority &low, const ListenerPriority &high);
+        int priority;
+    };
 
 } // namespace SWA
 

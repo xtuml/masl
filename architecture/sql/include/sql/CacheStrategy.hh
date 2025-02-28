@@ -11,57 +11,56 @@
 #ifndef Sql_CacheStrategy_HH
 #define Sql_CacheStrategy_HH
 
-#include <memory>
 #include <map>
+#include <memory>
 #include <stdint.h>
 
 namespace SQL {
 
-// *************************************************
-// *************************************************
-class CacheStrategy {
-  public:
-    virtual ~CacheStrategy() {}
+    // *************************************************
+    // *************************************************
+    class CacheStrategy {
+      public:
+        virtual ~CacheStrategy() {}
 
-    virtual std::string getName() const = 0;
-    virtual uint32_t getOperationalCount(const uint32_t population) const = 0;
+        virtual std::string getName() const = 0;
+        virtual uint32_t getOperationalCount(const uint32_t population) const = 0;
 
-    virtual bool allowLinearFind(const uint32_t population) const = 0;
-    virtual bool allowFullCaching(const uint32_t population) const = 0;
+        virtual bool allowLinearFind(const uint32_t population) const = 0;
+        virtual bool allowFullCaching(const uint32_t population) const = 0;
 
-    virtual CacheStrategy *clone() const = 0;
+        virtual CacheStrategy *clone() const = 0;
 
-  protected:
-    CacheStrategy() {}
-};
+      protected:
+        CacheStrategy() {}
+    };
 
-// *************************************************
-// *************************************************
-class CacheStrategyFactory {
-  public:
-    static CacheStrategyFactory &singleton();
+    // *************************************************
+    // *************************************************
+    class CacheStrategyFactory {
+      public:
+        static CacheStrategyFactory &singleton();
 
-    bool registerStrategy(const std::string &domain, const std::string &object,
-                          const std::shared_ptr<CacheStrategy> CacheStrategy);
+        bool registerStrategy(
+            const std::string &domain, const std::string &object, const std::shared_ptr<CacheStrategy> CacheStrategy
+        );
 
-    std::shared_ptr<CacheStrategy> getStrategy(const std::string &domain,
-                                                 const std::string &object);
+        std::shared_ptr<CacheStrategy> getStrategy(const std::string &domain, const std::string &object);
 
-  private:
-    CacheStrategyFactory();
-    ~CacheStrategyFactory();
+      private:
+        CacheStrategyFactory();
+        ~CacheStrategyFactory();
 
-    CacheStrategyFactory(const CacheStrategyFactory &rhs);
-    CacheStrategyFactory &operator=(const CacheStrategyFactory &rhs);
+        CacheStrategyFactory(const CacheStrategyFactory &rhs);
+        CacheStrategyFactory &operator=(const CacheStrategyFactory &rhs);
 
-  private:
-    typedef std::map<std::string, std::shared_ptr<CacheStrategy>>
-        DefinedStratergyDbType;
+      private:
+        typedef std::map<std::string, std::shared_ptr<CacheStrategy>> DefinedStratergyDbType;
 
-    DefinedStratergyDbType definedStratergyDb_;
+        DefinedStratergyDbType definedStratergyDb_;
 
-    bool disabled_;
-};
+        bool disabled_;
+    };
 
 } // namespace SQL
 #endif

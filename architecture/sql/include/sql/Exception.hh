@@ -20,28 +20,30 @@
 
 namespace SQL {
 
-// *****************************************************************
-// *****************************************************************
-template <class T> inline std::string streamTuple(const T &tuple) {
-    std::ostringstream textStream;
-    textStream << ::boost::tuples::set_open(' ')
-               << ::boost::tuples::set_close(' ')
-               << ::boost::tuples::set_delimiter(' ') << tuple;
-    return textStream.str();
-}
-
-// *****************************************************************
-// *****************************************************************
-class SqlException : public SWA::Exception {
-  public:
-    SqlException() {}
-
+    // *****************************************************************
+    // *****************************************************************
     template <class T>
-    SqlException(const T &tuple) : Exception(streamTuple(tuple)) {}
+    inline std::string streamTuple(const T &tuple) {
+        std::ostringstream textStream;
+        textStream << ::boost::tuples::set_open(' ') << ::boost::tuples::set_close(' ')
+                   << ::boost::tuples::set_delimiter(' ') << tuple;
+        return textStream.str();
+    }
 
-    SqlException(const std::string &error) : Exception(error) {}
-    ~SqlException() throw() {}
-};
+    // *****************************************************************
+    // *****************************************************************
+    class SqlException : public SWA::Exception {
+      public:
+        SqlException() {}
+
+        template <class T>
+        SqlException(const T &tuple)
+            : Exception(streamTuple(tuple)) {}
+
+        SqlException(const std::string &error)
+            : Exception(error) {}
+        ~SqlException() throw() {}
+    };
 
 } // namespace SQL
 

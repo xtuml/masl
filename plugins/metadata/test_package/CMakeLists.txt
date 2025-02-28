@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.30)
 project(PackageTest CXX)
 
-find_package(xtuml_swa CONFIG REQUIRED)
-find_package(xtuml_metadata CONFIG REQUIRED)
+find_package(xtuml_swa REQUIRED)
+find_package(xtuml_metadata REQUIRED)
 
 add_executable(testlib src/testlib.cc)
 

@@ -17,25 +17,24 @@
 
 namespace amqp_asio {
 
-        std::vector<std::byte> unique_tag() {
-            static boost::uuids::random_generator randomUuid;
-            auto uuid = randomUuid();
-            std::vector<std::byte> result(uuid.size());
-            std::transform(uuid.begin(), uuid.end(), result.begin(), [](auto c) {
-                return std::byte(c);
-            });
-            return result;
-        }
-        asio::awaitable<void> Tracker::await_sent() {
-            co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->await_sent());
-        }
-        asio::awaitable<void> Tracker::await_settled() {
-            co_return co_await  asio::co_spawn(pimpl_->get_executor(), pimpl_->await_settled());
-        }
+    std::vector<std::byte> unique_tag() {
+        static boost::uuids::random_generator randomUuid;
+        auto uuid = randomUuid();
+        std::vector<std::byte> result(uuid.size());
+        std::transform(uuid.begin(), uuid.end(), result.begin(), [](auto c) {
+            return std::byte(c);
+        });
+        return result;
+    }
+    asio::awaitable<void> Tracker::await_sent() {
+        co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->await_sent());
+    }
+    asio::awaitable<void> Tracker::await_settled() {
+        co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->await_settled());
+    }
 
-        Tracker::operator bool() const noexcept {
-            return static_cast<bool>(pimpl_);
-        }
+    Tracker::operator bool() const noexcept {
+        return static_cast<bool>(pimpl_);
+    }
 
-
-}
+} // namespace amqp_asio

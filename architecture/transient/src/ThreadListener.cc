@@ -12,37 +12,39 @@
 #include <swa/Process.hh>
 
 namespace transient {
-bool init = ThreadListener::initialise();
+    bool init = ThreadListener::initialise();
 
-bool ThreadListener::initialise() {
-    getInstance();
-    return true;
-}
-
-ThreadListener::ThreadListener() {
-    SWA::Process::getInstance().registerThreadCompletedListener(
-        [this]() { performCleanup(); });
-    SWA::Process::getInstance().registerThreadAbortedListener(
-        [this]() { performCleanup(); });
-}
-
-ThreadListener &ThreadListener::getInstance() {
-    static ThreadListener instance;
-    return instance;
-}
-
-void ThreadListener::addCleanup(const std::function<void()> function) {
-    cleanupRoutines.push_back(function);
-}
-
-void ThreadListener::performCleanup() {
-    for (std::vector<std::function<void()>>::const_iterator
-             it = cleanupRoutines.begin(),
-             end = cleanupRoutines.end();
-         it != end; ++it) {
-        (*it)();
+    bool ThreadListener::initialise() {
+        getInstance();
+        return true;
     }
-    cleanupRoutines.clear();
-}
+
+    ThreadListener::ThreadListener() {
+        SWA::Process::getInstance().registerThreadCompletedListener([this]() {
+            performCleanup();
+        });
+        SWA::Process::getInstance().registerThreadAbortedListener([this]() {
+            performCleanup();
+        });
+    }
+
+    ThreadListener &ThreadListener::getInstance() {
+        static ThreadListener instance;
+        return instance;
+    }
+
+    void ThreadListener::addCleanup(const std::function<void()> function) {
+        cleanupRoutines.push_back(function);
+    }
+
+    void ThreadListener::performCleanup() {
+        for (std::vector<std::function<void()>>::const_iterator it = cleanupRoutines.begin(),
+                                                                end = cleanupRoutines.end();
+             it != end;
+             ++it) {
+            (*it)();
+        }
+        cleanupRoutines.clear();
+    }
 
 } // namespace transient

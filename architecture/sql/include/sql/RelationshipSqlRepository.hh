@@ -28,34 +28,33 @@
 
 namespace SQL {
 
-// *****************************************************************
-//! Define an repository that can be used to programatically determine
-//! the SQL mapping that have been used for a MASl object. 
-// *****************************************************************
-class RelationshipSql;
-class RelationshipSqlRepository
-{
-   public:
-      static RelationshipSqlRepository& getInstance();
+    // *****************************************************************
+    //! Define an repository that can be used to programatically determine
+    //! the SQL mapping that have been used for a MASl object.
+    // *****************************************************************
+    class RelationshipSql;
+    class RelationshipSqlRepository {
+      public:
+        static RelationshipSqlRepository &getInstance();
 
-      bool registerRelationshipSql   (const RelationshipSql* const sql);
-      void deregisterRelationshipSql (const RelationshipSql* const sql);
+        bool registerRelationshipSql(const RelationshipSql *const sql);
+        void deregisterRelationshipSql(const RelationshipSql *const sql);
 
-      const RelationshipSql& getRelationshipSql(const std::string& domainName, const std::string& relationshipName) const;
+        const RelationshipSql &
+        getRelationshipSql(const std::string &domainName, const std::string &relationshipName) const;
 
-   private:
-      RelationshipSqlRepository();
-     ~RelationshipSqlRepository();
+      private:
+        RelationshipSqlRepository();
+        ~RelationshipSqlRepository();
 
-   private:
-      RelationshipSqlRepository(const RelationshipSqlRepository& rhs);
-      RelationshipSqlRepository& operator=(const RelationshipSqlRepository& rhs);
+      private:
+        RelationshipSqlRepository(const RelationshipSqlRepository &rhs);
+        RelationshipSqlRepository &operator=(const RelationshipSqlRepository &rhs);
 
-   private:
-      std::map<std::string, const RelationshipSql* const> repository;
-};
+      private:
+        std::map<std::string, const RelationshipSql *const> repository;
+    };
 
 } // end namespace SQL
 
 #endif
-

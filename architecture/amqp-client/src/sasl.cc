@@ -14,7 +14,8 @@
 
 namespace amqp_asio {
 
-    SaslClientContext::SaslClientContext(SaslOptions options) : options_(std::move(options)) {
+    SaslClientContext::SaslClientContext(SaslOptions options)
+        : options_(std::move(options)) {
         if (auto err = sasl_client_init(nullptr)) {
             throw std::runtime_error(fmt::format("sasl_client_init failed: code {}", err));
         }
@@ -123,4 +124,4 @@ namespace amqp_asio {
         }
     }
 
-} // namespace amqp_asio::sasl
+} // namespace amqp_asio

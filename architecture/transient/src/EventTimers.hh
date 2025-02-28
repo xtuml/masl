@@ -14,19 +14,22 @@
 #include <swa/EventTimers.hh>
 
 namespace transient {
-class EventTimers : public ::SWA::EventTimers {
-  public:
-    static EventTimers &getInstance();
+    class EventTimers : public ::SWA::EventTimers {
+      public:
+        static EventTimers &getInstance();
 
-  private:
-    EventTimers() : nextId(1) {}
+      private:
+        EventTimers()
+            : nextId(1) {}
 
-    virtual TimerIdType createTimerInner() { return nextId++; }
-    virtual void deleteTimerInner(const TimerIdType id) {}
-    virtual void updateTimerInner(const SWA::EventTimer &eventTimer) {}
+        virtual TimerIdType createTimerInner() {
+            return nextId++;
+        }
+        virtual void deleteTimerInner(const TimerIdType id) {}
+        virtual void updateTimerInner(const SWA::EventTimer &eventTimer) {}
 
-    TimerIdType nextId;
-};
+        TimerIdType nextId;
+    };
 } // namespace transient
 
 #endif

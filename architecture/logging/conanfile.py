@@ -28,7 +28,6 @@ class ConanFile(conan.ConanFile):
             raise ConanInvalidConfiguration("log4cplus only works as a shared library")
 
     def requirements(self):
-        self.requires("xtuml_cmake_helpers/[>=1.0 <2]@xtuml", visible=False)
         self.requires(
             "fmt/[>=11 <12]",
             transitive_headers=True,

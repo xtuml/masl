@@ -231,14 +231,14 @@ namespace amqp_asio::types {
 
         any_t inner() const & {
             Descriptors inner_descriptors;
-            if ( descriptors.size() > 1 ) {
-                inner_descriptors.insert(inner_descriptors.begin(),descriptors.begin()+1,descriptors.end());
+            if (descriptors.size() > 1) {
+                inner_descriptors.insert(inner_descriptors.begin(), descriptors.begin() + 1, descriptors.end());
             }
-            return {inner_descriptors,value()};
+            return {inner_descriptors, value()};
         }
 
         any_t inner() && {
-            if( descriptors.size() > 1) {
+            if (descriptors.size() > 1) {
                 descriptors.erase(descriptors.begin());
             }
             return std::move(*this);

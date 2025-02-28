@@ -17,15 +17,17 @@
 #include "Exception.hh"
 
 namespace SWA {
-class IOError : public Exception {
-  public:
-    IOError() : Exception(std::string("IO Error :")) {}
-    IOError(const std::string &error)
-        : Exception(std::string("IO Error :") + error) {}
+    class IOError : public Exception {
+      public:
+        IOError()
+            : Exception(std::string("IO Error :")) {}
+        IOError(const std::string &error)
+            : Exception(std::string("IO Error :") + error) {}
 
-    template <class T>
-    IOError(const T &tuple) : Exception(std::string("IO Error :"), tuple) {}
-};
+        template <class T>
+        IOError(const T &tuple)
+            : Exception(std::string("IO Error :"), tuple) {}
+    };
 
 } // namespace SWA
 

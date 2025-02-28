@@ -19,26 +19,29 @@
 
 namespace SQLITE {
 
-// *****************************************************************
-// *****************************************************************
-class SqliteException : public ::SQL::SqlException {
-  public:
-    SqliteException() {}
+    // *****************************************************************
+    // *****************************************************************
+    class SqliteException : public ::SQL::SqlException {
+      public:
+        SqliteException() {}
 
-    template <class T> SqliteException(const T &tuple) : SqlException(tuple) {}
+        template <class T>
+        SqliteException(const T &tuple)
+            : SqlException(tuple) {}
 
-    SqliteException(const std::string &error) : SqlException(error) {}
-    virtual ~SqliteException() throw() {}
-};
+        SqliteException(const std::string &error)
+            : SqlException(error) {}
+        virtual ~SqliteException() throw() {}
+    };
 
-// *****************************************************************
-// *****************************************************************
-class SqliteSchemaException : public SqliteException {
-  public:
-    SqliteSchemaException(const std::string &message)
-        : SqliteException(message) {}
-    virtual ~SqliteSchemaException() throw() {}
-};
+    // *****************************************************************
+    // *****************************************************************
+    class SqliteSchemaException : public SqliteException {
+      public:
+        SqliteSchemaException(const std::string &message)
+            : SqliteException(message) {}
+        virtual ~SqliteSchemaException() throw() {}
+    };
 
 } // end namespace SQLITE
 

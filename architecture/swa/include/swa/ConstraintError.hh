@@ -16,13 +16,14 @@
 #include "Exception.hh"
 
 namespace SWA {
-class ConstraintError : public Exception {
-  public:
-    ConstraintError(const std::string &error)
-        : Exception(std::string("Constraint Error :") + error) {}
-    ConstraintError() : Exception("Constraint Error") {}
-    ~ConstraintError() throw() {}
-};
+    class ConstraintError : public Exception {
+      public:
+        ConstraintError(const std::string &error)
+            : Exception(std::string("Constraint Error :") + error) {}
+        ConstraintError()
+            : Exception("Constraint Error") {}
+        ~ConstraintError() throw() {}
+    };
 
 } // namespace SWA
 

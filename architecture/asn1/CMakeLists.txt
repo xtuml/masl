@@ -1,25 +1,29 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.30)
 project(xtuml_asn1 CXX)
 
-find_package(xtuml_cmake_helpers REQUIRED)
 find_package(xtuml_swa REQUIRED)
 find_package(Boost REQUIRED)
 
-xtuml_add_library ( ${CMAKE_PROJECT_NAME} SHARED
-            src/DEREncode.cc
-            src/DEREncoder.cc
+add_library(xtuml_asn1 SHARED
+        src/DEREncode.cc
+        src/DEREncoder.cc
 )
 
-target_link_libraries (${CMAKE_PROJECT_NAME} 
+target_link_libraries(xtuml_asn1
         PUBLIC xtuml_swa::xtuml_swa
         Boost::headers
         -lm
 )
 
-xtuml_add_executable ( asn1Decoder
-        src/asn1Decoder.cc
-)
+target_sources(xtuml_asn1
+        PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
+        include/asn1)
+target_compile_options(xtuml_asn1 PRIVATE -Wall -Werror)
+install(TARGETS xtuml_asn1 FILE_SET HEADERS)
 
-target_link_libraries (asn1Decoder PRIVATE xtuml_asn1 )
 
+add_executable(asn1Decoder src/asn1Decoder.cc)
+target_link_libraries(asn1Decoder PRIVATE xtuml_asn1)
+target_compile_options(asn1Decoder PRIVATE -Wall -Werror)
+install(TARGETS asn1Decoder FILE_SET HEADERS)
 

@@ -17,9 +17,7 @@ namespace amqp_asio {
     }
 
     asio::awaitable<Tracker> Sender::send(
-        messages::binary_t payload,
-        std::optional<messages::Properties> properties,
-        std::optional<DeliveryMode> mode
+        messages::binary_t payload, std::optional<messages::Properties> properties, std::optional<DeliveryMode> mode
     ) {
         auto data = std::vector<amqp_asio::messages::Data>{amqp_asio::messages::Data{std::move(payload)}};
         co_return co_await send(
@@ -31,19 +29,23 @@ namespace amqp_asio {
         );
     }
 
-    asio::awaitable<Tracker>
-    Sender::send(std::string_view payload, std::optional<messages::Properties> properties, std::optional<DeliveryMode> mode) {
+    asio::awaitable<Tracker> Sender::send(
+        std::string_view payload, std::optional<messages::Properties> properties, std::optional<DeliveryMode> mode
+    ) {
         std::vector<std::byte> bytes;
         bytes.reserve(payload.size());
-        std::transform(payload.begin(),payload.end(),std::back_inserter(bytes),[](auto c) { return static_cast<std::byte>(c); });
-        co_return co_await send(std::move(bytes),std::move(properties),std::move(mode));
+        std::transform(payload.begin(), payload.end(), std::back_inserter(bytes), [](auto c) {
+            return static_cast<std::byte>(c);
+        });
+        co_return co_await send(std::move(bytes), std::move(properties), std::move(mode));
     }
 
-    asio::awaitable<Tracker>
-    Sender::send_json(const nlohmann::json& payload, std::optional<messages::Properties> properties, std::optional<DeliveryMode> mode) {
+    asio::awaitable<Tracker> Sender::send_json(
+        const nlohmann::json &payload, std::optional<messages::Properties> properties, std::optional<DeliveryMode> mode
+    ) {
         properties = properties.value_or(messages::Properties{});
         properties->content_type = properties->content_type.value_or(messages::symbol_t{"application/json"});
-        co_return co_await send(payload.dump(),std::move(properties), std::move(mode));
+        co_return co_await send(payload.dump(), std::move(properties), std::move(mode));
     }
 
     asio::awaitable<void> Sender::detach() {

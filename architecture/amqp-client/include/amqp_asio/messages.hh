@@ -19,7 +19,6 @@ namespace amqp_asio::messages {
 
     using namespace amqp_asio::types;
 
-
     // 2.8.6 Milliseconds
     // http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-transport-v1.0-os.html#type-milliseconds
     // <type name="milliseconds" class="restricted" source="uint"/>
@@ -34,7 +33,6 @@ namespace amqp_asio::messages {
     // http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-transport-v1.0-os.html#type-fields
     // <type name="fields" class="restricted" source="map"/>
     using Fields = map_t<symbol_t, any_t>;
-
 
     // 2.8.15 AMQP Error
     // http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-transport-v1.0-os.html#type-amqp-error
@@ -202,13 +200,10 @@ namespace amqp_asio::messages {
         }
     };
 
-
-
     // 3.2.10 Annotations
     // http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-annotations
     // <type name="annotations" class="restricted" source="map"/>
     using Annotations = map_t<std::variant<ulong_t, symbol_t>, any_t>;
-
 
     // 3.2.11 Message Id Ulong
     // http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-message-id-ulong
@@ -240,7 +235,6 @@ namespace amqp_asio::messages {
 
     // provides = "address"
     using Address = std::variant<AddressString>;
-
 
     // 3.2.1 Header
     // http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-messaging-v1.0-os.html#type-header
@@ -420,24 +414,26 @@ namespace amqp_asio::messages {
 
         std::vector<std::byte> as_bytes() {
             std::vector<std::byte> result;
-            for ( const auto& seg : std::get<std::vector<Data>>(data)) {
-                result.insert(result.end(),std::begin(seg.value),std::end(seg.value));
+            for (const auto &seg : std::get<std::vector<Data>>(data)) {
+                result.insert(result.end(), std::begin(seg.value), std::end(seg.value));
             }
             return result;
         }
 
         std::string as_string() {
             std::string result;
-            for ( const auto& seg : std::get<std::vector<Data>>(data)) {
-                std::transform(std::begin(seg.value),std::end(seg.value),std::back_inserter(result),[](auto b){return char(b); });
+            for (const auto &seg : std::get<std::vector<Data>>(data)) {
+                std::transform(std::begin(seg.value), std::end(seg.value), std::back_inserter(result), [](auto b) {
+                    return char(b);
+                });
             }
-            const auto& bytes = as_bytes();
+            const auto &bytes = as_bytes();
             return result;
         }
 
         nlohmann::json as_json() {
-            return nlohmann::json::parse(as_string());            
+            return nlohmann::json::parse(as_string());
         }
     };
 
-}
+} // namespace amqp_asio::messages

@@ -14,12 +14,14 @@
 #include "Exception.hh"
 
 namespace SWA {
-class MaslException : public Exception {
-  public:
-    MaslException() : Exception("") {}
-    MaslException(const std::string &message) : Exception(message) {}
-    ~MaslException() throw() {}
-};
+    class MaslException : public Exception {
+      public:
+        MaslException()
+            : Exception("") {}
+        MaslException(const std::string &message)
+            : Exception(message) {}
+        ~MaslException() throw() {}
+    };
 
 } // namespace SWA
 

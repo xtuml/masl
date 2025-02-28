@@ -15,35 +15,36 @@
 
 namespace SQL {
 
-// *************************************************
-// *************************************************
-class ResourceMonitorContext {
-  public:
-    ResourceMonitorContext() : reportStream_(&std::cout) {}
-    ResourceMonitorContext(std::ostream *str) : reportStream_(str) {}
-    ~ResourceMonitorContext() {}
+    // *************************************************
+    // *************************************************
+    class ResourceMonitorContext {
+      public:
+        ResourceMonitorContext()
+            : reportStream_(&std::cout) {}
+        ResourceMonitorContext(std::ostream *str)
+            : reportStream_(str) {}
+        ~ResourceMonitorContext() {}
 
-    std::ostream *getReportStream() { return reportStream_; }
+        std::ostream *getReportStream() {
+            return reportStream_;
+        }
 
-  private:
-    std::ostream *reportStream_;
-};
+      private:
+        std::ostream *reportStream_;
+    };
 
-// *************************************************
-// *************************************************
-class ResourceMonitorObserver {
-  public:
-    virtual void
-    report(ResourceMonitorContext &context) = 0; // report on resource usage.
-    virtual void compact(ResourceMonitorContext
-                             &context) = 0; // shrink resource usage to minimum.
-    virtual void
-    release(ResourceMonitorContext &context) = 0; // release all used resources.
+    // *************************************************
+    // *************************************************
+    class ResourceMonitorObserver {
+      public:
+        virtual void report(ResourceMonitorContext &context) = 0;  // report on resource usage.
+        virtual void compact(ResourceMonitorContext &context) = 0; // shrink resource usage to minimum.
+        virtual void release(ResourceMonitorContext &context) = 0; // release all used resources.
 
-  protected:
-    ResourceMonitorObserver() {};
-    virtual ~ResourceMonitorObserver() {}
-};
+      protected:
+        ResourceMonitorObserver() {};
+        virtual ~ResourceMonitorObserver() {}
+    };
 
 } // namespace SQL
 

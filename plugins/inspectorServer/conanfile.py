@@ -1,6 +1,5 @@
 import conan
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
-from conan.errors import ConanInvalidConfiguration
 
 
 class ConanFile(conan.ConanFile):
@@ -20,7 +19,6 @@ class ConanFile(conan.ConanFile):
     exports_sources = "CMakeLists.txt", "src/*", "include/*"
 
     def requirements(self):
-        self.requires("xtuml_cmake_helpers/[>=1.0 <2]@xtuml", visible=False)
         self.requires(
             "xtuml_swa/[>=1.0 <2]@xtuml",
             transitive_headers=True,
@@ -31,7 +29,7 @@ class ConanFile(conan.ConanFile):
             transitive_headers=True,
             transitive_libs=True,
         )
-        self.requires("xtuml_sockets/[>=1.0 <2]@xtuml", transitive_headers=True)
+        self.requires("xtuml_sockets/[>=1.0 <2]@xtuml", transitive_headers=True, )
 
     def layout(self):
         cmake_layout(self)

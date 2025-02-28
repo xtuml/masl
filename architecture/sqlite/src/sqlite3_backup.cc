@@ -47,47 +47,40 @@ int main(int argc, char **argv) {
     std::ifstream source(sourceName.c_str(), std::ios::in | std::ios::binary);
 
     if (!source) {
-        std::cerr << "Error: Could not open file: " << sourceName << "\n"
-                  << std::flush;
+        std::cerr << "Error: Could not open file: " << sourceName << "\n" << std::flush;
         return 1;
     }
 
     std::ofstream dest(destName.c_str(), std::ios::trunc | std::ios::binary);
 
     if (!dest) {
-        std::cerr << "Error: Could not write to file: " << destName << "\n"
-                  << std::flush;
+        std::cerr << "Error: Could not write to file: " << destName << "\n" << std::flush;
         return 1;
     }
 
     sqlite3 *database;
 
     if (sqlite3_open(sourceName.c_str(), &database) != SQLITE_OK) {
-        std::cerr << "Error: Could not open database: " << sourceName << "\n"
-                  << std::flush;
+        std::cerr << "Error: Could not open database: " << sourceName << "\n" << std::flush;
         return 1;
     }
 
     sqlite3_busy_handler(database, &busy_handler, 0);
 
     if (sqlite3_exec(database, "BEGIN TRANSACTION;", 0, 0, 0) != SQLITE_OK) {
-        std::cerr << "Error: Could not lock database: " << sourceName << "\n"
-                  << std::flush;
+        std::cerr << "Error: Could not lock database: " << sourceName << "\n" << std::flush;
         return 1;
     }
 
     // Lock is not actually taken out until a read is done, so
     // just read one value from the master table, which is the
     // only thing we can guarantee will be there!
-    if (sqlite3_exec(database, "SELECT name FROM sqlite_master LIMIT 1;", 0, 0,
-                     0) != SQLITE_OK) {
-        std::cerr << "Error: Could read from database: " << sourceName << "\n"
-                  << std::flush;
+    if (sqlite3_exec(database, "SELECT name FROM sqlite_master LIMIT 1;", 0, 0, 0) != SQLITE_OK) {
+        std::cerr << "Error: Could read from database: " << sourceName << "\n" << std::flush;
         return 1;
     }
 
-    std::cout << "Copying database " << sourceName << " to " << destName
-              << "..." << std::endl;
+    std::cout << "Copying database " << sourceName << " to " << destName << "..." << std::endl;
     dest << source.rdbuf() << std::flush;
     dest.close();
 
@@ -100,17 +93,13 @@ int main(int argc, char **argv) {
     // lock is released.
 
     if (sqlite3_exec(database, "ROLLBACK;", 0, 0, 0) != SQLITE_OK) {
-        std::cerr << "Error: Could not rollback database: " << sourceName
-                  << "\n"
-                  << std::flush;
+        std::cerr << "Error: Could not rollback database: " << sourceName << "\n" << std::flush;
         return 1;
     }
 
     if (sqlite3_close(database) != SQLITE_OK) {
-        std::cerr << "Error: Could close database: " << sourceName << "\n"
-                  << std::flush;
+        std::cerr << "Error: Could close database: " << sourceName << "\n" << std::flush;
         return 1;
     }
-    std::cout << "Copied database " << sourceName << " to " << destName << "."
-              << std::endl;
+    std::cout << "Copied database " << sourceName << " to " << destName << "." << std::endl;
 }

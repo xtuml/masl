@@ -12,7 +12,6 @@
 
 #include "messages.hh"
 #include <asio/any_io_executor.hpp>
-#include <asio/async_result.hpp>
 #include <asio/awaitable.hpp>
 #include <asio/co_spawn.hpp>
 #include <memory>

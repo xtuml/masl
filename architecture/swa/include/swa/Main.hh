@@ -12,7 +12,7 @@
 #define SWA_Main_HH
 
 namespace SWA {
-int main(int argc, const char *const *argv);
+    int main(int argc, const char *const *argv);
 }
 
 #endif

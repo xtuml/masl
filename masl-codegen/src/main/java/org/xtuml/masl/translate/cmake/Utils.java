@@ -14,8 +14,10 @@ import org.xtuml.masl.cppgen.SharedLibrary;
 import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.building.ReferencedFile;
 import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
+import org.xtuml.masl.translate.cmake.language.commands.Command;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -24,7 +26,9 @@ public class Utils {
 
     public static List<SingleArgument> getSourcePathArgs(final Iterable<? extends ReferencedFile> files) {
 
-        return StreamSupport.stream(files.spliterator(), false).map(Utils::getSourcePathArg).collect(Collectors.toList());
+        return StreamSupport.stream(files.spliterator(), false)
+                            .map(Utils::getSourcePathArg)
+                            .collect(Collectors.toList());
     }
 
     public static List<SingleArgument> getNameArgs(final Iterable<? extends FileGroup> targets) {
@@ -38,8 +42,8 @@ public class Utils {
         if (target.getName() == null) {
             return null;
         } else if (target.getParent() == null ||
-                   target.getParent().getName() == null ||
-                   (target instanceof Library && !((Library) target).isExport())) {
+                target.getParent().getName() == null ||
+                (target instanceof Library && !((Library) target).isExport())) {
             return new SingleArgument(target.getName());
         } else {
             return new SingleArgument(target.getParent().getName() + "::" + target.getName());
@@ -48,11 +52,26 @@ public class Utils {
     }
 
     public static SingleArgument getSourcePathArg(final ReferencedFile file) {
-        return getPathArg(new File("src",file.getFile().getPath()));
+        return getPathArg(new File("src", file.getFile().getPath()));
     }
 
     public static SingleArgument getPathArg(final File file) {
 
         return new SingleArgument(file.getPath());
     }
+
+    public static Command addHeaderPath(Library library) {
+        List<String> args = new ArrayList<>(List.of(library.getName(),
+                                                    "PUBLIC",
+                                                    "FILE_SET",
+                                                    "HEADERS",
+                                                    "BASE_DIRS",
+                                                    "include",
+                                                    "FILES"));
+        for (var path : library.getHeaderPaths()) {
+            args.add("include/" + path);
+        }
+        return new Command("target_sources", args.toArray(new String[0]));
+    }
+
 }

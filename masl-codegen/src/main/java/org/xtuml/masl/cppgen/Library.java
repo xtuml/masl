@@ -15,6 +15,9 @@ import org.xtuml.masl.translate.building.FileGroup;
 import org.xtuml.masl.translate.building.ReferencedFile;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static org.xtuml.masl.cppgen.CodeFile.Type.*;
 
@@ -38,6 +41,7 @@ public class Library extends FileGroup {
     }
 
     public CodeFile createInterfaceHeader(final File path, final String name) {
+        headerPaths.add(path);
         return createCodeFile(path, name + headerExtension, INTERFACE_HEADER);
     }
 
@@ -54,6 +58,7 @@ public class Library extends FileGroup {
     }
 
     public CodeFile createPublicHeader(final File path, final String name) {
+        headerPaths.add(path);
         return createCodeFile(path, name + headerExtension, PUBLIC_HEADER);
     }
 
@@ -233,6 +238,10 @@ public class Library extends FileGroup {
         return Iterables.filter(Iterables.filter(getFiles(), CodeFile.class), CodeFile::isBodyFile);
     }
 
+    public Set<File> getHeaderPaths() {
+        return headerPaths;
+    }
+
     private String bodyExtension = "";
     private File defaultBodyPath = null;
     private File defaultInterfaceHeaderPath = null;
@@ -244,5 +253,6 @@ public class Library extends FileGroup {
     private boolean export = true;
 
     private String headerExtension = "";
+    private Set<File> headerPaths = new LinkedHashSet<File>();
 
 }

@@ -86,8 +86,9 @@ namespace amqp_asio {
 
       private:
         static const SenderOptions &last_resort() {
-            static SenderOptions opts =
-                SenderOptions().delivery_mode(DeliveryMode::at_most_once).max_queue(std::numeric_limits<std::size_t>::max());
+            static SenderOptions opts = SenderOptions()
+                                            .delivery_mode(DeliveryMode::at_most_once)
+                                            .max_queue(std::numeric_limits<std::size_t>::max());
             return opts;
         }
     };

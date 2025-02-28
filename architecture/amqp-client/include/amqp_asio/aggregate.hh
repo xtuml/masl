@@ -17,7 +17,6 @@
 #include <type_traits>
 #include <utility>
 
-
 namespace amqp_asio::types::detail {
     // See https://playfulprogramming.blogspot.com/2016/12/serializing-structs-with-c17-structured.html
     // and May 10 2022 comment
@@ -27,10 +26,10 @@ namespace amqp_asio::types::detail {
     struct wildcard {
         template <typename T>
             requires(!std::is_lvalue_reference_v<T>)
-        operator T &&() const;
+        explicit(false) operator T &&() const;
 
         template <std::copy_constructible T>
-        operator T &() const;
+        explicit(false) operator T &() const;
     };
 
     template <aggregate structure, typename index_sequence = std::index_sequence<>, typename = void>

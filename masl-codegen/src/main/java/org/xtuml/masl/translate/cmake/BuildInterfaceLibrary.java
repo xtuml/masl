@@ -30,12 +30,7 @@ public class BuildInterfaceLibrary implements CMakeListsItem {
 
         commands.add(new AddLibrary(name, AddLibrary.Type.INTERFACE, Collections.emptyList()));
         commands.add(new TargetLinkLibraries(name, TargetLinkLibraries.Scope.INTERFACE, Utils.getNameArgs(library.getDependencies())));
-        if ( library.isExport()) {
-            commands.add(new Command("add_library",
-                                     library.getParent().getName() + "::" + library.getName(),
-                                     "ALIAS",
-                                     library.getName()));
-        }
+        commands.add(new Command("add_library", library.getParent().getName() + "::" + library.getName(), "ALIAS", library.getName()) );
     }
 
     @Override

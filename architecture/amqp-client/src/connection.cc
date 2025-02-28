@@ -22,7 +22,9 @@ namespace amqp_asio {
     }
 
     asio::awaitable<void> Connection::close(std::string condition, std::string description) {
-        co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->close(condition, description));
+        co_return co_await asio::co_spawn(
+            pimpl_->get_executor(), pimpl_->close(std::move(condition), std::move(description))
+        );
     }
 
     asio::awaitable<Session> Connection::open_session(SessionOptions options) {

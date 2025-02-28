@@ -16,52 +16,62 @@
 #include <boost/utility.hpp>
 
 namespace SWA {
-class Event;
+    class Event;
 
-class EventTimer : public boost::noncopyable {
-  public:
-    typedef std::shared_ptr<Event> EventDetails;
-    typedef uint32_t TimerIdType;
+    class EventTimer : public boost::noncopyable {
+      public:
+        typedef std::shared_ptr<Event> EventDetails;
+        typedef uint32_t TimerIdType;
 
-  public:
-    EventTimer(TimerIdType id);
-    ~EventTimer();
+      public:
+        EventTimer(TimerIdType id);
+        ~EventTimer();
 
-    TimerIdType getId() const { return id; }
+        TimerIdType getId() const {
+            return id;
+        }
 
-    const Timestamp &getExpiryTime() const;
-    const Timestamp &getScheduledAt() const;
-    Timestamp getExpiredAt() const;
-    const Duration &getPeriod() const;
-    int getMissed() const;
-    const EventDetails &getEvent() const;
+        const Timestamp &getExpiryTime() const;
+        const Timestamp &getScheduledAt() const;
+        Timestamp getExpiredAt() const;
+        const Duration &getPeriod() const;
+        int getMissed() const;
+        const EventDetails &getEvent() const;
 
-    bool isScheduled() const { return scheduled; }
-    bool isExpired() const { return expired; }
+        bool isScheduled() const {
+            return scheduled;
+        }
+        bool isExpired() const {
+            return expired;
+        }
 
-    void schedule(const Timestamp &expiryTime, const Duration &period,
-                  const EventDetails &eventDetails);
-    void restore(const Timestamp &expiryTime, const Duration &period,
-                 bool scheduled, bool expired, int missed,
-                 const EventDetails &event);
-    void cancel();
-    void suspend();
-    void resume();
+        void schedule(const Timestamp &expiryTime, const Duration &period, const EventDetails &eventDetails);
+        void restore(
+            const Timestamp &expiryTime,
+            const Duration &period,
+            bool scheduled,
+            bool expired,
+            int missed,
+            const EventDetails &event
+        );
+        void cancel();
+        void suspend();
+        void resume();
 
-    void fire(int overrun);
-    void callback(int overrun);
+        void fire(int overrun);
+        void callback(int overrun);
 
-  private:
-    TimerListener listener;
-    const TimerIdType id;
+      private:
+        TimerListener listener;
+        const TimerIdType id;
 
-    bool scheduled;
-    bool expired;
-    Timestamp expiryTime;
-    Duration period;
-    int missed;
-    EventDetails event;
-};
+        bool scheduled;
+        bool expired;
+        Timestamp expiryTime;
+        Duration period;
+        int missed;
+        EventDetails event;
+    };
 
 } // namespace SWA
 

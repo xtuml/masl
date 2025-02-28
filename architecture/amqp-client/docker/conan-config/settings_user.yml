@@ -1,3 +1,0 @@
-os:
-  Linux:
-    glibc: [ "2.34" ]

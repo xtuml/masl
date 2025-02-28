@@ -15,9 +15,9 @@
 
 namespace amqp_asio {
 
-        std::string unique_name() {
-            static boost::uuids::random_generator randomUuid;
-            return boost::uuids::to_string(randomUuid());
-        }
+    std::string unique_name() {
+        static boost::uuids::random_generator randomUuid;
+        return boost::uuids::to_string(randomUuid());
+    }
 
-}
+} // namespace amqp_asio

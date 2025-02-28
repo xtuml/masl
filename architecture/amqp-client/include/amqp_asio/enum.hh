@@ -35,9 +35,8 @@ namespace amqp_asio::types {
     };
 
     template <typename E>
-    concept symbolic_enumeration = enumeration<E> && named_enumeration<E> && requires(E e) {
-        symbolic_enumeration_check(e);
-    };
+    concept symbolic_enumeration =
+        enumeration<E> && named_enumeration<E> && requires(E e) { symbolic_enumeration_check(e); };
 
     template <symbolic_enumeration E>
     using EnumSymbol = std::pair<E, symbol_t>;
@@ -46,7 +45,7 @@ namespace amqp_asio::types {
     using EnumSymbolLookup = std::vector<EnumSymbol<E>>;
 
     template <named_enumeration E>
-    inline const EnumNameLookup<E>& enum_name_lookup() {
+    inline const EnumNameLookup<E> &enum_name_lookup() {
         return enum_name_lookup(E{});
     }
 
@@ -123,12 +122,12 @@ namespace amqp_asio::types {
         static const EnumNameLookup<ENUM_TYPE> l = __VA_ARGS__;                                                        \
         return l;                                                                                                      \
     }                                                                                                                  \
-    inline const std::string& format_as(ENUM_TYPE e) {                                                                                      \
-        return amqp_asio::types::enum_to_name(e);                                                                     \
+    inline const std::string &format_as(ENUM_TYPE e) {                                                                 \
+        return amqp_asio::types::enum_to_name(e);                                                                      \
     }
 
 #define NUMERIC_ENUM(ENUM_TYPE, ...) NAMED_ENUM(ENUM_TYPE, __VA_ARGS__)
 
 #define SYMBOLIC_ENUM(ENUM_TYPE, ...)                                                                                  \
-    NAMED_ENUM(ENUM_TYPE, __VA_ARGS__)                                                                                         \
+    NAMED_ENUM(ENUM_TYPE, __VA_ARGS__)                                                                                 \
     void symbolic_enumeration_check(ENUM_TYPE);

@@ -16,43 +16,47 @@
 
 namespace SQLITE {
 
-bool init = Transaction::initialise();
+    bool init = Transaction::initialise();
 
-bool Transaction::initialise() {
-    getInstance();
-    return true;
-}
+    bool Transaction::initialise() {
+        getInstance();
+        return true;
+    }
 
-Transaction::Transaction() {
-    SWA::Process::getInstance().registerThreadStartedListener(
-        [this](const std::string &name) { startTransaction(name); });
-    SWA::Process::getInstance().registerThreadCompletingListener(
-        [this]() { committingTransaction(); });
-    SWA::Process::getInstance().registerThreadCompletedListener(
-        [this]() { commitTransaction(); });
-    SWA::Process::getInstance().registerThreadAbortedListener(
-        [this]() { abortTransaction(); });
-}
+    Transaction::Transaction() {
+        SWA::Process::getInstance().registerThreadStartedListener([this](const std::string &name) {
+            startTransaction(name);
+        });
+        SWA::Process::getInstance().registerThreadCompletingListener([this]() {
+            committingTransaction();
+        });
+        SWA::Process::getInstance().registerThreadCompletedListener([this]() {
+            commitTransaction();
+        });
+        SWA::Process::getInstance().registerThreadAbortedListener([this]() {
+            abortTransaction();
+        });
+    }
 
-void Transaction::startTransaction(const std::string &name) {
-    Database::singleton().startTransaction(name);
-}
+    void Transaction::startTransaction(const std::string &name) {
+        Database::singleton().startTransaction(name);
+    }
 
-void Transaction::committingTransaction() {
-    Database::singleton().committingTransaction();
-}
+    void Transaction::committingTransaction() {
+        Database::singleton().committingTransaction();
+    }
 
-void Transaction::commitTransaction() {
-    Database::singleton().commitTransaction();
-}
+    void Transaction::commitTransaction() {
+        Database::singleton().commitTransaction();
+    }
 
-void Transaction::abortTransaction() {
-    Database::singleton().abortTransaction();
-}
+    void Transaction::abortTransaction() {
+        Database::singleton().abortTransaction();
+    }
 
-Transaction &Transaction::getInstance() {
-    static Transaction instance;
-    return instance;
-}
+    Transaction &Transaction::getInstance() {
+        static Transaction instance;
+        return instance;
+    }
 
 } // end namespace SQLITE

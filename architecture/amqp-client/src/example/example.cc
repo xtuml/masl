@@ -1,5 +1,5 @@
-#include "amqp_asio/connection.hh"
 #include "../spawn.hh"
+#include "amqp_asio/connection.hh"
 #include "rabbitmq_mgt.hh"
 #include <asio/co_spawn.hpp>
 #include <asio/connect.hpp>
@@ -76,7 +76,7 @@ awaitable<void> main_loop(
             executor,
             [&]() -> asio::awaitable<void> {
                 auto delivery = co_await receiver.receive();
-//                log.info("Received message {}", nlohmann::json(delivery.message()).dump(2));
+                //                log.info("Received message {}", nlohmann::json(delivery.message()).dump(2));
                 log.info("Received message {}", delivery.message().as_string());
                 co_await delivery.accept();
             },
@@ -86,9 +86,11 @@ awaitable<void> main_loop(
         spawn_cancellable_loop(
             executor,
             [&]() -> asio::awaitable<void> {
-                auto json = nlohmann::json({{"hello","world"}});
-                co_await sender.send("hello",amqp_asio::messages::Properties{.to = topic_prefix + "example.channel"});
-                co_await sender.send_json(json,amqp_asio::messages::Properties{.to = topic_prefix + "example.channel"});
+                auto json = nlohmann::json({{"hello", "world"}});
+                co_await sender.send("hello", amqp_asio::messages::Properties{.to = topic_prefix + "example.channel"});
+                co_await sender.send_json(
+                    json, amqp_asio::messages::Properties{.to = topic_prefix + "example.channel"}
+                );
                 asio::steady_timer timer(executor, 1s);
                 co_await timer.async_wait();
                 co_return;

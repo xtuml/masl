@@ -14,31 +14,46 @@
 #include <string>
 
 namespace SQLITE {
-class BlobData {
-  public:
-    typedef std::string::const_iterator const_iterator;
+    class BlobData {
+      public:
+        typedef std::string::const_iterator const_iterator;
 
-    BlobData() : blob() {}
+        BlobData()
+            : blob() {}
 
-    template <class It> BlobData(It begin, It end) : blob(begin, end) {}
+        template <class It>
+        BlobData(It begin, It end)
+            : blob(begin, end) {}
 
-    explicit BlobData(const std::string &str) : blob(str) {}
+        explicit BlobData(const std::string &str)
+            : blob(str) {}
 
-    void append(const char *data, size_t size) { blob.append(data, size); }
+        void append(const char *data, size_t size) {
+            blob.append(data, size);
+        }
 
-    template <class It> void assign(It begin, It end) {
-        blob.assign(begin, end);
-    }
+        template <class It>
+        void assign(It begin, It end) {
+            blob.assign(begin, end);
+        }
 
-    const char *const data() const { return blob.data(); }
-    size_t size() const { return blob.size(); }
+        const char *const data() const {
+            return blob.data();
+        }
+        size_t size() const {
+            return blob.size();
+        }
 
-    const_iterator begin() const { return blob.begin(); }
-    const_iterator end() const { return blob.end(); }
+        const_iterator begin() const {
+            return blob.begin();
+        }
+        const_iterator end() const {
+            return blob.end();
+        }
 
-  private:
-    std::string blob;
-};
+      private:
+        std::string blob;
+    };
 
 } // namespace SQLITE
 #endif

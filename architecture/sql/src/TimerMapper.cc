@@ -17,86 +17,97 @@
 #include <algorithm>
 
 namespace SQL {
-namespace {
-bool initialise() {
-    SWA::Process::getInstance().registerInitialisingListener(
-        &TimerMapper::init);
-    return true;
-}
+    namespace {
+        bool initialise() {
+            SWA::Process::getInstance().registerInitialisingListener(&TimerMapper::init);
+            return true;
+        }
 
-// Force initialisation
-const bool initialised = initialise();
-} // namespace
+        // Force initialisation
+        const bool initialised = initialise();
+    } // namespace
 
-// ***************************************************************
-// ***************************************************************
-void TimerMapper::init() { singleton().initialise(); }
-
-// ***************************************************************
-// ***************************************************************
-TimerMapper &TimerMapper::singleton() {
-    static TimerMapper instance;
-    return instance;
-}
-
-// ***************************************************************
-// ***************************************************************
-TimerMapper::TimerMapper()
-    : unitOfWork(new TimerMapperUnitOfWork(*this)), timerSql() {}
-
-// ***************************************************************
-// ***************************************************************
-TimerMapper::~TimerMapper() {}
-
-void TimerMapper::initialise() {
-    if (timerSql.get() == 0) {
-        timerSql = TimerMapperSqlFactory::singleton().getImpl();
+    // ***************************************************************
+    // ***************************************************************
+    void TimerMapper::init() {
+        singleton().initialise();
     }
-    nextId = timerSql->getMaxTimerId() + 1;
-    timerSql->initialise(*this);
-}
 
-void TimerMapper::restoreTimer(const EventTimerData &timerData) {
-    addTimer(timerData.id)
-        .restore(timerData.expiryTime, timerData.period, timerData.scheduled,
-                 timerData.expired, timerData.missed, timerData.event);
-}
+    // ***************************************************************
+    // ***************************************************************
+    TimerMapper &TimerMapper::singleton() {
+        static TimerMapper instance;
+        return instance;
+    }
 
-// ***************************************************************
-// ***************************************************************
-TimerMapper::TimerIdType TimerMapper::createTimerInner() {
-    unitOfWork->createTimer(nextId);
-    return nextId++;
-}
+    // ***************************************************************
+    // ***************************************************************
+    TimerMapper::TimerMapper()
+        : unitOfWork(new TimerMapperUnitOfWork(*this)), timerSql() {}
 
-// ***************************************************************
-// ***************************************************************
-void TimerMapper::deleteTimerInner(const TimerIdType id) {
-    unitOfWork->deleteTimer(id);
-}
+    // ***************************************************************
+    // ***************************************************************
+    TimerMapper::~TimerMapper() {}
 
-// ***************************************************************
-// ***************************************************************
-void TimerMapper::updateTimerInner(const SWA::EventTimer &eventTimer) {
-    unitOfWork->updateTimer(EventTimerData(eventTimer));
-}
+    void TimerMapper::initialise() {
+        if (timerSql.get() == 0) {
+            timerSql = TimerMapperSqlFactory::singleton().getImpl();
+        }
+        nextId = timerSql->getMaxTimerId() + 1;
+        timerSql->initialise(*this);
+    }
 
-// ***************************************************************
-// ***************************************************************
-void TimerMapper::commitCreate(TimerIdType id) { timerSql->executeCreate(id); }
+    void TimerMapper::restoreTimer(const EventTimerData &timerData) {
+        addTimer(timerData.id)
+            .restore(
+                timerData.expiryTime,
+                timerData.period,
+                timerData.scheduled,
+                timerData.expired,
+                timerData.missed,
+                timerData.event
+            );
+    }
 
-// ***************************************************************
-// ***************************************************************
-void TimerMapper::commitDelete(TimerIdType id) { timerSql->executeDelete(id); }
+    // ***************************************************************
+    // ***************************************************************
+    TimerMapper::TimerIdType TimerMapper::createTimerInner() {
+        unitOfWork->createTimer(nextId);
+        return nextId++;
+    }
 
-// ***************************************************************
-// ***************************************************************
-void TimerMapper::commitUpdate(const EventTimerData &timerData) {
-    timerSql->executeUpdate(timerData);
-}
+    // ***************************************************************
+    // ***************************************************************
+    void TimerMapper::deleteTimerInner(const TimerIdType id) {
+        unitOfWork->deleteTimer(id);
+    }
 
-namespace {
-bool registered = TimerMapper::registerSingleton(&TimerMapper::singleton);
-}
+    // ***************************************************************
+    // ***************************************************************
+    void TimerMapper::updateTimerInner(const SWA::EventTimer &eventTimer) {
+        unitOfWork->updateTimer(EventTimerData(eventTimer));
+    }
+
+    // ***************************************************************
+    // ***************************************************************
+    void TimerMapper::commitCreate(TimerIdType id) {
+        timerSql->executeCreate(id);
+    }
+
+    // ***************************************************************
+    // ***************************************************************
+    void TimerMapper::commitDelete(TimerIdType id) {
+        timerSql->executeDelete(id);
+    }
+
+    // ***************************************************************
+    // ***************************************************************
+    void TimerMapper::commitUpdate(const EventTimerData &timerData) {
+        timerSql->executeUpdate(timerData);
+    }
+
+    namespace {
+        bool registered = TimerMapper::registerSingleton(&TimerMapper::singleton);
+    }
 
 } // namespace SQL

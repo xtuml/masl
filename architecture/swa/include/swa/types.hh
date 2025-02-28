@@ -12,7 +12,7 @@
 #define SWA_TYPES_HH
 
 namespace SWA {
-typedef int IdType;
+    typedef int IdType;
 }
 
 #endif

@@ -18,36 +18,37 @@
 
 namespace SWA {
 
-RealTimeSignalListener::RealTimeSignalListener(const Callback &callback,
-                                               ActivityMonitor &monitor)
-    : id(monitor.addNormalCallback(
-          [this](int pid, int uid) { callCallback(pid, uid); })),
-      callback(callback), priority(ListenerPriority::getNormal()), active(true),
-      monitor(monitor) {}
+    RealTimeSignalListener::RealTimeSignalListener(const Callback &callback, ActivityMonitor &monitor)
+        : id(monitor.addNormalCallback([this](int pid, int uid) {
+              callCallback(pid, uid);
+          })),
+          callback(callback),
+          priority(ListenerPriority::getNormal()),
+          active(true),
+          monitor(monitor) {}
 
-RealTimeSignalListener::~RealTimeSignalListener() {
-    monitor.removeNormalCallback(id);
-}
+    RealTimeSignalListener::~RealTimeSignalListener() {
+        monitor.removeNormalCallback(id);
+    }
 
-void RealTimeSignalListener::setPriority(const ListenerPriority &priority) {
-    this->priority = priority;
-}
+    void RealTimeSignalListener::setPriority(const ListenerPriority &priority) {
+        this->priority = priority;
+    }
 
-void RealTimeSignalListener::queueSignal() const {
-    sigval data;
-    data.sival_int = id;
-    sigqueue(getpid(), priority.getValue(), data);
-}
+    void RealTimeSignalListener::queueSignal() const {
+        sigval data;
+        data.sival_int = id;
+        sigqueue(getpid(), priority.getValue(), data);
+    }
 
-void RealTimeSignalListener::queueSignal(
-    const ListenerPriority &priority) const {
-    sigval data;
-    data.sival_int = id;
-    sigqueue(getpid(), priority.getValue(), data);
-}
+    void RealTimeSignalListener::queueSignal(const ListenerPriority &priority) const {
+        sigval data;
+        data.sival_int = id;
+        sigqueue(getpid(), priority.getValue(), data);
+    }
 
-void RealTimeSignalListener::callCallback(int pid, int uid) {
-    if (active)
-        callback(pid, uid);
-}
+    void RealTimeSignalListener::callCallback(int pid, int uid) {
+        if (active)
+            callback(pid, uid);
+    }
 } // namespace SWA

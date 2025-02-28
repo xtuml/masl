@@ -21,39 +21,48 @@
 
 namespace SWA {
 
-class Domain {
-  public:
-    Domain() : id(0), name(""), interface(true) {}
-    Domain(int id, const std::string &name, bool interface)
-        : id(id), name(name), interface(interface) {}
+    class Domain {
+      public:
+        Domain()
+            : id(0), name(""), interface(true) {}
+        Domain(int id, const std::string &name, bool interface)
+            : id(id), name(name), interface(interface) {}
 
-    int getId() const { return id; }
+        int getId() const {
+            return id;
+        }
 
-    const std::string &getName() const { return name; }
+        const std::string &getName() const {
+            return name;
+        }
 
-    bool isInterface() const { return interface; }
-    void setInterface(bool interface) { this->interface = interface; }
+        bool isInterface() const {
+            return interface;
+        }
+        void setInterface(bool interface) {
+            this->interface = interface;
+        }
 
-    typedef std::function<void()> Scenario;
-    typedef std::function<void()> External;
+        typedef std::function<void()> Scenario;
+        typedef std::function<void()> External;
 
-    void addExternal(int id, const Scenario &external);
-    void addScenario(int id, const External &scenario);
+        void addExternal(int id, const Scenario &external);
+        void addScenario(int id, const External &scenario);
 
-    const std::function<void()> &getScenario(int id) const;
-    const std::function<void()> &getExternal(int id) const;
+        const std::function<void()> &getScenario(int id) const;
+        const std::function<void()> &getExternal(int id) const;
 
-  private:
-    typedef std::map<int, Scenario> ScenarioLookup;
-    typedef std::map<int, External> ExternalLookup;
+      private:
+        typedef std::map<int, Scenario> ScenarioLookup;
+        typedef std::map<int, External> ExternalLookup;
 
-    int id;
-    std::string name;
-    bool interface;
+        int id;
+        std::string name;
+        bool interface;
 
-    ScenarioLookup scenarios;
-    ExternalLookup externals;
-};
+        ScenarioLookup scenarios;
+        ExternalLookup externals;
+    };
 } // namespace SWA
 
 #endif

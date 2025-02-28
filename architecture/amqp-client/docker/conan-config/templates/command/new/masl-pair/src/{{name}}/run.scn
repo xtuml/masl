@@ -1,4 +1,0 @@
-public service {{name}}::run() is
-begin
-   hello_world();
-end service;
