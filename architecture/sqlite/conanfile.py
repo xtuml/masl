@@ -21,6 +21,15 @@ class ConanFile(conan.ConanFile):
         self.requires("xtuml_sql/[>=1 <2]@xtuml", transitive_headers=True)
         self.requires("sqlite3/[>=3.48.0 <4]", transitive_headers=True,transitive_libs=True)
 
+    default_options = {
+        "sqlite3/*:shared": True,
+    }
+    
+    def validate(self):
+        if not self.dependencies["sqlite3"].options.shared:
+            raise ConanInvalidConfiguration("sqlite3 only works as a shared library")
+
+
     def layout(self):
         cmake_layout(self)
 
