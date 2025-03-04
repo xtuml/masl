@@ -83,7 +83,7 @@ namespace SWA {
     unlink(const LhsColl<ObjectPtr<LhsObj>> &lhs, Set<ObjectPtr<AssocObj>> (LhsObj::*unlinker)()) {
         Set<ObjectPtr<AssocObj>> result =
             combine_collection<Set, ObjectPtr<AssocObj>>(lhs, [&](const ObjectPtr<LhsObj> &l) {
-                return (l.get().*unlinker)(rhs);
+                return (l.get().*unlinker)();
             });
         result.forceUnique();
         return result;

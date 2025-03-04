@@ -29,6 +29,7 @@ public class BuildExecutable implements CMakeListsItem {
         commands.add(new AddExecutable(name, Utils.getSourcePathArgs(exe.getBodyFiles())));
         commands.add(new TargetLinkLibraries(name, TargetLinkLibraries.Scope.PUBLIC, Utils.getNameArgs(exe.getDependencies())));
         commands.add(Utils.addHeaderPath(exe) );
+        commands.add(new Command("set_property", "TARGET", exe.getName(), "PROPERTY", "RUNTIME_OUTPUT_DIRECTORY",  "${CMAKE_BINARY_DIR}/bin"));
         if ( exe.isExport()) {
             commands.add(new Command("install", "TARGETS", exe.getName()));
         }

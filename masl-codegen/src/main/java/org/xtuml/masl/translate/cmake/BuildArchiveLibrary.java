@@ -29,6 +29,7 @@ public class BuildArchiveLibrary implements CMakeListsItem {
         commands.add(new AddLibrary(name, AddLibrary.Type.STATIC, Utils.getSourcePathArgs(library.getBodyFiles())));
         commands.add(new TargetLinkLibraries(name, TargetLinkLibraries.Scope.PUBLIC, Utils.getNameArgs(library.getDependencies())));
         commands.add(Utils.addHeaderPath(library) );
+        commands.add(new Command("set_property", "TARGET", library.getName(), "PROPERTY", "ARCHIVE_OUTPUT_DIRECTORY", "${CMAKE_BINARY_DIR}/lib"));
 
         if ( library.isExport()) {
             commands.add(new Command("install", "TARGETS", library.getName(), "FILE_SET", "HEADERS"));

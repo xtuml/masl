@@ -32,5 +32,5 @@ class TestConan(ConanFile):
 
     def test(self):
         if can_run(self):
-            cmd = os.path.join(self.cpp.build.bindir, "Example_transient_standalone")
+            cmd = os.path.join(self.cpp.build.bindir, "bin", "Example_transient_standalone")
             self.run(f"{cmd} -mainloop-disable", env="conanrun")
