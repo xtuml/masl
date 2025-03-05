@@ -48,6 +48,8 @@ public class ProjectTranslator extends org.xtuml.masl.translate.ProjectTranslato
         this.library =
                 new SharedLibrary(project.getProjectName() +
                                   "_inspector").inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
+        var metaTranslator = org.xtuml.masl.translate.metadata.ProjectTranslator.getInstance(project);
+        this.library.addDependency(metaTranslator.getLibrary());
     }
 
     /**

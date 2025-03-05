@@ -43,8 +43,8 @@ set -e
 (cd utils/schedule && conan create . --update --build=missing --test-missing)
 (cd utils/test && conan create . --update --build=missing --test-missing)
 
-(cd examples/petrol &&  conan create . --update --build=missing --test-missing)
-(cd examples/calculator &&  conan create . --update --build=missing --test-missing)
+(cd examples/petrol/masl &&  conan create . --update --build=missing --test-missing)
+(cd examples/calculator/masl &&  conan create . --update --build=missing --test-missing)
 
 (cd inspector && conan create . --update --build=missing --test-missing)
 

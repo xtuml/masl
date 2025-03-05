@@ -1,7 +1,7 @@
 import conan
 from conan.tools.build import can_run
 from conan.tools.layout import basic_layout
-
+from pathlib import Path
 
 class ConanFile(conan.ConanFile):
     settings = "os", "compiler", "build_type", "arch"
@@ -14,4 +14,5 @@ class ConanFile(conan.ConanFile):
 
     def test(self):
         if can_run(self):
-            self.run(f"PETROL_PROC_sqlite -db :memory: -util Inspector -postinit {self.source_folder}/run.sch", env="conanrun")
+            schedule = Path(self.dependencies["masl_examples_calculator"].cpp_info.resdirs[0])/'schedule'/'test.sch'
+            self.run(f"calculator_transient -util Inspector -postinit {schedule}", env="conanrun")

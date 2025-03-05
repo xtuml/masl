@@ -9,11 +9,11 @@ domain ALU is
 
   public service key ( code: in integer );
   public service clear ();
-  private service testcase1 (); pragma scenario( 1 ); pragma test_only( true );
-  private service testcase2 (); pragma scenario( 2 ); pragma test_only( true );
-  private service testcase3 (); pragma scenario( 3 ); pragma test_only( true );
-  private service testcase4 (); pragma scenario( 4 ); pragma test_only( true );
-  private service testcase5 (); pragma scenario( 5 ); pragma test_only( true );
+  private service testcase1 (); pragma scenario( 1 ); //pragma test_only( true );
+  private service testcase2 (); pragma scenario( 2 ); //pragma test_only( true );
+  private service testcase3 (); pragma scenario( 3 ); //pragma test_only( true );
+  private service testcase4 (); pragma scenario( 4 ); //pragma test_only( true );
+  private service testcase5 (); pragma scenario( 5 ); //pragma test_only( true );
 
 
   terminator disp is

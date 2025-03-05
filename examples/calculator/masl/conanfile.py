@@ -8,8 +8,6 @@ class ConanFile(conan.ConanFile):
     python_requires = 'xtuml_masl_conan/[>=1.0 <2]@xtuml'
     python_requires_extend = 'xtuml_masl_conan.MaslConanHelper'
 
-    exports_sources= "src/*"
-
     def requirements(self):
         self.requires('masl_uuid/[>=1.0 <2]@xtuml')
         super().requirements()
