@@ -1,5 +1,5 @@
-#include "../spawn.hh"
 #include "amqp_asio/connection.hh"
+#include "amqp_asio/spawn.hh"
 #include "rabbitmq_mgt.hh"
 #include <asio/co_spawn.hpp>
 #include <asio/connect.hpp>

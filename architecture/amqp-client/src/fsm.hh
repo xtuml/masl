@@ -10,7 +10,7 @@
 
 #pragma once
 #include "condition_var.hh"
-#include "spawn.hh"
+#include "amqp_asio/spawn.hh"
 #include <algorithm>
 #include <cstdint>
 #include <logging/log.hh>

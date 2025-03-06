@@ -8,7 +8,7 @@
  * -----------------------------------------------------------------------------
  */
 
-#include "spawn.hh"
+#include "amqp_asio/spawn.hh"
 
 #include <cxxabi.h>
 #include <string>
