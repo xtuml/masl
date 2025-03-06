@@ -9,7 +9,7 @@ find_package(log4cplus REQUIRED)
 find_package(fmt REQUIRED)
 
 
-add_library(xtuml_activemq SHARED
+add_library(ActiveMQ SHARED
         src/Consumer.cc
         src/DataConsumer.cc
         src/ActiveMQ.cc
@@ -18,7 +18,7 @@ add_library(xtuml_activemq SHARED
         src/ServiceHandler.cc
 )
 
-target_link_libraries(xtuml_activemq
+target_link_libraries(ActiveMQ
         PUBLIC
         xtuml_swa::xtuml_swa
         xtuml_amqp_client::xtuml_amqp_client
@@ -27,10 +27,10 @@ target_link_libraries(xtuml_activemq
         log4cplus::log4cplus
 )
 
-target_sources(xtuml_activemq
+target_sources(ActiveMQ
         PUBLIC FILE_SET HEADERS BASE_DIRS include FILES
         include/activemq)
-target_compile_options(xtuml_activemq PRIVATE -Wall -Werror)
-install(TARGETS xtuml_activemq FILE_SET HEADERS)
+target_compile_options(ActiveMQ PRIVATE -Wall -Werror)
+install(TARGETS ActiveMQ FILE_SET HEADERS)
 install(DIRECTORY share/ DESTINATION share/activemq)
 

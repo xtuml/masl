@@ -5,7 +5,7 @@ from conan.errors import ConanInvalidConfiguration
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_kafka"
-    version = "1.0"
+    version = "1.1"
     user = "xtuml"
 
     package_type = "shared-library"
@@ -57,7 +57,7 @@ class ConanFile(conan.ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["xtuml_kafka"]
+        self.cpp_info.libs = ["Kafka"]
         self.cpp_info.requires.append("xtuml_swa::xtuml_swa")
         self.cpp_info.requires.append("cppkafka::cppkafka")
         self.cpp_info.requires.append("fmt::fmt")

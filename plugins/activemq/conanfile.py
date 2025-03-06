@@ -58,7 +58,7 @@ class ConanFile(conan.ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["xtuml_activemq"]
+        self.cpp_info.libs = ["ActiveMQ"]
         self.cpp_info.requires.append("xtuml_swa::xtuml_swa")
         self.cpp_info.requires.append("xtuml_amqp_client::xtuml_amqp_client")
         self.cpp_info.requires.append("fmt::fmt")
