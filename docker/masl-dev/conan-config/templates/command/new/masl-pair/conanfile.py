@@ -5,7 +5,7 @@ class ConanFile(conan.ConanFile):
     version = "{{version if version is defined else '0.1'}}"
     user = "{{user if user is defined else 'xtuml'}}"
 
-    python_requires = 'xtuml_masl_conan/[>=1.0 <2]@xtuml'
+    python_requires = 'xtuml_masl_conan/[>=5.0 <6]@xtuml'
     python_requires_extend = 'xtuml_masl_conan.MaslConanHelper'
 
     exports_sources= "src/*"
