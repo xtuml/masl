@@ -57,7 +57,7 @@ class ConanFile(conan.ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["xtuml_kafka"]
+        self.cpp_info.libs = ["Kafka"]
         self.cpp_info.requires.append("xtuml_swa::xtuml_swa")
         self.cpp_info.requires.append("cppkafka::cppkafka")
         self.cpp_info.requires.append("fmt::fmt")

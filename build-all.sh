@@ -13,7 +13,6 @@ set -e
 ( cd architecture/transient && conan create . --update --build=missing --test-missing )
 ( cd architecture/sql && conan create . --update --build=missing --test-missing )
 ( cd architecture/sqlite && conan create . --update --build=missing --test-missing )
-( cd architecture/kafka && conan create . --update --build=missing --test-missing )
 
 ( cd plugins/metadata && conan create . --update --build=missing --test-missing )
 ( cd plugins/inspectorServer && conan create . --update --build=missing --test-missing )
@@ -21,6 +20,7 @@ set -e
 ( cd plugins/codecoverage && conan create . --update --build=missing --test-missing )
 ( cd plugins/backlogMonitor && conan create . --update --build=missing --test-missing )
 ( cd plugins/trace && conan create . --update --build=missing --test-missing )
+( cd plugins/kafka && conan create . --update --build=missing --test-missing )
 
 (cd masl-conan && conan create . --update --build=missing --test-missing)
 (cd masl-codegen && conan create . --update --build=missing --test-missing)
