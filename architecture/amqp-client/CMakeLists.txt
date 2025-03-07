@@ -48,11 +48,11 @@ target_compile_options(xtuml_amqp_client PRIVATE -Wall -Werror)
 
 # False positive in non-debug builds regarding messages::Detach::handle and
 # messages::Detach::closed when optimizing
-target_compile_options(xtuml_amqp_client PUBLIC -Wno-maybe-uninitialized)
+target_compile_options(xtuml_amqp_client PUBLIC $<$<CXX_COMPILER_ID:GNU>:-Wno-maybe-uninitialized>)
 
 # False positive for coroutines  when optimizing
 # https://github.com/boostorg/cobalt/issues/7
-target_compile_options(xtuml_amqp_client PUBLIC -Wno-mismatched-new-delete)
+target_compile_options(xtuml_amqp_client PUBLIC $<$<CXX_COMPILER_ID:GNU>:-Wno-mismatched-new-delete>)
 
 install(TARGETS xtuml_amqp_client FILE_SET HEADERS)
 
