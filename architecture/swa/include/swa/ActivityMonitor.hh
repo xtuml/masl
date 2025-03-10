@@ -16,6 +16,7 @@
 #include <stdint.h>
 
 #include <functional>
+#include <sys/types.h>
 
 namespace SWA {
     class FileDescriptorListener;

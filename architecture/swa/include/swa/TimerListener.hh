@@ -15,6 +15,7 @@
 #include "Timestamp.hh"
 #include <boost/utility.hpp>
 #include <functional>
+#include <sys/types.h>
 
 namespace SWA {
     class ListenerPriority;
