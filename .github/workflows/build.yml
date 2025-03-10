@@ -47,8 +47,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - buildjet-8vcpu-ubuntu-2204
-          - buildjet-8vcpu-ubuntu-2204-arm
+          - buildjet-32vcpu-ubuntu-2204
+          - buildjet-32vcpu-ubuntu-2204-arm
     runs-on: ${{ matrix.os }}
     env:
       ARTIFACTORY_USERNAME: build_server
