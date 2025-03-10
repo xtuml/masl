@@ -1,7 +1,7 @@
 name: masl
 volumes:
-  ConanCache:
-    name: ConanCache
+  conan-cache:
+    name: conan-cache
 
 services:
   masl-dev:
@@ -10,7 +10,7 @@ services:
       context: masl-dev
     volumes:
       - type: volume
-        source: ConanCache
+        source: conan-cache
         target: /conan-cache
     profiles:
       - tools

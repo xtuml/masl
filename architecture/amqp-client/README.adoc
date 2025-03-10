@@ -1,0 +1,157 @@
+= AMQP 1.0 C++ Asio Client
+:source-highlighter: highlight.js
+:toc:
+
+== Overview
+The AMQP 1.0 C++ Asio Client provides a library to enable {cpp} applications to communicate with other applications using the http://www.amqp.org/specification/1.0/amqp-org-download[AMQP 1.0 protocol].
+
+Message brokers supporting AMQP 1.0 include
+
+* https://activemq.apache.org/components/classic/[ActiveMQ Classic]
+* https://activemq.apache.org/components/artemis/[ActiveMQ Artemis]
+* https://www.rabbitmq.com[RabbitMQ] (https://www.rabbitmq.com/blog/2024/08/05/native-amqp[natively from version 4.0])
+* https://qpid.apache.org/components/cpp-broker/index.html[ApacheQpid {cpp} Broker]
+* https://qpid.apache.org/components/jms/index.html[ApacheQpid JMS Broker]
+* https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-amqp-overview[Microsoft Azure Service Bus].
+
+The https://think-async.com/Asio/[Asio] library is used for all network communications, timers and asynchronous behaviour.
+
+== Usage
+
+A compiler supporting a minimum of {cpp}20 is required.
+
+=== Building
+
+[source,cmake]
+.CMakeLists.txt
+----
+find_package(xtuml_ampq CONFIG REQUIRED)
+target_link_libraries(example-app xtuml_ampq::xtuml_ampq)
+----
+
+=== Client Code
+
+The public interface consists of four main classes, `Connection`, `Session`, `Sender` and `Receiver`. Once a connection has been estabilished to the broker, a communication session can be started, and any number of senders and receivers attached to that session.
+
+
+==== Coroutines
+The interface is highly asynchronous, and uses {cpp}20 coroutines to instigate operations, with results returned using `asio::awaitable<>` objects.
+
+For the purposes of this example, we will spawn a detached coroutine onto an io context to run the main application.
+
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=setup;co-main;!*;elipsis]
+----
+
+==== Connection
+
+For this example, we will assume an ActiveMQ Artemis server running in docker using the default configuration.
+[source,console]
+----
+$ docker run --detach --name apache-artemis -p 8161:8161 -p 5672:5672 --rm apache/activemq-artemis:latest-alpine
+----
+
+The connection must first be created by calling the `Connection::create` function, or its helpers. The main function takes a std::unique_ptr to an asio socket, and the various helpers take arguments to pass to a socket constructor. 
+`create_amqp` creates a connection based on a TCP `asio::tcp::socket`, and `create_amqps` wraps this socket in an SSL Stream `asio::ssl::stream`. Any parameters passed to the function are used to initialise the underlying asio socket. See the https://think-async.com/Asio/asio-1.30.2/doc/asio/overview/ssl.html[Asio documentation]  for configuring SSL connections.
+
+In this example we are using the `amqp` protocol, so pass an executor. The executor of the current coroutine will suffice in this case. 
+
+
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=co-main;!*;connection-create;elipsis]
+----
+
+We now have a connection object initialised, but not connected to the broker. Calling the `connection.open` coroutine will cause the connection object to attempt to connect, and will return once the connection is established, or throw an exception if there was a problem.
+
+By default, the connection will attempt to connect to `localhost`, port 5672. These parameters can be changed by passing a `ConnectionOptions` object with appropriate configuration. All option object use a fluent-style api to populate fields.
+
+
+
+
+Once a connection is established, the Asio event loop will continue to run until there is no outstanding work to do, so to enable our application to shut down cleanly, we will also close the connection.
+
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=connection-open;elipsis]
+----
+
+==== Session
+
+Once we have a connection open, we can create any number of sessions within the connection. Each session can then open any number of senders and receivers.
+
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=session-open;elipsis]
+----
+
+==== Sender
+
+To send messages out over the connection we must open a sender using `open_sender` on a session.
+An address can be supplied, which will bind the sender to a specific address.
+Alternatively, the address parameter can be omitted, which will create an anonymous sender.
+How this is interpreted is broker specific, but in most cases the target address must be specified in the `to` field of the message properties when sending a message.
+
+The default delivery mode is at most once (aka pre-settled), but this may be adjusted by specifiying `SenderOptions` on the `open`.
+
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=sender-open;elipsis]
+----
+
+==== Receiver
+
+To receive messages from the connection we must open a receiver using `open_receiver` on a session.
+An address must be supplied to bind the receiver to a specific address. 
+
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=receiver-open;elipsis]
+----
+
+==== Sending a message
+
+To send a message, pass the required payload to the `send` coroutine on the sender.
+The payload can be passed as either a `std::string_view` or `std::vector<std::byte>`, along with an optional properties object.
+
+To send a JSON payload, call the `send_json` coroutine. This will populate the payload as a JSON string, and fill in the `content-type` as `application/json` if not already supplied.
+
+If more complicated functionality is needed, for example passing application properties, a messages::Message object can be formed manually and populated as required.
+
+The `send` coroutines return a `Tracker` object which can be used to detect when the message has been sent to the broker, and (for `at_least_once` and `exactly_once` senders) whether it has been settled.
+
+
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=send]
+----
+
+
+==== Receiving a message
+
+To receive a message, call the `receive` coroutine on the receiver. This returns a `Delivery` object, which allows access to the delivered message.
+For links with 'at_least_once' and 'exactly_once' delivery modes, the message can be accepted or rejected using the appropriate coroutines, which will cause the delivery to be settled in the appropriate manner.
+
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=receive]
+----
+
+==== Putting it all together
+[source,c++]
+----
+include::docs/examples/src/example.cc[tags=!elipsis]
+----
+
+== Limitations
+
+* Unsolicited incoming connections are rejected.
+* Transactions not supported.
+* Link recovery not supported.
+* Loss of connection not fully supported.
+
+== Suggested future API improvements
+* Automatic lifetime management (`close`/`end`/`detach` called on destructor) to avoid resource leakage.
+Will need some sort of intermediary object holding a unique_ptr to the impl class that spawns off a coroutine to do the close in its destructor.
+

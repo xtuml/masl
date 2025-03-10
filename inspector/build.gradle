@@ -10,18 +10,16 @@ plugins {
 description = 'MASL Process Inspector'
 
 application {
+    applicationName = 'masl-inspector'
     mainClass = 'org.xtuml.masl.inspector.gui.MainFrame'
+}
+
+repositories {
+    mavenCentral()
 }
 
 java {
     withSourcesJar()
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
-jar {
-  manifest {
-    attributes 'Main-Class' : application.mainClass
-  }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }

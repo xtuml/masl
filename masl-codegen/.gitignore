@@ -1,0 +1,12 @@
+/.gradle/
+/classes/
+/generated-src/
+/install/
+/libs/
+/resources/
+/scripts/
+/tmp/
+.classpath
+.project
+.settings/
+/bin/

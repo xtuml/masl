@@ -4,11 +4,11 @@
 
 Run a command in the dev container. This will mount the current working directory into the /work directory in the container, and run the command in that directory.
 
-    docker run --rm --network masl-dev -v ConanCache:/conan-cache -v ${PWD}/work levistarrett/masl-dev:latest <command>
+    docker run --rm --network masl-dev -v conan-cache:/conan-cache -v ${PWD}/work levistarrett/masl-dev:latest <command>
 
 It is recommended that you set a shell alias for the above command.
 
-    alias masl-dev='run --rm --network masl-dev -v ConanCache:/conan-cache -v ${PWD}/work levistarrett/masl-dev:latest'
+    alias masl-dev='run --rm --network masl-dev -v conan-cache:/conan-cache -v ${PWD}/work levistarrett/masl-dev:latest'
 
 ### With `docker compose`
 
