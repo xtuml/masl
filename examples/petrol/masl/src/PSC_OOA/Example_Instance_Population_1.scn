@@ -74,22 +74,22 @@ begin
   link pump_3 R1 tank_1002;
 
 
-  for t in 1..100 loop
-    tank := create TANK (
-      Tank_Number => t,
-      Tank_Empty_Flag => false,
-      Tank_Level => real(t)*10.0,
-      Tank_Capacity => real(t)*10.0+50.0,
-      Empty_Threshold => real(t)/10.0,
-      Current_State => Reset_waiting_pumps);
-
-
-    for p in  1..1000 loop
-      pump := create PUMP ( Pump_Number => t*1000+p, Current_State => Waiting_For_Customer );
-
-      link pump R1 tank;
-
-    end loop;
-  end loop;
+//  for t in 1..100 loop
+//    tank := create TANK (
+//      Tank_Number => t,
+//      Tank_Empty_Flag => false,
+//      Tank_Level => real(t)*10.0,
+//      Tank_Capacity => real(t)*10.0+50.0,
+//      Empty_Threshold => real(t)/10.0,
+//      Current_State => Reset_waiting_pumps);
+//
+//
+//    for p in  1..1000 loop
+//      pump := create PUMP ( Pump_Number => t*1000+p, Current_State => Waiting_For_Customer );
+//
+//      link pump R1 tank;
+//
+//    end loop;
+//  end loop;
 
 end service;

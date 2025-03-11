@@ -9,4 +9,8 @@ begin
   //# Continue until the gun trigger is released
   
   CLUTCH~>Engage_Clutch();
-end state;
+
+  console << "Pumping" << endl;
+  schedule this.fuel_timer generate DELIVERY.Fuel_Unit_Delivered() to this->R3 delay @PT1S@ delta @PT1S@;
+
+  end state;

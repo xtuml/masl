@@ -15,4 +15,4 @@ class ConanFile(conan.ConanFile):
     def test(self):
         if can_run(self):
             schedule = Path(self.dependencies["masl_examples_petrol"].cpp_info.resdirs[0])/'schedule'/'run.sch'
-            self.run(f"PETROL_PROC_sqlite -db :memory: -util Inspector -postinit {schedule}", env="conanrun")
+            self.run(f"PETROL_PROC_transient -postinit {schedule}", env="conanrun")

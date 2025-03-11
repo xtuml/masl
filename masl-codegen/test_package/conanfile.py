@@ -13,18 +13,18 @@ class TestConan(ConanFile):
         self.tool_requires(self.tested_reference_str)
         self.requires("xtuml_swa/[>=1.0 <2]@xtuml")
         self.requires("xtuml_asn1/[>=1.0 <2]@xtuml")
-        self.requires("xtuml_inspector_server/[>=1.0 <2]@xtuml")
+#        self.requires("xtuml_inspector_server/[>=1.0 <2]@xtuml")
         self.requires("xtuml_transient/[>=1.0 <2]@xtuml")
-        self.requires("xtuml_sqlite/[>=1.0 <2]@xtuml")
-        self.requires("xtuml_kafka/[>=1.0 <2]@xtuml")
+#        self.requires("xtuml_sqlite/[>=1.0 <2]@xtuml")
+#        self.requires("xtuml_kafka/[>=1.0 <2]@xtuml")
 
     def layout(self):
         cmake_layout(self)
 
     def build(self):
         src = os.path.join(self.source_folder,'Example.mod')
-        self.run(f"masl-codegen -output generated -mod {src}", env="conanbuild")
-        
+        self.run(f"masl-codegen -output generated -mod {src} -skiptranslator MetaData -skiptranslator Sqlite -skiptranslator Inspector -skiptranslator Kafka", env="conanbuild")
+
         cmake = CMake(self)
         cmake.configure(build_script_folder=os.path.join(self.build_folder, 'generated'))
         cmake.build()

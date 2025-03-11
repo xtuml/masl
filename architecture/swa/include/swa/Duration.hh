@@ -269,6 +269,11 @@ namespace SWA {
             return ticks;
         }
 
+        std::chrono::nanoseconds getChronoDuration() const {
+            return std::chrono::nanoseconds(nanos());
+        }
+
+
         // Returns the duration split down into the requested
         // components. The most significant field will be first
         // in the result vector, and subsequent fields will be

@@ -9,39 +9,32 @@
  */
 
 #include "swa/EventTimer.hh"
-#include "swa/ActivityMonitor.hh"
 #include "swa/Duration.hh"
 #include "swa/EventTimers.hh"
-#include "swa/ListenerPriority.hh"
 #include "swa/Process.hh"
 #include "swa/Timestamp.hh"
 
 #include <errno.h>
+#include <print>
 #include <string.h>
 
 namespace SWA {
     class Event;
 
     EventTimer::EventTimer(TimerIdType id)
-        : listener(
-              ListenerPriority::getNormal(),
-              [this](int overrun) {
-                  callback(overrun);
-              }
-          ),
-          id(id),
+        : id(id),
+          timer(Process::getInstance().getIOContext().get_executor()),
           scheduled(false),
           expired(false),
           expiryTime(),
           event() {}
 
-    EventTimer::~EventTimer() {}
-
     const Timestamp &EventTimer::getScheduledAt() const {
-        if (scheduled)
+        if (scheduled) {
             return expiryTime;
-        else
+        } else {
             throw SWA::ProgramError("Timer is not scheduled");
+        }
     }
 
     Timestamp EventTimer::getExpiredAt() const {
@@ -74,11 +67,24 @@ namespace SWA {
         missed = 0;
         scheduled = true;
         expired = false;
-
-        if (!EventTimers::getInstance().isSuspended()) {
-            listener.schedule(expiryTime, period);
-        }
+        schedule();
         ProcessMonitor::getInstance().settingTimer(id, expiryTime, period, event);
+    }
+
+    void EventTimer::schedule() {
+        if (!EventTimers::getInstance().isSuspended()) {
+            timer.expires_at(this->expiryTime.getChronoTimePoint());
+            timer.async_wait([self = this->shared_from_this()](const asio::error_code &ec) {
+                if (ec == asio::error::operation_aborted) {
+                    return;
+                }
+                auto overrun = self->period > Duration::zero()
+                                   ? (std::chrono::system_clock::now() - self->expiryTime.getChronoTimePoint()) /
+                                         self->period.getChronoDuration()
+                                   : 0;
+                EventTimers::getInstance().fireTimer(self->id, overrun);
+            });
+        }
     }
 
     void EventTimer::restore(
@@ -98,18 +104,18 @@ namespace SWA {
 
         if (scheduled) {
             if (!EventTimers::getInstance().isSuspended()) {
-                listener.schedule(expiryTime, period);
+                schedule();
             }
         }
     }
 
     void EventTimer::cancel() {
+        timer.cancel();
         scheduled = false;
         expired = false;
         missed = 0;
         event.reset();
 
-        listener.cancel();
         ProcessMonitor::getInstance().cancellingTimer(id);
     }
 
@@ -121,23 +127,23 @@ namespace SWA {
         if (period > Duration::zero()) {
             expiryTime += period * (1 + overrun);
             missed = overrun;
+            schedule();
         } else {
             scheduled = false;
             missed = 0;
             event.reset();
-            listener.cancel();
         }
 
         ProcessMonitor::getInstance().firingTimer(id, overrun);
     }
 
     void EventTimer::suspend() {
-        listener.cancel();
+        timer.cancel();
     }
 
     void EventTimer::resume() {
         if (scheduled) {
-            listener.schedule(expiryTime, period);
+            schedule();
         }
     }
 

@@ -11,11 +11,11 @@
 #ifndef SWA_Process_HH
 #define SWA_Process_HH
 
-#include "ActivityMonitor.hh"
 #include "Domain.hh"
 #include "EventQueue.hh"
 #include "boost/signals2.hpp"
-
+#include <asio/io_context.hpp>
+#include <boost/io/ios_state.hpp>
 #include <deque>
 #include <string>
 
@@ -103,8 +103,8 @@ namespace SWA {
 
         void mainLoop();
 
-        ActivityMonitor &getActivityMonitor() {
-            return activityMonitor;
+        asio::io_context &getIOContext() {
+            return ioContext;
         }
 
         static void shutdownHandler(int, int);
@@ -126,7 +126,7 @@ namespace SWA {
 
         bool shutdownRequested;
 
-        ActivityMonitor activityMonitor;
+        asio::io_context ioContext;
 
         typedef boost::signals2::
             signal_type<void(), boost::signals2::keywords::mutex_type<boost::signals2::dummy_mutex>>::type VoidSignal;

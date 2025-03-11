@@ -22,6 +22,7 @@ class ConanFile(conan.ConanFile):
         self.requires("xtuml_logging/[>=1 <2]@xtuml")
         self.requires("nlohmann_json/[>=3.11 <4]", transitive_headers=True)
         self.requires("boost/[>=1.86.0 <2]", transitive_headers=True)
+        self.requires("asio/[>=1.31.0 <2]", transitive_headers=True)
 
     def layout(self):
         cmake_layout(self)
@@ -46,3 +47,4 @@ class ConanFile(conan.ConanFile):
         self.cpp_info.requires.append("xtuml_logging::xtuml_logging")
         self.cpp_info.requires.append("nlohmann_json::nlohmann_json")
         self.cpp_info.requires.append("boost::boost")
+        self.cpp_info.requires.append("asio::asio")

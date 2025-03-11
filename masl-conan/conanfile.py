@@ -103,6 +103,23 @@ class MaslGen(object):
         args += ['-output', output]   
         if self.conanfile.version:
             args += ['-version', self.conanfile.version]
+
+        if not self.conanfile.options.inspector:
+            args+= ['-skiptranslator Inspector']
+
+        if not self.conanfile.options.metadata:
+            args+= ['-skiptranslator MetaData']
+
+        if not self.conanfile.options.transient:
+            args+= ['-skiptranslator Transient']
+
+        if not self.conanfile.options.sqlite:
+            args+= ['-skiptranslator Sqlite']
+
+        if not self.conanfile.options.kafka:
+            args+= ['-skiptranslator Kafka']
+
+            
         args += self.extras
         args += extras
 
@@ -302,3 +319,4 @@ class MaslConanHelper():
             self.runenv_info.append_path("PATH",os.path.join(self.package_folder,d))
         for d in self.cpp_info.libdirs:
             self.runenv_info.append_path("LD_LIBRARY_PATH",os.path.join(self.package_folder,d))
+            self.runenv_info.append_path("DYLD_LIBRARY_PATH",os.path.join(self.package_folder,d))
