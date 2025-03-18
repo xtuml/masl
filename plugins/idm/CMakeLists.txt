@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(xtuml_idm CXX)
 
 find_package(xtuml_swa REQUIRED)
+find_package(asio REQUIRED)
 
 add_library(xtuml_idm SHARED
         src/ProcessHandler.cc
@@ -10,6 +11,7 @@ add_library(xtuml_idm SHARED
 target_link_libraries(xtuml_idm
         PUBLIC
         xtuml_swa::xtuml_swa
+        asio::asio
 )
 
 target_sources(xtuml_idm

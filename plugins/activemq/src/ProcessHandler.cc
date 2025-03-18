@@ -1,152 +1,59 @@
-#include "activemq/ProcessHandler.hh"
+#include "ProcessHandler.hh"
+#include "Consumer.hh"
+#include "Producer.hh"
 
 #include "activemq/ActiveMQ.hh"
-#include "activemq/Consumer.hh"
-
 #include "swa/CommandLine.hh"
-#include "swa/Process.hh"
-#include "swa/ProgramError.hh"
 
-#include <asio/detached.hpp>
+#include <asio/co_spawn.hpp>
+#include <asio/use_future.hpp>
+#include <future>
 
-using namespace std::literals;
+namespace InterDomainMessaging {
 
-namespace ActiveMQ {
+    namespace ActiveMQ {
 
-bool ProcessHandler::registerServiceHandler(
-    int domainId, int serviceId, std::shared_ptr<ServiceHandler> handler) {
-  const std::string topicName = getTopicName(domainId, serviceId);
-  serviceLookup.insert(ServiceLookup::value_type(topicName, handler));
-  return true;
-}
+        ProcessHandler::ProcessHandler()
+            : log(xtuml::logging::Logger("idm.activemq.processhandler")) {
 
-ServiceHandler &ProcessHandler::getServiceHandler(int domainId, int serviceId) {
-  const std::string topicName = getTopicName(domainId, serviceId);
-  return getServiceHandler(topicName);
-}
-ServiceHandler &ProcessHandler::getServiceHandler(std::string topicName) {
-  ServiceLookup::iterator it = serviceLookup.find(topicName);
+            auto executor = getContext().get_executor();
+            std::future<void> future = asio::co_spawn(
+                executor,
+                [this, executor]() -> asio::awaitable<void> {
+                    const std::string hostname = SWA::CommandLine::getInstance().getOption(BrokerOption);
+                    const std::string username = SWA::CommandLine::getInstance().getOption(UsernameOption, "admin");
+                    const std::string password = SWA::CommandLine::getInstance().getOption(PasswordOption, "admin");
+                    const std::string port = SWA::CommandLine::getInstance().getOption(PortNoOption, "5672");
 
-  if (it == serviceLookup.end()) {
-    throw SWA::ProgramError("No ActiveMQ topic registered for '" + topicName + "'");
-  }
+                    // create connection
+                    conn = amqp_asio::Connection::create_amqp("idm.activemq", executor);
+                    co_await conn.open(amqp_asio::ConnectionOptions().hostname(hostname).port(port).sasl_options(amqp_asio::SaslOptions().authname(username).password(password)));
+                    log.debug("Connection open");
 
-  return *(it->second);
-}
+                    // open a session
+                    session = co_await conn.open_session();
+                    log.debug("Session open");
+                },
+                asio::use_future
+            );
+            future.wait();
+        }
 
-std::vector<std::string> ProcessHandler::getTopicNames() {
-  std::vector<std::string> topicNames;
-  for (auto it = serviceLookup.begin(); it != serviceLookup.end(); it++) {
-    topicNames.push_back(it->first);
-  }
-  return topicNames;
-}
+        std::unique_ptr<InterDomainMessaging::Consumer> ProcessHandler::createConsumer(std::string topic) {
+            return std::make_unique<Consumer>(topic, session);
+        }
 
-bool ProcessHandler::setCustomTopicName(int domainId, int serviceId, std::string topicName) {
-  std::pair<int, int> key (domainId, serviceId);
-  customTopicNames.insert(TopicMap::value_type(key, topicName));
-  return true;
-}
+        std::unique_ptr<InterDomainMessaging::Producer> ProcessHandler::createProducer(std::string topic) {
+            return std::make_unique<Producer>(topic, session);
+        }
 
-std::string ProcessHandler::getTopicName(int domainId, int serviceId) {
-  std::string name = "";
+        ProcessHandler &ProcessHandler::getInstance() {
+            static ProcessHandler instance;
+            return instance;
+        }
 
-  // get the base name
-  std::pair<int, int> key (domainId, serviceId);
-  if (customTopicNames.contains(key)) {
-    name = customTopicNames[key];
-  } else {
-    name = SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
-  }
+        bool registered = ProcessHandler::registerSingleton(&ProcessHandler::getInstance);
 
-  return name;
-}
+    } // namespace ActiveMQ
 
-xtuml::logging::Logger &ProcessHandler::getLog() {
-  return log;
-}
-
-asio::io_context &ProcessHandler::getContext() {
-  return ctx;
-}
-
-amqp_asio::Sender ProcessHandler::getSender() {
-  return sender;
-}
-
-amqp_asio::Session ProcessHandler::getSession() {
-  return session;
-}
-
-asio::awaitable<void> ProcessHandler::run() {
-
-  const std::string hostname = SWA::CommandLine::getInstance().getOption(BrokerOption);
-  const std::string username = SWA::CommandLine::getInstance().getOption(UsernameOption, "admin");
-  const std::string password = SWA::CommandLine::getInstance().getOption(PasswordOption, "admin");
-  const std::string port = SWA::CommandLine::getInstance().getOption(PortNoOption, "5672");
-
-  try {
-      auto executor = co_await asio::this_coro::executor;
-
-      // create connection
-      conn = amqp_asio::Connection::create_amqp("amqp-bridge", executor);
-      co_await conn.open(amqp_asio::ConnectionOptions().hostname(hostname).port(port).sasl_options(
-          amqp_asio::SaslOptions().authname(username).password(password)
-      ));
-      log.debug("Connection open");
-
-      // open a session
-      session = co_await conn.open_session();
-      log.debug("Session open");
-
-      // launch consumer
-      if (hasRegisteredServices()) {
-        consumer.initialize(getTopicNames());
-      }
-
-      // create producer
-      sender = co_await session.open_sender(amqp_asio::SenderOptions().name("sender").delivery_mode(amqp_asio::DeliveryMode::at_least_once));
-      log.debug("Sender created");
-
-      // Clean up on shutdown
-      SWA::Process::getInstance().registerShutdownListener([this, executor]() {
-        asio::co_spawn(executor, [this]() -> asio::awaitable<void> {
-          co_await session.end();
-          co_await conn.close();
-          ctx.stop();
-        }, asio::detached);
-      });
-
-  } catch (std::bad_variant_access &e) {
-      throw std::system_error(make_error_code(std::errc::bad_message));
-  } catch (const std::system_error &e) {
-      fmt::println("Error: {}", e.code().message());
-  }
-
-  log.debug("Initialization complete");
-
-}
-
-ProcessHandler &ProcessHandler::getInstance() {
-  static ProcessHandler instance;
-  return instance;
-}
-
-namespace {
-
-// Load up the domain handlers once the process has initialised and domains are
-// known.
-void loadLibs() {
-  SWA::Process::getInstance().loadDynamicLibraries("activemq", "_if", false);
-}
-
-bool initialise() {
-  SWA::Process::getInstance().registerInitialisedListener(&loadLibs);
-  return true;
-}
-
-bool initialised = initialise();
-
-} // namespace
-
-} // namespace ActiveMQ
+} // namespace InterDomainMessaging

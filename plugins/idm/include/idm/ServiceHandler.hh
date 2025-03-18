@@ -13,7 +13,6 @@ namespace InterDomainMessaging {
         virtual Callable getInvoker(nlohmann::json data) const {
             return Callable();
         }
-        virtual ~ServiceHandler();
     };
 
 } // namespace InterDomainMessaging

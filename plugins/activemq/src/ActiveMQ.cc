@@ -1,48 +1,46 @@
 #include "activemq/ActiveMQ.hh"
 
-#include "activemq/Consumer.hh"
-#include "activemq/ProcessHandler.hh"
-
+#include "idm/ProcessHandler.hh"
 #include "swa/CommandLine.hh"
 #include "swa/Process.hh"
 
-#include <asio/co_spawn.hpp>
-#include <asio/detached.hpp>
 #include <thread>
 
-namespace ActiveMQ {
+namespace InterDomainMessaging {
 
-const char *const BrokerOption       = "-activemq-hostname";
-const char *const UsernameOption     = "-activemq-username";
-const char *const PasswordOption     = "-activemq-password";
-const char *const PortNoOption       = "-activemq-port";
+    namespace ActiveMQ {
 
-bool startup() {
-  std::thread{[] { 
-    try {
-        auto& ctx = ProcessHandler::getInstance().getContext();
-        auto ex = ctx.get_executor();
-        asio::co_spawn(ex, ProcessHandler::getInstance().run(), asio::detached);
-        ctx.run();
-        return true;
-    } catch (std::exception &e) {
-        return false;
-    }
-  }}.detach();
-  return true;
-}
+        const char *const BrokerOption = "-activemq-hostname";
+        const char *const UsernameOption = "-activemq-username";
+        const char *const PasswordOption = "-activemq-password";
+        const char *const PortNoOption = "-activemq-port";
 
-struct Init {
-  Init() {
+        bool startup() {
+            std::thread{[] {
+                try {
+                    auto &ctx = ProcessHandler::getInstance().getContext();
+                    ctx.run();
+                    return true;
+                } catch (std::exception &e) {
+                    return false;
+                }
+            }}.detach();
+            return true;
+        }
 
-    // register command line arguments
-    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokerOption, std::string("Broker URL"), true, "broker", true, false));
-    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(UsernameOption, std::string("Broker Username"), false, "username", true, false));
-    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PasswordOption, std::string("Broker Password"), false, "password", true, false));
-    SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PortNoOption, std::string("Broker Port Number"), false, "port", true, false));
+        struct Init {
+            Init() {
 
-    SWA::Process::getInstance().registerStartedListener(&startup);
-  }
-} init;
+                // register command line arguments
+                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokerOption, std::string("Broker URL"), true, "broker", true, false));
+                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(UsernameOption, std::string("Broker Username"), false, "username", true, false));
+                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PasswordOption, std::string("Broker Password"), false, "password", true, false));
+                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PortNoOption, std::string("Broker Port Number"), false, "port", true, false));
 
-} // namespace ActiveMQ
+                SWA::Process::getInstance().registerStartedListener(&startup);
+            }
+        } init;
+
+    } // namespace ActiveMQ
+
+} // namespace InterDomainMessaging

@@ -8,9 +8,8 @@ namespace InterDomainMessaging {
     class Producer {
 
       public:
-        Producer(std::string topic);
-        void produce(std::string topic, nlohmann::json data);
-        void produce(std::string topic, nlohmann::json data, nlohmann::json partKey);
+        virtual void produce(nlohmann::json data);
+        virtual void produce(nlohmann::json data, nlohmann::json partKey);
     };
 
 } // namespace InterDomainMessaging

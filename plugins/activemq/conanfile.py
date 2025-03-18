@@ -24,8 +24,6 @@ class ConanFile(conan.ConanFile):
         "log4cplus/*:shared": True,
     }
 
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "share/*"
-
     def validate(self):
         if not self.dependencies["log4cplus"].options.shared:
             raise ConanInvalidConfiguration("log4cplus only works as a shared library")
@@ -34,7 +32,7 @@ class ConanFile(conan.ConanFile):
         self.requires("xtuml_amqp_client/[>=1 <2]@xtuml", transitive_headers=True)
         self.requires('xtuml_logging/[>=1.0 <2]@xtuml')
         self.requires("xtuml_swa/[>=1 <2]@xtuml", transitive_headers=True)
-        self.requires("libuuid/[>=1.0.3 <2]")
+        self.requires("xtuml_idm/[>=1 <2]@xtuml", transitive_headers=True)
         self.requires("fmt/[>=11.1.3 <12]")
         self.requires("boost/[>=1.86.0 <2]", override=True)
         self.requires("log4cplus/[>=2.1.0 <3]")
@@ -60,7 +58,8 @@ class ConanFile(conan.ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["ActiveMQ"]
         self.cpp_info.requires.append("xtuml_swa::xtuml_swa")
+        self.cpp_info.requires.append("xtuml_idm::xtuml_idm")
+        self.cpp_info.requires.append("xtuml_logging::xtuml_logging")
         self.cpp_info.requires.append("xtuml_amqp_client::xtuml_amqp_client")
         self.cpp_info.requires.append("fmt::fmt")
         self.cpp_info.requires.append("log4cplus::log4cplus")
-        self.cpp_info.requires.append("libuuid::libuuid")

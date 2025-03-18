@@ -3,26 +3,24 @@ project(xtuml_activemq CXX)
 
 find_package(xtuml_swa REQUIRED)
 find_package(xtuml_amqp_client REQUIRED)
+find_package(xtuml_idm REQUIRED)
 
-find_package(libuuid REQUIRED)
 find_package(log4cplus REQUIRED)
 find_package(fmt REQUIRED)
 
 
 add_library(ActiveMQ SHARED
-        src/Consumer.cc
-        src/DataConsumer.cc
         src/ActiveMQ.cc
+        src/Consumer.cc
         src/ProcessHandler.cc
         src/Producer.cc
-        src/ServiceHandler.cc
 )
 
 target_link_libraries(ActiveMQ
         PUBLIC
         xtuml_swa::xtuml_swa
+        xtuml_idm::xtuml_idm
         xtuml_amqp_client::xtuml_amqp_client
-        libuuid::libuuid
         fmt::fmt
         log4cplus::log4cplus
 )

@@ -11,8 +11,7 @@ namespace InterDomainMessaging {
     class Consumer {
 
       public:
-        Consumer(std::string topic);
-        bool consumeOne(DataConsumer &dataConsumer);
+        virtual bool consumeOne(DataConsumer &dataConsumer);
         virtual void receive(std::shared_ptr<ServiceHandler> handler);
     };
 

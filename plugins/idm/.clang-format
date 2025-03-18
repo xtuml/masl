@@ -14,5 +14,4 @@ AllowShortFunctionsOnASingleLine: Empty
 AllowShortLoopsOnASingleLine: false
 AlignAfterOpenBracket: BlockIndent
 PackConstructorInitializers: NextLineOnly
-ColumnLimit: 120
-...
+ColumnLimit: 180
