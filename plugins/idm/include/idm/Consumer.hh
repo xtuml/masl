@@ -2,6 +2,7 @@
 #define InterDomainMessaging_Consumer_HH
 
 #include "DataConsumer.hh"
+#include "ServiceHandler.hh"
 
 #include <nlohmann/json.hpp>
 
@@ -12,7 +13,7 @@ namespace InterDomainMessaging {
       public:
         Consumer(std::string topic);
         bool consumeOne(DataConsumer &dataConsumer);
-        void receive();
+        virtual void receive(std::shared_ptr<ServiceHandler> handler);
     };
 
 } // namespace InterDomainMessaging

@@ -7,16 +7,16 @@ class ConanFile(conan.ConanFile):
     version = "1.0"
     user = "xtuml"
 
-    package_type = "header-library"
+    package_type = "shared-library"
 
     license = "Apache-2.0"
     url = "https://github.com/xtuml/masl"
-    description = "xtUML C++ Software Architecture Kafka IPC"
+    description = "xtUML C++ Software Architecture Inter Domain Messaging API"
     topics = ("xtuml", "masl", "ipc")
 
     settings = "os", "compiler", "build_type", "arch"
 
-    exports_sources = "CMakeLists.txt", "include/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*"
 
     def requirements(self):
         self.requires("xtuml_swa/[>=1 <2]@xtuml", transitive_headers=True)
