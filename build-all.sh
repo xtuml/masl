@@ -20,6 +20,8 @@ set -e
 ( cd plugins/codecoverage && conan create . --update --build=missing --test-missing )
 ( cd plugins/backlogMonitor && conan create . --update --build=missing --test-missing )
 ( cd plugins/trace && conan create . --update --build=missing --test-missing )
+( cd plugins/idm && conan create . --update --build=missing --test-missing )
+( cd plugins/activemq && conan create . --update --build=missing --test-missing )
 ( cd plugins/kafka && conan create . --update --build=missing --test-missing )
 
 (cd masl-conan && conan create . --update --build=missing --test-missing)
