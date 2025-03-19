@@ -23,6 +23,8 @@
 #include <boost/tokenizer.hpp>
 
 #include <dlfcn.h>
+#include "libfile.hh"
+
 
 namespace SWA {
     namespace {
@@ -56,8 +58,7 @@ namespace SWA {
                 for (std::vector<std::string>::const_iterator it = libs.begin(), end = libs.end(); it != end; ++it) {
                     boost::tokenizer<> tok(*it);
                     for (boost::tokenizer<>::iterator it = tok.begin(), end = tok.end(); it != end; ++it) {
-                        std::string libname = "lib" + *it + ".so";
-                        if (dlopen(libname.c_str(), RTLD_NOW | RTLD_GLOBAL)) {
+                        if (dlopen(libfile(*it).c_str(), RTLD_NOW | RTLD_GLOBAL)) {
                             std::cout << "Included utility " << *it << std::endl;
                         } else {
                             std::cout << "Utility " << *it << " not found. " << std::endl;

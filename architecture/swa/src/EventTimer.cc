@@ -74,16 +74,21 @@ namespace SWA {
     void EventTimer::schedule() {
         if (!EventTimers::getInstance().isSuspended()) {
             timer.expires_at(this->expiryTime.getChronoTimePoint());
-            timer.async_wait([self = this->shared_from_this()](const asio::error_code &ec) {
-                if (ec == asio::error::operation_aborted) {
-                    return;
+            timer.async_wait(SWA::Process::getInstance().wrapProcessingThread(
+                "EventTimer",
+                [self = this->shared_from_this()](const asio::error_code &ec) {
+                    if (ec == asio::error::operation_aborted) {
+                        return;
+                    }
+                    EventTimers::getInstance().fireTimer(
+                        self->id,
+                        self->period > Duration::zero()
+                            ? (std::chrono::system_clock::now() - self->expiryTime.getChronoTimePoint()) /
+                                  self->period.getChronoDuration()
+                            : 0
+                    );
                 }
-                auto overrun = self->period > Duration::zero()
-                                   ? (std::chrono::system_clock::now() - self->expiryTime.getChronoTimePoint()) /
-                                         self->period.getChronoDuration()
-                                   : 0;
-                EventTimers::getInstance().fireTimer(self->id, overrun);
-            });
+            ));
         }
     }
 

@@ -29,7 +29,7 @@ class ConanFile(conan.ConanFile):
             transitive_headers=True,
             transitive_libs=True,
         )
-        self.requires("xtuml_sockets/[>=1.0 <2]@xtuml", transitive_headers=True, )
+        self.requires("asio/[>=1.31.0 <2]", transitive_headers=True)
 
     def layout(self):
         cmake_layout(self)
@@ -52,5 +52,5 @@ class ConanFile(conan.ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["Inspector"]
         self.cpp_info.requires.append("xtuml_swa::xtuml_swa")
-        self.cpp_info.requires.append("xtuml_sockets::xtuml_sockets")
         self.cpp_info.requires.append("xtuml_metadata::xtuml_metadata")
+        self.cpp_info.requires.append("asio::asio")

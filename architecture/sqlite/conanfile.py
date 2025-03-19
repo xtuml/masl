@@ -53,4 +53,5 @@ class ConanFile(conan.ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["xtuml_sqlite"]
         self.cpp_info.requires.append("xtuml_sql::xtuml_sql")
+        self.cpp_info.requires.append("xtuml_swa::xtuml_swa")
         self.cpp_info.requires.append("sqlite3::sqlite3")
