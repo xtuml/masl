@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "../condition_var.hh"
+#include "amqp_asio/condition_var.hh"
 #include <asio/co_spawn.hpp>
 #include <asio/detached.hpp>
 #include <asio/io_context.hpp>

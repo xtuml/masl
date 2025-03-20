@@ -3,10 +3,14 @@
 
 #include "idm/Producer.hh"
 
+#include "ProcessHandler.hh"
+
+#include "amqp_asio/condition_var.hh"
 #include "amqp_asio/sender.hh"
 #include "amqp_asio/session.hh"
 #include "logging/log.hh"
 
+#include <asio/any_io_executor.hpp>
 #include <future>
 
 namespace InterDomainMessaging {
@@ -16,7 +20,7 @@ namespace InterDomainMessaging {
         class Producer : public InterDomainMessaging::Producer {
 
           public:
-            Producer(const std::string topic, amqp_asio::Session session);
+            Producer(const std::string topic, ProcessHandler& proc);
 
             void produce(std::string data) override;
 
@@ -26,9 +30,12 @@ namespace InterDomainMessaging {
             };
 
           private:
-            std::future<amqp_asio::Sender> sender;
             std::string topic;
             xtuml::logging::Logger log;
+            amqp_asio::Sender sender;
+            amqp_asio::ConditionVar initialised;
+            ProcessHandler& proc;
+
         };
 
     } // namespace ActiveMQ

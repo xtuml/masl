@@ -9,7 +9,7 @@
  */
 
 #pragma once
-#include "condition_var.hh"
+#include "amqp_asio/condition_var.hh"
 #include "amqp_asio/spawn.hh"
 #include <algorithm>
 #include <cstdint>

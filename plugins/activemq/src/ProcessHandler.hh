@@ -3,6 +3,7 @@
 
 #include "idm/ProcessHandler.hh"
 
+#include "amqp_asio/condition_var.hh"
 #include "amqp_asio/connection.hh"
 #include "amqp_asio/session.hh"
 
@@ -20,13 +21,19 @@ namespace InterDomainMessaging {
             ProcessHandler();
             std::unique_ptr<InterDomainMessaging::Consumer> createConsumer(std::string topic) override;
             std::unique_ptr<InterDomainMessaging::Producer> createProducer(std::string topic) override;
+            amqp_asio::Session getSession() {
+                return session;
+            }
+            amqp_asio::ConditionVar& getInitialised() {
+                return initialised;
+            }
             static ProcessHandler &getInstance();
 
           private:
             xtuml::logging::Logger log;
             amqp_asio::Connection conn;
             amqp_asio::Session session;
-            std::future<void> initialised;
+            amqp_asio::ConditionVar initialised;
         };
 
     } // namespace ActiveMQ

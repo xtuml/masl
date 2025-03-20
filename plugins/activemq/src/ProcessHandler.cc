@@ -6,17 +6,17 @@
 #include "swa/CommandLine.hh"
 
 #include <asio/co_spawn.hpp>
-#include <asio/use_future.hpp>
+#include <asio/detached.hpp>
 
 namespace InterDomainMessaging {
 
     namespace ActiveMQ {
 
         ProcessHandler::ProcessHandler()
-            : log(xtuml::logging::Logger("idm.activemq.processhandler")) {
+            : log(xtuml::logging::Logger("idm.activemq.processhandler")), initialised(getContext().get_executor()) {
 
             auto executor = getContext().get_executor();
-            initialised = asio::co_spawn(
+            asio::co_spawn(
                 executor,
                 [this, executor]() -> asio::awaitable<void> {
                     try {
@@ -37,24 +37,24 @@ namespace InterDomainMessaging {
                         session = co_await conn.open_session();
                         log.debug("Session open");
 
+                        initialised.notify();
+
                     } catch (std::bad_variant_access &e) {
                         throw std::system_error(make_error_code(std::errc::bad_message));
                     } catch (const std::system_error &e) {
                         fmt::println("Error: {}", e.code().message());
                     }
                 },
-                asio::use_future
+                asio::detached
             );
         }
 
         std::unique_ptr<InterDomainMessaging::Consumer> ProcessHandler::createConsumer(std::string topic) {
-            initialised.wait();
-            return std::make_unique<Consumer>(topic, session);
+            return std::make_unique<Consumer>(topic, *this);
         }
 
         std::unique_ptr<InterDomainMessaging::Producer> ProcessHandler::createProducer(std::string topic) {
-            initialised.wait();
-            return std::make_unique<Producer>(topic, session);
+            return std::make_unique<Producer>(topic, *this);
         }
 
         ProcessHandler &ProcessHandler::getInstance() {

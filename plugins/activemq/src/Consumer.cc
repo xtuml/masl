@@ -30,7 +30,7 @@ namespace InterDomainMessaging {
                             service();
 
                             // accept delivery
-                            auto executor = ProcessHandler::getInstance().getContext().get_executor();
+                            auto executor = proc.getContext().get_executor();
                             asio::co_spawn(
                                 executor,
                                 [msg]() mutable -> asio::awaitable<void> {
@@ -45,11 +45,12 @@ namespace InterDomainMessaging {
             );
 
             // loop and wait for messages
-            auto executor = ProcessHandler::getInstance().getContext().get_executor();
+            auto executor = proc.getContext().get_executor();
             asio::co_spawn(
                 executor,
                 [this, executor]() -> asio::awaitable<void> {
-                    auto receiver = co_await session.open_receiver(topic, amqp_asio::ReceiverOptions().name("idm.activemq.receiver." + topic));
+                    co_await proc.getInitialised().wait();
+                    auto receiver = co_await proc.getSession().open_receiver(topic, amqp_asio::ReceiverOptions().name("idm.activemq.receiver." + topic));
                     amqp_asio::spawn_cancellable_loop(
                         executor,
                         [this, receiver]() mutable -> asio::awaitable<void> {

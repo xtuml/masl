@@ -10,7 +10,7 @@
 
 #include "../delivery.hh"
 #include "../messages.hh"
-#include "../condition_var.hh"
+#include "amqp_asio/condition_var.hh"
 #include "test_coro.hh"
 
 #include <gmock/gmock.h>

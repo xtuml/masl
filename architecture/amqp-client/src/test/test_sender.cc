@@ -11,7 +11,7 @@
 #include "../sender.hh"
 #include "../messages.hh"
 #include "amqp_asio/options.hh"
-#include "../condition_var.hh"
+#include "amqp_asio/condition_var.hh"
 #include "session_mock.hh"
 #include "test_coro.hh"
 #include "utils.hh"
