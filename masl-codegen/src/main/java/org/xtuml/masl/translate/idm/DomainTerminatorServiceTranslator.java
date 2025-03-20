@@ -1,4 +1,4 @@
-package org.xtuml.masl.translate.kafka;
+package org.xtuml.masl.translate.idm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ public class DomainTerminatorServiceTranslator extends ServiceTranslator {
 
         // create and add the consumer class to the file
         consumerClass = new Class(Mangler.mangleName(getService()) + "Consumer", getDomainNamespace());
-        consumerClass.addSuperclass(Kafka.dataConsumerClass, Visibility.PUBLIC);
+        consumerClass.addSuperclass(InterDomainMessaging.dataConsumerClass, Visibility.PUBLIC);
         final DeclarationGroup functions = consumerClass.createDeclarationGroup();
 
         // create the constructor
@@ -122,9 +122,9 @@ public class DomainTerminatorServiceTranslator extends ServiceTranslator {
         }
 
         // create consumer instance
-        consumer = new Variable(new TypeUsage(Kafka.consumerClass), "consumer_" + Mangler.mangleName(getService()),
+        consumer = new Variable(new TypeUsage(InterDomainMessaging.consumerClass), "consumer_" + Mangler.mangleName(getService()),
                 getDomainNamespace(),
-                Kafka.consumerClass.callConstructor(Std.string.callConstructor(getTopicName(getService()))));
+                InterDomainMessaging.consumerClass.callConstructor(Std.string.callConstructor(getTopicName(getService()))));
 
         // add the call to consume to the overrider
         final Variable dataConsumer = new Variable(new TypeUsage(consumerClass), "dataConsumer",

@@ -1,4 +1,4 @@
-package org.xtuml.masl.translate.kafka;
+package org.xtuml.masl.translate.idm;
 
 import java.util.List;
 
@@ -48,14 +48,14 @@ abstract class ServiceTranslator {
     }
 
     Expression getTopicName(final DomainTerminatorService service) {
-        if (service.getDeclarationPragmas().getPragmaValues(DomainTranslator.KAFKA_TOPIC_PRAGMA).size() == 1) {
+        if (service.getDeclarationPragmas().getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).size() == 1) {
             final String topicNameString = service.getDeclarationPragmas()
-                    .getPragmaValues(DomainTranslator.KAFKA_TOPIC_PRAGMA).get(0);
+                    .getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).get(0);
             if (!isBoolean(topicNameString) && !isNumeric(topicNameString)) {
                 return Literal.createStringLiteral(topicNameString);
             }
         }
-        final Expression processHandler = Kafka.processHandlerClass.callStaticFunction("getInstance");
+        final Expression processHandler = InterDomainMessaging.processHandlerClass.callStaticFunction("getInstance");
         final Expression domainId = new Function("getId")
                 .asFunctionCall(new Function("getDomain").asFunctionCall(Architecture.process, false,
                         Literal.createStringLiteral(getDomainTranslator().getDomain().getName())), false);

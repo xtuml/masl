@@ -16,7 +16,7 @@ class TestConan(ConanFile):
         self.requires("xtuml_inspector_server/[>=1.0 <2]@xtuml")
         self.requires("xtuml_transient/[>=1.0 <2]@xtuml")
         self.requires("xtuml_sqlite/[>=1.0 <2]@xtuml")
-        self.requires("xtuml_kafka/[>=1.0 <2]@xtuml")
+        self.requires("xtuml_idm/[>=1.0 <2]@xtuml")
 
     def layout(self):
         cmake_layout(self)

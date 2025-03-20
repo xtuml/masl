@@ -1,4 +1,4 @@
-package org.xtuml.masl.translate.kafka;
+package org.xtuml.masl.translate.idm;
 
 import java.util.List;
 

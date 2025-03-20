@@ -1,4 +1,4 @@
-package org.xtuml.masl.translate.kafka;
+package org.xtuml.masl.translate.idm;
 
 import java.util.Iterator;
 import java.util.List;
@@ -14,12 +14,12 @@ import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
 import org.xtuml.masl.translate.main.Mangler;
 
-@Alias("Kafka")
+@Alias("InterDomainMessaging")
 @Default
 public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator {
 
-    public static final String KAFKA_TOPIC_PRAGMA = "kafka_topic";
-    public static final String KAFKA_PARTITION_KEY_PRAGMA = "kafka_partition_key";
+    public static final String IDM_TOPIC_PRAGMA = "idm_topic";
+    public static final String IDM_PARTITION_KEY_PRAGMA = "idm_partition_key";
 
     private final org.xtuml.masl.translate.main.DomainTranslator mainTranslator;
     private final Namespace domainNamespace;
@@ -33,28 +33,28 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     private DomainTranslator(final Domain domain) {
         super(domain);
         mainTranslator = org.xtuml.masl.translate.main.DomainTranslator.getInstance(domain);
-        domainNamespace = new Namespace(Mangler.mangleName(domain), Kafka.kafkaNamespace);
+        domainNamespace = new Namespace(Mangler.mangleName(domain), InterDomainMessaging.idmNamespace);
 
-        library = new SharedLibrary(mainTranslator.getLibrary().getName() + "_kafka")
+        library = new SharedLibrary(mainTranslator.getLibrary().getName() + "_idm")
                 .inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
-        library.addDependency(Kafka.library);
+        library.addDependency(InterDomainMessaging.library);
 
-        interfaceLibrary = new SharedLibrary(mainTranslator.getLibrary().getName() + "_if_kafka")
+        interfaceLibrary = new SharedLibrary(mainTranslator.getLibrary().getName() + "_if_idm")
                 .inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
-        interfaceLibrary.addDependency(Kafka.library);
+        interfaceLibrary.addDependency(InterDomainMessaging.library);
     }
 
     @Override
     public void translate() {
         // create code files
-        final CodeFile consumerCodeFile = library.createBodyFile("Kafka_consumers" + Mangler.mangleFile(domain));
-        final CodeFile pollerCodeFile = library.createBodyFile("Kafka_pollers" + Mangler.mangleFile(domain));
+        final CodeFile consumerCodeFile = library.createBodyFile("InterDomainMessaging_consumers" + Mangler.mangleFile(domain));
+        final CodeFile pollerCodeFile = library.createBodyFile("InterDomainMessaging_pollers" + Mangler.mangleFile(domain));
         final CodeFile publisherCodeFile = interfaceLibrary
-                .createBodyFile("Kafka_publishers" + Mangler.mangleFile(domain));
+                .createBodyFile("InterDomainMessaging_publishers" + Mangler.mangleFile(domain));
 
         // create domain service translators
         final List<DomainServiceTranslator> domainServiceTranslators = domain.getServices().stream()
-                .filter(service -> service.getDeclarationPragmas().hasPragma(KAFKA_TOPIC_PRAGMA)
+                .filter(service -> service.getDeclarationPragmas().hasPragma(IDM_TOPIC_PRAGMA)
                         && !service.isFunction() && !service.isExternal() && !service.isScenario())
                 .map(service -> new DomainServiceTranslator(service, this, new JsonSerializer(), consumerCodeFile, publisherCodeFile))
                 .collect(Collectors.toList());
@@ -72,7 +72,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         // create domain terminator service translators
         final List<DomainTerminatorServiceTranslator> terminatorServiceTranslators = domain.getTerminators().stream()
                 .flatMap(terminator -> terminator.getServices().stream())
-                .filter(service -> service.getDeclarationPragmas().hasPragma(KAFKA_TOPIC_PRAGMA) && service.isFunction()
+                .filter(service -> service.getDeclarationPragmas().hasPragma(IDM_TOPIC_PRAGMA) && service.isFunction()
                         && service.getReturnType().isAssignableFrom(BooleanType.createAnonymous()))
                 .map(service -> new DomainTerminatorServiceTranslator(service, this, new JsonSerializer(), pollerCodeFile))
                 .collect(Collectors.toList());

@@ -1,4 +1,4 @@
-package org.xtuml.masl.translate.kafka;
+package org.xtuml.masl.translate.idm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,10 +77,10 @@ public class DomainServiceTranslator extends ServiceTranslator {
     void translateConsumer() {
         // create and add the handler class to the file
         handlerClass = new Class(Mangler.mangleName(getService()) + "Handler", getDomainNamespace());
-        handlerClass.addSuperclass(Kafka.serviceHandlerClass, Visibility.PUBLIC);
+        handlerClass.addSuperclass(InterDomainMessaging.serviceHandlerClass, Visibility.PUBLIC);
         final DeclarationGroup group = handlerClass.createDeclarationGroup();
         getInvokerFn = handlerClass.createMemberFunction(group, "getInvoker", Visibility.PUBLIC);
-        getInvokerFn.setReturnType(new TypeUsage(Kafka.callable));
+        getInvokerFn.setReturnType(new TypeUsage(InterDomainMessaging.callable));
         getInvokerFn.setConst(true);
 
         // create the invoker class
@@ -144,7 +144,7 @@ public class DomainServiceTranslator extends ServiceTranslator {
         getInvokerFn.getCode().appendStatement(new ReturnStatement(invokerClass.callConstructor(paramData2)));
 
         // void addTopicRegistration(final CodeFile codeFile) {
-        final Expression processHandler = Kafka.processHandlerClass.callStaticFunction("getInstance");
+        final Expression processHandler = InterDomainMessaging.processHandlerClass.callStaticFunction("getInstance");
         final Expression domainId = new Function("getId")
                 .asFunctionCall(new Function("getDomain").asFunctionCall(Architecture.process, false,
                         Literal.createStringLiteral(getDomainTranslator().getDomain().getName())), false);
@@ -169,9 +169,9 @@ public class DomainServiceTranslator extends ServiceTranslator {
 
         // determine whether or not to include partition key
         final boolean includePartKey = getService().getParameters().stream().anyMatch(
-                param -> getService().getDeclarationPragmas().hasPragma(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA)
+                param -> getService().getDeclarationPragmas().hasPragma(DomainTranslator.IDM_PARTITION_KEY_PRAGMA)
                         && getService().getDeclarationPragmas()
-                                .getPragmaValues(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA)
+                                .getPragmaValues(DomainTranslator.IDM_PARTITION_KEY_PRAGMA)
                                 .contains(param.getName()));
 
         // handle parameters
@@ -184,8 +184,8 @@ public class DomainServiceTranslator extends ServiceTranslator {
             if (isTypeSerializable(param.getType().getBasicType())) {
                 serializeVars.add(paramTrans.getVariable());
             }
-            if (getService().getDeclarationPragmas().hasPragma(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA)
-                    && getService().getDeclarationPragmas().getPragmaValues(DomainTranslator.KAFKA_PARTITION_KEY_PRAGMA)
+            if (getService().getDeclarationPragmas().hasPragma(DomainTranslator.IDM_PARTITION_KEY_PRAGMA)
+                    && getService().getDeclarationPragmas().getPragmaValues(DomainTranslator.IDM_PARTITION_KEY_PRAGMA)
                             .contains(param.getName())) {
                 serializeKeyVars.add(paramTrans.getVariable());
             }
@@ -204,7 +204,7 @@ public class DomainServiceTranslator extends ServiceTranslator {
         }
 
         // call publisher
-        final Expression producer = Kafka.producerClass.callStaticFunction("getInstance");
+        final Expression producer = InterDomainMessaging.producerClass.callStaticFunction("getInstance");
         final Function publishFunc = new Function("publish");
         final Expression domainId = new Function("getId")
                 .asFunctionCall(new Function("getDomain").asFunctionCall(Architecture.process, false,
@@ -239,11 +239,11 @@ public class DomainServiceTranslator extends ServiceTranslator {
     }
 
     void translateCustomTopicName() {
-        if (getService().getDeclarationPragmas().getPragmaValues(DomainTranslator.KAFKA_TOPIC_PRAGMA).size() == 1) {
+        if (getService().getDeclarationPragmas().getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).size() == 1) {
             final String topicNameString = getService().getDeclarationPragmas()
-                    .getPragmaValues(DomainTranslator.KAFKA_TOPIC_PRAGMA).get(0);
+                    .getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).get(0);
             if (!isBoolean(topicNameString) && !isNumeric(topicNameString)) {
-                final Expression processHandler = Kafka.processHandlerClass.callStaticFunction("getInstance");
+                final Expression processHandler = InterDomainMessaging.processHandlerClass.callStaticFunction("getInstance");
                 final Expression domainId = new Function("getId")
                         .asFunctionCall(
                                 new Function("getDomain").asFunctionCall(Architecture.process, false,

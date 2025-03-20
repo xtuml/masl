@@ -6,7 +6,6 @@ org.xtuml.masl.translate.inmemory.DomainTranslator
 org.xtuml.masl.translate.inmemory.ProjectTranslator
 org.xtuml.masl.translate.inspector.DomainTranslator
 org.xtuml.masl.translate.inspector.ProjectTranslator
-org.xtuml.masl.translate.kafka.DomainTranslator
 org.xtuml.masl.translate.main.DomainTranslator
 org.xtuml.masl.translate.main.ProjectTranslator
 org.xtuml.masl.translate.metadata.DomainTranslator
@@ -17,3 +16,4 @@ org.xtuml.masl.translate.sql.sqlite.ProjectTranslator
 org.xtuml.masl.translate.stacktrack.DomainTranslator
 org.xtuml.masl.translate.stacktrack.ProjectTranslator
 org.xtuml.masl.translate.tracelines.DomainTranslator
+org.xtuml.masl.translate.idm.DomainTranslator
