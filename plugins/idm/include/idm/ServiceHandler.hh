@@ -2,7 +2,7 @@
 #define InterDomainMessaging_ServiceHandler_HH
 
 #include <functional>
-#include <nlohmann/json.hpp>
+#include <string>
 
 namespace InterDomainMessaging {
 
@@ -10,7 +10,7 @@ namespace InterDomainMessaging {
 
     class ServiceHandler {
       public:
-        virtual Callable getInvoker(nlohmann::json data) const {
+        virtual Callable getInvoker(std::string data) const {
             return Callable();
         }
     };

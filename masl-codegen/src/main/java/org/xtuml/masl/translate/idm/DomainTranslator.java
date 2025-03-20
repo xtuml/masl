@@ -49,14 +49,14 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         // create code files
         final CodeFile consumerCodeFile = library.createBodyFile("InterDomainMessaging_consumers" + Mangler.mangleFile(domain));
         final CodeFile pollerCodeFile = library.createBodyFile("InterDomainMessaging_pollers" + Mangler.mangleFile(domain));
-        final CodeFile publisherCodeFile = interfaceLibrary
-                .createBodyFile("InterDomainMessaging_publishers" + Mangler.mangleFile(domain));
+        final CodeFile producerCodeFile = interfaceLibrary
+                .createBodyFile("InterDomainMessaging_producers" + Mangler.mangleFile(domain));
 
         // create domain service translators
         final List<DomainServiceTranslator> domainServiceTranslators = domain.getServices().stream()
                 .filter(service -> service.getDeclarationPragmas().hasPragma(IDM_TOPIC_PRAGMA)
                         && !service.isFunction() && !service.isExternal() && !service.isScenario())
-                .map(service -> new DomainServiceTranslator(service, this, new JsonSerializer(), consumerCodeFile, publisherCodeFile))
+                .map(service -> new DomainServiceTranslator(service, this, new JsonSerializer(), consumerCodeFile, producerCodeFile))
                 .collect(Collectors.toList());
 
         // translate domain service handlers

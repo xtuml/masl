@@ -111,6 +111,12 @@ public class Std {
         return ret;
     }
 
+    public final static Class unique_ptr (final TypeUsage type) {
+        final Class ret = new Class("unique_ptr", std, memoryInc);
+        ret.addTemplateSpecialisation(type);
+        return ret;
+    }
+
     /**
      * Creates <code>{@literal ::std::for_each(coll.begin(),coll.end(),fn)}</code>
      * code

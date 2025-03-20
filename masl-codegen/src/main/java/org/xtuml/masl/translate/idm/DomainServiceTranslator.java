@@ -33,21 +33,21 @@ import org.xtuml.masl.translate.main.Types;
 public class DomainServiceTranslator extends ServiceTranslator {
 
     private final CodeFile consumerCodeFile;
-    private final CodeFile publisherCodeFile;
+    private final CodeFile producerCodeFile;
 
     private Class handlerClass;
     private Class invokerClass;
     private Function getInvokerFn;
-    private Variable topicNameSet;
     private Variable consumerRegisteredVar;
-    private Variable publisherRegisteredVar;
-    private Function publishFn;
+    private Variable producerVar;
+    private Variable producerRegisteredVar;
+    private Function produceFn;
 
     DomainServiceTranslator(DomainService service, DomainTranslator domainTranslator, ParameterSerializer serializer,
-            CodeFile consumerCodeFile, CodeFile publisherCodeFile) {
+            CodeFile consumerCodeFile, CodeFile producerCodeFile) {
         super(service, domainTranslator, serializer);
         this.consumerCodeFile = consumerCodeFile;
-        this.publisherCodeFile = publisherCodeFile;
+        this.producerCodeFile = producerCodeFile;
     }
 
     @Override
@@ -60,18 +60,16 @@ public class DomainServiceTranslator extends ServiceTranslator {
         return List.of(() -> consumerCodeFile.addClassDeclaration(handlerClass),
                 () -> consumerCodeFile.addClassDeclaration(invokerClass),
                 () -> consumerCodeFile.addFunctionDefinition(getInvokerFn),
-                topicNameSet != null ? () -> consumerCodeFile.addVariableDefinition(topicNameSet) : () -> {},
                 () -> consumerCodeFile.addVariableDefinition(consumerRegisteredVar),
-                () -> publisherCodeFile.addFunctionDefinition(publishFn),
-                topicNameSet != null ? () -> publisherCodeFile.addVariableDefinition(topicNameSet) : () -> {},
-                () -> publisherCodeFile.addVariableDefinition(publisherRegisteredVar));
+                () -> producerCodeFile.addVariableDefinition(producerVar),
+                () -> producerCodeFile.addFunctionDefinition(produceFn),
+                () -> producerCodeFile.addVariableDefinition(producerRegisteredVar));
     }
 
     @Override
     void translate() {
         translateConsumer();
-        translatePublisher();
-        translateCustomTopicName();
+        translateProducer();
     }
 
     void translateConsumer() {
@@ -89,7 +87,7 @@ public class DomainServiceTranslator extends ServiceTranslator {
         final Function constructor = invokerClass.createConstructor(functions, Visibility.PUBLIC);
         constructor.declareInClass(true);
         final Expression paramData = constructor
-                .createParameter(new TypeUsage(Std.vector(new TypeUsage(Std.uint8))), "param_data").asExpression();
+                .createParameter(new TypeUsage(Std.string), "param_data").asExpression();
 
         // create invoker function
         final Function invoker = invokerClass.createMemberFunction(functions, "operator()", Visibility.PUBLIC);
@@ -140,29 +138,55 @@ public class DomainServiceTranslator extends ServiceTranslator {
 
         // add implementation of 'getInvoker' to the file
         final Expression paramData2 = getInvokerFn
-                .createParameter(new TypeUsage(Std.vector(new TypeUsage(Std.uint8))), "param_data").asExpression();
+                .createParameter(new TypeUsage(Std.string), "param_data").asExpression();
         getInvokerFn.getCode().appendStatement(new ReturnStatement(invokerClass.callConstructor(paramData2)));
 
-        // void addTopicRegistration(final CodeFile codeFile) {
+        // register the service handler
         final Expression processHandler = InterDomainMessaging.processHandlerClass.callStaticFunction("getInstance");
         final Expression domainId = new Function("getId")
                 .asFunctionCall(new Function("getDomain").asFunctionCall(Architecture.process, false,
                         Literal.createStringLiteral(getDomainTranslator().getDomain().getName())), false);
         final Expression serviceId = org.xtuml.masl.translate.main.DomainServiceTranslator
                 .getInstance((DomainService) getService()).getServiceId();
+        Expression topicName = InterDomainMessaging.processHandlerClass.callStaticFunction("getTopicName", domainId, serviceId);
+        if (getService().getDeclarationPragmas().getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).size() == 1) {
+            final String topicNameString = getService().getDeclarationPragmas()
+                    .getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).get(0);
+            if (!isBoolean(topicNameString) && !isNumeric(topicNameString)) {
+                topicName = Literal.createStringLiteral(topicNameString);
+            }
+        }
         final Expression handler = Std.shared_ptr(new TypeUsage(handlerClass))
                 .callConstructor(new NewExpression(new TypeUsage(handlerClass)));
         final Function registerServiceFunc = new Function("registerServiceHandler");
-        final Expression registerService = registerServiceFunc.asFunctionCall(processHandler, false, domainId,
-                serviceId, handler);
+        final Expression registerService = registerServiceFunc.asFunctionCall(processHandler, false, topicName, handler);
         consumerRegisteredVar = new Variable(new TypeUsage(FundamentalType.BOOL),
                 Mangler.mangleName(getService()) + "_registered", getDomainNamespace(), registerService);
     }
 
-    void translatePublisher() {
+    void translateProducer() {
+        // create producer for topic
+        final Expression processHandler = InterDomainMessaging.processHandlerClass.callStaticFunction("getInstance");
+        final Expression domainId = new Function("getId")
+                .asFunctionCall(new Function("getDomain").asFunctionCall(Architecture.process, false,
+                        Literal.createStringLiteral(getDomainTranslator().getDomain().getName())), false);
+        final Expression serviceId = org.xtuml.masl.translate.main.DomainServiceTranslator
+                .getInstance((DomainService) getService()).getServiceId();
+        Expression topicName = InterDomainMessaging.processHandlerClass.callStaticFunction("getTopicName", domainId, serviceId);
+        if (getService().getDeclarationPragmas().getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).size() == 1) {
+            final String topicNameString = getService().getDeclarationPragmas()
+                    .getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).get(0);
+            if (!isBoolean(topicNameString) && !isNumeric(topicNameString)) {
+                topicName = Literal.createStringLiteral(topicNameString);
+            }
+        }
+        producerVar = new Variable(new TypeUsage(Std.unique_ptr(new TypeUsage(InterDomainMessaging.producerClass))), Mangler.mangleName(getService())
+            + "_producer", getDomainNamespace(), new Function("createProducer").asFunctionCall(processHandler, false, topicName));
+
+
         // create service function
-        publishFn = new Function(Mangler.mangleName(getService()), getDomainNamespace());
-        publishFn.setReturnType(getDomainTranslator().getTypes().getType(getService().getReturnType()));
+        produceFn = new Function(Mangler.mangleName(getService()), getDomainNamespace());
+        produceFn.setReturnType(getDomainTranslator().getTypes().getType(getService().getReturnType()));
 
         // if the service has a single string parameter, just pass through
         final boolean noParse = hasSingleStringParameter(getService());
@@ -179,7 +203,7 @@ public class DomainServiceTranslator extends ServiceTranslator {
         final List<Variable> serializeKeyVars = new ArrayList<>();
         final Map<ParameterDefinition, ParameterTranslator> paramTranslators = new HashMap<>();
         for (final ParameterDefinition param : getService().getParameters()) {
-            final ParameterTranslator paramTrans = new ParameterTranslator(param, publishFn);
+            final ParameterTranslator paramTrans = new ParameterTranslator(param, produceFn);
             paramTranslators.put(param, paramTrans);
             if (isTypeSerializable(param.getType().getBasicType())) {
                 serializeVars.add(paramTrans.getVariable());
@@ -194,36 +218,27 @@ public class DomainServiceTranslator extends ServiceTranslator {
         // serialize the data
         Expression paramData = null;
         if (!noParse) {
-            paramData = getParameterSerializer().serialize(serializeVars, publishFn.getCode());
+            paramData = getParameterSerializer().serialize(serializeVars, produceFn.getCode());
         }
 
         // serialize the partition key
         Expression keyData = null;
         if (includePartKey) {
-            keyData = getParameterSerializer().serialize(serializeKeyVars, publishFn.getCode());
+            keyData = getParameterSerializer().serialize(serializeKeyVars, produceFn.getCode());
         }
 
-        // call publisher
-        final Expression producer = InterDomainMessaging.producerClass.callStaticFunction("getInstance");
-        final Function publishFunc = new Function("publish");
-        final Expression domainId = new Function("getId")
-                .asFunctionCall(new Function("getDomain").asFunctionCall(Architecture.process, false,
-                        Literal.createStringLiteral(getDomainTranslator().getDomain().getName())), false);
-        final Expression serviceId = org.xtuml.masl.translate.main.DomainServiceTranslator
-                .getInstance((DomainService) getService()).getServiceId();
-
-        final List<Expression> publishArgs = new ArrayList<>();
-        publishArgs.add(domainId);
-        publishArgs.add(serviceId);
-        publishArgs.add(noParse
+        // call producer
+        final Function produceFunc = new Function("produce");
+        final List<Expression> produceArgs = new ArrayList<>();
+        produceArgs.add(noParse
                 ? Std.string.callConstructor(
                         paramTranslators.get(getService().getParameters().get(0)).getVariable().asExpression())
                 : paramData);
         if (includePartKey) {
-            publishArgs.add(keyData);
+            produceArgs.add(keyData);
         }
-        final Expression publishExpr = publishFunc.asFunctionCall(producer, false, publishArgs);
-        publishFn.getCode().appendStatement(new ExpressionStatement(publishExpr));
+        final Expression produceExpr = produceFunc.asFunctionCall(producerVar.asExpression(), true, produceArgs);
+        produceFn.getCode().appendStatement(new ExpressionStatement(produceExpr));
 
         // add service registration
         final org.xtuml.masl.translate.main.DomainServiceTranslator serviceTranslator = org.xtuml.masl.translate.main.DomainServiceTranslator
@@ -232,32 +247,10 @@ public class DomainServiceTranslator extends ServiceTranslator {
         final Expression interceptorFnCall = serviceInterceptor.asClass().callStaticFunction("instance");
         final Function registerFunction = new Function("registerLocal");
         final Expression initialValue = registerFunction.asFunctionCall(interceptorFnCall, false,
-                publishFn.asFunctionPointer());
-        publisherRegisteredVar = new Variable(new TypeUsage(FundamentalType.BOOL, TypeUsage.Const),
+                produceFn.asFunctionPointer());
+        producerRegisteredVar = new Variable(new TypeUsage(FundamentalType.BOOL, TypeUsage.Const),
                 "localServiceRegistration_" + Mangler.mangleName(getService()), getDomainNamespace(), initialValue);
-        publisherRegisteredVar.setStatic(true);
+        producerRegisteredVar.setStatic(true);
     }
 
-    void translateCustomTopicName() {
-        if (getService().getDeclarationPragmas().getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).size() == 1) {
-            final String topicNameString = getService().getDeclarationPragmas()
-                    .getPragmaValues(DomainTranslator.IDM_TOPIC_PRAGMA).get(0);
-            if (!isBoolean(topicNameString) && !isNumeric(topicNameString)) {
-                final Expression processHandler = InterDomainMessaging.processHandlerClass.callStaticFunction("getInstance");
-                final Expression domainId = new Function("getId")
-                        .asFunctionCall(
-                                new Function("getDomain").asFunctionCall(Architecture.process, false,
-                                        Literal.createStringLiteral(getDomainTranslator().getDomain().getName())),
-                                false);
-                final Expression serviceId = org.xtuml.masl.translate.main.DomainServiceTranslator
-                        .getInstance((DomainService) getService()).getServiceId();
-                final Expression topicName = Literal.createStringLiteral(topicNameString);
-                final Function setTopicNameFunc = new Function("setCustomTopicName");
-                final Expression setTopicName = setTopicNameFunc.asFunctionCall(processHandler, false, domainId,
-                        serviceId, topicName);
-                topicNameSet = new Variable(new TypeUsage(FundamentalType.BOOL),
-                        Mangler.mangleName(getService()) + "_topic_name_set", getDomainNamespace(), setTopicName);
-            }
-        }
-    }
 }

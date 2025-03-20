@@ -24,7 +24,7 @@ namespace InterDomainMessaging {
                             auto msg = std::move(*it);
 
                             // get the service invoker
-                            Callable service = handler->getInvoker(msg.message().as_json());
+                            Callable service = handler->getInvoker(msg.message().as_string());
 
                             // run the service
                             service();

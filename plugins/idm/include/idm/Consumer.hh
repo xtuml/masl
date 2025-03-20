@@ -4,15 +4,15 @@
 #include "DataConsumer.hh"
 #include "ServiceHandler.hh"
 
-#include <nlohmann/json.hpp>
+#include <memory>
 
 namespace InterDomainMessaging {
 
     class Consumer {
 
       public:
-        virtual bool consumeOne(DataConsumer &dataConsumer);
-        virtual void receive(std::shared_ptr<ServiceHandler> handler);
+        virtual bool consumeOne(DataConsumer &dataConsumer) = 0;
+        virtual void receive(std::shared_ptr<ServiceHandler> handler) = 0;
     };
 
 } // namespace InterDomainMessaging

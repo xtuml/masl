@@ -19,8 +19,8 @@ namespace InterDomainMessaging {
           public:
             Consumer(std::string topic, amqp_asio::Session session)
                 : topic(topic), log("idm.activemq.consumer.{}", topic), session(session) {}
-            void receive(std::shared_ptr<ServiceHandler> handler);
-            bool consumeOne(DataConsumer &dataConsumer) {
+            void receive(std::shared_ptr<ServiceHandler> handler) override;
+            bool consumeOne(DataConsumer &dataConsumer) override {
                 throw std::logic_error("Not implemented");
             }
 

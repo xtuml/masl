@@ -9,18 +9,19 @@
 #include "swa/Process.hh"
 
 #include <asio/io_context.hpp>
+#include <string>
 
 namespace InterDomainMessaging {
 
     class ProcessHandler : public SWA::DynamicSingleton<ProcessHandler> {
       public:
-        virtual std::unique_ptr<Consumer> createConsumer(std::string topic);
+        virtual std::unique_ptr<Consumer> createConsumer(std::string topic) = 0;
 
-        virtual std::unique_ptr<Producer> createProducer(std::string topic);
+        virtual std::unique_ptr<Producer> createProducer(std::string topic) = 0;
 
         bool registerServiceHandler(std::string topic, std::shared_ptr<ServiceHandler> handler);
 
-        std::string getTopicName(int domainId, int serviceId) {
+        static std::string getTopicName(int domainId, int serviceId) {
             return SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
         }
 

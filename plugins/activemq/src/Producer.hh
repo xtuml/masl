@@ -7,6 +7,8 @@
 #include "amqp_asio/session.hh"
 #include "logging/log.hh"
 
+#include <future>
+
 namespace InterDomainMessaging {
 
     namespace ActiveMQ {
@@ -16,20 +18,17 @@ namespace InterDomainMessaging {
           public:
             Producer(const std::string topic, amqp_asio::Session session);
 
-            void produce(nlohmann::json data) {
-                produce(data, std::nullopt);
-            };
+            void produce(std::string data) override;
 
-            void produce(nlohmann::json data, nlohmann::json partKey) {
-                produce(data, std::make_optional<nlohmann::json>(partKey));
+            void produce(std::string data, std::string partKey) override {
+                // partition key is ignored in this implementation
+                produce(data);
             };
 
           private:
-            amqp_asio::Sender sender;
+            std::future<amqp_asio::Sender> sender;
             std::string topic;
             xtuml::logging::Logger log;
-
-            void produce(nlohmann::json data, std::optional<nlohmann::json> partKey);
         };
 
     } // namespace ActiveMQ

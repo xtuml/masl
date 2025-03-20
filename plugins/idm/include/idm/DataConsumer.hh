@@ -1,13 +1,13 @@
 #ifndef InterDomainMessaging_DataConsumer_HH
 #define InterDomainMessaging_DataConsumer_HH
 
-#include <nlohmann/json.hpp>
+#include <string>
 
 namespace InterDomainMessaging {
 
     class DataConsumer {
       public:
-        virtual void accept(nlohmann::json data) const {}
+        virtual void accept(std::string data) const {}
         virtual ~DataConsumer();
     };
 

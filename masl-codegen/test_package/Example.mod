@@ -9,7 +9,7 @@ domain Example is
 
     relationship R1 is Obj1 conditionally contains many Obj2, Obj2 conditionally contained_in one Obj1;
 
-    public service svc1( a : in integer ); pragma idm_topic();
+    public service svc1( a : in integer ); pragma idm_topic("test_topic_name");
 
     object Obj1 is
         id : preferred integer;

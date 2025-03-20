@@ -32,7 +32,7 @@ class ConanFile(conan.ConanFile):
         self.requires("xtuml_amqp_client/[>=1 <2]@xtuml", transitive_headers=True)
         self.requires('xtuml_logging/[>=1.0 <2]@xtuml')
         self.requires("xtuml_swa/[>=1 <2]@xtuml", transitive_headers=True)
-        self.requires("xtuml_idm/[>=1 <2]@xtuml", transitive_headers=True)
+        self.requires("xtuml_idm/[>=1 <2]@xtuml", transitive_headers=True, transitive_libs=True)
         self.requires("fmt/[>=11.1.3 <12]")
         self.requires("boost/[>=1.86.0 <2]", override=True)
         self.requires("log4cplus/[>=2.1.0 <3]")
