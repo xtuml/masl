@@ -22,7 +22,6 @@ set -e
 ( cd plugins/trace && conan create . --update --build=missing --test-missing )
 ( cd plugins/idm && conan create . --update --build=missing --test-missing )
 ( cd plugins/activemq && conan create . --update --build=missing --test-missing )
-( cd plugins/kafka && conan create . --update --build=missing --test-missing )
 
 (cd masl-conan && conan create . --update --build=missing --test-missing)
 (cd masl-codegen && conan create . --update --build=missing --test-missing)
