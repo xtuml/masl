@@ -120,7 +120,7 @@ class MaslConanHelper():
         "metadata" : [True, False],
         "transient" : [True,False],
         "sqlite" : [True,False],
-        "kafka" : [True, False],
+        "idm" : [True, False],
         "amqp" : [True, False],
         "test" : [True, False]
     }
@@ -130,7 +130,7 @@ class MaslConanHelper():
         "metadata" : True,
         "transient" : True,
         "sqlite" : True,
-        "kafka" : True,
+        "idm" : True,
         "amqp" : False,
         "test" : False
         
@@ -163,7 +163,7 @@ class MaslConanHelper():
             ('xtuml_transient', '[>=1.0 <2]', self.options.transient ),
             ('xtuml_sql', '[>=1.0 <2]', self.options.sqlite ),
             ('xtuml_sqlite', '[>=1.0 <2]', self.options.sqlite ),
-            ('xtuml_kafka', '[>=1.0 <2]', self.options.kafka ),
+            ('xtuml_idm', '[>=1.0 <2]', self.options.idm ),
             ('xtuml_amqp_client', '[>=1.0 <2]', self.options.amqp ),
         ):
             if inc and  pkg not in omit and pkg not in ( r.ref.name for r in self.requires.values()):
