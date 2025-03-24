@@ -1,5 +1,7 @@
 #include "activemq/ActiveMQ.hh"
 
+#include "LogAppender.hh"
+
 #include "idm/ProcessHandler.hh"
 #include "swa/CommandLine.hh"
 #include "swa/Process.hh"
@@ -30,6 +32,10 @@ namespace InterDomainMessaging {
 
         struct Init {
             Init() {
+
+
+                // register log appender
+                log4cplus::spi::getAppenderFactoryRegistry().put(std::make_unique<InterDomainMessaging::ActiveMQ::ActiveMQAppenderFactory>());
 
                 // register command line arguments
                 SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokerOption, std::string("Broker URL"), true, "broker", true, false));

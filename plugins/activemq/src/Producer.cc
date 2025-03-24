@@ -23,7 +23,7 @@ namespace InterDomainMessaging {
                             .delivery_mode(amqp_asio::DeliveryMode::at_least_once)
                     );
                     initialised.notify();
-                    log.debug("Producer initialised")
+                    log.debug("Producer initialised");
                 },
                 asio::detached
             );
@@ -34,11 +34,11 @@ namespace InterDomainMessaging {
             asio::co_spawn(
                 executor,
                 [this, data]() -> asio::awaitable<void> {
-                    log.debug("Sending message")
-                        // TODO not sure why this is not working
-                        /*co_await initialised.wait();*/
-                        co_await sender.send(data, amqp_asio::messages::Properties{.to = topic});
-                    log.debug("Done sending")
+                    log.debug("Sending message");
+                    // TODO not sure why this is not working
+                    /*co_await initialised.wait();*/
+                    co_await sender.send(data, amqp_asio::messages::Properties{.to = topic});
+                    log.debug("Done sending");
                 },
                 asio::detached
             );

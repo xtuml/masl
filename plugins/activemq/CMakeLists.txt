@@ -12,6 +12,7 @@ find_package(fmt REQUIRED)
 add_library(ActiveMQ SHARED
         src/ActiveMQ.cc
         src/Consumer.cc
+        src/LogAppender.cc
         src/ProcessHandler.cc
         src/Producer.cc
 )
