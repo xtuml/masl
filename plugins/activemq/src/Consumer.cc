@@ -43,6 +43,7 @@ namespace InterDomainMessaging {
                 },
                 SWA::Process::getInstance().getActivityMonitor()
             );
+            log.debug("Created listener");
 
             // loop and wait for messages
             auto executor = proc.getContext().get_executor();
@@ -50,7 +51,10 @@ namespace InterDomainMessaging {
                 executor,
                 [this, executor]() -> asio::awaitable<void> {
                     co_await proc.getInitialised().wait();
-                    auto receiver = co_await proc.getSession().open_receiver(topic, amqp_asio::ReceiverOptions().name("idm.activemq.receiver." + topic));
+                    auto receiver = co_await proc.getSession().open_receiver(
+                        topic, amqp_asio::ReceiverOptions().name("idm.activemq." + SWA::Process::getInstance().getName() + ".receiver." + topic)
+                    );
+                    log.debug("Created receiver");
                     amqp_asio::spawn_cancellable_loop(
                         executor,
                         [this, receiver]() mutable -> asio::awaitable<void> {
@@ -63,6 +67,7 @@ namespace InterDomainMessaging {
                         },
                         log
                     );
+                    log.debug("Listening for messages");
                 },
                 asio::detached
             );

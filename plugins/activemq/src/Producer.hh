@@ -20,7 +20,7 @@ namespace InterDomainMessaging {
         class Producer : public InterDomainMessaging::Producer {
 
           public:
-            Producer(const std::string topic, ProcessHandler& proc);
+            Producer(const std::string topic, ProcessHandler &proc);
 
             void produce(std::string data) override;
 
@@ -34,8 +34,7 @@ namespace InterDomainMessaging {
             xtuml::logging::Logger log;
             amqp_asio::Sender sender;
             amqp_asio::ConditionVar initialised;
-            ProcessHandler& proc;
-
+            ProcessHandler &proc;
         };
 
     } // namespace ActiveMQ

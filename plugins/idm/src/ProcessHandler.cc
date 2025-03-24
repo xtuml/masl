@@ -5,6 +5,7 @@ namespace InterDomainMessaging {
     bool ProcessHandler::registerServiceHandler(std::string topic, std::shared_ptr<ServiceHandler> handler) {
         auto consumer = createConsumer(topic);
         consumer->receive(handler);
+        consumers.push_back(std::move(consumer));
         return true;
     }
 

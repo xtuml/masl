@@ -21,12 +21,15 @@ namespace InterDomainMessaging {
             ProcessHandler();
             std::unique_ptr<InterDomainMessaging::Consumer> createConsumer(std::string topic) override;
             std::unique_ptr<InterDomainMessaging::Producer> createProducer(std::string topic) override;
+
             amqp_asio::Session getSession() {
                 return session;
             }
-            amqp_asio::ConditionVar& getInitialised() {
+
+            amqp_asio::ConditionVar &getInitialised() {
                 return initialised;
             }
+
             static ProcessHandler &getInstance();
 
           private:

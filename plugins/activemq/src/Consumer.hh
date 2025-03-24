@@ -18,7 +18,7 @@ namespace InterDomainMessaging {
         class Consumer : public InterDomainMessaging::Consumer {
 
           public:
-            Consumer(std::string topic, ProcessHandler& proc)
+            Consumer(std::string topic, ProcessHandler &proc)
                 : topic(topic), log("idm.activemq.consumer.{}", topic), proc(proc) {}
             void receive(std::shared_ptr<ServiceHandler> handler) override;
             bool consumeOne(DataConsumer &dataConsumer) override {
@@ -30,7 +30,7 @@ namespace InterDomainMessaging {
             xtuml::logging::Logger log;
             std::unique_ptr<SWA::RealTimeSignalListener> listener;
             MessageQueue<amqp_asio::Delivery> messageQueue;
-            ProcessHandler& proc;
+            ProcessHandler &proc;
         };
 
     } // namespace ActiveMQ

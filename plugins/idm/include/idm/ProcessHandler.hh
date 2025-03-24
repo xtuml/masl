@@ -32,6 +32,7 @@ namespace InterDomainMessaging {
         static ProcessHandler &getInstance();
 
       private:
+        std::vector<std::unique_ptr<Consumer>> consumers;
         asio::io_context ctx;
     };
 
