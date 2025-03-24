@@ -9,7 +9,6 @@
  */
 package org.xtuml.masl.translate.cmake;
 
-import org.checkerframework.checker.units.qual.A;
 import org.xtuml.masl.cppgen.SharedLibrary;
 import org.xtuml.masl.translate.cmake.language.arguments.SingleArgument;
 import org.xtuml.masl.translate.cmake.language.commands.AddLibrary;
