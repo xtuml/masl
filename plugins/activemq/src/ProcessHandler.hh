@@ -26,8 +26,10 @@ namespace InterDomainMessaging {
                 return session;
             }
 
-            amqp_asio::ConditionVar &getInitialised() {
-                return initialised;
+            asio::awaitable<void> isInitialised() {
+                return initialisedCond.wait([this] {
+                    return initialised;
+                });
             }
 
             static ProcessHandler &getInstance();
@@ -36,7 +38,8 @@ namespace InterDomainMessaging {
             xtuml::logging::Logger log;
             amqp_asio::Connection conn;
             amqp_asio::Session session;
-            amqp_asio::ConditionVar initialised;
+            bool initialised;
+            amqp_asio::ConditionVar initialisedCond;
         };
 
     } // namespace ActiveMQ

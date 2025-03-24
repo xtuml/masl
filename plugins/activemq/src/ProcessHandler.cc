@@ -14,7 +14,7 @@ namespace InterDomainMessaging {
     namespace ActiveMQ {
 
         ProcessHandler::ProcessHandler()
-            : log(xtuml::logging::Logger("idm.activemq.processhandler")), initialised(getContext().get_executor()) {
+            : log(xtuml::logging::Logger("idm.activemq.processhandler")), initialisedCond(getContext().get_executor()) {
 
             auto executor = getContext().get_executor();
             asio::co_spawn(
@@ -38,7 +38,8 @@ namespace InterDomainMessaging {
                         session = co_await conn.open_session();
                         log.debug("Session open");
 
-                        initialised.notify();
+                        initialised = true;
+                        initialisedCond.notify();
 
                     } catch (std::bad_variant_access &e) {
                         throw std::system_error(make_error_code(std::errc::bad_message));

@@ -29,11 +29,18 @@ namespace InterDomainMessaging {
                 produce(data);
             };
 
+            asio::awaitable<void> isInitialised() {
+                return initialisedCond.wait([this] {
+                    return initialised;
+                });
+            }
+
           private:
             std::string topic;
             xtuml::logging::Logger log;
             amqp_asio::Sender sender;
-            amqp_asio::ConditionVar initialised;
+            bool initialised;
+            amqp_asio::ConditionVar initialisedCond;
             ProcessHandler &proc;
         };
 
