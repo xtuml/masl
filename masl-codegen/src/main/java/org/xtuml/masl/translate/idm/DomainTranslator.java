@@ -48,7 +48,6 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     public void translate() {
         // create code files
         final CodeFile consumerCodeFile = library.createBodyFile("InterDomainMessaging_consumers" + Mangler.mangleFile(domain));
-        final CodeFile pollerCodeFile = library.createBodyFile("InterDomainMessaging_pollers" + Mangler.mangleFile(domain));
         final CodeFile producerCodeFile = interfaceLibrary
                 .createBodyFile("InterDomainMessaging_producers" + Mangler.mangleFile(domain));
 
@@ -69,24 +68,6 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
             domainServiceFilePopulators.stream().filter(Iterator::hasNext).map(Iterator::next).forEach(Runnable::run);
         }
 
-        // create domain terminator service translators
-        final List<DomainTerminatorServiceTranslator> terminatorServiceTranslators = domain.getTerminators().stream()
-                .flatMap(terminator -> terminator.getServices().stream())
-                .filter(service -> service.getDeclarationPragmas().hasPragma(IDM_TOPIC_PRAGMA) && service.isFunction()
-                        && service.getReturnType().isAssignableFrom(BooleanType.createAnonymous()))
-                .map(service -> new DomainTerminatorServiceTranslator(service, this, new JsonSerializer(), pollerCodeFile))
-                .collect(Collectors.toList());
-
-        // translate domain terminator service handlers
-        terminatorServiceTranslators.forEach(DomainTerminatorServiceTranslator::translate);
-
-        // populate the code for the terminator services
-        final List<Iterator<Runnable>> terminatorServiceFilePopulators = terminatorServiceTranslators.stream()
-                .map(ServiceTranslator::getFilePopulators).map(List::iterator).collect(Collectors.toList());
-        while (terminatorServiceFilePopulators.stream().anyMatch(Iterator::hasNext)) {
-            terminatorServiceFilePopulators.stream().filter(Iterator::hasNext).map(Iterator::next)
-                    .forEach(Runnable::run);
-        }
     }
 
     Namespace getNamespace() {

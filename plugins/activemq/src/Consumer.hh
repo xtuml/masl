@@ -21,9 +21,6 @@ namespace InterDomainMessaging {
             Consumer(std::string topic, ProcessHandler &proc)
                 : topic(topic), log("idm.activemq.consumer.{}", topic), proc(proc) {}
             void receive(std::shared_ptr<ServiceHandler> handler) override;
-            bool consumeOne(DataConsumer &dataConsumer) override {
-                throw std::logic_error("Not implemented");
-            }
 
           private:
             std::string topic;

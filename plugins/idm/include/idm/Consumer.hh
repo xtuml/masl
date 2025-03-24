@@ -11,7 +11,6 @@ namespace InterDomainMessaging {
     class Consumer {
 
       public:
-        virtual bool consumeOne(DataConsumer &dataConsumer) = 0;
         virtual void receive(std::shared_ptr<ServiceHandler> handler) = 0;
     };
 
