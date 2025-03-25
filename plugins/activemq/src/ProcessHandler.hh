@@ -9,9 +9,6 @@
 
 #include "logging/log.hh"
 
-#include <asio/io_context.hpp>
-#include <future>
-
 namespace InterDomainMessaging {
 
     namespace ActiveMQ {

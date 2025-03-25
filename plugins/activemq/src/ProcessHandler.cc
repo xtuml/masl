@@ -14,12 +14,11 @@ namespace InterDomainMessaging {
     namespace ActiveMQ {
 
         ProcessHandler::ProcessHandler()
-            : log(xtuml::logging::Logger("idm.activemq.processhandler")), initialisedCond(getContext().get_executor()) {
+            : log(xtuml::logging::Logger("idm.activemq.processhandler")), initialisedCond(SWA::Process::getInstance().getIOContext().get_executor()) {
 
-            auto executor = getContext().get_executor();
             asio::co_spawn(
-                executor,
-                [this, executor]() -> asio::awaitable<void> {
+                SWA::Process::getInstance().getIOContext().get_executor(),
+                [this]() -> asio::awaitable<void> {
                     try {
 
                         const std::string hostname = SWA::CommandLine::getInstance().getOption(BrokerOption);
@@ -28,7 +27,8 @@ namespace InterDomainMessaging {
                         const std::string port = SWA::CommandLine::getInstance().getOption(PortNoOption, "5672");
 
                         // create connection
-                        conn = amqp_asio::Connection::create_amqp("idm.activemq." + SWA::Process::getInstance().getName(), executor);
+                        conn =
+                            amqp_asio::Connection::create_amqp("idm.activemq." + SWA::Process::getInstance().getName(), SWA::Process::getInstance().getIOContext().get_executor());
                         co_await conn.open(
                             amqp_asio::ConnectionOptions().hostname(hostname).port(port).sasl_options(amqp_asio::SaslOptions().authname(username).password(password))
                         );
