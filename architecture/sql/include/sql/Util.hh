@@ -261,19 +261,6 @@ namespace SQL {
 
     //******************************************************************************
     //******************************************************************************
-    inline int64_t htonll(int64_t value) {
-        int64_t destination = value;
-        if (isBigEndian() == true) {
-            // byte swap the 64 bit value.
-            char *dst = reinterpret_cast<char *>(&destination);
-            char *src = reinterpret_cast<char *>(&value);
-            std::reverse_copy(src, src + sizeof(int64_t), dst);
-        }
-        return destination;
-    }
-
-    //******************************************************************************
-    //******************************************************************************
     inline void checkStream(const std::ostringstream &str, const char *const location) {
         if (str.bad() || (str.fail() && !str.eof())) {
             std::string message("checkStream failed in ");

@@ -25,6 +25,7 @@ class ConanFile(conan.ConanFile):
             transitive_headers=True,
             transitive_libs=True,
         )
+        self.requires("asio/[>=1.31.0 <2]")
 
     def layout(self):
         cmake_layout(self)
@@ -47,3 +48,4 @@ class ConanFile(conan.ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["BacklogMonitor"]
         self.cpp_info.requires.append("xtuml_swa::xtuml_swa")
+        self.cpp_info.requires.append("asio::asio")

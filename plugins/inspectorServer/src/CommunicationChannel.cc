@@ -20,85 +20,55 @@
  * ----------------------------------------------------------------------------
  */
 
-#include <string>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <vector>
-#include <iostream>
-
 #include "inspector/CommunicationChannel.hh"
 #include "ConnectionError.hh"
+#include <arpa/inet.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <format>
+#include <iostream>
+#include <netinet/in.h>
+#include <string>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <vector>
 
-namespace Inspector
-{
+namespace Inspector {
 
-  CommunicationChannel::CommunicationChannel ( int port ) : 
-         serverSocket(port),
-         clientSocket(NULL),
-         connected(false)
-  {
-    serverSocket.setOption(SKT::SoReuseAddr(SKT::enable));
-    serverSocket.establish();
-  }
+    CommunicationChannel::CommunicationChannel(
+        std::string name, asio::any_io_executor executor, asio::ip::port_type port
+    )
+        : acceptor(executor, {asio::ip::tcp::v4(), port}),
+          client_socket(executor),
+          connected(false) {}
 
-  CommunicationChannel::~CommunicationChannel()
-  {
-     try{
-       disconnect();
-     }
-     catch(ConnectionError& se){
-       std::cerr << " CommunicationChannel::~CommunicationChannel - caught unexpected SocketException : " << se.what() << std::endl;
-     }
-     catch(...){
-       std::cerr << " CommunicationChannel::~CommunicationChannel - caught unexpected exception" << std::endl;
-     }
-  } 
+    CommunicationChannel::~CommunicationChannel() {
+        disconnect();
+    }
 
-  bool CommunicationChannel::attemptConnect()
-  {
-    try {
-      SocketDescriptorType clientConnection = serverSocket.acceptSocket();
-      if (clientConnection.isValid()){
-          disconnect();  // remove any old client.
-          clientSocket = new ClientSocketType(clientConnection);
-          outputStream.setFp(clientConnection.descriptor_);
-          inputStream.setFp (clientConnection.descriptor_);
-          connected = true;
-      }
-      else{
-        if (errno != EAGAIN){
-	    throw ConnectionError(std::string("Inspector::CommunicationChannel::attemptConnect - Non-blocking socket accept failed - ") + strerror(errno));
+    bool CommunicationChannel::attemptConnect() {
+        std::error_code ec;
+        acceptor.accept(client_socket, ec);
+        if (!ec) {
+            connected = true;
+            outputStream.setFp(client_socket.native_handle());
+            inputStream.setFp(client_socket.native_handle());
+        } else if (ec != asio::error::would_block) {
+            throw ConnectionError(
+                std::format("ConsoleRedirection::attemptConnect - Non-blocking socket accept failed - {}", ec.message())
+            );
         }
-      }
+        return connected;
     }
-    catch(SKT::SocketException& se){
-       std::cerr << "CommunicationChannel::attemptConnect - Caught unexpected SKT::SocketException : " << se.report() << std::endl;
-       throw ConnectionError("Inspector::CommunicationChannel::attemptConnect - failed");
+
+    void CommunicationChannel::disconnect() {
+        if (connected) {
+            outputStream.setFp(-1);
+            inputStream.setFp(-1);
+            client_socket.close();
+
+            connected = false;
+        }
     }
-    return connected;
-  } 
 
-  void CommunicationChannel::disconnect()
-  {
-    try {
-        if(connected){
-           outputStream.setFp(-1);
-           inputStream.setFp(-1);
-
-           delete clientSocket;
-           clientSocket = NULL;
-
-           connected = false;
-        } 
-    }
-    catch(SKT::SocketException& se){
-       std::cerr << "CommunicationChannel::disconnect - Caught unexpected SKT::SocketException : " << se.report() << std::endl;
-       throw ConnectionError("Inspector::CommunicationChannel::disconnect - failed");
-    }
-  } 
-
-}
+} // namespace Inspector

@@ -11,11 +11,11 @@
 #ifndef SWA_Process_HH
 #define SWA_Process_HH
 
-#include "ActivityMonitor.hh"
 #include "Domain.hh"
 #include "EventQueue.hh"
 #include "boost/signals2.hpp"
-
+#include <asio/io_context.hpp>
+#include <asio/strand.hpp>
 #include <deque>
 #include <string>
 
@@ -103,14 +103,26 @@ namespace SWA {
 
         void mainLoop();
 
-        ActivityMonitor &getActivityMonitor() {
-            return activityMonitor;
+        asio::io_context &getIOContext() {
+            return ioContext;
         }
 
         static void shutdownHandler(int, int);
 
         void requestShutdown() {
             shutdownRequested = true;
+            ioContext.stop();
+        }
+
+        template<typename Fn>
+        auto wrapProcessingThread(std::string name, Fn fn ) {
+            return ooa_strand.wrap([name=std::move(name), fn=std::move(fn),this](auto&&... args) {
+                ProcessingThread thread(name);
+                fn(std::forward<decltype(args)>(args)...);
+                getEventQueue().processEvents();
+                thread.completing();
+                thread.complete();
+            });
         }
 
       private:
@@ -126,7 +138,9 @@ namespace SWA {
 
         bool shutdownRequested;
 
-        ActivityMonitor activityMonitor;
+        asio::io_context ioContext;
+        asio::io_context::strand ooa_strand;
+        asio::executor_work_guard<asio::io_context::executor_type> work_guard;
 
         typedef boost::signals2::
             signal_type<void(), boost::signals2::keywords::mutex_type<boost::signals2::dummy_mutex>>::type VoidSignal;

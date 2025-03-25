@@ -12,7 +12,7 @@
 #include "swa/CommandLine.hh"
 #include "swa/Duration.hh"
 #include "swa/Process.hh"
-
+#include <print>
 #include <format>
 
 namespace SWA {
@@ -66,7 +66,7 @@ namespace SWA {
 
     EventTimer &EventTimers::addTimer(const TimerIdType id) {
         EventTimer &result =
-            *timers.insert(TimerStore::value_type(id, std::shared_ptr<EventTimer>(new EventTimer(id)))).first->second;
+            *timers.emplace(id, std::make_shared<EventTimer>(id)).first->second;
         return result;
     }
 

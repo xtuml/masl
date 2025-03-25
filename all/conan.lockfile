@@ -14,7 +14,6 @@
         "xtuml_masl_conan/5.0@xtuml#e07f5f34d6e50b3e322ac319802dfa23%1741627255.8788173",
         "xtuml_masl_codegen/1.0@xtuml#ee42ba36660ccd3eb287f590632dcc8b%1741627256.6591737",
         "xtuml_logging/1.0@xtuml#4c20251547d6fa974d05ef88759df1ab%1741627207.0120656",
-        "xtuml_kafka/1.0@xtuml#8e938fed5e9d3195c4b8436cd5e8a9a0%1741627244.2765322",
         "xtuml_inspector_server/1.0@xtuml#8b9a400a35be5c98c56ff6dda064ca1c%1741627231.863412",
         "xtuml_code_coverage/1.0@xtuml#169f4b8f3f77df31ea943879f3854ed2%1741627236.692589",
         "xtuml_backlog_monitor/1.0@xtuml#f97bb901ac44f3832e0e1d0932d0c92f%1741627239.9174523",
