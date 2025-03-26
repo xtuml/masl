@@ -1,6 +1,8 @@
 #include "Producer.hh"
 
+#include "activemq/ActiveMQ.hh"
 #include "idm/ProcessHandler.hh"
+#include "swa/CommandLine.hh"
 #include "swa/Process.hh"
 
 #include <asio/co_spawn.hpp>
@@ -11,7 +13,11 @@ namespace InterDomainMessaging {
     namespace ActiveMQ {
 
         Producer::Producer(const std::string topic, ProcessHandler &proc)
-            : topic(topic), log("idm.activemq.producer.{}", topic), initialisedCond(proc.getContext().get_executor()), proc(proc) {
+            : topic_prefix(SWA::CommandLine::getInstance().getOption(TopicPrefixOption, "topic://")),
+              topic(topic),
+              log("idm.activemq.producer.{}", topic),
+              initialisedCond(proc.getContext().get_executor()),
+              proc(proc) {
             auto executor = proc.getContext().get_executor();
             asio::co_spawn(
                 executor,
@@ -33,7 +39,7 @@ namespace InterDomainMessaging {
                 [this, data]() -> asio::awaitable<void> {
                     log.debug("Sending message");
                     co_await isInitialised();
-                    co_await sender.send(data, amqp_asio::messages::Properties{.to = topic});
+                    co_await sender.send(data, amqp_asio::messages::Properties{.to = topic_prefix + topic});
                     log.debug("Done sending");
                 },
                 asio::detached

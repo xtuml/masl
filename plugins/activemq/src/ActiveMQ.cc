@@ -16,6 +16,7 @@ namespace InterDomainMessaging {
         const char *const UsernameOption = "-activemq-username";
         const char *const PasswordOption = "-activemq-password";
         const char *const PortNoOption = "-activemq-port";
+        const char *const TopicPrefixOption = "-activemq-topic-prefix";
 
         bool startup() {
             std::thread{[] {
@@ -41,6 +42,7 @@ namespace InterDomainMessaging {
                 SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(UsernameOption, std::string("Broker Username"), false, "username", true, false));
                 SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PasswordOption, std::string("Broker Password"), false, "password", true, false));
                 SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PortNoOption, std::string("Broker Port Number"), false, "port", true, false));
+                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(TopicPrefixOption, std::string("Topic Prefix"), false, "prefix", true, false));
 
                 SWA::Process::getInstance().registerStartedListener(&startup);
             }

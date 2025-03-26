@@ -40,6 +40,7 @@ namespace InterDomainMessaging {
             }
 
           private:
+            std::string topic_prefix;
             std::string topic;
             xtuml::logging::Logger log;
             amqp_asio::Sender sender;

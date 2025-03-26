@@ -1,6 +1,7 @@
 #ifndef ActiveMQ_Consumer_HH
 #define ActiveMQ_Consumer_HH
 
+#include "activemq/ActiveMQ.hh"
 #include "idm/Consumer.hh"
 
 #include "ProcessHandler.hh"
@@ -9,6 +10,7 @@
 #include "idm/DataConsumer.hh"
 #include "idm/MessageQueue.hh"
 #include "logging/log.hh"
+#include "swa/CommandLine.hh"
 #include "swa/RealTimeSignalListener.hh"
 
 namespace InterDomainMessaging {
@@ -19,7 +21,7 @@ namespace InterDomainMessaging {
 
           public:
             Consumer(std::string topic, ProcessHandler &proc)
-                : topic(topic), log("idm.activemq.consumer.{}", topic), proc(proc) {}
+                : topic_prefix(SWA::CommandLine::getInstance().getOption(TopicPrefixOption, "topic://")), topic(topic), log("idm.activemq.consumer.{}", topic), proc(proc) {}
             void receive(std::shared_ptr<ServiceHandler> handler) override;
 
             std::string getName() {
@@ -27,6 +29,7 @@ namespace InterDomainMessaging {
             }
 
           private:
+            std::string topic_prefix;
             std::string topic;
             xtuml::logging::Logger log;
             std::unique_ptr<SWA::RealTimeSignalListener> listener;
