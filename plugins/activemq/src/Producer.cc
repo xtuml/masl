@@ -17,11 +17,7 @@ namespace InterDomainMessaging {
                 executor,
                 [this, topic, &proc]() mutable -> asio::awaitable<void> {
                     co_await proc.isInitialised();
-                    sender = co_await proc.getSession().open_sender(
-                        amqp_asio::SenderOptions()
-                            .name("idm.activemq." + SWA::Process::getInstance().getName() + ".producer.sender." + topic)
-                            .delivery_mode(amqp_asio::DeliveryMode::at_least_once)
-                    );
+                    sender = co_await proc.getSession().open_sender(amqp_asio::SenderOptions().name(getName()).delivery_mode(amqp_asio::DeliveryMode::at_least_once));
                     initialised = true;
                     initialisedCond.notify();
                     log.debug("Producer initialised");

@@ -36,6 +36,7 @@ class ConanFile(conan.ConanFile):
         self.requires("fmt/[>=11.1.3 <12]")
         self.requires("boost/[>=1.86.0 <2]", override=True)
         self.requires("log4cplus/[>=2.1.0 <3]")
+        self.requires("libuuid/1.0.3")
 
     def layout(self):
         cmake_layout(self)
@@ -63,3 +64,4 @@ class ConanFile(conan.ConanFile):
         self.cpp_info.requires.append("xtuml_amqp_client::xtuml_amqp_client")
         self.cpp_info.requires.append("fmt::fmt")
         self.cpp_info.requires.append("log4cplus::log4cplus")
+        self.cpp_info.requires.append("libuuid::libuuid")

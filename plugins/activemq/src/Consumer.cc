@@ -51,9 +51,7 @@ namespace InterDomainMessaging {
                 executor,
                 [this, executor]() -> asio::awaitable<void> {
                     co_await proc.isInitialised();
-                    auto receiver = co_await proc.getSession().open_receiver(
-                        topic, amqp_asio::ReceiverOptions().name("idm.activemq." + SWA::Process::getInstance().getName() + ".receiver." + topic)
-                    );
+                    auto receiver = co_await proc.getSession().open_receiver(topic, amqp_asio::ReceiverOptions().name(getName()));
                     log.debug("Created receiver");
                     amqp_asio::spawn_cancellable_loop(
                         executor,

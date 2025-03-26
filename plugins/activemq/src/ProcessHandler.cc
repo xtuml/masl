@@ -8,6 +8,7 @@
 
 #include <asio/co_spawn.hpp>
 #include <asio/detached.hpp>
+#include <uuid/uuid.h>
 
 namespace InterDomainMessaging {
 
@@ -15,6 +16,13 @@ namespace InterDomainMessaging {
 
         ProcessHandler::ProcessHandler()
             : log(xtuml::logging::Logger("idm.activemq.processhandler")), initialisedCond(getContext().get_executor()) {
+
+            // set name
+            uuid_t uuid;
+            uuid_generate(uuid);
+            char formatted_uuid[37];
+            uuid_unparse(uuid, formatted_uuid);
+            name = "idm.activemq." + SWA::Process::getInstance().getName() + "." + std::string(formatted_uuid);
 
             auto executor = getContext().get_executor();
             asio::co_spawn(
@@ -28,7 +36,7 @@ namespace InterDomainMessaging {
                         const std::string port = SWA::CommandLine::getInstance().getOption(PortNoOption, "5672");
 
                         // create connection
-                        conn = amqp_asio::Connection::create_amqp("idm.activemq." + SWA::Process::getInstance().getName(), executor);
+                        conn = amqp_asio::Connection::create_amqp(getName(), executor);
                         co_await conn.open(
                             amqp_asio::ConnectionOptions().hostname(hostname).port(port).sasl_options(amqp_asio::SaslOptions().authname(username).password(password))
                         );

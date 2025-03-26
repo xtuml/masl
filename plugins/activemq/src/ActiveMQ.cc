@@ -33,7 +33,6 @@ namespace InterDomainMessaging {
         struct Init {
             Init() {
 
-
                 // register log appender
                 log4cplus::spi::getAppenderFactoryRegistry().put(std::make_unique<InterDomainMessaging::ActiveMQ::ActiveMQAppenderFactory>());
 

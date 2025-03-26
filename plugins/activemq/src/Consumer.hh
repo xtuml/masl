@@ -22,6 +22,10 @@ namespace InterDomainMessaging {
                 : topic(topic), log("idm.activemq.consumer.{}", topic), proc(proc) {}
             void receive(std::shared_ptr<ServiceHandler> handler) override;
 
+            std::string getName() {
+                return proc.getName() + ".consumer." + topic;
+            }
+
           private:
             std::string topic;
             xtuml::logging::Logger log;

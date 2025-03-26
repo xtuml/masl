@@ -7,6 +7,7 @@ find_package(xtuml_idm REQUIRED)
 
 find_package(log4cplus REQUIRED)
 find_package(fmt REQUIRED)
+find_package(libuuid REQUIRED)
 
 
 add_library(ActiveMQ SHARED
@@ -24,6 +25,7 @@ target_link_libraries(ActiveMQ
         xtuml_amqp_client::xtuml_amqp_client
         fmt::fmt
         log4cplus::log4cplus
+        libuuid::libuuid
 )
 
 target_sources(ActiveMQ

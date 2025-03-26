@@ -20,7 +20,7 @@ namespace InterDomainMessaging {
         class Producer : public InterDomainMessaging::Producer {
 
           public:
-            Producer(const std::string topic, ProcessHandler &proc);
+            Producer(std::string topic, ProcessHandler &proc);
 
             void produce(std::string data) override;
 
@@ -33,6 +33,10 @@ namespace InterDomainMessaging {
                 return initialisedCond.wait([this] {
                     return initialised;
                 });
+            }
+
+            std::string getName() {
+                return proc.getName() + ".producer." + topic;
             }
 
           private:
