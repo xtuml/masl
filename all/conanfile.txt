@@ -1,6 +1,7 @@
 [requires]
 xtuml_logging/[>=1.0 <2]@xtuml
 xtuml_swa/[>=1.0 <2]@xtuml
+xtuml_activemq/[>=1.0 <2]@xtuml
 xtuml_amqp_client/[>=1.0 <2]@xtuml
 xtuml_asn1/[>=1.0 <2]@xtuml
 xtuml_sockets/[>=1.0 <2]@xtuml
@@ -9,6 +10,7 @@ xtuml_sql/[>=1.0 <2]@xtuml
 xtuml_sqlite/[>=1.0 <2]@xtuml
 xtuml_kafka/[>=1.0 <2]@xtuml
 xtuml_metadata/[>=1.0 <2]@xtuml
+xtuml_idm/[>=1.0 <2]@xtuml
 xtuml_inspector_server/[>=1.0 <2]@xtuml
 xtuml_thread_timer/[>=1.0 <2]@xtuml
 xtuml_code_coverage/[>=1.0 <2]@xtuml
