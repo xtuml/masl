@@ -229,11 +229,16 @@ class MaslConanHelper():
             env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{dep.ref.name}.channel={dep.ref.channel}")
             env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{dep.ref.name}.user={dep.ref.user}")
 
-
         envvars = env.vars(self)
         envvars.save_script("package_vars")
         
-        
+        runenv = Environment()
+        runenv.append_path("PATH", os.path.join(self.build_folder,'bin'))
+        runenv.append_path("LD_LIBRARY_PATH", os.path.join(self.build_folder,'lib'))
+        runenvvars = runenv.vars(self, scope="run")
+        runenvvars.save_script("local_paths")
+
+
     def build(self):
         extras = self.masl_extras()
         if self.options.test:
