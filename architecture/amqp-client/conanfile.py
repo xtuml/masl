@@ -1,6 +1,8 @@
 import conan
+from conan.tools.env import Environment
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
 from conan.errors import ConanInvalidConfiguration
+import os
 
 
 class ConanFile(conan.ConanFile):
@@ -51,6 +53,12 @@ class ConanFile(conan.ConanFile):
         tc = CMakeToolchain(self)
         tc.generate()
 
+        sasl_env = Environment()
+        for l in self.dependencies["cyrus-sasl"].cpp_info.libdirs:
+            sasl_env.append_path("SASL_PATH", os.path.join(l, "sasl2"))
+        sasl_vars = sasl_env.vars(self, scope="run")
+        sasl_vars.save_script("sasl_env")
+
     def build(self):
         cmake = CMake(self)
         cmake.configure()
@@ -69,3 +77,8 @@ class ConanFile(conan.ConanFile):
         self.cpp_info.requires.append("nlohmann_json::nlohmann_json")
         self.cpp_info.requires.append("boost::headers")
         self.cpp_info.requires.append("openssl::openssl")
+        for l in self.dependencies["cyrus-sasl"].cpp_info.libdirs:
+            self.runenv_info.append_path(
+                "SASL_PATH",
+                os.path.join(self.dependencies["cyrus-sasl"].package_folder, l, "sasl2"),
+            )
