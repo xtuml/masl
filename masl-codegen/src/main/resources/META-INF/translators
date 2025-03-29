@@ -2,6 +2,8 @@ org.xtuml.masl.translate.customcode.DomainTranslator
 org.xtuml.masl.translate.customcode.ProjectTranslator
 org.xtuml.masl.translate.cmake.Translator
 org.xtuml.masl.translate.conan.Translator
+org.xtuml.masl.translate.idm.DomainTranslator
+org.xtuml.masl.translate.idm.ProjectTranslator
 org.xtuml.masl.translate.inmemory.DomainTranslator
 org.xtuml.masl.translate.inmemory.ProjectTranslator
 org.xtuml.masl.translate.inspector.DomainTranslator
@@ -16,4 +18,3 @@ org.xtuml.masl.translate.sql.sqlite.ProjectTranslator
 org.xtuml.masl.translate.stacktrack.DomainTranslator
 org.xtuml.masl.translate.stacktrack.ProjectTranslator
 org.xtuml.masl.translate.tracelines.DomainTranslator
-org.xtuml.masl.translate.idm.DomainTranslator
