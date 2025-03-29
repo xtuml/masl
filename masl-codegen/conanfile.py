@@ -5,7 +5,7 @@ import os
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_masl_codegen"
-    version = "1.1"
+    version = "1.1.1"
     user = 'xtuml'
 
     package_type = 'application'
