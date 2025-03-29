@@ -18,6 +18,7 @@ xtuml_backlog_monitor/[>=1.0 <2]@xtuml
 xtuml_trace/[>=1.0 <2]@xtuml
 xtuml_masl_conan/[>=5.0 <6]@xtuml
 xtuml_masl_codegen/[>=1.0 <2]@xtuml
+xtuml_deployer/[>=1.0 <2]@xtuml
 masl_assertions/[>=1.0 <2]@xtuml
 masl_binary_io/[>=1.0 <2]@xtuml
 masl_command_line/[>=1.0 <2]@xtuml
