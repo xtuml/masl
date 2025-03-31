@@ -2,11 +2,12 @@ org.xtuml.masl.translate.customcode.DomainTranslator
 org.xtuml.masl.translate.customcode.ProjectTranslator
 org.xtuml.masl.translate.cmake.Translator
 org.xtuml.masl.translate.conan.Translator
+org.xtuml.masl.translate.idm.DomainTranslator
+org.xtuml.masl.translate.idm.ProjectTranslator
 org.xtuml.masl.translate.inmemory.DomainTranslator
 org.xtuml.masl.translate.inmemory.ProjectTranslator
 org.xtuml.masl.translate.inspector.DomainTranslator
 org.xtuml.masl.translate.inspector.ProjectTranslator
-org.xtuml.masl.translate.kafka.DomainTranslator
 org.xtuml.masl.translate.main.DomainTranslator
 org.xtuml.masl.translate.main.ProjectTranslator
 org.xtuml.masl.translate.metadata.DomainTranslator

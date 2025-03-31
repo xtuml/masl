@@ -16,7 +16,7 @@ from pathlib import Path
 
 class ConanFile(conan.ConanFile):
     name = 'xtuml_masl_conan'
-    version = '5.0'
+    version = '5.1'
     user = 'xtuml'
 
     package_type = 'python-require'
@@ -120,7 +120,7 @@ class MaslConanHelper():
         "metadata" : [True, False],
         "transient" : [True,False],
         "sqlite" : [True,False],
-        "kafka" : [True, False],
+        "idm" : [True, False],
         "amqp" : [True, False],
         "test" : [True, False]
     }
@@ -130,7 +130,7 @@ class MaslConanHelper():
         "metadata" : True,
         "transient" : True,
         "sqlite" : True,
-        "kafka" : True,
+        "idm" : True,
         "amqp" : False,
         "test" : False
         
@@ -163,7 +163,7 @@ class MaslConanHelper():
             ('xtuml_transient', '[>=1.0 <2]', self.options.transient ),
             ('xtuml_sql', '[>=1.0 <2]', self.options.sqlite ),
             ('xtuml_sqlite', '[>=1.0 <2]', self.options.sqlite ),
-            ('xtuml_kafka', '[>=1.0 <2]', self.options.kafka ),
+            ('xtuml_idm', '[>=1.0 <2]', self.options.idm ),
             ('xtuml_amqp_client', '[>=1.0 <2]', self.options.amqp ),
         ):
             if inc and  pkg not in omit and pkg not in ( r.ref.name for r in self.requires.values()):
@@ -212,11 +212,16 @@ class MaslConanHelper():
             env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{dep.ref.name}.channel={dep.ref.channel}")
             env.append("MASL_CODEGEN_OPTS", f"-Dpackage.{dep.ref.name}.user={dep.ref.user}")
 
-
         envvars = env.vars(self)
         envvars.save_script("package_vars")
         
-        
+        runenv = Environment()
+        runenv.append_path("PATH", os.path.join(self.build_folder,'bin'))
+        runenv.append_path("LD_LIBRARY_PATH", os.path.join(self.build_folder,'lib'))
+        runenvvars = runenv.vars(self, scope="run")
+        runenvvars.save_script("local_paths")
+
+
     def build(self):
         extras = self.masl_extras()
         if self.options.test:

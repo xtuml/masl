@@ -2,7 +2,7 @@ import conan
 
 class ConanFile(conan.ConanFile):
     name = "masl_uuid"
-    version = "1.0"
+    version = "1.2.1"
     user = "xtuml"
     
     python_requires = 'xtuml_masl_conan/[>=5.0 <6]@xtuml'
