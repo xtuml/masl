@@ -10,12 +10,13 @@
 
 #pragma once
 #include "amqp_asio/sender.hh"
-#include "messages.hh"
-#include "link.hh"
-#include "tracker.hh"
-#include "encoder.hh"
 #include "decoder.hh"
+#include "encoder.hh"
+#include "link.hh"
+#include "messages.hh"
+#include "tracker.hh"
 #include <asio/awaitable.hpp>
+#include <asio/strand.hpp>
 
 namespace amqp_asio {
 
@@ -25,8 +26,7 @@ namespace amqp_asio {
         using Self = std::shared_ptr<SenderImpl>;
         using Tracker = TrackerImpl<SenderImpl>;
 
-        static asio::awaitable<Self>
-        create(std::shared_ptr<Session> session, SenderOptions options) {
+        static asio::awaitable<Self> create(std::shared_ptr<Session> session, SenderOptions options) {
             auto link = std::make_shared<SenderImpl>(std::move(session), std::move(options));
             co_await link->init();
             co_return link;
@@ -34,24 +34,25 @@ namespace amqp_asio {
 
         SenderImpl(std::shared_ptr<Session> session, SenderOptions options)
             : LinkImpl<Session>(options.name().value_or(unique_name()), std::move(session), options.properties()),
+              send_strand_{make_strand(this->get_executor())},
               message_queue_{this->get_executor(), options.max_queue()},
               credit_watch_{this->get_executor()},
               log_{"amqp_asio.sender.{}", this->name()} {
-                switch (options.delivery_mode()) {
-                    case DeliveryMode::any:
-                        receiver_settle_mode_ = messages::ReceiverSettleMode::second;
-                        break;
-                    case DeliveryMode::at_most_once:
-                        sender_settle_mode_ = messages::SenderSettleMode::settled;
-                        break;
-                    case DeliveryMode::at_least_once:
-                        sender_settle_mode_ = messages::SenderSettleMode::unsettled;
-                        break;
-                    case DeliveryMode::exactly_once:
-                        sender_settle_mode_ = messages::SenderSettleMode::unsettled;
-                        receiver_settle_mode_ = messages::ReceiverSettleMode::second;
-                        break;
-                }
+            switch (options.delivery_mode()) {
+                case DeliveryMode::any:
+                    receiver_settle_mode_ = messages::ReceiverSettleMode::second;
+                    break;
+                case DeliveryMode::at_most_once:
+                    sender_settle_mode_ = messages::SenderSettleMode::settled;
+                    break;
+                case DeliveryMode::at_least_once:
+                    sender_settle_mode_ = messages::SenderSettleMode::unsettled;
+                    break;
+                case DeliveryMode::exactly_once:
+                    sender_settle_mode_ = messages::SenderSettleMode::unsettled;
+                    receiver_settle_mode_ = messages::ReceiverSettleMode::second;
+                    break;
+            }
         }
 
         asio::awaitable<void> init() override {
@@ -74,13 +75,23 @@ namespace amqp_asio {
             return std::static_pointer_cast<SenderImpl>(this->shared_from_this());
         }
 
-        asio::awaitable<std::shared_ptr<amqp_asio::Tracker::Impl>> send(messages::Message message, std::optional<DeliveryMode> mode={}) override {
-            auto tracker = co_await Tracker::create(self(), this->session()->next_delivery_number(), std::move(message), mode );
-            this->session()->register_unsettled_tracker(tracker);
+        asio::awaitable<std::shared_ptr<amqp_asio::Tracker::Impl>>
+        send(messages::Message message, std::optional<DeliveryMode> mode = {}) override {
+            // Do sends on a strand to prevent races between getting the delivery-id and pushing to the queue
+            co_return co_await asio::co_spawn(
+                send_strand_,
+                [this, message = std::move(message), mode](
+                ) -> asio::awaitable<std::shared_ptr<amqp_asio::Tracker::Impl>> {
+                    auto tracker = co_await Tracker::create(
+                        self(), this->session()->next_delivery_number(), std::move(message), mode
+                    );
+                    this->session()->register_unsettled_tracker(tracker);
 
-            co_await message_queue_.async_send({}, tracker);
-            ++this->flow().available;
-            co_return tracker;
+                    co_await message_queue_.async_send({}, tracker);
+                    ++this->flow().available;
+                    co_return tracker;
+                }
+            );
         }
 
         asio::awaitable<void>
@@ -90,7 +101,6 @@ namespace amqp_asio {
             );
             co_return;
         }
-
 
         asio::any_io_executor get_executor() const override {
             return LinkImpl<Session>::get_executor();
@@ -104,7 +114,6 @@ namespace amqp_asio {
             this->session()->settle_tracker(id);
         }
 
-
       private:
         void register_local_link() override {
             this->session()->register_local_sender(self());
@@ -113,15 +122,18 @@ namespace amqp_asio {
             this->session()->deregister_local_sender(self());
         }
 
-
         messages::Attach create_attach_request(std::optional<std::string> address) override {
 
             auto result = messages::Attach{
                 .name = this->name(),
                 .handle = this->output_handle(),
                 .role = messages::Role::sender,
-                .snd_settle_mode = sender_settle_mode_ == messages::SenderSettleMode::mixed ? std::optional<messages::SenderSettleMode>{} : sender_settle_mode_,
-                .rcv_settle_mode = receiver_settle_mode_ == messages::ReceiverSettleMode::first ? std::optional<messages::ReceiverSettleMode>{} : receiver_settle_mode_,
+                .snd_settle_mode = sender_settle_mode_ == messages::SenderSettleMode::mixed
+                                       ? std::optional<messages::SenderSettleMode>{}
+                                       : sender_settle_mode_,
+                .rcv_settle_mode = receiver_settle_mode_ == messages::ReceiverSettleMode::first
+                                       ? std::optional<messages::ReceiverSettleMode>{}
+                                       : receiver_settle_mode_,
                 .source = messages::Source{.address = address},
                 .target = messages::Target{.address = address},
                 .initial_delivery_count{this->flow().delivery_count},
@@ -220,7 +232,9 @@ namespace amqp_asio {
             --this->flow().available;
             ++this->flow().delivery_count;
             co_await check_drain();
-            co_await tracker->sent(transfer.settled.value_or(false), transfer.rcv_settle_mode.value_or(receiver_settle_mode_));
+            co_await tracker->sent(
+                transfer.settled.value_or(false), transfer.rcv_settle_mode.value_or(receiver_settle_mode_)
+            );
         }
 
         asio::awaitable<void> wait_for_credit() {
@@ -245,11 +259,11 @@ namespace amqp_asio {
             co_return;
         }
 
+        asio::any_io_executor send_strand_;
         messages::SenderSettleMode sender_settle_mode_{messages::SenderSettleMode::mixed};
         messages::ReceiverSettleMode receiver_settle_mode_{messages::ReceiverSettleMode::first};
         messages::ulong_t max_message_size_{};
-        using message_channel =
-            asio::experimental::channel<void(std::error_code, std::shared_ptr<Tracker>)>;
+        using message_channel = asio::experimental::channel<void(std::error_code, std::shared_ptr<Tracker>)>;
         message_channel message_queue_;
         ConditionVar credit_watch_;
 
