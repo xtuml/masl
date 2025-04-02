@@ -21,7 +21,7 @@
 namespace amqp_asio {
 
     template <typename Session>
-    class SenderImpl : public amqp_asio::Sender::Impl, public LinkImpl<Session> {
+    class SenderImpl : public Sender::Impl, public LinkImpl<Session> {
       public:
         using Self = std::shared_ptr<SenderImpl>;
         using Tracker = TrackerImpl<SenderImpl>;
@@ -34,9 +34,8 @@ namespace amqp_asio {
 
         SenderImpl(std::shared_ptr<Session> session, SenderOptions options)
             : LinkImpl<Session>(options.name().value_or(unique_name()), std::move(session), options.properties()),
-              send_strand_{make_strand(this->get_executor())},
-              message_queue_{this->get_executor(), options.max_queue()},
-              credit_watch_{this->get_executor()},
+              message_queue_{this->LinkImpl<Session>::get_executor(), options.max_queue()},
+              credit_watch_{this->LinkImpl<Session>::get_executor()},
               log_{"amqp_asio.sender.{}", this->name()} {
             switch (options.delivery_mode()) {
                 case DeliveryMode::any:
@@ -77,21 +76,11 @@ namespace amqp_asio {
 
         asio::awaitable<std::shared_ptr<amqp_asio::Tracker::Impl>>
         send(messages::Message message, std::optional<DeliveryMode> mode = {}) override {
-            // Do sends on a strand to prevent races between getting the delivery-id and pushing to the queue
-            co_return co_await asio::co_spawn(
-                send_strand_,
-                [this, message = std::move(message), mode](
-                ) -> asio::awaitable<std::shared_ptr<amqp_asio::Tracker::Impl>> {
-                    auto tracker = co_await Tracker::create(
-                        self(), this->session()->next_delivery_number(), std::move(message), mode
-                    );
-                    this->session()->register_unsettled_tracker(tracker);
+            auto tracker = co_await Tracker::create(self(), std::move(message), mode);
 
-                    co_await message_queue_.async_send({}, tracker);
-                    ++this->flow().available;
-                    co_return tracker;
-                }
-            );
+            co_await message_queue_.async_send({}, tracker);
+            ++this->flow().available;
+            co_return tracker;
         }
 
         asio::awaitable<void>
@@ -195,7 +184,6 @@ namespace amqp_asio {
 
             auto transfer = messages::Transfer{
                 .handle = this->output_handle(),
-                .delivery_id = tracker->id(),
                 .delivery_tag = tracker->tag(),
             };
 
@@ -210,7 +198,7 @@ namespace amqp_asio {
             }
 
             if (max_message_size_ == 0 || buffer.size() <= max_message_size_) {
-                co_await this->session()->send_message(transfer, std::move(buffer));
+                co_await this->session()->track_transfer(tracker, transfer, std::move(buffer));
 
             } else {
                 transfer.more = true;
@@ -220,11 +208,17 @@ namespace amqp_asio {
                         end = buffer.size();
                         transfer.more.reset();
                     }
-                    co_await this->session()->send_message(
-                        transfer, messages::AmqpPayload{buffer.begin() + start, buffer.begin() + end}
-                    );
+                    if ( start == 0 ) {
+                        co_await this->session()->track_transfer(tracker,
+                            transfer, messages::AmqpPayload{buffer.begin() + start, buffer.begin() + end}
+                        );
+
+                    } else {
+                        co_await this->session()->send_message(
+                            transfer, messages::AmqpPayload{buffer.begin() + start, buffer.begin() + end}
+                        );
+                    }
                     // Only needed for first
-                    transfer.delivery_id.reset();
                     transfer.delivery_tag.reset();
                 }
             }
@@ -259,7 +253,6 @@ namespace amqp_asio {
             co_return;
         }
 
-        asio::any_io_executor send_strand_;
         messages::SenderSettleMode sender_settle_mode_{messages::SenderSettleMode::mixed};
         messages::ReceiverSettleMode receiver_settle_mode_{messages::ReceiverSettleMode::first};
         messages::ulong_t max_message_size_{};

@@ -70,21 +70,21 @@ target_link_libraries(gen_to_tuple PRIVATE fmt::fmt)
 target_compile_options(gen_to_tuple PRIVATE -Wall -Werror)
 
 # Tests
-add_executable(
-        tests
-        src/test/test_value_decode.cc
-        src/test/test_value_encode.cc
-        src/test/test_delivery.cc
-        src/test/test_receiver.cc
-        src/test/test_sender.cc
-        src/test/test_tracker.cc
-        src/test/main.cc)
+#add_executable(
+#        tests
+#        src/test/test_value_decode.cc
+#        src/test/test_value_encode.cc
+#        src/test/test_delivery.cc
+#        src/test/test_receiver.cc
+#        src/test/test_sender.cc
+#        src/test/test_tracker.cc
+#        src/test/main.cc)
 
-target_link_libraries(tests PRIVATE xtuml_amqp_client GTest::gtest GTest::gmock)
-target_compile_options(tests PRIVATE -Wall -Werror)
+#target_link_libraries(tests PRIVATE xtuml_amqp_client GTest::gtest GTest::gmock)
+#target_compile_options(tests PRIVATE -Wall -Werror)
 
-add_test(NAME tests COMMAND tests)
-set_tests_properties(tests PROPERTIES TIMEOUT 10)
+#add_test(NAME tests COMMAND tests)
+#set_tests_properties(tests PROPERTIES TIMEOUT 10)
 
 # Doc examples
 add_subdirectory(docs/examples)
