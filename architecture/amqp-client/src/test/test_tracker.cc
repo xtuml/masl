@@ -19,7 +19,7 @@
 using namespace testing;
 using namespace amqp_asio::testing;
 using namespace amqp_asio;
-namespace messages = amqp_asio::messages;
+namespace msg = amqp_asio::messages;
 
 struct SenderMock {
 
@@ -30,17 +30,17 @@ struct SenderMock {
         return executor_;
     }
 
-    MOCK_METHOD(void, settle, (messages::DeliveryNumber id));
+    MOCK_METHOD(void, settle, (msg::DeliveryNumber id));
 
     asio::awaitable<void>
-    send_disposition(messages::DeliveryNumber id, bool settled, std::optional<messages::DeliveryState> state) {
+    send_disposition(msg::DeliveryNumber id, bool settled, std::optional<msg::DeliveryState> state) {
         co_return send_disposition_async(id, settled, state);
     }
 
     MOCK_METHOD(
         void,
         send_disposition_async,
-        (messages::DeliveryNumber id, bool settled, std::optional<messages::DeliveryState> state)
+        (msg::DeliveryNumber id, bool settled, std::optional<msg::DeliveryState> state)
     );
 
   private:
@@ -50,8 +50,8 @@ struct SenderMock {
 using StrictSender = StrictMock<SenderMock>;
 
 struct TrackerTest : public AsyncTest {
-    messages::DeliveryNumber id{1};
-    messages::Message message{};
+    msg::DeliveryNumber id{1};
+    msg::Message message{};
 
 };
 
@@ -62,14 +62,16 @@ TEST_F(TrackerTest, AtMostOnce) {
         auto sender = std::make_shared<StrictSender>(get_executor());
 
         auto tracker = co_await TrackerImpl<StrictSender>::create(
-            sender, id, message, {}
+            sender, message, {}
         );
 
         EXPECT_FALSE(tracker->is_sent());
 
         EXPECT_CALL(*sender, settle(id));
 
-        co_await tracker->sent(true,messages::ReceiverSettleMode::first);
+        co_await tracker->start(id);
+
+        co_await tracker->sent(true,msg::ReceiverSettleMode::first);
 
         co_await tracker->await_settled();
 
@@ -85,14 +87,15 @@ TEST_F(TrackerTest, AtLeastOnce) {
         auto sender = std::make_shared<StrictSender>(get_executor());
 
         auto tracker = co_await TrackerImpl<StrictSender>::create(
-            sender, id, message, {}
+            sender, message, {}
         );
 
         EXPECT_FALSE(tracker->is_sent());
 
         EXPECT_CALL(*sender, settle(id));
 
-        co_await tracker->sent(false,messages::ReceiverSettleMode::first);
+        co_await tracker->start(id);
+        co_await tracker->sent(false,msg::ReceiverSettleMode::first);
         co_await tracker->await_sent();
         EXPECT_FALSE(tracker->is_settled());
 
@@ -110,20 +113,21 @@ TEST_F(TrackerTest, ExactlyOnce) {
         auto sender = std::make_shared<StrictSender>(get_executor());
 
         auto tracker = co_await TrackerImpl<StrictSender>::create(
-            sender, id, message, {}
+            sender, message, {}
         );
 
         EXPECT_FALSE(tracker->is_sent());
 
 
-        co_await tracker->sent(false,messages::ReceiverSettleMode::second);
+        co_await tracker->start(id);
+        co_await tracker->sent(false,msg::ReceiverSettleMode::second);
         co_await tracker->await_sent();
         EXPECT_FALSE(tracker->is_settled());
 
-        EXPECT_CALL(*sender,send_disposition_async(1,true, std::make_optional(messages::DeliveryState{messages::Accepted{}})));
+        EXPECT_CALL(*sender,send_disposition_async(1,true, std::make_optional(msg::DeliveryState{msg::Accepted{}})));
         EXPECT_CALL(*sender, settle(id));
  
-        co_await tracker->disposition(false,messages::Accepted{},false);
+        co_await tracker->disposition(false,msg::Accepted{},false);
 
         co_await tracker->await_settled();
         EXPECT_TRUE(tracker->is_settled());
@@ -138,24 +142,25 @@ TEST_F(TrackerTest, ExactlyOnceNonFinal) {
         auto sender = std::make_shared<StrictSender>(get_executor());
 
         auto tracker = co_await TrackerImpl<StrictSender>::create(
-            sender, id, message, {}
+            sender, message, {}
         );
 
         EXPECT_FALSE(tracker->is_sent());
 
 
-        co_await tracker->sent(false,messages::ReceiverSettleMode::second);
+        co_await tracker->start(id);
+        co_await tracker->sent(false,msg::ReceiverSettleMode::second);
         co_await tracker->await_sent();
         EXPECT_FALSE(tracker->is_settled());
 
-        co_await tracker->disposition(false,messages::Received{},false);
+        co_await tracker->disposition(false,msg::Received{},false);
         co_await wait_a_bit();
         EXPECT_FALSE(tracker->is_settled());
 
-        EXPECT_CALL(*sender,send_disposition_async(1,true, std::make_optional(messages::DeliveryState{messages::Accepted{}})));
+        EXPECT_CALL(*sender,send_disposition_async(1,true, std::make_optional(msg::DeliveryState{msg::Accepted{}})));
         EXPECT_CALL(*sender, settle(id));
 
-        co_await tracker->disposition(false,messages::Accepted{},false);
+        co_await tracker->disposition(false,msg::Accepted{},false);
         co_await tracker->await_settled();
         EXPECT_TRUE(tracker->is_settled());
 

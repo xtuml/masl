@@ -48,7 +48,7 @@ namespace amqp_asio::testing {
         asio::awaitable<Ret> pop() {
             timeout_.expires_after(100ms);
             timeout_.async_wait([&](auto ec) {
-                if ( ec != asio::error::operation_aborted ) {
+                if (ec != asio::error::operation_aborted) {
                     ADD_FAILURE() << "Timeout waiting for " << name_;
                     calls_.cancel();
                 }
@@ -72,7 +72,6 @@ namespace amqp_asio::testing {
     };
 
     struct SessionMock {
-
         using Link = LinkImpl<StrictMock<SessionMock>>;
         using Receiver = ReceiverImpl<StrictMock<SessionMock>>;
         using Delivery = DeliveryImpl<Receiver>;
@@ -81,6 +80,7 @@ namespace amqp_asio::testing {
 
         SessionMock(asio::any_io_executor executor)
             : executor_{executor},
+              track_transfer_calls{executor, "track_transfer()"},
               open_calls{executor, "send_message(Open)"},
               begin_calls{executor, "send_message(Begin)"},
               attach_calls{executor, "send_message(Attach)"},
@@ -102,6 +102,13 @@ namespace amqp_asio::testing {
         void deregister_local_sender(std::shared_ptr<Sender>) {}
         void deregister_local_receiver(std::shared_ptr<Receiver>) {}
         void deregister_remote_link(std::shared_ptr<Link>) {}
+
+        asio::awaitable<void>
+        track_transfer(std::shared_ptr<Tracker> tracker, messages::Transfer transfer, messages::AmqpPayload message) {
+            co_await tracker->start(2);
+            track_transfer_calls.push(tracker, transfer, std::move(message));
+            co_return;
+        }
 
         asio::awaitable<void> send_message(messages::Performative performative, messages::AmqpPayload payload = {}) {
             std::visit(
@@ -157,6 +164,10 @@ namespace amqp_asio::testing {
             return next_delivery_no_++;
         }
 
+        asio::awaitable<std::tuple<std::shared_ptr<Tracker>,messages::Transfer, messages::AmqpPayload>> transfer_tracked() {
+            co_return co_await track_transfer_calls.pop();
+        }
+
         asio::awaitable<messages::Open> open_sent() {
             co_return co_await open_calls.pop();
         }
@@ -194,6 +205,7 @@ namespace amqp_asio::testing {
         messages::DeliveryNumber next_delivery_no_{};
 
       public:
+        CallQueue<std::shared_ptr<Tracker>, messages::Transfer, messages::AmqpPayload> track_transfer_calls;
         CallQueue<messages::Open> open_calls;
         CallQueue<messages::Begin> begin_calls;
         CallQueue<messages::Attach> attach_calls;

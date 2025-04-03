@@ -14,7 +14,7 @@
 class Environment : public ::testing::Environment {
  public:
     void SetUp() override {
-        xtuml::logging::Logger::root().set_level(xtuml::logging::Logger::Level::DEBUG);
+        xtuml::logging::Logger::root().set_level(xtuml::logging::Logger::Level::INFO);
     }
 };
 
