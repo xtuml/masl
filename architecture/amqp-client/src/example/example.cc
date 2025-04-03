@@ -9,6 +9,7 @@
 #include <asio/ip/tcp.hpp>
 #include <asio/signal_set.hpp>
 #include <asio/spawn.hpp>
+#include <asio/ssl.hpp>
 #include <asio/strand.hpp>
 #include <asio/write.hpp>
 
@@ -24,14 +25,61 @@ using asio::detached;
 using asio::use_awaitable;
 namespace this_coro = asio::this_coro;
 
-awaitable<void> main_loop(
-    asio::io_context &ctx,
-    std::string hostname,
-    std::string port,
-    std::string username,
-    std::string password,
-    bool use_rabbitmq = false
-) {
+struct BrokerConfig {
+    std::string hostname;
+    std::string port;
+    std::string username;
+    std::string password;
+    bool rabbitmq{};
+};
+
+struct SSLConfig {
+    bool use = false;
+    std::string certificate_file;
+    std::string private_key_file;
+    std::string ca_file;
+    std::string password;
+
+    [[nodiscard]]
+    bool use_ssl() const {
+        return use || !certificate_file.empty() || !ca_file.empty() || !private_key_file.empty();
+    }
+
+    [[nodiscard]]
+    asio::ssl::context context() const {
+        asio::ssl::context ctx(asio::ssl::context::tlsv13);
+
+        ctx.set_verify_mode(asio::ssl::verify_peer);
+        if (!ca_file.empty()) {
+            ctx.load_verify_file(ca_file);
+        }
+
+        if (!password.empty()) {
+            ctx.set_password_callback([password = password](auto size, auto purpose) -> std::string {
+                return password;
+            });
+        }
+
+        if (!certificate_file.empty()) {
+            ctx.use_certificate_file(certificate_file, asio::ssl::context::pem);
+        }
+        if (!private_key_file.empty()) {
+            ctx.use_private_key_file(private_key_file, asio::ssl::context::pem);
+            if (certificate_file.empty()) {
+                ctx.use_certificate_file(private_key_file, asio::ssl::context::pem);
+            }
+        }
+        return ctx;
+    }
+};
+
+struct Config {
+    std::string name;
+    BrokerConfig broker;
+    SSLConfig ssl;
+};
+
+awaitable<void> main_loop(asio::io_context &ctx, const Config &config) {
 
     auto log = xtuml::logging::Logger("amqp_asio.main_loop");
 
@@ -43,26 +91,31 @@ awaitable<void> main_loop(
     try {
         auto executor = co_await this_coro::executor;
         asio::steady_timer timer(executor);
+        auto ssl_ctx = config.ssl.context();
+        Connection c = config.ssl.use_ssl() ? Connection::create_amqps(config.name, executor, ssl_ctx)
+                                            : Connection::create_amqp(config.name, executor);
 
-        auto c = Connection::create_amqp("test-container", executor);
-        co_await c.open(ConnectionOptions().hostname(hostname).port(port).sasl_options(
-            SaslOptions().authname(username).password(password)
-        ));
+        co_await c.open(
+            ConnectionOptions()
+                .hostname(config.broker.hostname)
+                .port(config.broker.port)
+                .sasl_options(SaslOptions().authname(config.broker.username).password(config.broker.password))
+        );
 
         log.info("Connection open");
 
         auto session = co_await c.open_session();
 
-        std::string topic_prefix = "";
-        std::string queue_prefix = "";
+        std::string send_prefix = "topic://";
+        std::string recv_prefix = "topic://";
 
-        if (use_rabbitmq) {
+        if (config.broker.rabbitmq) {
             auto mgt = co_await RabbitMQManagement::create(session);
             co_await mgt.bind_topic("example.*");
             co_await mgt.detach();
 
-            queue_prefix = "/queues/";
-            topic_prefix = "/exchanges/amq.topic/";
+            recv_prefix = "/queues/";
+            send_prefix = "/exchanges/amq.topic/";
         }
 
         log.info("Session open");
@@ -70,13 +123,13 @@ awaitable<void> main_loop(
 
         auto sender =
             co_await session.open_sender(SenderOptions().name("sender").delivery_mode(DeliveryMode::at_least_once));
-        auto receiver = co_await session.open_receiver(queue_prefix + "example.*", ReceiverOptions().name("receiver"));
+        auto receiver = co_await session.open_receiver(recv_prefix + "example.*", ReceiverOptions().name("receiver"));
 
         spawn_cancellable_loop(
             executor,
             [&]() -> asio::awaitable<void> {
                 auto delivery = co_await receiver.receive();
-                //                log.info("Received message {}", nlohmann::json(delivery.message()).dump(2));
+                // log.info("Received message {}", nlohmann::json(delivery.message()).dump(2));
                 log.info("Received message {}", delivery.message().as_string());
                 co_await delivery.accept();
             },
@@ -87,9 +140,9 @@ awaitable<void> main_loop(
             executor,
             [&]() -> asio::awaitable<void> {
                 auto json = nlohmann::json({{"hello", "world"}});
-                co_await sender.send("hello", amqp_asio::messages::Properties{.to = topic_prefix + "example.channel"});
+                co_await sender.send("hello", amqp_asio::messages::Properties{.to = send_prefix + "example.channel"});
                 co_await sender.send_json(
-                    json, amqp_asio::messages::Properties{.to = topic_prefix + "example.channel"}
+                    json, amqp_asio::messages::Properties{.to = send_prefix + "example.channel"}
                 );
                 asio::steady_timer timer(executor, 1s);
                 co_await timer.async_wait();
@@ -135,28 +188,37 @@ int main(int argc, char *argv[]) {
         )
         ->envname("LOG_CONFIG");
 
-    std::string hostname;
-    std::string port;
-    std::string username;
-    std::string password;
-    bool rabbitmq{};
-    auto conn_opts = options.add_option_group("Connection");
-    conn_opts->add_option("--hostname", hostname, "Broker hostname")->default_val("localhost");
-    conn_opts->add_option("--port", port, "Broker port")->default_val("5672");
-    conn_opts->add_option("--username", username, "Broker username")->default_val("guest");
-    conn_opts->add_option("--password", password, "Broker password")->default_val("guest");
-    conn_opts->add_flag("--rabbitmq", rabbitmq, "Use RabbitMQ Broker Management");
+    Config config;
+    options.add_option("--name", config.name, "Client name")->default_val("example-client");
+    auto conn_opts = options.add_option_group("Broker");
+    conn_opts->add_option("--hostname", config.broker.hostname, "Broker hostname")->default_val("localhost");
+    conn_opts->add_option("--port", config.broker.port, "Broker port");
+    conn_opts->add_option("--username", config.broker.username, "Broker username")->default_val("guest");
+    conn_opts->add_option("--password", config.broker.password, "Broker password")->default_val("guest");
+    conn_opts->add_flag("--rabbitmq", config.broker.rabbitmq, "Use RabbitMQ Broker Management");
+
+    auto ssl_opts = options.add_option_group("SSL");
+    ssl_opts->add_flag("--ssl", config.ssl.use, "Connect using SSL");
+    ssl_opts->add_option("--ssl_cert", config.ssl.certificate_file, "SSL Certificate (pem)");
+    ssl_opts->add_option("--ssl_key", config.ssl.private_key_file, "SSL Private Key (pem)");
+    ssl_opts->add_option("--ssl_ca", config.ssl.ca_file, "SSL CA (pem)");
+    ssl_opts->add_option("--ssl_password", config.ssl.password, "SSL password");
     try {
         options.parse(argc, argv);
+        if ( config.broker.port.empty()) {
+            config.broker.port = config.ssl.use_ssl()? "5671" : "5672";
+        }
     } catch (const CLI::ParseError &e) {
         return options.exit(e);
     }
+
+
 
     try {
         asio::io_context io_context(1);
         auto ex = io_context.get_executor();
         log.info("Running");
-        co_spawn(ex, main_loop(io_context, hostname, port, username, password, rabbitmq), detached);
+        co_spawn(ex, main_loop(io_context, config), detached);
         io_context.run();
 
     } catch (std::exception &e) {
