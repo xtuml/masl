@@ -7,7 +7,7 @@ import os
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_amqp_client"
-    version = "1.1.1"
+    version = "1.1.2"
     user = "xtuml"
 
     package_type = "shared-library"
@@ -63,6 +63,7 @@ class ConanFile(conan.ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+        cmake.test()
 
     def package(self):
         cmake = CMake(self)
@@ -80,5 +81,7 @@ class ConanFile(conan.ConanFile):
         for l in self.dependencies["cyrus-sasl"].cpp_info.libdirs:
             self.runenv_info.append_path(
                 "SASL_PATH",
-                os.path.join(self.dependencies["cyrus-sasl"].package_folder, l, "sasl2"),
+                os.path.join(
+                    self.dependencies["cyrus-sasl"].package_folder, l, "sasl2"
+                ),
             )

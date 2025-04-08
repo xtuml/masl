@@ -38,19 +38,18 @@ namespace amqp_asio {
         using Released = messages::Released;
 
         static asio::awaitable<Self>
-        create(std::shared_ptr<Sender> sender, DeliveryNumber id, Message message, std::optional<DeliveryMode> delivery_mode) {
-            auto tracker = std::make_shared<TrackerImpl>(std::move(sender), id, std::move(message), delivery_mode);
+        create(std::shared_ptr<Sender> sender, Message message, std::optional<DeliveryMode> delivery_mode) {
+            auto tracker = std::make_shared<TrackerImpl>(std::move(sender), std::move(message), delivery_mode);
             co_await tracker->init();
             co_return tracker;
         }
 
-        TrackerImpl(std::shared_ptr<Sender> sender, DeliveryNumber id, Message message, std::optional<DeliveryMode> delivery_mode)
-            : id_{id},
-              tag_{unique_tag()},
+        TrackerImpl(std::shared_ptr<Sender> sender, Message message, std::optional<DeliveryMode> delivery_mode)
+            : tag_{unique_tag()},
               delivery_mode_{delivery_mode},
               message_{std::move(message)},
               sender_{std::move(sender)},
-              sm_(get_executor(), "amqp_asio.tracker.sm.{}", id_) {}
+              sm_(get_executor(), "amqp_asio.tracker.sm") {}
 
         auto self() const {
             return this->shared_from_this();
@@ -72,9 +71,10 @@ namespace amqp_asio {
             return message_;
         }
 
-        DeliveryNumber id() const {
-            return id_;
+        std::optional<DeliveryNumber> delivery_id() const {
+            return delivery_id_;
         }
+
         DeliveryTag tag() const {
             return tag_;
         }
@@ -103,6 +103,11 @@ namespace amqp_asio {
             return sm_.template in_state<Settled>();
         }
 
+        asio::awaitable<void> start(messages::DeliveryNumber delivery_id) {
+            co_await sm_.generate_event(Start{delivery_id});
+            co_return;
+        };
+
         asio::awaitable<void> sent(bool settled, messages::ReceiverSettleMode rcv_mode) {
             co_await sm_.generate_event(Sent{std::make_tuple(settled, rcv_mode)});
             co_return;
@@ -113,12 +118,14 @@ namespace amqp_asio {
         static constexpr auto plantuml_fsm = R"(
 @startuml
 state Pending
+state Sending
 state SendComplete  #line.dotted
 state Unsettled
 state Settled
 state CheckingDisposition  #line.dotted
 
-Pending --> SendComplete : Sent(settled,rcv_mode)
+Pending --> Sending : SendStarted(delivery_id)
+Sending --> SendComplete : Sent(settled,rcv_mode)
 SendComplete --> Settled : Settle
 SendComplete --> Unsettled : Done
 Unsettled --> CheckingDisposition : Disposition(disposition)
@@ -144,12 +151,19 @@ else:\n\
 @enduml
         )";
 
+        using Start = fsm::Event<"Start", messages::DeliveryNumber>;
         using Sent = fsm::Event<"Sent", std::tuple<bool, messages::ReceiverSettleMode>>;
         using Done = fsm::Event<"Done">;
         using Settle = fsm::Event<"Settle">;
         using Disposition = fsm::Event<"Disposition", std::tuple<bool, std::optional<DeliveryState>, bool>>;
 
         using Pending = fsm::State<"Pending">;
+        struct Sending : fsm::State<"Sending"> {
+            asio::awaitable<void> operator()(Self self, messages::DeliveryNumber delivery_id) {
+                co_await self->state_sending(delivery_id);
+                co_return;
+            }
+        };
         struct SendComplete : fsm::State<"SendComplete"> {
             asio::awaitable<void> operator()(Self self, std::tuple<bool, messages::ReceiverSettleMode>&& args) {
                 auto [settled,rcv_mode] = std::move(args);
@@ -175,12 +189,18 @@ else:\n\
         };
 
         using StateMachine = fsm::StateMachine<
-            fsm::Transition<Pending, SendComplete, Sent>,
+            fsm::Transition<Pending, Sending, Start>,
+            fsm::Transition<Sending, SendComplete, Sent>,
             fsm::Transition<SendComplete, Settled, Settle>,
             fsm::Transition<SendComplete, Unsettled, Done>,
             fsm::Transition<Unsettled, CheckingDisposition, Disposition>,
             fsm::Transition<CheckingDisposition, Settled, Settle>,
             fsm::Transition<CheckingDisposition, Unsettled, Done>>;
+
+        asio::awaitable<void> state_sending(messages::DeliveryNumber delivery_id) {
+            delivery_id_ = delivery_id;
+            co_return;
+        }
 
         asio::awaitable<void> state_send_complete(bool settled, messages::ReceiverSettleMode rcv_mode) {
             if (settled) {
@@ -202,7 +222,7 @@ else:\n\
                 co_await sm_.generate_local_event(Settle{});
             } else if (in_terminal_state() &&
                        rcv_mode_ == messages::ReceiverSettleMode::second) {
-                co_await sender_->send_disposition(id_, true, remote_state_);
+                co_await sender_->send_disposition(delivery_id_.value(), true, remote_state_);
                 co_await sm_.generate_local_event(Settle{});
             } else {
                 co_await sm_.generate_local_event(Done{});
@@ -213,7 +233,7 @@ else:\n\
 
         asio::awaitable<void>
         state_settled() {
-            sender_->settle(id_);
+            sender_->settle(delivery_id_.value());
             co_return;
         }
 
@@ -225,8 +245,8 @@ else:\n\
         }
 
       private:
-        DeliveryNumber id_{};
         DeliveryTag tag_{};
+        std::optional<DeliveryNumber> delivery_id_{};
         std::optional<DeliveryMode> delivery_mode_{};
         messages::ReceiverSettleMode rcv_mode_{};
         Message message_{};

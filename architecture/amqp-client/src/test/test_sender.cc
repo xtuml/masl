@@ -136,13 +136,13 @@ struct SenderTest : public AsyncTest {
     ) {
         run([&, this]() -> asio::awaitable<void> {
             co_await attach(amqp_asio::SenderOptions().delivery_mode(attach_mode));
-            EXPECT_CALL(*session, register_unsettled_tracker);
             EXPECT_CALL(*session, settle_tracker);
 
             co_await update_flow(0, 1, false);
             auto tracker = co_await sender->send(Message{}, send_mode);
 
-            auto [tx, payload] = co_await session->transfer_calls.pop();
+            auto [trk, tx, payload] = co_await session->track_transfer_calls.pop();
+            EXPECT_EQ(tracker,trk);
 
             co_await tracker->await_sent();
 
@@ -210,7 +210,6 @@ TEST_F(SenderTest, SendNoCredit) {
     run([this]() -> asio::awaitable<void> {
         co_await attach();
 
-        EXPECT_CALL(*session, register_unsettled_tracker);
         EXPECT_CALL(*session, settle_tracker);
 
         auto tracker = co_await sender->send(Message{}, at_most_once);
@@ -220,8 +219,8 @@ TEST_F(SenderTest, SendNoCredit) {
         EXPECT_EQ(sender->flow().link_credit, 0u);
 
         co_await update_flow(0, 1, false);
-        auto [tx, payload] = co_await session->transfer_calls.pop();
-        EXPECT_EQ(tx.delivery_id, 0);
+        auto [trck, tx, payload] = co_await session->transfer_tracked();
+        EXPECT_EQ(trck, tracker);
 
         co_await tracker->await_sent();
         EXPECT_EQ(sender->flow().available, 0u);
@@ -237,14 +236,13 @@ TEST_F(SenderTest, SendOneCredit) {
     run([this]() -> asio::awaitable<void> {
         co_await attach();
 
-        EXPECT_CALL(*session, register_unsettled_tracker);
         EXPECT_CALL(*session, settle_tracker);
 
         co_await update_flow(0, 1, false);
 
         auto tracker = co_await sender->send(Message{}, at_most_once);
-        auto [tx, payload] = co_await session->transfer_calls.pop();
-        EXPECT_EQ(tx.delivery_id, 0u);
+        auto [trck, tx, payload] = co_await session->transfer_tracked();
+        EXPECT_EQ(trck, tracker);
 
         co_await tracker->await_sent();
         EXPECT_EQ(sender->flow().available, 0u);
@@ -260,7 +258,6 @@ TEST_F(SenderTest, SendMultiSlowCredit) {
     run([this]() -> asio::awaitable<void> {
         co_await attach();
 
-        EXPECT_CALL(*session, register_unsettled_tracker).Times(3);
         EXPECT_CALL(*session, settle_tracker).Times(3);
 
         std::vector<std::shared_ptr<amqp_asio::Tracker::Impl>> trackers;
@@ -273,9 +270,9 @@ TEST_F(SenderTest, SendMultiSlowCredit) {
             EXPECT_EQ(sender->flow().available, 3u - i);
 
             co_await update_flow(i, 1, false);
-            auto [tx, payload] = co_await session->transfer_calls.pop();
-            EXPECT_TRUE(session->transfer_calls.empty());
-            EXPECT_EQ(tx.delivery_id, i);
+            auto [trck, tx, payload] = co_await session->transfer_tracked();
+            EXPECT_TRUE(session->track_transfer_calls.empty());
+
             co_await trackers[i]->await_sent();
             EXPECT_EQ(sender->flow().available, 3u - i - 1u);
             EXPECT_EQ(sender->flow().delivery_count, i + 1u);
@@ -296,23 +293,23 @@ TEST_F(SenderTest, SendMultiPlentyCredit) {
     run([this]() -> asio::awaitable<void> {
         co_await attach();
 
-        EXPECT_CALL(*session, register_unsettled_tracker).Times(3);
         EXPECT_CALL(*session, settle_tracker).Times(3);
 
-        auto t1 = co_await sender->send(Message{}, at_most_once);
-        auto t2 = co_await sender->send(Message{}, at_most_once);
-        auto t3 = co_await sender->send(Message{}, at_most_once);
+        std::vector<std::shared_ptr<amqp_asio::Tracker::Impl>> trackers;
+        trackers.push_back(co_await sender->send(Message{}, at_most_once));
+        trackers.push_back(co_await sender->send(Message{}, at_most_once));
+        trackers.push_back(co_await sender->send(Message{}, at_most_once));
 
         co_await update_flow(0, 100, false);
 
         for (int i = 0; i < 3; ++i) {
-            auto [tx, payload] = co_await session->transfer_calls.pop();
-            EXPECT_EQ(tx.delivery_id, i);
+            auto [tracker, tx, payload] = co_await session->transfer_tracked();
+            EXPECT_EQ(tracker,trackers[i]);
         }
 
-        co_await t3->await_sent();
+        co_await trackers.back()->await_sent();
 
-        EXPECT_TRUE(session->transfer_calls.empty());
+        EXPECT_TRUE(session->track_transfer_calls.empty());
         EXPECT_EQ(sender->flow().available, 0u);
         EXPECT_EQ(sender->flow().delivery_count, 3u);
         EXPECT_EQ(sender->flow().link_credit, 97u);
@@ -326,22 +323,22 @@ TEST_F(SenderTest, SendMultiDrainCredit) {
     run([this]() -> asio::awaitable<void> {
         co_await attach();
 
-        EXPECT_CALL(*session, register_unsettled_tracker).Times(4);
         EXPECT_CALL(*session, settle_tracker).Times(4);
 
-        auto t1 = co_await sender->send(Message{}, at_most_once);
-        auto t2 = co_await sender->send(Message{}, at_most_once);
-        auto t3 = co_await sender->send(Message{}, at_most_once);
+        std::vector<std::shared_ptr<amqp_asio::Tracker::Impl>> trackers;
+        for ( int i = 0; i < 3; ++i ) {
+           trackers.push_back(co_await sender->send(Message{}, at_most_once));
+        }
 
         co_await update_flow(0, 100, true);
 
         for (int i = 0; i < 3; ++i) {
-            auto [tx, payload] = co_await session->transfer_calls.pop();
-            EXPECT_EQ(tx.delivery_id, i);
+            auto [tracker, tx, payload] = co_await session->transfer_tracked();
+            EXPECT_EQ(tracker,trackers[i]);
         }
 
-        EXPECT_TRUE(session->transfer_calls.empty());
-        co_await t3->await_sent();
+        EXPECT_TRUE(session->track_transfer_calls.empty());
+        co_await trackers.back()->await_sent();
 
         auto [handle, flow] = co_await session->update_flow_calls.pop();
         EXPECT_EQ(handle, 2u);
@@ -351,21 +348,21 @@ TEST_F(SenderTest, SendMultiDrainCredit) {
         EXPECT_EQ(flow.drain, true);
 
         co_await wait_a_bit();
-        EXPECT_TRUE(session->transfer_calls.empty());
+        EXPECT_TRUE(session->track_transfer_calls.empty());
         EXPECT_EQ(sender->flow().available, 0u);
         EXPECT_EQ(sender->flow().delivery_count, 100u);
         EXPECT_EQ(sender->flow().link_credit, 0u);
 
         auto t4 = co_await sender->send(Message{}, at_most_once);
         co_await wait_a_bit();
-        EXPECT_TRUE(session->transfer_calls.empty());
+        EXPECT_TRUE(session->track_transfer_calls.empty());
         EXPECT_EQ(sender->flow().available, 1u);
         EXPECT_EQ(sender->flow().delivery_count, 100u);
         EXPECT_EQ(sender->flow().link_credit, 0u);
 
         co_await update_flow(100, 100, false);
-        auto [tx, payload] = co_await session->transfer_calls.pop();
-        EXPECT_EQ(tx.delivery_id, 3u);
+        auto [tracker, tx, payload] = co_await session->transfer_tracked();
+        EXPECT_EQ(tracker,t4);
 
         co_await t4->await_sent();
         EXPECT_EQ(sender->flow().available, 0u);
@@ -381,9 +378,7 @@ TEST_F(SenderTest, SendMultiDelayCredit) {
     run([this]() -> asio::awaitable<void> {
         co_await attach();
 
-        EXPECT_CALL(*session, register_unsettled_tracker).Times(9);
         EXPECT_CALL(*session, settle_tracker).Times(9);
-
 
         std::vector<std::shared_ptr<amqp_asio::Tracker::Impl>> trackers;
         for ( int i = 0; i < 9; ++i ) {
@@ -393,12 +388,12 @@ TEST_F(SenderTest, SendMultiDelayCredit) {
         co_await update_flow(0, 3, false);
 
         for (int i = 0; i < 3; ++i) {
-            auto [tx, payload] = co_await session->transfer_calls.pop();
-            EXPECT_EQ(tx.delivery_id, i);
+            auto [tracker, tx, payload] = co_await session->transfer_tracked();
+            EXPECT_EQ(tracker,trackers[i]);
         }
         co_await trackers[2]->await_sent();
         co_await wait_a_bit();
-        EXPECT_TRUE(session->transfer_calls.empty());
+        EXPECT_TRUE(session->track_transfer_calls.empty());
         EXPECT_EQ(sender->flow().available, 6u);
         EXPECT_EQ(sender->flow().delivery_count, 3u);
         EXPECT_EQ(sender->flow().link_credit, 0u);
@@ -406,13 +401,13 @@ TEST_F(SenderTest, SendMultiDelayCredit) {
         co_await update_flow(2, 3, false);
 
         for (int i = 3; i < 5; ++i) {
-            auto [tx, payload] = co_await session->transfer_calls.pop();
-            EXPECT_EQ(tx.delivery_id, i);
+            auto [tracker, tx, payload] = co_await session->transfer_tracked();
+            EXPECT_EQ(tracker,trackers[i]);
         }
 
         co_await trackers[3]->await_sent();
         co_await wait_a_bit();
-        EXPECT_TRUE(session->transfer_calls.empty());
+        EXPECT_TRUE(session->track_transfer_calls.empty());
         EXPECT_EQ(sender->flow().available, 4u);
         EXPECT_EQ(sender->flow().delivery_count, 5u);
         EXPECT_EQ(sender->flow().link_credit, 0u);
@@ -420,11 +415,11 @@ TEST_F(SenderTest, SendMultiDelayCredit) {
         co_await update_flow(4, 5, false);
 
         for (int i = 5; i < 9; ++i) {
-            auto [tx, payload] = co_await session->transfer_calls.pop();
-            EXPECT_EQ(tx.delivery_id, i);
+            auto [tracker, tx, payload] = co_await session->transfer_tracked();
+            EXPECT_EQ(tracker,trackers[i]);
         }
 
-        co_await trackers[8]->await_sent();
+        co_await trackers.back()->await_sent();
         co_await wait_a_bit();
         EXPECT_TRUE(session->transfer_calls.empty());
         EXPECT_EQ(sender->flow().available, 0u);
@@ -509,7 +504,6 @@ TEST_F(SenderTest, SendSinglePart) {
     run([this]() -> asio::awaitable<void> {
         co_await attach();
 
-        EXPECT_CALL(*session, register_unsettled_tracker);
         EXPECT_CALL(*session, settle_tracker);
 
         co_await update_flow(0, 1, false);
@@ -519,11 +513,10 @@ TEST_F(SenderTest, SendSinglePart) {
         auto payload = vector_from_hex(R"(00 53 75 a0 0c 'hello world!')");
 
         auto message = Message{.data = std::vector<Data>{data}};
-        co_await sender->send(message, at_most_once);
+        auto tracker = co_await sender->send(message, at_most_once);
 
-        auto [tx, p] = co_await session->transfer_calls.pop();
-
-        EXPECT_EQ(tx.delivery_id, 0);
+        auto [trk, tx, p] = co_await session->transfer_tracked();
+        EXPECT_EQ(tracker,trk);
 
         EXPECT_FALSE(tx.more);
 
@@ -543,7 +536,6 @@ TEST_F(SenderTest, SendMultiPart) {
         // Set max message len on attach
         co_await attach({}, {}, 6);
 
-        EXPECT_CALL(*session, register_unsettled_tracker);
         EXPECT_CALL(*session, settle_tracker);
 
 
@@ -556,20 +548,13 @@ TEST_F(SenderTest, SendMultiPart) {
         auto payload3 = vector_from_hex(R"('orld!')");
 
         auto message = Message{.data = std::vector<Data>{data}};
-        log.info("Send");
-        co_await sender->send(message, at_most_once);
+        auto tracker = co_await sender->send(message, at_most_once);
 
-        log.info("Receive 1");
-        auto [tx1, p1] = co_await session->transfer_calls.pop();
-        log.info("Receive 2");
+        auto [trk, tx1, p1] = co_await session->track_transfer_calls.pop();
         auto [tx2, p2] = co_await session->transfer_calls.pop();
-        log.info("Receive 3");
         auto [tx3, p3] = co_await session->transfer_calls.pop();
 
-        log.info("Checking");
-        EXPECT_EQ(tx1.delivery_id, 0u);
-        EXPECT_FALSE(tx2.delivery_id.has_value());
-        EXPECT_FALSE(tx3.delivery_id.has_value());
+        EXPECT_EQ(tracker,trk);
 
         EXPECT_TRUE(tx1.more);
         EXPECT_TRUE(tx2.more);
@@ -583,9 +568,7 @@ TEST_F(SenderTest, SendMultiPart) {
         EXPECT_EQ(sender->flow().delivery_count, 1u);
         EXPECT_EQ(sender->flow().link_credit, 0u);
 
-        log.info("Detaching");
         co_await detach();
-        log.info("Done");
         co_return;
     });
 }

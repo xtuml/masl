@@ -18,6 +18,7 @@
 #include "tracker.hh"
 #include <asio/awaitable.hpp>
 #include <asio/experimental/channel.hpp>
+#include <asio/strand.hpp>
 
 #include <asio/detached.hpp>
 #include <logging/log.hh>
@@ -51,7 +52,8 @@ namespace amqp_asio {
               connection_(std::move(connection)),
               options_(std::move(options)),
               incoming_message_queue_{connection_->get_executor(), std::numeric_limits<std::size_t>::max()},
-              sm_(connection_->get_executor(), "amqp_asio.session.sm.{}.{}", connection_->container_id(), id_) {}
+              sm_(connection_->get_executor(), "amqp_asio.session.sm.{}.{}", connection_->container_id(), id_),
+              send_strand_(make_strand(connection_->get_executor())) {}
 
         asio::any_io_executor get_executor() const override {
             return connection_->get_executor();
@@ -159,8 +161,8 @@ namespace amqp_asio {
         void settle_delivery(messages::DeliveryNumber id) {
             unsettled_deliveries_.erase(id);
         }
-        void register_unsettled_tracker(const std::shared_ptr<Tracker> &tracker) {
-            unsettled_trackers_.emplace(tracker->id(), tracker);
+        void register_unsettled_tracker(messages::DeliveryNumber id, const std::shared_ptr<Tracker> &tracker) {
+            unsettled_trackers_.emplace(id, tracker);
         }
 
         void settle_tracker(messages::DeliveryNumber id) {
@@ -181,7 +183,25 @@ namespace amqp_asio {
         }
 
         asio::awaitable<void> send_message(messages::Performative performative, messages::AmqpPayload message = {}) {
-            co_await connection_->send_amqp_message(id_, std::move(performative), std::move(message));
+            co_await asio::co_spawn(
+                send_strand_,
+                [this, performative = std::move(performative), message = std::move(message)](
+                ) mutable -> asio::awaitable<void> {
+                    co_await connection_->send_amqp_message(id_, std::move(performative), std::move(message));
+                }
+            );
+        }
+
+        asio::awaitable<void> track_transfer(
+            std::shared_ptr<Tracker> tracker, messages::Transfer transfer, messages::AmqpPayload message
+        ) {
+            co_await asio::co_spawn(send_strand_, [&, this]() -> asio::awaitable<void> {
+                auto delivery_id = next_delivery_number();
+                transfer.delivery_id = delivery_id;
+                co_await tracker->start(delivery_id);
+                register_unsettled_tracker(delivery_id, tracker);
+                co_await connection_->send_amqp_message(id_, std::move(transfer), std::move(message));
+            });
         }
 
       private:
@@ -623,6 +643,7 @@ namespace amqp_asio {
         message_channel incoming_message_queue_;
         std::exception_ptr error_;
         StateMachine sm_;
+        asio::any_io_executor send_strand_;
 
         std::map<std::string, std::shared_ptr<Sender>> local_senders_;
         std::map<std::string, std::shared_ptr<Receiver>> local_receivers_;
