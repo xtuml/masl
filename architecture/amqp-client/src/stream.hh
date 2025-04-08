@@ -24,6 +24,7 @@
 #include <asio/experimental/awaitable_operators.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/read.hpp>
+#include <asio/strand.hpp>
 #include <asio/ssl/stream.hpp>
 #include <asio/write.hpp>
 #include <logging/log.hh>
@@ -35,7 +36,7 @@ namespace amqp_asio {
         Stream(std::unique_ptr<AnySocket> socket)
             : log_("amqp_asio.stream"),
               socket_{std::move(socket)},
-              strand_(socket_->get_executor()),
+              strand_(make_strand(socket_->get_executor())),
               read_mutex{strand_},
               write_mutex{strand_} {}
 

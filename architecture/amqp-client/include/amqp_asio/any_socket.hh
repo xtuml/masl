@@ -17,9 +17,10 @@
 #include <asio/ip/tcp.hpp>
 #include <asio/read.hpp>
 #include <asio/write.hpp>
+#include <asio/ssl.hpp>
 #include <string_view>
 #include <system_error>
-
+#include <print>
 namespace amqp_asio {
 
     static constexpr auto operation_timeout = std::chrono::seconds(3);
@@ -34,6 +35,15 @@ namespace amqp_asio {
 
     template <typename S>
     constexpr bool has_async_shutdown_v = has_async_shutdown<S>::value;
+
+    template <typename S, typename = void>
+    struct has_async_handshake : std::false_type {};
+
+    template <typename S>
+    struct has_async_handshake<S, std::void_t<decltype(std::declval<S>().async_handshake(S::handshake_type::client))>> : std::true_type {};
+
+    template <typename S>
+    constexpr bool has_async_handshake_v = has_async_handshake<S>::value;
 
     template <typename>
     class AnySocketConcrete;
@@ -64,21 +74,28 @@ namespace amqp_asio {
             : socket_{std::move(socket)} {}
         asio::awaitable<void> connect(std::string_view host, std::string_view service) override {
             asio::ip::tcp::resolver resolver(co_await asio::this_coro::executor);
-            co_await async_connect(*socket_, co_await resolver.async_resolve(host, service));
+            co_await async_connect(socket_->lowest_layer(), co_await resolver.async_resolve(host, service));
+            if constexpr ( has_async_handshake_v<std::decay_t<Socket>>) {
+                std::println("Handshaking...");
+                co_await socket_->async_handshake(Socket::handshake_type::client);
+                std::println("Handshake complete");
+            }
         }
         asio::awaitable<void> close() override {
             if constexpr (has_async_shutdown_v<std::decay_t<Socket>>) {
-                asio::steady_timer timeout(asio::this_coro::executor, operation_timeout);
-                co_await (socket_->async_shutdown() || [&, this]() -> asio::awaitable<void> {
-                    co_await timeout.async_wait();
-                    std::error_code ec;
-                    socket_->next_layer().close(ec);
-                });
+                co_await (socket_->async_shutdown(asio::use_awaitable) || force_close());
             } else {
                 std::error_code ec;
                 socket_->close(ec);
             }
             co_return;
+        }
+
+        asio::awaitable<void> force_close() {
+            asio::steady_timer timeout(co_await asio::this_coro::executor, operation_timeout);
+            co_await timeout.async_wait();
+            std::error_code ec;
+            socket_->next_layer().close(ec);
         }
 
         asio::awaitable<void> read(asio::mutable_buffer &buffer) override {
