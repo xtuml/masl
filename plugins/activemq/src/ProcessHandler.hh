@@ -29,9 +29,14 @@ namespace InterDomainMessaging {
                 });
             }
 
+            std::string getName() {
+                return name;
+            }
+
             static ProcessHandler &getInstance();
 
           private:
+            std::string name;
             xtuml::logging::Logger log;
             amqp_asio::Connection conn;
             amqp_asio::Session session;

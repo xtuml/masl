@@ -9,6 +9,7 @@ namespace InterDomainMessaging {
         extern const char *const UsernameOption;
         extern const char *const PasswordOption;
         extern const char *const PortNoOption;
+        extern const char *const TopicPrefixOption;
 
     } // namespace ActiveMQ
 

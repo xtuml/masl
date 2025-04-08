@@ -18,7 +18,7 @@ namespace xtuml::logging {
         static Logger log{"xtuml.logging.config"};
         static std::optional<log4cplus::ConfigureAndWatchThread> config_watcher{};
 
-        if (std::fstream{filename}) {
+        if (std::fstream{filename, std::fstream::in}) {
             if (interval > std::chrono::seconds{0}) {
                 log.debug("Watching log config file: {}", filename);
                 config_watcher.emplace(filename, interval.count());

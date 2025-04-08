@@ -8,6 +8,7 @@
 
 #include <asio/co_spawn.hpp>
 #include <asio/detached.hpp>
+#include <uuid/uuid.h>
 
 namespace InterDomainMessaging {
 

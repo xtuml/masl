@@ -14,6 +14,9 @@ import org.xtuml.masl.translate.Alias;
 import org.xtuml.masl.translate.Default;
 import org.xtuml.masl.translate.main.Mangler;
 
+import java.util.Collection;
+import java.util.Collections;
+
 @Alias("InterDomainMessaging")
 @Default
 public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator {
@@ -38,10 +41,22 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         library = new SharedLibrary(mainTranslator.getLibrary().getName() + "_idm")
                 .inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
         library.addDependency(InterDomainMessaging.library);
+        for (final Domain referencedDomain : domain.getReferencedInterfaces()) {
+            if (referencedDomain.getPragmas().hasPragma("service_domain")) {
+                library.addDependency(DomainTranslator.getInstance(referencedDomain).getLibrary());
+            } else {
+                library.addDependency(DomainTranslator.getInstance(referencedDomain).getInterfaceLibrary());
+            }
+        }
 
         interfaceLibrary = new SharedLibrary(mainTranslator.getLibrary().getName() + "_if_idm")
                 .inBuildSet(mainTranslator.getBuildSet()).withCCDefaultExtensions();
         interfaceLibrary.addDependency(InterDomainMessaging.library);
+    }
+
+    @Override
+    public Collection<org.xtuml.masl.translate.DomainTranslator> getPrerequisites() {
+        return Collections.singletonList(mainTranslator);
     }
 
     @Override
@@ -72,6 +87,14 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
 
     Namespace getNamespace() {
         return domainNamespace;
+    }
+
+    Library getLibrary() {
+        return library;
+    }
+
+    Library getInterfaceLibrary() {
+        return interfaceLibrary;
     }
 
 }

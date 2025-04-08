@@ -7,6 +7,7 @@ shift 3
 
 set -e
 
+<<<<<<< HEAD
 ( cd architecture/logging && conan create . --update --build=missing --test-missing "$@")
 ( cd architecture/amqp-client && conan create . --update --build=missing --test-missing "$@") 
 ( cd architecture/swa && conan create . --update --build=missing --test-missing "$@" )
@@ -23,10 +24,11 @@ set -e
 ( cd plugins/backlogMonitor && conan create . --update --build=missing --test-missing "$@")
 ( cd plugins/trace && conan create . --update --build=missing --test-missing "$@")
 ( cd plugins/idm && conan create . --update --build=missing --test-missing "$@")
-# ( cd plugins/activemq && conan create . --update --build=missing --test-missing "$@")
+( cd plugins/activemq && conan create . --update --build=missing --test-missing "$@")
 
-(cd masl-conan && conan create . --update --build=missing --test-missing "$@")
-(cd masl-codegen && conan create . --update --build=missing --test-missing "$@")
+( cd deployer && conan create . --update --build=missing --test-missing "$@")
+( cd masl-conan && conan create . --update --build=missing --test-missing "$@")
+( cd masl-codegen && conan create . --update --build=missing --test-missing "$@")
 
 (cd utils/assertions && conan create . --update --build=missing --test-missing "$@")
 (cd utils/binary-io && conan create . --update --build=missing --test-missing "$@")
@@ -66,7 +68,9 @@ set -e
         conan upload --list  ${pkglist} -r $remote -c
         rm -f ${pkglist}
     fi
-    rm -f ${install}
-  
-)
+    conan upload --list ${pkglist} -r $remote -c
+    rm -f ${pkglist}
+  fi
+  rm -f ${install}
 
+)
