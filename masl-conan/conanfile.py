@@ -16,7 +16,7 @@ from pathlib import Path
 
 class ConanFile(conan.ConanFile):
     name = 'xtuml_masl_conan'
-    version = '5.1'
+    version = '5.1.1'
     user = 'xtuml'
 
     package_type = 'python-require'

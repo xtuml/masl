@@ -5,7 +5,7 @@ from conan.errors import ConanInvalidConfiguration
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_asn1"
-    version = "1.0"
+    version = "1.0.1"
     user = "xtuml"
 
     package_type = "shared-library"
