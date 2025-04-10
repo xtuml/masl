@@ -8,7 +8,7 @@ services:
       - "61613:61613" # stomp
       - "61616:61616" # openwire
     environment:
-      ACTIVEMQ_SSL_OPTS: >
+      ACTIVEMQ_SSL_OPTS: >-
         -Djavax.net.ssl.keyStore=/certs/broker.ks
         -Djavax.net.ssl.keyStorePassword=password
         -Djavax.net.ssl.trustStore=/certs/broker.ts
