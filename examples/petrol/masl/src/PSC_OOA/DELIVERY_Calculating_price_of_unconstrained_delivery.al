@@ -17,4 +17,6 @@ begin
   grade := this->R3->R1->R2;
   new_cost := this.Cost + grade.Unit_Price;
   this.Cost := new_cost;
+
+    console << new_volume << " litres delivered at a cost of " << this.Cost << endl;
 end state;

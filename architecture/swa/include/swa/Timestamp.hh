@@ -223,6 +223,11 @@ namespace SWA {
         // Returns a time representing the duration since midnight
         Duration getTime() const;
 
+        using TimePoint = std::chrono::time_point<std::chrono::system_clock,std::chrono::nanoseconds>;
+
+        TimePoint getChronoTimePoint() const {
+            return TimePoint(std::chrono::nanoseconds(nanosSinceEpoch()));
+        }
         Sequence<int64_t> getSplit(TimestampFields fields) const;
 
         Timestamp addYears(int64_t year);

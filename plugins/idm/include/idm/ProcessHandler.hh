@@ -8,7 +8,6 @@
 #include "swa/DynamicSingleton.hh"
 #include "swa/Process.hh"
 
-#include <asio/io_context.hpp>
 #include <string>
 
 namespace InterDomainMessaging {
@@ -25,15 +24,10 @@ namespace InterDomainMessaging {
             return SWA::Process::getInstance().getDomain(domainId).getName() + "_service" + std::to_string(serviceId);
         }
 
-        asio::io_context &getContext() {
-            return ctx;
-        }
-
         static ProcessHandler &getInstance();
 
       private:
         std::vector<std::unique_ptr<Consumer>> consumers;
-        asio::io_context ctx;
     };
 
 } // namespace InterDomainMessaging

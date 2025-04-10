@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(xtuml_sqlite CXX)
 
 find_package(xtuml_sql REQUIRED)
+find_package(xtuml_swa REQUIRED)
 
 find_package(SQLite3 REQUIRED)
 
@@ -21,6 +22,7 @@ add_library(xtuml_sqlite SHARED
 
 target_link_libraries(xtuml_sqlite
         PUBLIC
+        xtuml_swa::xtuml_swa
         xtuml_sql::xtuml_sql
         SQLite::SQLite3
 )

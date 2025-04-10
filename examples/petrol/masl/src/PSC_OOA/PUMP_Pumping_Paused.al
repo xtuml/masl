@@ -10,4 +10,6 @@ begin
   //# holster or for the trigger to be depressed.
   
   CLUTCH~>Disengage_Clutch();
+    cancel this.fuel_timer;
+  console << "Stopped" << endl;
 end state;

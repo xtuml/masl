@@ -25,12 +25,16 @@
 #include <set>
 #include <sstream>
 
+#include "libfile.hh"
+
 namespace SWA {
     const char *const NAME_OPTION = "-name";
     const char *const COLD_START_OPTION = "-cold";
 
     const char *const PreInitSchedule = "-preinit";
     const char *const PostInitSchedule = "-postinit";
+
+    using namespace std::literals::chrono_literals;
 
     void quitWithCleanup(int) {
         signal(SIGINT, SIG_DFL);
@@ -39,7 +43,7 @@ namespace SWA {
     }
 
     Process::Process()
-        : name(), shutdownRequested(false) {
+        : name(), shutdownRequested(false), ooa_strand(ioContext), work_guard(make_work_guard(ioContext)) {
         CommandLine::getInstance().registerOption(
             NamedOption(NAME_OPTION, "Name of the Process", false, "processName", true)
         );
@@ -120,20 +124,7 @@ namespace SWA {
     }
 
     void Process::idle(int timeout_secs) {
-        Timestamp finishTime = Timestamp::now() + Duration::fromSeconds(timeout_secs);
-
-        bool timeExpired = false;
-        while (!shutdownRequested && !timeExpired) {
-            Duration remaining = finishTime - Timestamp::now();
-
-            ProcessingThread thread("Idle");
-            activityMonitor.pollActivity(std::max<int>(0, remaining.millis()));
-            getEventQueue().processEvents();
-            thread.completing();
-            thread.complete();
-
-            timeExpired = remaining <= Duration::zero();
-        }
+        ioContext.run_for(std::chrono::seconds(timeout_secs));
     }
 
     void Process::pause() {
@@ -304,30 +295,13 @@ namespace SWA {
     void Process::initialise() {
         ProcessingThread thread("Initialise Process");
 
-        // Defer initialisation of the activity monitor until the application
-        // knows that the process functionality provided by this class is going
-        // to be used (i.e. OOA process). This is so that external applications
-        // linked against the SWA library can install their own signal handlers
-        // and not be forced to use the real-time signalling provided by the
-        // Activity monitor. This initialise method is currently only called
-        // from Main.cc.
-        activityMonitor.initialise();
-
         initialising();
         thread.completing();
         thread.complete();
     }
 
     void Process::mainLoop() {
-        while (!shutdownRequested) {
-            ProcessMonitor::getInstance().startMainLoop();
-            ProcessingThread thread("Main Loop");
-            activityMonitor.waitOnActivity();
-            getEventQueue().processEvents();
-            thread.completing();
-            thread.complete();
-            ProcessMonitor::getInstance().endMainLoop();
-        }
+        ioContext.run();
         shutdown();
     }
 
@@ -367,26 +341,6 @@ namespace SWA {
         }
     }
 
-//===========================  BUG WORKAROUND  =================================
-
-// Bug 14577 in glibc v2.12 (onwards?). Stops dlopen working
-// properly if a load fails. It stops the library fully
-// unloading, and therefore it fails silently on the second
-// attemt to load. Workaround is to do a lazy open, so that
-// the load doesn't fail in the first place. This has the
-// unfortunate side effect that we won't know about unresolved
-// symbols until they are accessed, so once the bug is fixed
-// we should revert to RTLD_NOW
-#include <gnu/libc-version.h>
-
-#if __GLIBC__ == 2 && __GLIBC_MINOR__ >= 12
-#define DLOPEN_LOAD_TYPE RTLD_LAZY
-#else
-#define DLOPEN_LOAD_TYPE RTLD_NOW
-#endif
-
-    //==============================================================================
-
     void
     Process::loadDynamicLibraries(const std::string &libName, const std::string &interfaceSuffix, bool loadProjectLib) {
 
@@ -395,7 +349,7 @@ namespace SWA {
 
         for (SWA::Process::DomainList::const_iterator it = domains.begin(), end = domains.end(); it != end; ++it) {
             requiredDomainLibs.insert(
-                "lib" + it->getName() + (it->isInterface() ? interfaceSuffix : "") + "_" + libName + ".so"
+               libfile(it->getName() + (it->isInterface() ? interfaceSuffix : "") + "_" + libName)
             );
         }
 
@@ -408,8 +362,7 @@ namespace SWA {
         int prevErrors = 0;
 
         while (domainLibIt != requiredDomainLibs.end()) {
-            // Bug 14577 in GLIBC v2.12 - see above
-            if (!dlopen(domainLibIt->c_str(), DLOPEN_LOAD_TYPE | RTLD_GLOBAL)) {
+            if (!dlopen(domainLibIt->c_str(), RTLD_NOW | RTLD_GLOBAL)) {
                 errorText += std::string(dlerror()) + "\n";
                 ++errors;
                 ++domainLibIt;
@@ -440,7 +393,7 @@ namespace SWA {
         // the domain libraries in support of overriding the terminator services
         // required by the process.
         if (loadProjectLib && projectName.size()) {
-            const std::string processLib = "lib" + projectName + "_" + libName + ".so";
+            const std::string processLib = libfile(projectName + "_" + libName);
             if (!dlopen(processLib.c_str(), RTLD_NOW | RTLD_GLOBAL)) {
                 throw std::runtime_error(
                     std::string("failed to load process metadata library ") + processLib + " : " +
@@ -451,7 +404,7 @@ namespace SWA {
     }
 
     void Process::loadDynamicProjectLibrary(const std::string &libName) {
-        const std::string processLib = "lib" + projectName + "_" + libName + ".so";
+        const std::string processLib = libfile(projectName + "_" + libName);
         if (!dlopen(processLib.c_str(), RTLD_NOW | RTLD_GLOBAL)) {
             throw std::runtime_error(
                 std::string("failed to load process metadata library ") + processLib + " : " + std::string(dlerror()) +

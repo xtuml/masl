@@ -8,11 +8,9 @@
 #include <boost/type_traits/is_signed.hpp>
 #include <boost/type_traits/is_unsigned.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
-#include <byteswap.h>
-#include <endian.h>
 #include <stdint.h>
 #include <vector>
-
+#include <bit>
 namespace masld_BinaryIO
 {
   namespace Endian
@@ -26,19 +24,18 @@ namespace masld_BinaryIO
 
         template<> struct float_t<sizeof(float)*8>       { typedef float type; };
         template<> struct float_t<sizeof(double)*8>      { typedef double type; };
-        template<> struct float_t<sizeof(long double)*8> { typedef long double type; };
 
-        template<int bits, int ByteOrder> struct Bswap;
+        template<int bits, std::endian ByteOrder> struct Bswap;
 
-        template<> struct Bswap<64,BYTE_ORDER> { static uint64_t bswap ( uint64_t v ) { return v; } }; 
-        template<> struct Bswap<32,BYTE_ORDER> { static uint32_t bswap ( uint32_t v ) { return v; } }; 
-        template<> struct Bswap<16,BYTE_ORDER> { static uint16_t bswap ( uint16_t v ) { return v; } }; 
-        template<> struct Bswap<8 ,BYTE_ORDER> { static uint8_t  bswap ( uint8_t  v ) { return v; } }; 
+        template<> struct Bswap<64,std::endian::native> { static uint64_t bswap ( uint64_t v ) { return v; } };
+        template<> struct Bswap<32,std::endian::native> { static uint32_t bswap ( uint32_t v ) { return v; } };
+        template<> struct Bswap<16,std::endian::native> { static uint16_t bswap ( uint16_t v ) { return v; } };
+        template<> struct Bswap<8 ,std::endian::native> { static uint8_t  bswap ( uint8_t  v ) { return v; } };
 
-        template<int ByteOrder> struct Bswap<64,ByteOrder> { static uint64_t bswap ( uint64_t v ) { return bswap_64(v); } }; 
-        template<int ByteOrder> struct Bswap<32,ByteOrder> { static uint32_t bswap ( uint32_t v ) { return bswap_32(v); } };
-        template<int ByteOrder> struct Bswap<16,ByteOrder> { static uint16_t bswap ( uint16_t v ) { return bswap_16(v); } }; 
-        template<int ByteOrder> struct Bswap<8 ,ByteOrder> { static uint8_t  bswap ( uint8_t  v ) { return v; } }; 
+        template<std::endian ByteOrder> struct Bswap<64,ByteOrder> { static uint64_t bswap ( uint64_t v ) { return __builtin_bswap64(v); } };
+        template<std::endian ByteOrder> struct Bswap<32,ByteOrder> { static uint32_t bswap ( uint32_t v ) { return __builtin_bswap32(v); } };
+        template<std::endian ByteOrder> struct Bswap<16,ByteOrder> { static uint16_t bswap ( uint16_t v ) { return __builtin_bswap16(v); } };
+        template<std::endian ByteOrder> struct Bswap<8 ,ByteOrder> { static uint8_t  bswap ( uint8_t  v ) { return v; } };
 
         template<int V> struct Int2Type { };
 
@@ -64,7 +61,7 @@ namespace masld_BinaryIO
     }
 
 
-    template<int ByteOrder>
+    template<std::endian ByteOrder>
     struct Convert
     {
       private:
@@ -219,8 +216,8 @@ namespace masld_BinaryIO
         template<class C, class S> static void try_reserve ( C& container, S size ) {}
     };
 
-    typedef Convert<BIG_ENDIAN>    BigEndian;
-    typedef Convert<LITTLE_ENDIAN> LittleEndian;
+    typedef Convert<std::endian::big>    BigEndian;
+    typedef Convert<std::endian::little> LittleEndian;
 
   }
 

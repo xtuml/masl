@@ -1,9 +1,10 @@
 import conan
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
+from conan.errors import ConanInvalidConfiguration
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_sqlite"
-    version = "1.0"
+    version = "1.0.1"
     user = "xtuml"
 
     package_type = "shared-library"
@@ -18,7 +19,8 @@ class ConanFile(conan.ConanFile):
     exports_sources = "CMakeLists.txt", "src/*", "include/*"
 
     def requirements(self):
-        self.requires("xtuml_sql/[>=1 <2]@xtuml", transitive_headers=True)
+        self.requires("xtuml_sql/[>=1 <2]@xtuml", transitive_headers=True,transitive_libs=True)
+        self.requires("xtuml_swa/[>=1 <2]@xtuml", transitive_headers=True,transitive_libs=True)
         self.requires("sqlite3/[>=3.48.0 <4]", transitive_headers=True,transitive_libs=True)
 
     default_options = {
@@ -27,7 +29,7 @@ class ConanFile(conan.ConanFile):
     
     def validate(self):
         if not self.dependencies["sqlite3"].options.shared:
-            raise ConanInvalidConfiguration("sqlite3 only works as a shared library")
+            raise conan.ConanInvalidConfiguration("sqlite3 only works as a shared library")
 
 
     def layout(self):
@@ -51,4 +53,5 @@ class ConanFile(conan.ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["xtuml_sqlite"]
         self.cpp_info.requires.append("xtuml_sql::xtuml_sql")
+        self.cpp_info.requires.append("xtuml_swa::xtuml_swa")
         self.cpp_info.requires.append("sqlite3::sqlite3")

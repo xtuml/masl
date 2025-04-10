@@ -266,6 +266,7 @@ domain PSC is
     //! Link to connected tank
     Tank_Number : referential (R1.is_pumping_fuel_from.TANK.Tank_Number) integer;
 
+    fuel_timer : timer;
 
     state Waiting_For_Customer ();
 

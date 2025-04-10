@@ -21,17 +21,13 @@
  */
 
 #include "swa/CommandLine.hh"
-#include "swa/Duration.hh"
-#include "swa/ListenerPriority.hh"
 #include "swa/PluginRegistry.hh"
 #include "swa/Process.hh"
-#include "swa/Sequence.hh"
-#include "swa/String.hh"
-#include "swa/TimerListener.hh"
-#include "swa/Timestamp.hh"
-
-#include <iostream>
 #include <string>
+#include <asio/system_timer.hpp>
+#include <chrono>
+#include <print>
+
 
 namespace BacklogMonitor {
     const char *const PollIntervalOption = "-backlog-poll-interval";
@@ -56,25 +52,24 @@ namespace BacklogMonitor {
         void setPollInterval(const std::string &interval);
         void setReportThreshold(const std::string &threshold);
         std::string getPollInterval() const {
-            return std::format("{}", pollInterval.seconds());
+            return std::format("{}", pollInterval.count());
         }
         std::string getReportThreshold() const {
-            return std::format("{}", reportThreshold.seconds());
+            return std::format("{}", reportThreshold.count());
         }
 
         BacklogMonitor();
 
       private:
         bool active;
-        SWA::Duration pollInterval;
-        SWA::Duration reportThreshold;
-        SWA::Duration lastBacklog;
+        std::chrono::seconds pollInterval;
+        std::chrono::seconds reportThreshold;
+        std::chrono::nanoseconds lastBacklog;
 
-        SWA::Timestamp expectedTime;
-        SWA::TimerListener timer;
+        asio::system_timer timer;
 
-        void timerCallback(int overrun);
-        void report(const SWA::Duration &backlog) const;
+        void ping();
+        void report(const std::chrono::nanoseconds &backlog) const;
     };
 
     BacklogMonitor::BacklogMonitor()
@@ -82,10 +77,7 @@ namespace BacklogMonitor {
           pollInterval(),
           reportThreshold(),
           lastBacklog(),
-          expectedTime(),
-          timer(SWA::ListenerPriority::getNormal(), [this](auto &&overrun) {
-              timerCallback(overrun);
-          }) {}
+          timer(SWA::Process::getInstance().getIOContext().get_executor()) {}
 
     BacklogMonitor &BacklogMonitor::getInstance() {
         static BacklogMonitor singleton;
@@ -130,21 +122,38 @@ namespace BacklogMonitor {
 
     void BacklogMonitor::setActive(bool active) {
         this->active = active;
-        if (active && pollInterval > SWA::Duration::zero()) {
-            expectedTime = SWA::Timestamp::now();
-            timer.schedule(expectedTime, pollInterval);
+        if (active && pollInterval > std::chrono::seconds(0)) {
+            ping();
         } else {
             timer.cancel();
         }
     }
 
+    void BacklogMonitor::ping() {
+        timer.expires_after(pollInterval);
+        timer.async_wait([this](const asio::error_code &ec) {
+            if (ec == asio::error::operation_aborted) {
+                return;
+            }
+            std::chrono::nanoseconds backlog = std::chrono::system_clock::now() - timer.expires_at();
+            if (backlog > reportThreshold) {
+                report(backlog);
+                lastBacklog = backlog;
+            } else if (backlog < lastBacklog) {
+                report(backlog);
+                lastBacklog = std::chrono::seconds(0);
+            }
+            ping();
+        });
+    }
+
     void BacklogMonitor::setPollInterval(const std::string &interval) {
-        pollInterval = SWA::Duration::fromSeconds(std::stod(interval));
+        pollInterval = std::chrono::seconds(std::stoi(interval));
         setActive(active);
     }
 
     void BacklogMonitor::setReportThreshold(const std::string &threshold) {
-        reportThreshold = SWA::Duration::fromSeconds(std::stod(threshold));
+        reportThreshold = std::chrono::seconds(std::stoi(threshold));
     }
 
     void BacklogMonitor::startup() {
@@ -153,38 +162,8 @@ namespace BacklogMonitor {
         setActive(active);
     }
 
-    void BacklogMonitor::timerCallback(int overrun) {
-        SWA::Duration backlog = SWA::Timestamp::now() - expectedTime;
-        expectedTime += pollInterval * (1 + overrun);
-
-        if (backlog > reportThreshold) {
-            report(backlog);
-            lastBacklog = backlog;
-        } else if (backlog < lastBacklog) {
-            report(backlog);
-            lastBacklog = SWA::Duration::zero();
-        }
-    }
-
-    void BacklogMonitor::report(const SWA::Duration &backlog) const {
-        static const std::string suffixArray[] = {"h ", "m ", "s "};
-        static const SWA::Sequence<SWA::String> suffixes(suffixArray, suffixArray + 3);
-
-        std::clog << "Backlog : "
-                  << backlog.format(
-                         SWA::Duration::Hour,
-                         SWA::Duration::Second,
-                         SWA::Duration::TowardsZero,
-                         true,
-                         1,
-                         false,
-                         0,
-                         "",
-                         "",
-                         suffixes
-                     )
-                  << "\n"
-                  << std::flush;
+    void BacklogMonitor::report(const std::chrono::nanoseconds &backlog) const {
+        std::println("Backlog : {}",std::chrono::duration_cast<std::chrono::milliseconds>(backlog));
     }
 
 } // namespace BacklogMonitor

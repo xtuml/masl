@@ -160,8 +160,6 @@ namespace SWA {
 
         void pauseRequested();
 
-        void setIgnoreExceptions(bool ignore);
-
       private:
         static ProcessMonitor &instance;
         ProcessMonitor();
