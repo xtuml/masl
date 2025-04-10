@@ -1,0 +1,20 @@
+services:
+  activemq:
+    image: apache/activemq-classic:6.1.6
+    ports:
+      - "5671:5671" # ampq+ssl
+      - "5672:5672" # ampq
+      - "8161:8161" # console
+      - "61613:61613" # stomp
+      - "61616:61616" # openwire
+    environment:
+      ACTIVEMQ_SSL_OPTS: >-
+        -Djavax.net.ssl.keyStore=/certs/broker.ks
+        -Djavax.net.ssl.keyStorePassword=password
+        -Djavax.net.ssl.trustStore=/certs/broker.ts
+        -Djavax.net.ssl.trustStorePassword=password
+        -Djavax.net.debug=ssl
+    volumes:
+      - ./certs/server:/certs
+      - ./logs:/opt/apache-activemq/data
+      - ./conf:/opt/apache-activemq/conf
