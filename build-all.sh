@@ -7,7 +7,6 @@ shift 3
 
 set -e
 
-<<<<<<< HEAD
 ( cd architecture/logging && conan create . --update --build=missing --test-missing "$@")
 ( cd architecture/amqp-client && conan create . --update --build=missing --test-missing "$@") 
 ( cd architecture/swa && conan create . --update --build=missing --test-missing "$@" )
