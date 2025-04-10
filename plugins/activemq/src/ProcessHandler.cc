@@ -17,6 +17,13 @@ namespace InterDomainMessaging {
         ProcessHandler::ProcessHandler()
             : log(xtuml::logging::Logger("idm.activemq.processhandler")), initialisedCond(SWA::Process::getInstance().getIOContext().get_executor()) {
 
+            // set name
+            uuid_t uuid;
+            uuid_generate(uuid);
+            char formatted_uuid[37];
+            uuid_unparse(uuid, formatted_uuid);
+            name = "idm.activemq." + SWA::Process::getInstance().getName() + "." + std::string(formatted_uuid);
+
             asio::co_spawn(
                 SWA::Process::getInstance().getIOContext().get_executor(),
                 [this]() -> asio::awaitable<void> {

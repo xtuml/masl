@@ -4,14 +4,9 @@
 #include "idm/Producer.hh"
 
 #include "ProcessHandler.hh"
-
 #include "amqp_asio/condition_var.hh"
 #include "amqp_asio/sender.hh"
-#include "amqp_asio/session.hh"
 #include "logging/log.hh"
-
-#include <asio/any_io_executor.hpp>
-#include <future>
 
 namespace InterDomainMessaging {
 

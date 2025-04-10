@@ -15,7 +15,8 @@ namespace InterDomainMessaging {
         Producer::Producer(const std::string topic, ProcessHandler &proc)
             : topic_prefix(SWA::CommandLine::getInstance().getOption(TopicPrefixOption, "topic://")),
               topic(topic),
-              log("idm.activemq.producer.{}", topic), initialisedCond(SWA::Process::getInstance().getIOContext().get_executor()),
+              log("idm.activemq.producer.{}", topic),
+              initialisedCond(SWA::Process::getInstance().getIOContext().get_executor()),
               proc(proc) {
             asio::co_spawn(
                 SWA::Process::getInstance().getIOContext().get_executor(),

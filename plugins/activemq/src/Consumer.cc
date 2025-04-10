@@ -1,6 +1,5 @@
 #include "Consumer.hh"
 
-#include "amqp_asio/delivery.hh"
 #include "amqp_asio/spawn.hh"
 #include "idm/ProcessHandler.hh"
 #include "swa/Process.hh"

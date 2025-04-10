@@ -15,22 +15,21 @@ namespace InterDomainMessaging {
         const char *const PortNoOption = "-activemq-port";
         const char *const TopicPrefixOption = "-activemq-topic-prefix";
 
-        struct Init {
-            Init() {
+        bool init() {
+            // register log appender
+            log4cplus::spi::getAppenderFactoryRegistry().put(std::make_unique<InterDomainMessaging::ActiveMQ::ActiveMQAppenderFactory>());
 
-                // register log appender
-                log4cplus::spi::getAppenderFactoryRegistry().put(std::make_unique<InterDomainMessaging::ActiveMQ::ActiveMQAppenderFactory>());
+            // register command line arguments
+            SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokerOption, std::string("Broker URL"), true, "broker", true, false));
+            SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(UsernameOption, std::string("Broker Username"), false, "username", true, false));
+            SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PasswordOption, std::string("Broker Password"), false, "password", true, false));
+            SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PortNoOption, std::string("Broker Port Number"), false, "port", true, false));
+            SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(TopicPrefixOption, std::string("Topic Prefix"), false, "prefix", true, false));
 
-                // register command line arguments
-                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(BrokerOption, std::string("Broker URL"), true, "broker", true, false));
-                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(UsernameOption, std::string("Broker Username"), false, "username", true, false));
-                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PasswordOption, std::string("Broker Password"), false, "password", true, false));
-                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(PortNoOption, std::string("Broker Port Number"), false, "port", true, false));
-                SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(TopicPrefixOption, std::string("Topic Prefix"), false, "prefix", true, false));
+            return true;
+        }
 
-                SWA::Process::getInstance().registerStartedListener(&startup);
-            }
-        } init;
+        bool initialised = init();
 
     } // namespace ActiveMQ
 

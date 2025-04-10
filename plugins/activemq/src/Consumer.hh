@@ -1,14 +1,13 @@
 #ifndef ActiveMQ_Consumer_HH
 #define ActiveMQ_Consumer_HH
 
-#include "activemq/ActiveMQ.hh"
 #include "idm/Consumer.hh"
 
 #include "ProcessHandler.hh"
-
+#include "activemq/ActiveMQ.hh"
 #include "amqp_asio/delivery.hh"
-#include "idm/DataConsumer.hh"
 #include "logging/log.hh"
+#include "swa/CommandLine.hh"
 
 #include <queue>
 
