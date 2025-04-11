@@ -31,6 +31,15 @@ namespace amqp_asio {
 
             virtual asio::any_io_executor get_executor() const = 0;
 
+            virtual asio::awaitable<void> drain() = 0;
+            virtual asio::awaitable<void> add_credit(messages::uint_t credits) = 0;
+            virtual asio::awaitable<void> remove_credit(messages::uint_t credits) = 0;
+            virtual asio::awaitable<void> set_credit(messages::uint_t credits) = 0;
+
+            virtual asio::awaitable<void> start_auto_credit() = 0;
+            virtual asio::awaitable<void> stop_auto_credit() = 0;
+            virtual asio::awaitable<void> auto_credit_limits(messages::uint_t low_water, messages::uint_t high_water) = 0;
+
             virtual ~Impl() = default;
         };
 
@@ -43,6 +52,16 @@ namespace amqp_asio {
         asio::awaitable<Delivery> receive();
 
         asio::awaitable<void> detach();
+
+        asio::awaitable<void> drain();
+        asio::awaitable<void> add_credit(messages::uint_t credits);
+        asio::awaitable<void> remove_credit(messages::uint_t credits);
+        asio::awaitable<void> set_credit(messages::uint_t credits);
+
+        asio::awaitable<void> start_auto_credit();
+        asio::awaitable<void> stop_auto_credit();
+        asio::awaitable<void> auto_credit_limits(messages::uint_t low_water, messages::uint_t high_water);
+
 
       private:
         std::shared_ptr<Impl> pimpl_;

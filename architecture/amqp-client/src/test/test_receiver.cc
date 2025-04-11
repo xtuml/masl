@@ -8,10 +8,10 @@
  * -----------------------------------------------------------------------------
  */
 
-#include "../receiver.hh"
 #include "../messages.hh"
-#include "amqp_asio/options.hh"
+#include "../receiver.hh"
 #include "amqp_asio/condition_var.hh"
+#include "amqp_asio/options.hh"
 #include "session_mock.hh"
 #include "test_coro.hh"
 
@@ -56,7 +56,11 @@ struct ReceiverTest : public AsyncTest {
         auto [handle, flow] = co_await session->update_flow_calls.pop();
         EXPECT_EQ(handle, 2u);
         EXPECT_EQ(flow.delivery_count, 0u);
-        EXPECT_EQ(flow.link_credit, std::max(options.initial_credit(), options.auto_credit_high_water()));
+        if ( options.auto_credit()) {
+            EXPECT_EQ(flow.link_credit, std::max(options.initial_credit(), options.auto_credit_high_water()));
+        } else {
+            EXPECT_EQ(flow.link_credit,options.initial_credit());
+        }
         EXPECT_EQ(flow.available, 0u);
         EXPECT_EQ(flow.drain, false);
 
@@ -148,14 +152,14 @@ TEST_F(ReceiverTest, ReceiveUnsettled) {
         EXPECT_CALL(*session, settle_delivery(1));
 
         co_await receiver->push_message(
-           Transfer{.handle = 42, .delivery_id = 1, .delivery_tag = {{std::byte(1)}}, .settled = false}
+            Transfer{.handle = 42, .delivery_id = 1, .delivery_tag = {{std::byte(1)}}, .settled = false}
         );
 
         auto disposition = co_await session->disposition_calls.pop();
         EXPECT_EQ(disposition.role, Role::receiver);
-        EXPECT_EQ(disposition.first,1u);
-        EXPECT_EQ(disposition.settled,true);
-        EXPECT_EQ(disposition.state,DeliveryState{Accepted{}});
+        EXPECT_EQ(disposition.first, 1u);
+        EXPECT_EQ(disposition.settled, true);
+        EXPECT_EQ(disposition.state, DeliveryState{Accepted{}});
 
         auto msg = co_await receiver->receive();
 
@@ -166,7 +170,6 @@ TEST_F(ReceiverTest, ReceiveUnsettled) {
 
 TEST_F(ReceiverTest, ReceiveUnsettledDelayAccept) {
     run([this]() -> asio::awaitable<void> {
-
         co_await attach(amqp_asio::ReceiverOptions().auto_accept(false));
 
         EXPECT_CALL(*session, register_unsettled_delivery(_));
@@ -181,9 +184,9 @@ TEST_F(ReceiverTest, ReceiveUnsettledDelayAccept) {
 
         auto disposition = co_await session->disposition_calls.pop();
         EXPECT_EQ(disposition.role, Role::receiver);
-        EXPECT_EQ(disposition.first,1u);
-        EXPECT_EQ(disposition.settled,true);
-        EXPECT_EQ(disposition.state,DeliveryState{Accepted{}});
+        EXPECT_EQ(disposition.first, 1u);
+        EXPECT_EQ(disposition.settled, true);
+        EXPECT_EQ(disposition.state, DeliveryState{Accepted{}});
 
         co_await detach();
         co_return;
@@ -192,24 +195,25 @@ TEST_F(ReceiverTest, ReceiveUnsettledDelayAccept) {
 
 TEST_F(ReceiverTest, ReceiveSettleSecond) {
     run([this]() -> asio::awaitable<void> {
-
         co_await attach();
 
         EXPECT_CALL(*session, register_unsettled_delivery(_));
 
-        co_await receiver->push_message(Transfer{
-            .handle = 42,
-            .delivery_id = 1,
-            .delivery_tag = {{std::byte(1)}},
-            .settled = false,
-            .rcv_settle_mode = ReceiverSettleMode::second
-        });
+        co_await receiver->push_message(
+            Transfer{
+                .handle = 42,
+                .delivery_id = 1,
+                .delivery_tag = {{std::byte(1)}},
+                .settled = false,
+                .rcv_settle_mode = ReceiverSettleMode::second
+            }
+        );
 
         auto disposition = co_await session->disposition_calls.pop();
         EXPECT_EQ(disposition.role, Role::receiver);
-        EXPECT_EQ(disposition.first,1u);
-        EXPECT_EQ(disposition.settled,false);
-        EXPECT_EQ(disposition.state,DeliveryState{Accepted{}});
+        EXPECT_EQ(disposition.first, 1u);
+        EXPECT_EQ(disposition.settled, false);
+        EXPECT_EQ(disposition.state, DeliveryState{Accepted{}});
 
         auto msg = std::static_pointer_cast<SessionMock::Delivery>(co_await receiver->receive());
 
@@ -225,22 +229,24 @@ TEST_F(ReceiverTest, ReceiveSettleSecondDelayAccept) {
         co_await attach(amqp_asio::ReceiverOptions().auto_accept(false));
 
         EXPECT_CALL(*session, register_unsettled_delivery(_));
-        co_await receiver->push_message(Transfer{
-            .handle = 42,
-            .delivery_id = 1,
-            .delivery_tag = {{std::byte(1)}},
-            .settled = false,
-            .rcv_settle_mode = ReceiverSettleMode::second
-        });
+        co_await receiver->push_message(
+            Transfer{
+                .handle = 42,
+                .delivery_id = 1,
+                .delivery_tag = {{std::byte(1)}},
+                .settled = false,
+                .rcv_settle_mode = ReceiverSettleMode::second
+            }
+        );
 
         auto msg = std::static_pointer_cast<SessionMock::Delivery>(co_await receiver->receive());
         co_await msg->accept();
 
         auto disposition = co_await session->disposition_calls.pop();
         EXPECT_EQ(disposition.role, Role::receiver);
-        EXPECT_EQ(disposition.first,1u);
-        EXPECT_EQ(disposition.settled,false);
-        EXPECT_EQ(disposition.state,DeliveryState{Accepted{}});
+        EXPECT_EQ(disposition.first, 1u);
+        EXPECT_EQ(disposition.settled, false);
+        EXPECT_EQ(disposition.state, DeliveryState{Accepted{}});
 
         EXPECT_CALL(*session, settle_delivery(1u));
         co_await msg->disposition(true, Accepted{}, false);
@@ -267,15 +273,114 @@ TEST_F(ReceiverTest, AutoCredit) {
         );
         co_await receiver->receive();
 
-        auto [handle,flow] = co_await session->update_flow_calls.pop();
-        EXPECT_EQ(handle,2u);
-        EXPECT_EQ(flow.delivery_count,2u );
-        EXPECT_EQ(flow.link_credit,3u );
-        EXPECT_EQ(flow.available,0u );
-        EXPECT_EQ(flow.drain,false );
-
+        auto [handle, flow] = co_await session->update_flow_calls.pop();
+        EXPECT_EQ(handle, 2u);
+        EXPECT_EQ(flow.delivery_count, 2u);
+        EXPECT_EQ(flow.link_credit, 3u);
+        EXPECT_EQ(flow.available, 0u);
+        EXPECT_EQ(flow.drain, false);
 
         co_await detach();
         co_return;
+    });
+}
+
+TEST_F(ReceiverTest, Drain) {
+    run([this]() -> asio::awaitable<void> {
+        co_await attach(amqp_asio::ReceiverOptions().initial_credit(10).auto_credit(false));
+        co_await receiver->drain();
+        auto [handle, flow] = co_await session->update_flow_calls.pop();
+        EXPECT_EQ(handle, 2u);
+        EXPECT_EQ(flow.delivery_count, 0u);
+        EXPECT_EQ(flow.link_credit, 10u);
+        EXPECT_EQ(flow.available, 0u);
+        EXPECT_EQ(flow.drain, true);
+
+        co_await detach();
+        co_return;
+    });
+}
+
+TEST_F(ReceiverTest, AddCredit) {
+    run([this]() -> asio::awaitable<void> {
+        co_await attach(amqp_asio::ReceiverOptions().initial_credit(10).auto_credit(false));
+        co_await receiver->add_credit(5);
+        auto [handle, flow] = co_await session->update_flow_calls.pop();
+        EXPECT_EQ(handle, 2u);
+        EXPECT_EQ(flow.delivery_count, 0u);
+        EXPECT_EQ(flow.link_credit, 15u);
+        EXPECT_EQ(flow.available, 0u);
+        EXPECT_EQ(flow.drain, false);
+
+        co_await detach();
+        co_return;
+    });
+}
+
+TEST_F(ReceiverTest, RemoveCredit) {
+    run([this]() -> asio::awaitable<void> {
+        co_await attach(amqp_asio::ReceiverOptions().initial_credit(10).auto_credit(false));
+        co_await receiver->remove_credit(5);
+        auto [handle, flow] = co_await session->update_flow_calls.pop();
+        EXPECT_EQ(handle, 2u);
+        EXPECT_EQ(flow.delivery_count, 0u);
+        EXPECT_EQ(flow.link_credit, 5u);
+        EXPECT_EQ(flow.available, 0u);
+        EXPECT_EQ(flow.drain, false);
+
+        co_await detach();
+        co_return;
+
+    });
+}
+
+TEST_F(ReceiverTest, RemoveCreditUnderflow) {
+    run([this]() -> asio::awaitable<void> {
+        co_await attach(amqp_asio::ReceiverOptions().initial_credit(10).auto_credit(false));
+        co_await receiver->remove_credit(15);
+        auto [handle, flow] = co_await session->update_flow_calls.pop();
+        EXPECT_EQ(handle, 2u);
+        EXPECT_EQ(flow.delivery_count, 0u);
+        EXPECT_EQ(flow.link_credit, 0u);
+        EXPECT_EQ(flow.available, 0u);
+        EXPECT_EQ(flow.drain, false);
+
+        co_await detach();
+        co_return;
+
+    });
+}
+TEST_F(ReceiverTest, SetCredit) {
+    run([this]() -> asio::awaitable<void> {
+        co_await attach(amqp_asio::ReceiverOptions().initial_credit(10).auto_credit(false));
+        co_await receiver->set_credit(99);
+        auto [handle, flow] = co_await session->update_flow_calls.pop();
+        EXPECT_EQ(handle, 2u);
+        EXPECT_EQ(flow.delivery_count, 0u);
+        EXPECT_EQ(flow.link_credit, 99u);
+        EXPECT_EQ(flow.available, 0u);
+        EXPECT_EQ(flow.drain, false);
+
+        co_await detach();
+        co_return;
+
+    });
+}
+
+
+TEST_F(ReceiverTest, StartAutoCredit) {
+    run([this]() -> asio::awaitable<void> {
+        co_await attach(amqp_asio::ReceiverOptions().initial_credit(0).auto_credit_high_water(10).auto_credit_low_water(5).auto_credit(false));
+        co_await receiver->start_auto_credit();
+        auto [handle, flow] = co_await session->update_flow_calls.pop();
+        EXPECT_EQ(handle, 2u);
+        EXPECT_EQ(flow.delivery_count, 0u);
+        EXPECT_EQ(flow.link_credit, 10u);
+        EXPECT_EQ(flow.available, 0u);
+        EXPECT_EQ(flow.drain, false);
+
+        co_await detach();
+        co_return;
+
     });
 }
