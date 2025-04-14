@@ -65,6 +65,6 @@ set -e
     conan upload --list ${pkglist} -r $remote -c
     rm -f ${pkglist}
   fi
-  conan upload --list ${pkglist} -r $remote -c
-  rm -f ${pkglist}
+  rm -f ${install}
+
 )
