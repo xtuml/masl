@@ -6,7 +6,6 @@
 
 #include <asio/co_spawn.hpp>
 #include <asio/detached.hpp>
-#include <asio/use_future.hpp>
 
 namespace InterDomainMessaging {
 
@@ -45,8 +44,7 @@ namespace InterDomainMessaging {
                                             service();
 
                                             // accept delivery
-                                            auto accepted = asio::co_spawn(SWA::Process::getInstance().getIOContext().get_executor(), msg.accept(), asio::use_future);
-                                            accepted.wait();
+                                            asio::co_spawn(SWA::Process::getInstance().getIOContext().get_executor(), msg.accept(), asio::detached);
                                         }
                                     }
                                 )
