@@ -16,11 +16,10 @@ namespace InterDomainMessaging {
             : topic_prefix(SWA::CommandLine::getInstance().getOption(TopicPrefixOption, "topic://")),
               topic(topic),
               log("idm.activemq.producer.{}", topic),
-              initialisedCond(proc.getContext().get_executor()),
+              initialisedCond(SWA::Process::getInstance().getIOContext().get_executor()),
               proc(proc) {
-            auto executor = proc.getContext().get_executor();
             asio::co_spawn(
-                executor,
+                SWA::Process::getInstance().getIOContext().get_executor(),
                 [this, topic, &proc]() mutable -> asio::awaitable<void> {
                     co_await proc.isInitialised();
                     sender = co_await proc.getSession().open_sender(amqp_asio::SenderOptions().name(getName()).delivery_mode(amqp_asio::DeliveryMode::at_least_once));
@@ -33,9 +32,8 @@ namespace InterDomainMessaging {
         }
 
         void Producer::produce(std::string data) {
-            auto executor = proc.getContext().get_executor();
             asio::co_spawn(
-                executor,
+                SWA::Process::getInstance().getIOContext().get_executor(),
                 [this, data]() -> asio::awaitable<void> {
                     log.debug("Sending message");
                     co_await isInitialised();

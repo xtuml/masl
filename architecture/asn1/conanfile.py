@@ -5,7 +5,7 @@ from conan.errors import ConanInvalidConfiguration
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_asn1"
-    version = "1.0"
+    version = "1.0.1"
     user = "xtuml"
 
     package_type = "shared-library"
@@ -20,7 +20,7 @@ class ConanFile(conan.ConanFile):
     exports_sources = "CMakeLists.txt", "src/*", "include/*"
 
     def requirements(self):
-        self.requires("xtuml_swa/[>=1.0 <2]@xtuml", transitive_headers=True)
+        self.requires("xtuml_swa/[>=1.0 <2]@xtuml", transitive_headers=True, transitive_libs=True)
         self.requires("boost/[>=1.86.0 <2]", transitive_headers=True)
 
     def layout(self):

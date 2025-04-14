@@ -4,21 +4,10 @@
  * The copyright of this Software is vested in the Crown
  * and the Software is the property of the Crown.
  * ----------------------------------------------------------------------------
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ----------------------------------------------------------------------------
- * Classification: UK OFFICIAL
+ * SPDX-License-Identifier: Apache-2.0
  * ----------------------------------------------------------------------------
  */
+
 
 #ifndef Inspector_Inspector_HH
 #define Inspector_Inspector_HH
@@ -27,14 +16,16 @@
 #include "inspector/CommunicationChannel.hh"
 
 #include "swa/Duration.hh"
-#include "swa/FileDescriptorListener.hh"
 #include "swa/ProcessMonitor.hh"
 #include "swa/Stack.hh"
-#include "swa/TimerListener.hh"
 #include "swa/Timestamp.hh"
 
 #include "inspector/types.hh"
+#include <asio/system_timer.hpp>
 #include <queue>
+#include <chrono>
+
+using namespace std::literals;
 
 namespace Inspector {
 
@@ -94,7 +85,7 @@ class Inspector : public SWA::ProcessMonitor::MonitorConnection {
     };
 
   public:
-    Inspector(int port);
+    Inspector(asio::any_io_executor executor, asio::ip::port_type port);
     std::string getName() { return "Inspector"; }
 
     void pause();
@@ -131,20 +122,11 @@ class Inspector : public SWA::ProcessMonitor::MonitorConnection {
 
     void endMainLoop() override;
 
-    bool connectCallback(int) {
-        connectToClient();
-        return false;
-    }
-    bool requestCallback(int) {
-        if (requestChannel.ready()) {
-            processRequest();
-            return !requestChannel.empty();
-        } else {
-            return false;
-        }
-    }
+private:
+    void activateAsyncListen();
+    void deactivateAsyncListen();
+    void pollBacklog();
 
-  private:
     bool hitBreakpoint();
     bool getProcessData();
     bool redirectConsole();
@@ -215,8 +197,8 @@ class Inspector : public SWA::ProcessMonitor::MonitorConnection {
     CommunicationChannel requestChannel;
     CommunicationChannel infoChannel;
     ConsoleRedirection consoleRedirect;
-    SWA::FileDescriptorListener connectListener;
-    SWA::FileDescriptorListener requestListener;
+
+    asio::cancellation_signal deactivator;
 
     bool traceLines;
     bool traceBlocks;
@@ -240,11 +222,8 @@ class Inspector : public SWA::ProcessMonitor::MonitorConnection {
     std::queue<Callable> inThreadQueue;
     std::queue<Callable> endThreadQueue;
 
-    static SWA::Duration backlogPollInterval;
-    SWA::Timestamp backlogTime;
-    SWA::TimerListener backlogTimer;
-
-    void backlogCallback(int overrun);
+    static inline std::chrono::seconds backlogPollInterval = 10s;
+    asio::system_timer backlogTimer;
 };
 
 } // namespace Inspector

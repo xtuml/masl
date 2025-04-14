@@ -10,10 +10,8 @@
 #include "swa/Device.hh"
 #include "swa/Sequence.hh"
 #include "swa/String.hh"
-#include "swa/IOError.hh"
 #include "boost/dynamic_bitset.hpp"
 #include <memory>
-#include "boost/make_shared.hpp"
 
 #include "endian.hh"
 

@@ -11,21 +11,27 @@
 #ifndef SWA_EventTimer_HH
 #define SWA_EventTimer_HH
 
-#include "TimerListener.hh"
 #include "Timestamp.hh"
-#include <boost/utility.hpp>
+#include "Duration.hh"
+#include <asio/system_timer.hpp>
 
 namespace SWA {
     class Event;
 
-    class EventTimer : public boost::noncopyable {
+
+    class EventTimer : public std::enable_shared_from_this<EventTimer> {
       public:
-        typedef std::shared_ptr<Event> EventDetails;
-        typedef uint32_t TimerIdType;
+        using EventDetails = std::shared_ptr<Event>;
+        using TimerIdType = std::uint32_t;
 
       public:
         EventTimer(TimerIdType id);
-        ~EventTimer();
+        ~EventTimer() = default;
+
+        EventTimer(const EventTimer &) = delete;
+        EventTimer &operator=(const EventTimer &) = delete;
+        EventTimer(EventTimer &&) = delete;
+        EventTimer &operator=(EventTimer &&) = delete;
 
         TimerIdType getId() const {
             return id;
@@ -45,6 +51,8 @@ namespace SWA {
             return expired;
         }
 
+        std::shared_ptr<EventTimer> ptr() { return shared_from_this(); }
+
         void schedule(const Timestamp &expiryTime, const Duration &period, const EventDetails &eventDetails);
         void restore(
             const Timestamp &expiryTime,
@@ -62,9 +70,11 @@ namespace SWA {
         void callback(int overrun);
 
       private:
-        TimerListener listener;
-        const TimerIdType id;
+        void schedule();
 
+
+        const TimerIdType id;
+        asio::system_timer timer;
         bool scheduled;
         bool expired;
         Timestamp expiryTime;
