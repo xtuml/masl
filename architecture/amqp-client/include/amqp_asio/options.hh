@@ -95,6 +95,7 @@ namespace amqp_asio {
 
     class ReceiverOptions {
         DEFINE_OPTIONAL_OPTION(name, std::string);
+        DEFINE_OPTION(auto_credit, bool);
         DEFINE_OPTION(auto_credit_low_water, messages::uint_t);
         DEFINE_OPTION(auto_credit_high_water, messages::uint_t);
         DEFINE_OPTION(initial_credit, messages::uint_t);
@@ -110,6 +111,7 @@ namespace amqp_asio {
         auto values_or(const ReceiverOptions &rhs) const {
             return ReceiverOptions()
                 .OR_OPTION(name)
+                .OR_OPTION(auto_credit)
                 .OR_OPTION(auto_credit_low_water)
                 .OR_OPTION(auto_credit_high_water)
                 .OR_OPTION(initial_credit)
@@ -122,8 +124,7 @@ namespace amqp_asio {
       private:
         static const ReceiverOptions &last_resort() {
             static ReceiverOptions opts =
-                ReceiverOptions().auto_credit_low_water(5).auto_credit_high_water(10).initial_credit(0).auto_accept(true
-                );
+                ReceiverOptions().auto_credit(true).auto_credit_low_water(5).auto_credit_high_water(10).initial_credit(0).auto_accept(true);
             return opts;
         }
     };

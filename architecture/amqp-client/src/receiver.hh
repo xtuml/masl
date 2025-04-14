@@ -9,11 +9,11 @@
  */
 
 #pragma once
-#include "amqp_asio/receiver.hh"
 #include "amqp_asio/options.hh"
-#include "messages.hh"
+#include "amqp_asio/receiver.hh"
 #include "delivery.hh"
 #include "link.hh"
+#include "messages.hh"
 
 #include <asio/awaitable.hpp>
 
@@ -26,8 +26,7 @@ namespace amqp_asio {
         using Self = std::shared_ptr<ReceiverImpl>;
         using Delivery = DeliveryImpl<ReceiverImpl>;
 
-        static asio::awaitable<Self>
-        create(std::shared_ptr<Session> session, ReceiverOptions options) {
+        static asio::awaitable<Self> create(std::shared_ptr<Session> session, ReceiverOptions options) {
             auto link = std::make_shared<ReceiverImpl>(std::move(session), std::move(options));
             co_await link->init();
             co_return link;
@@ -35,12 +34,17 @@ namespace amqp_asio {
 
         ReceiverImpl(std::shared_ptr<Session> session, ReceiverOptions options)
             : LinkImpl<Session>(options.name().value_or(unique_name()), std::move(session), options.properties()),
+              auto_credit_{options.auto_credit()},
               auto_credit_low_water_{options.auto_credit_low_water()},
               auto_credit_high_water_{options.auto_credit_high_water()},
               auto_accept{options.auto_accept()},
               delivery_queue_{this->get_executor(), std::numeric_limits<std::size_t>::max()},
               log_{"async_ampq.receiver.{}", this->name()} {
-            flow().link_credit = std::max(options.initial_credit(), options.auto_credit_high_water());
+            flow().link_credit = options.initial_credit();
+            if (auto_credit_ && flow().link_credit <= auto_credit_low_water_ &&
+                flow().link_credit < auto_credit_high_water_) {
+                flow().link_credit = auto_credit_high_water_;
+            }
         }
 
         const LinkFlow &flow() const {
@@ -90,6 +94,51 @@ namespace amqp_asio {
             co_return co_await LinkImpl<Session>::detach();
         }
 
+        asio::awaitable<void> drain() override {
+            flow().drain = true;
+            auto_credit_ = false;
+            co_await this->update_flow();
+        }
+
+        asio::awaitable<void> add_credit(messages::uint_t credits) override {
+            flow().link_credit += credits;
+            flow().drain = false;
+            auto_credit_ = false;
+            co_await this->update_flow();
+        }
+
+        asio::awaitable<void> remove_credit(messages::uint_t credits) override {
+            if (flow().link_credit <= credits) {
+                flow().link_credit = 0;
+            } else {
+                flow().link_credit -= credits;
+            }
+            auto_credit_ = false;
+            co_await this->update_flow();
+        }
+
+        asio::awaitable<void> set_credit(messages::uint_t credits) override {
+            flow().link_credit = credits;
+            flow().drain = false;
+            auto_credit_ = false;
+            co_await this->update_flow();
+        }
+
+        asio::awaitable<void> start_auto_credit() override {
+            auto_credit_ = true;
+            co_await auto_update_credit();
+        }
+        asio::awaitable<void> stop_auto_credit() override {
+            auto_credit_ = false;
+            co_return;
+        }
+
+        asio::awaitable<void> auto_credit_limits(messages::uint_t low_water, messages::uint_t high_water) override {
+            auto_credit_low_water_ = low_water;
+            auto_credit_high_water_ = high_water;
+            co_await auto_update_credit();
+        }
+
       private:
         void register_local_link() override {
             this->session()->register_local_receiver(self());
@@ -104,12 +153,18 @@ namespace amqp_asio {
             if (flow().available > 0) {
                 --flow().available;
             }
-            if (flow().link_credit <= auto_credit_low_water_ && flow().link_credit < auto_credit_high_water_) {
+            co_await auto_update_credit();
+            log_.debug("{}", nlohmann::json(flow()).dump());
+            co_return;
+        }
+
+        asio::awaitable<void> auto_update_credit() {
+            if (auto_credit_ && flow().link_credit <= auto_credit_low_water_ &&
+                flow().link_credit < auto_credit_high_water_) {
+                flow().drain = false;
                 flow().link_credit = auto_credit_high_water_;
                 co_await this->update_flow();
             }
-            log_.debug("{}",nlohmann::json(flow()).dump());
-            co_return;
         }
 
         asio::awaitable<void> flow_updated(const messages::Flow &update) override {
@@ -178,6 +233,7 @@ namespace amqp_asio {
             co_return;
         }
 
+        bool auto_credit_{};
         messages::uint_t auto_credit_low_water_{};
         messages::uint_t auto_credit_high_water_{};
         messages::ReceiverSettleMode receiver_settle_mode_{};
