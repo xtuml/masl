@@ -71,6 +71,8 @@ namespace SWA {
     }
 
     void EventTimers::deleteTimer(const TimerIdType id) {
+        EventTimer &timer = getTimer(id);
+        timer.cancel();
         timers.erase(id);
         deleteTimerInner(id);
     }
