@@ -9,6 +9,8 @@
 
 #include "logging/log.hh"
 
+#include <map>
+
 namespace InterDomainMessaging {
 
     namespace ActiveMQ {
@@ -16,8 +18,12 @@ namespace InterDomainMessaging {
         class ProcessHandler : public InterDomainMessaging::ProcessHandler {
           public:
             ProcessHandler();
-            std::unique_ptr<InterDomainMessaging::Consumer> createConsumer(std::string topic) override;
-            std::unique_ptr<InterDomainMessaging::Producer> createProducer(std::string topic) override;
+            std::shared_ptr<InterDomainMessaging::Consumer> createConsumer(std::string topic) override;
+            std::shared_ptr<InterDomainMessaging::Producer> createProducer(std::string topic) override;
+
+            void setConsumerConfig(std::string consumerId, std::string paramName, std::string paramValue) override;
+            void setConsumerConfig(std::string consumerId, std::string paramName, int paramValue) override;
+            void setConsumerConfig(std::string consumerId, std::string paramName, bool paramValue) override;
 
             amqp_asio::Session getSession() {
                 return session;
@@ -42,6 +48,7 @@ namespace InterDomainMessaging {
             amqp_asio::Session session;
             bool initialised;
             amqp_asio::ConditionVar initialisedCond;
+            std::map<std::string, std::shared_ptr<InterDomainMessaging::Consumer>> consumers;
         };
 
     } // namespace ActiveMQ
