@@ -14,6 +14,10 @@ namespace InterDomainMessaging {
         extern const char *const SslKeyOption;
         extern const char *const SslCertAuthOption;
         extern const char *const SslPasswordOption;
+        extern const char *const DisableAutoCreditOption;
+        extern const char *const AutoCreditHighWaterOption;
+        extern const char *const AutoCreditLowWaterOption;
+        extern const char *const InitialCreditOption;
 
     } // namespace ActiveMQ
 

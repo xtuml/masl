@@ -2,6 +2,7 @@
 
 #include "amqp_asio/spawn.hh"
 #include "idm/ProcessHandler.hh"
+#include "swa/CommandLine.hh"
 #include "swa/Process.hh"
 
 #include <asio/co_spawn.hpp>
@@ -17,7 +18,20 @@ namespace InterDomainMessaging {
                 SWA::Process::getInstance().getIOContext().get_executor(),
                 [this, handler]() -> asio::awaitable<void> {
                     co_await proc.isInitialised();
-                    receiver = co_await proc.getSession().open_receiver(topic_prefix + topic, amqp_asio::ReceiverOptions().name(getName()));
+                    // get receiver options
+                    bool disableAutoCredit = SWA::CommandLine::getInstance().optionPresent(DisableAutoCreditOption);
+                    int autoCreditHighWater = SWA::CommandLine::getInstance().getIntOption(AutoCreditHighWaterOption, 10);
+                    int autoCreditLowWater = SWA::CommandLine::getInstance().getIntOption(AutoCreditLowWaterOption, 5);
+                    int initialCredit = SWA::CommandLine::getInstance().getIntOption(InitialCreditOption, 0);
+                    receiver = co_await proc.getSession().open_receiver(
+                        topic_prefix + topic,
+                        amqp_asio::ReceiverOptions()
+                            .name(getName())
+                            .auto_credit(!disableAutoCredit)
+                            .auto_credit_low_water(autoCreditLowWater)
+                            .auto_credit_high_water(autoCreditHighWater)
+                            .initial_credit(initialCredit)
+                    );
                     log.debug("Created receiver");
                     amqp_asio::spawn_cancellable_loop(
                         SWA::Process::getInstance().getIOContext().get_executor(),
