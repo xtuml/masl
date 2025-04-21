@@ -9,7 +9,6 @@
  */
 package org.xtuml.masl.translate.main;
 
-import com.google.common.base.Suppliers;
 import org.xtuml.masl.cppgen.Class;
 import org.xtuml.masl.cppgen.*;
 import org.xtuml.masl.cppgen.EnumerationType.Enumerator;
@@ -100,6 +99,8 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
         getDomain = new Function("getDomain", DomainNamespace.get(domain));
         interfaceDomainHeader.addFunctionDeclaration(getDomain);
         getDomainId = new Function("getId").asFunctionCall(getDomain.asFunctionCall(), false);
+
+        nativeStubsFile = new Library("native").inBuildSet(buildSet).createBodyFile(NativeStubsFile);
 
     }
 
@@ -491,6 +492,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     private final CodeFile publicServicesHeaderFile;
     private final CodeFile privateServicesHeaderFile;
     private final CodeFile terminatorsHeaderFile;
+    private final CodeFile nativeStubsFile;
     private EnumerationType servicesEnum;
 
     public EnumerationType getServicesEnum() {
@@ -546,6 +548,6 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     }
 
     public CodeFile getNativeStubs() {
-        return Suppliers.memoize(() -> new Library("native").inBuildSet(buildSet).createBodyFile(NativeStubsFile)).get();
+        return nativeStubsFile;
     }
 }
