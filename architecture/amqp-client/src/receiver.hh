@@ -133,9 +133,13 @@ namespace amqp_asio {
             co_return;
         }
 
-        asio::awaitable<void> auto_credit_limits(messages::uint_t low_water, messages::uint_t high_water) override {
-            auto_credit_low_water_ = low_water;
-            auto_credit_high_water_ = high_water;
+        asio::awaitable<void> auto_credit_limits(messages::int_t low_water, messages::int_t high_water) override {
+            if (low_water >= 0) {
+                auto_credit_low_water_ = low_water;
+            }
+            if (high_water >= 0) {
+                auto_credit_high_water_ = high_water;
+            }
             co_await auto_update_credit();
         }
 

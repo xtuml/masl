@@ -15,6 +15,8 @@ namespace InterDomainMessaging {
 
     namespace ActiveMQ {
 
+        class Consumer;
+
         class ProcessHandler : public InterDomainMessaging::ProcessHandler {
           public:
             ProcessHandler();
@@ -48,7 +50,7 @@ namespace InterDomainMessaging {
             amqp_asio::Session session;
             bool initialised;
             amqp_asio::ConditionVar initialisedCond;
-            std::map<std::string, std::shared_ptr<InterDomainMessaging::Consumer>> consumers;
+            std::map<std::string, std::shared_ptr<Consumer>> consumers;
         };
 
     } // namespace ActiveMQ
