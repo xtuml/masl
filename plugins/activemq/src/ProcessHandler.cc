@@ -70,15 +70,21 @@ namespace InterDomainMessaging {
         }
 
         void ProcessHandler::setConsumerConfig(std::string consumerId, std::string paramName, std::string paramValue) {
-            // TODO
+            if (consumers.contains(consumerId)) {
+                consumers[consumerId]->setConfig(paramName, paramValue);
+            }
         }
 
         void ProcessHandler::setConsumerConfig(std::string consumerId, std::string paramName, int paramValue) {
-            // TODO
+            if (consumers.contains(consumerId)) {
+                consumers[consumerId]->setConfig(paramName, paramValue);
+            }
         }
 
         void ProcessHandler::setConsumerConfig(std::string consumerId, std::string paramName, bool paramValue) {
-            // TODO
+            if (consumers.contains(consumerId)) {
+                consumers[consumerId]->setConfig(paramName, paramValue);
+            }
         }
 
         ProcessHandler &ProcessHandler::getInstance() {
