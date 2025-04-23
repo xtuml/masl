@@ -21,6 +21,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
+          flavor: latest=true
           images: levistarrett/masl-dev
       - name: Build and push
         uses: docker/build-push-action@v3
