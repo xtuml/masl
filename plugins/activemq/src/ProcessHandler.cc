@@ -35,8 +35,7 @@ namespace InterDomainMessaging {
                         const std::string port = SWA::CommandLine::getInstance().getOption(PortNoOption, "5672");
 
                         // create connection
-                        conn =
-                            amqp_asio::Connection::create_amqp("idm.activemq." + SWA::Process::getInstance().getName(), SWA::Process::getInstance().getIOContext().get_executor());
+                        conn = amqp_asio::Connection::create_amqp(getName(), SWA::Process::getInstance().getIOContext().get_executor());
                         co_await conn.open(
                             amqp_asio::ConnectionOptions().hostname(hostname).port(port).sasl_options(amqp_asio::SaslOptions().authname(username).password(password))
                         );
