@@ -38,7 +38,7 @@ namespace amqp_asio {
 
             virtual asio::awaitable<void> start_auto_credit() = 0;
             virtual asio::awaitable<void> stop_auto_credit() = 0;
-            virtual asio::awaitable<void> auto_credit_limits(messages::uint_t low_water, messages::uint_t high_water) = 0;
+            virtual asio::awaitable<void> auto_credit_limits(messages::int_t low_water, messages::int_t high_water) = 0;
 
             virtual ~Impl() = default;
         };
@@ -60,7 +60,7 @@ namespace amqp_asio {
 
         asio::awaitable<void> start_auto_credit();
         asio::awaitable<void> stop_auto_credit();
-        asio::awaitable<void> auto_credit_limits(messages::uint_t low_water, messages::uint_t high_water);
+        asio::awaitable<void> auto_credit_limits(messages::int_t low_water, messages::int_t high_water);
 
 
       private:

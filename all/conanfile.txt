@@ -26,6 +26,7 @@ masl_filesystem/[>=1.0 <2]@xtuml
 masl_format/[>=1.0 <2]@xtuml
 masl_hash/[>=1.0 <2]@xtuml
 masl_host/[>=1.0 <2]@xtuml
+masl_idm/[>=1.0 <2]@xtuml
 masl_json/[>=1.0 <2]@xtuml
 masl_json_validation/[>=1.0 <2]@xtuml
 masl_logger/[>=1.0 <2]@xtuml

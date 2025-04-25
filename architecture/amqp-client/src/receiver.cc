@@ -39,7 +39,7 @@ namespace amqp_asio {
     asio::awaitable<void> Receiver::stop_auto_credit() {
         co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->stop_auto_credit());
     }
-    asio::awaitable<void> Receiver::auto_credit_limits(messages::uint_t low_water, messages::uint_t high_water) {
+    asio::awaitable<void> Receiver::auto_credit_limits(messages::int_t low_water, messages::int_t high_water) {
         co_return co_await asio::co_spawn(pimpl_->get_executor(), pimpl_->auto_credit_limits(low_water,high_water));
     }
 

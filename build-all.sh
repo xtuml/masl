@@ -34,6 +34,7 @@ set -e
 (cd utils/command-line && conan create . --update --build=missing --test-missing "$@")
 (cd utils/environment && conan create . --update --build=missing --test-missing "$@")
 (cd utils/host && conan create . --update --build=missing --test-missing "$@")
+(cd utils/idm && conan create . --update --build=missing --test-missing "$@")
 (cd utils/filesystem && conan create . --update --build=missing --test-missing "$@")
 (cd utils/format && conan create . --update --build=missing --test-missing "$@")
 (cd utils/hash && conan create . --update --build=missing --test-missing "$@")

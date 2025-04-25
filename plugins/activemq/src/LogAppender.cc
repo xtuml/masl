@@ -31,7 +31,7 @@ namespace InterDomainMessaging {
             }
 
           private:
-            std::unique_ptr<InterDomainMessaging::Producer> producer;
+            std::shared_ptr<InterDomainMessaging::Producer> producer;
         };
 
         log4cplus::SharedAppenderPtr ActiveMQAppenderFactory::createObject(const log4cplus::helpers::Properties &props) {
