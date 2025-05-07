@@ -5,7 +5,7 @@ from conan.errors import ConanInvalidConfiguration
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_activemq"
-    version = "1.1.3"
+    version = "1.1.4"
     user = "xtuml"
 
     package_type = "shared-library"
@@ -22,11 +22,15 @@ class ConanFile(conan.ConanFile):
     default_options = {
         "log4cplus/*:unicode": False,
         "log4cplus/*:shared": True,
+        "openssl/*:shared": True,
     }
+
 
     def validate(self):
         if not self.dependencies["log4cplus"].options.shared:
             raise ConanInvalidConfiguration("log4cplus only works as a shared library")
+        if not self.dependencies["openssl"].options.shared:
+            raise ConanInvalidConfiguration("openssl only works as a shared library")
 
     def requirements(self):
         self.requires("xtuml_amqp_client/[>=1 <2]@xtuml", transitive_headers=True)
@@ -37,6 +41,7 @@ class ConanFile(conan.ConanFile):
         self.requires("boost/[>=1.86.0 <2]", override=True)
         self.requires("log4cplus/[>=2.1.0 <3]")
         self.requires("libuuid/1.0.3")
+        self.requires("openssl/[>=3.4.1 <4]", transitive_headers=True, transitive_libs=True)
 
     def layout(self):
         cmake_layout(self)
@@ -65,3 +70,4 @@ class ConanFile(conan.ConanFile):
         self.cpp_info.requires.append("fmt::fmt")
         self.cpp_info.requires.append("log4cplus::log4cplus")
         self.cpp_info.requires.append("libuuid::libuuid")
+        self.cpp_info.requires.append("openssl::openssl")

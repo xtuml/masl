@@ -7,7 +7,7 @@ import os
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_amqp_client"
-    version = "1.1.2"
+    version = "1.1.3"
     user = "xtuml"
 
     package_type = "shared-library"
@@ -23,11 +23,14 @@ class ConanFile(conan.ConanFile):
 
     default_options = {
         "cyrus-sasl/*:shared": True,
+        "openssl/*:shared": True,
     }
 
     def validate(self):
         if not self.dependencies["cyrus-sasl"].options.shared:
             raise ConanInvalidConfiguration("cyrus-sasl only works as a shared library")
+        if not self.dependencies["openssl"].options.shared:
+            raise ConanInvalidConfiguration("openssl only works as a shared library")
 
     def requirements(self):
         self.requires(
@@ -42,7 +45,7 @@ class ConanFile(conan.ConanFile):
         self.test_requires("gtest/[>=1.15.0 <2]")
         self.requires("cli11/[>=2.4.2 <3]", visible=False)
         self.requires("boost/[>=1.86.0 <2]", transitive_headers=True)
-        self.requires("openssl/[>=3.4.1 <4]", transitive_headers=True)
+        self.requires("openssl/[>=3.4.1 <4]", transitive_headers=True, transitive_libs=True)
 
     def layout(self):
         cmake_layout(self)

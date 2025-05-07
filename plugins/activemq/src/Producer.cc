@@ -6,7 +6,6 @@
 #include "swa/Process.hh"
 
 #include <asio/co_spawn.hpp>
-#include <asio/detached.hpp>
 
 namespace InterDomainMessaging {
 
@@ -27,7 +26,11 @@ namespace InterDomainMessaging {
                     initialisedCond.notify();
                     log.debug("Producer initialised");
                 },
-                asio::detached
+                [](std::exception_ptr eptr) {
+                    if (eptr) {
+                        std::rethrow_exception(eptr);
+                    }
+                }
             );
         }
 
@@ -40,7 +43,11 @@ namespace InterDomainMessaging {
                     co_await sender.send(data, amqp_asio::messages::Properties{.to = topic_prefix + topic});
                     log.debug("Done sending");
                 },
-                asio::detached
+                [](std::exception_ptr eptr) {
+                    if (eptr) {
+                        std::rethrow_exception(eptr);
+                    }
+                }
             );
         }
 

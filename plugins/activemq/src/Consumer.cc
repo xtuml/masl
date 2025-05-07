@@ -5,7 +5,6 @@
 #include "swa/Process.hh"
 
 #include <asio/co_spawn.hpp>
-#include <asio/detached.hpp>
 
 namespace InterDomainMessaging {
 
@@ -30,8 +29,7 @@ namespace InterDomainMessaging {
                             messageQueue.push(std::move(msg));
                             SWA::Process::getInstance().getIOContext().post(
                                 SWA::Process::getInstance().wrapProcessingThread(
-                                    "idm.activemq." + SWA::Process::getInstance().getName() + ".receiver." + topic + ".message",
-                                    [this, handler]() {
+                                    "idm.activemq." + SWA::Process::getInstance().getName() + ".receiver." + topic + ".message", [this, handler]() {
                                         // drain the message queue
                                         while (!messageQueue.empty()) {
                                             auto msg = std::move(messageQueue.front());
@@ -44,7 +42,11 @@ namespace InterDomainMessaging {
                                             service();
 
                                             // accept delivery
-                                            asio::co_spawn(SWA::Process::getInstance().getIOContext().get_executor(), msg.accept(), asio::detached);
+                                            asio::co_spawn(SWA::Process::getInstance().getIOContext().get_executor(), msg.accept(), [](std::exception_ptr eptr) {
+                                                if (eptr) {
+                                                    std::rethrow_exception(eptr);
+                                                }
+                                            });
                                         }
                                     }
                                 )
@@ -54,7 +56,11 @@ namespace InterDomainMessaging {
                     );
                     log.debug("Listening for messages");
                 },
-                asio::detached
+                [](std::exception_ptr eptr) {
+                    if (eptr) {
+                        std::rethrow_exception(eptr);
+                    }
+                }
             );
         }
 
