@@ -29,7 +29,7 @@ namespace InterDomainMessaging {
             void receive(std::shared_ptr<ServiceHandler> handler) override;
 
             asio::awaitable<void> isInitialised() {
-                return initialisedCond.wait([this] {
+                co_await initialisedCond.wait([this] {
                     return initialised;
                 });
             }
@@ -38,9 +38,17 @@ namespace InterDomainMessaging {
                 return proc.getName() + ".consumer." + topic;
             }
 
-            void setConfig(std::string paramName, std::string paramValue) {}
-            void setConfig(std::string paramName, int paramValue);
-            void setConfig(std::string paramName, bool paramValue);
+            void setProperty(const std::string &name, int value) override;
+            void setProperty(const std::string &name, bool value) override;
+
+          private:
+            auto self() const {
+                return std::static_pointer_cast<const Consumer>(this->shared_from_this());
+            }
+
+            auto self() {
+                return std::static_pointer_cast<Consumer>(this->shared_from_this());
+            }
 
           private:
             std::string topic_prefix;

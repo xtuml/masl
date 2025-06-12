@@ -80,40 +80,38 @@ namespace InterDomainMessaging {
             );
         }
 
-        void Consumer::setConfig(std::string paramName, int paramValue) {
-            if (paramName == "auto_credit_high_water" || paramName == "auto_credit_low_water" || paramName == "credit") {
-                asio::co_spawn(
-                    SWA::Process::getInstance().getIOContext().get_executor(),
-                    [this, paramName, paramValue]() -> asio::awaitable<void> {
-                        co_await isInitialised();
-                        if (paramName == "auto_credit_high_water") {
-                            co_await receiver.auto_credit_limits(-1, paramValue);
-                        } else if (paramName == "auto_credit_low_water") {
-                            co_await receiver.auto_credit_limits(paramValue, -1);
-                        } else if (paramName == "credit") {
-                            co_await receiver.set_credit(paramValue);
-                        }
-                    },
-                    asio::detached
-                );
-            }
+        void Consumer::setProperty(const std::string &name, int value) {
+            asio::co_spawn(
+                SWA::Process::getInstance().getIOContext().get_executor(),
+                [name, self = self(), value]() mutable -> asio::awaitable<void> {
+                    co_await self->isInitialised();
+                    if (name == "auto_credit_high_water") {
+                        co_await self->receiver.auto_credit_high_water(value);
+                    } else if (name == "auto_credit_low_water") {
+                        co_await self->receiver.auto_credit_high_water(value);
+                    } else if (name == "credit") {
+                        co_await self->receiver.set_credit(value);
+                    }
+                },
+                asio::detached
+            );
         }
 
-        void Consumer::setConfig(std::string paramName, bool paramValue) {
-            if (paramName == "auto_credit") {
-                asio::co_spawn(
-                    SWA::Process::getInstance().getIOContext().get_executor(),
-                    [this, paramValue]() -> asio::awaitable<void> {
-                        co_await isInitialised();
-                        if (paramValue) {
-                            co_await receiver.start_auto_credit();
+        void Consumer::setProperty(const std::string &name, bool value) {
+            asio::co_spawn(
+                SWA::Process::getInstance().getIOContext().get_executor(),
+                [name, self = self(), value]() mutable -> asio::awaitable<void> {
+                    if (name == "auto_credit") {
+                        co_await self->isInitialised();
+                        if (value) {
+                            co_await self->receiver.start_auto_credit();
                         } else {
-                            co_await receiver.stop_auto_credit();
+                            co_await self->receiver.stop_auto_credit();
                         }
-                    },
-                    asio::detached
-                );
-            }
+                    }
+                },
+                asio::detached
+            );
         }
     } // namespace ActiveMQ
 

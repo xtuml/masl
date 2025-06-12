@@ -25,7 +25,7 @@ namespace InterDomainMessaging {
             };
 
             asio::awaitable<void> isInitialised() {
-                return initialisedCond.wait([this] {
+                co_await initialisedCond.wait([this] {
                     return initialised;
                 });
             }
@@ -35,6 +35,15 @@ namespace InterDomainMessaging {
             }
 
           private:
+            auto self() const {
+                return std::static_pointer_cast<const Producer>(this->shared_from_this());
+            }
+
+            auto self() {
+                return std::static_pointer_cast<Producer>(this->shared_from_this());
+            }
+
+
             std::string topic_prefix;
             std::string topic;
             xtuml::logging::Logger log;

@@ -2,12 +2,6 @@
 
 namespace InterDomainMessaging {
 
-    bool ProcessHandler::registerServiceHandler(std::string topic, std::shared_ptr<ServiceHandler> handler) {
-        auto consumer = createConsumer(topic);
-        consumer->receive(handler);
-        consumers.push_back(consumer);
-        return true;
-    }
 
     ProcessHandler &ProcessHandler::getInstance() {
         return getSingleton();

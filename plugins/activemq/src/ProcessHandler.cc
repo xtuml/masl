@@ -119,31 +119,11 @@ namespace InterDomainMessaging {
         }
 
         std::shared_ptr<InterDomainMessaging::Consumer> ProcessHandler::createConsumer(std::string topic) {
-            auto consumer = std::make_shared<Consumer>(topic, *this);
-            consumers[topic] = consumer;
-            return consumer;
+            return std::make_shared<Consumer>(topic, *this);
         }
 
         std::shared_ptr<InterDomainMessaging::Producer> ProcessHandler::createProducer(std::string topic) {
             return std::make_shared<Producer>(topic, *this);
-        }
-
-        void ProcessHandler::setConsumerConfig(std::string consumerId, std::string paramName, std::string paramValue) {
-            if (consumers.contains(consumerId)) {
-                consumers[consumerId]->setConfig(paramName, paramValue);
-            }
-        }
-
-        void ProcessHandler::setConsumerConfig(std::string consumerId, std::string paramName, int paramValue) {
-            if (consumers.contains(consumerId)) {
-                consumers[consumerId]->setConfig(paramName, paramValue);
-            }
-        }
-
-        void ProcessHandler::setConsumerConfig(std::string consumerId, std::string paramName, bool paramValue) {
-            if (consumers.contains(consumerId)) {
-                consumers[consumerId]->setConfig(paramName, paramValue);
-            }
         }
 
         ProcessHandler &ProcessHandler::getInstance() {
