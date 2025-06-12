@@ -7,7 +7,7 @@ import os
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_amqp_client"
-    version = "1.1.3"
+    version = "1.1.4"
     user = "xtuml"
 
     package_type = "shared-library"
