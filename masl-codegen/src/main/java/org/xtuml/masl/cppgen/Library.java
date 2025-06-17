@@ -41,7 +41,9 @@ public class Library extends FileGroup {
     }
 
     public CodeFile createInterfaceHeader(final File path, final String name) {
-        headerPaths.add(path);
+        if (path != null) {
+            headerPaths.add(path);
+        }
         return createCodeFile(path, name + headerExtension, INTERFACE_HEADER);
     }
 
@@ -58,7 +60,9 @@ public class Library extends FileGroup {
     }
 
     public CodeFile createPublicHeader(final File path, final String name) {
-        headerPaths.add(path);
+        if (path != null) {
+            headerPaths.add(path);
+        }
         return createCodeFile(path, name + headerExtension, PUBLIC_HEADER);
     }
 
