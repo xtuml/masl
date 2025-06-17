@@ -139,7 +139,8 @@ class MaslConanHelper():
         "sqlite" : [True,False],
         "idm" : [True, False],
         "amqp" : [True, False],
-        "test" : [True, False]
+        "test" : [True, False],
+        "include_mod" : [True, False]
     }
 
     default_options = {
@@ -149,7 +150,8 @@ class MaslConanHelper():
         "sqlite" : True,
         "idm" : True,
         "amqp" : False,
-        "test" : False
+        "test" : False,
+        "include_mod" : False
         
     }
 
@@ -278,9 +280,12 @@ class MaslConanHelper():
             copy(self, srcfile, src=src, dst=masl_src_resource)
             copy(self, '*.tr', src=src, dst=masl_src_resource)
             if ext == '.mod':
-                # Use a raw copy, as conan copy preserves the symlink, and we want a copy
-                os.makedirs(masl_include, exist_ok=True)
-                shutil.copy(os.path.join(src, name + '.int'), os.path.join(masl_include, name + '.int'))
+                if self.options.include_mod:
+                    copy(self, srcfile, src=src, dst=masl_include)
+                else:
+                    # Use a raw copy, as conan copy preserves the symlink, and we want a copy
+                    os.makedirs(masl_include, exist_ok=True)
+                    shutil.copy(os.path.join(src, name + '.int'), os.path.join(masl_include, name + '.int'))
 
                 copy(self, name + '.int', src=src, dst=masl_src_resource)
                 copy(self, '*.al', src=src, dst=masl_src_resource)

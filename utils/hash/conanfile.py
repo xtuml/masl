@@ -16,6 +16,7 @@ class ConanFile(conan.ConanFile):
         "idm" : True,
         "amqp" : False,
         "test" : False,
+        "include_mod" : False,
         "openssl/*:shared": True
     }
 

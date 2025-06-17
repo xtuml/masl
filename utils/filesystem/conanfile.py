@@ -16,13 +16,14 @@ class ConanFile(conan.ConanFile):
         "idm" : True,
         "amqp" : False,
         "test" : False,
+        "include_mod" : False,
         "openssl/*:shared": True
     }
 
     def validate(self):
         if not self.dependencies["openssl"].options.shared:
             raise ConanInvalidConfiguration("openssl only works as a shared library")
-    
+
     def requirements(self):
         self.requires('masl_host/[>=1.0 <2]@xtuml', transitive_libs=True, transitive_headers=True)
         self.requires("openssl/[>=3.4.1 <4]", transitive_headers=True, transitive_libs=True)
