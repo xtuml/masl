@@ -52,11 +52,13 @@ public class Library extends FileGroup {
     }
 
     public CodeFile createPrivateHeader(final File path, final String name) {
-        return createCodeFile(path, name + headerExtension, PRIVATE_HEADER);
+        // return createCodeFile(path, name + headerExtension, PRIVATE_HEADER);
+        return createPublicHeader(path, name);
     }
 
     public CodeFile createPrivateHeader(final String name) {
-        return createPrivateHeader(defaultPrivateHeaderPath, name);
+        // return createPrivateHeader(defaultPrivateHeaderPath, name);
+        return createPublicHeader(name);
     }
 
     public CodeFile createPublicHeader(final File path, final String name) {
