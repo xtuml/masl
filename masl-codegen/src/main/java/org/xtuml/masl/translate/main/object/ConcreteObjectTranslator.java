@@ -209,6 +209,10 @@ public abstract class ConcreteObjectTranslator {
         Expression identifierTaken = null;
         for (final IdentifierDeclaration identifier : objectDeclaration.getIdentifiers()) {
             boolean needsCheck = true;
+            if (objectDeclaration.getDefinitionPragmas().hasPragma(DomainTranslator.ignoreDuplicatesPragma)
+                    || objectDeclaration.getDomain().getPragmas().hasPragma(DomainTranslator.ignoreDuplicatesPragma)) {
+                needsCheck = false;
+            }
             final List<Expression> checkParams = new ArrayList<>();
             for (final AttributeDeclaration att : identifier.getAttributes()) {
                 // If attribute is flagged as unique, then there is no need to check it,

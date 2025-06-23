@@ -43,6 +43,7 @@ public class DomainTranslator extends org.xtuml.masl.translate.DomainTranslator 
     private static final String signalHandlerPragma = "signal_handler";
     private static final String startupPragma = "startup";
     private static final String processListenerPragma = "process_listener";
+    public static final String ignoreDuplicatesPragma = "ignore_duplicates";
 
     public static DomainTranslator getInstance(final Domain domain) {
         return getInstance(DomainTranslator.class, domain);
