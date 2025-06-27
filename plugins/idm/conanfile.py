@@ -4,7 +4,7 @@ from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
 
 class ConanFile(conan.ConanFile):
     name = "xtuml_idm"
-    version = "1.0.3"
+    version = "1.0.4"
     user = "xtuml"
 
     package_type = "shared-library"
