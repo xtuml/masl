@@ -1,6 +1,7 @@
 #include "activemq/ActiveMQ.hh"
 
 #include "LogAppender.hh"
+#include "idm/IDM.hh"
 #include "swa/CommandLine.hh"
 
 #include <thread>
@@ -42,6 +43,9 @@ namespace InterDomainMessaging {
             SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(AutoCreditHighWaterOption, "Auto Credit High Water (AMQP)", false, "high_water", true, false));
             SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(AutoCreditLowWaterOption, "Auto Credit Low Water (AMQP)", false, "low_water", true, false));
             SWA::CommandLine::getInstance().registerOption(SWA::NamedOption(InitialCreditOption, "Initial Credit (AMQP)", false, "credit", true, false));
+
+            // register the dynamic library loader
+            SWA::Process::getInstance().registerInitialisedListener(&InterDomainMessaging::loadLibs);
 
             return true;
         }

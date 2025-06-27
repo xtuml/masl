@@ -37,6 +37,8 @@ namespace InterDomainMessaging {
 
         static ProcessHandler &getInstance();
 
+        static bool hasImplementation();
+
         std::shared_ptr<Consumer> getConsumer(const std::string& id ) {
             if ( auto it = consumers.find(id); it == consumers.end() ) {
                 throw std::out_of_range(std::format("Consumer {} not found", id));
