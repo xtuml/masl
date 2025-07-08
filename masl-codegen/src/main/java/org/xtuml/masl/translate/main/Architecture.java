@@ -742,6 +742,10 @@ public final class Architecture {
         return nameFormatter.callStaticFunction("formatObjectName", domainId, objectId);
     }
 
+    public static Expression formatStackFrame(final Expression stackFrame) {
+        return nameFormatter.callStaticFunction("formatStackFrame", stackFrame);
+    }
+
     public static final CodeFile navigateInc = library.createInterfaceHeader("swa/navigate.hh");
 
     public static Function navigateOne(final TypeUsage destObj) {

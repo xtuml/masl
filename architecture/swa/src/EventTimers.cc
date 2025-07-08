@@ -15,6 +15,27 @@
 #include <print>
 #include <format>
 
+#include <execinfo.h>
+#include <signal.h>
+#include <unistd.h>
+#include <cstdlib>
+#include <iostream>
+
+void print_stacktrace() {
+    const int max_frames = 64;
+    void* frames[max_frames];
+
+    int num_frames = backtrace(frames, max_frames);
+    char** symbols = backtrace_symbols(frames, num_frames);
+
+    std::cerr << "Stack trace:\n";
+    for (int i = 0; i < num_frames; ++i) {
+        std::cerr << symbols[i] << '\n';
+    }
+
+    free(symbols);
+}
+
 namespace SWA {
     namespace {
         const char *const DisableTimersOption = "-timers-disable";
@@ -45,7 +66,8 @@ namespace SWA {
     EventTimer &EventTimers::getTimer(const TimerIdType id) {
         TimerStore::iterator it = timers.find(id);
         if (it == timers.end()) {
-            throw ProgramError(std::format("Timer {} not found.", id));
+            print_stacktrace();
+            throw std::runtime_error(std::format("Levi1: Timer {} not found.", id));
         }
         return *it->second;
     }
@@ -53,7 +75,8 @@ namespace SWA {
     const EventTimer &EventTimers::getTimer(const TimerIdType id) const {
         TimerStore::const_iterator it = timers.find(id);
         if (it == timers.end()) {
-            throw ProgramError(std::format("Timer {} not found.", id));
+            print_stacktrace();
+            throw std::runtime_error(std::format("Levi2: Timer {} not found.", id));
         }
         return *it->second;
     }
@@ -75,6 +98,7 @@ namespace SWA {
         timer.cancel();
         timers.erase(id);
         deleteTimerInner(id);
+        std::cout << "Levi3: deleted timer: " << id << std::endl;
     }
 
     void EventTimers::cancelTimer(const TimerIdType id) {

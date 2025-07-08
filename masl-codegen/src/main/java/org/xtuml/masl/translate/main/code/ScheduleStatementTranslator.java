@@ -12,6 +12,8 @@ package org.xtuml.masl.translate.main.code;
 import org.xtuml.masl.cppgen.BinaryExpression;
 import org.xtuml.masl.cppgen.BinaryOperator;
 import org.xtuml.masl.cppgen.ExpressionStatement;
+import org.xtuml.masl.cppgen.Function;
+import org.xtuml.masl.cppgen.Literal;
 import org.xtuml.masl.metamodel.expression.Expression;
 import org.xtuml.masl.metamodel.object.ObjectDeclaration;
 import org.xtuml.masl.metamodel.statemodel.EventDeclaration;
@@ -86,5 +88,15 @@ public class ScheduleStatementTranslator extends CodeTranslator {
                                                  eventToSchedule);
 
         getCode().appendStatement(new ExpressionStatement(scheduleTimerFnCall));
+
+        // log timer ID
+        org.xtuml.masl.cppgen.Expression consoleExpr = new BinaryExpression(Architecture.console.asFunctionCall(), BinaryOperator.LEFT_SHIFT, Literal.createStringLiteral("Scheduling timer: "));
+        consoleExpr = new BinaryExpression(consoleExpr, BinaryOperator.LEFT_SHIFT, timerIdTranslator.getReadExpression());
+        consoleExpr = new BinaryExpression(consoleExpr, BinaryOperator.LEFT_SHIFT, Literal.createStringLiteral(" "));
+        consoleExpr = new BinaryExpression(consoleExpr, BinaryOperator.LEFT_SHIFT, Architecture.formatStackFrame(new Function("top").asFunctionCall(Architecture.stackClass.callStaticFunction("getInstance"), false)));
+        consoleExpr = new BinaryExpression(consoleExpr, BinaryOperator.LEFT_SHIFT, Literal.NEWLINE);
+        getCode().appendStatement(new ExpressionStatement(consoleExpr));
+
+
     }
 }
