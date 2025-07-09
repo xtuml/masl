@@ -119,7 +119,7 @@ awaitable<void> main_loop(asio::io_context &ctx, const Config &config) {
         }
 
         log.info("Session open");
-        timer.expires_after(10s);
+        timer.expires_after(1min);
 
         auto sender =
             co_await session.open_sender(SenderOptions().name("sender").delivery_mode(DeliveryMode::at_least_once));
@@ -130,7 +130,7 @@ awaitable<void> main_loop(asio::io_context &ctx, const Config &config) {
             [&]() -> asio::awaitable<void> {
                 auto delivery = co_await receiver.receive();
                 // log.info("Received message {}", nlohmann::json(delivery.message()).dump(2));
-                log.info("Received message {}", delivery.message().as_string());
+                // log.info("Received message {}", delivery.message().as_string());
                 co_await delivery.accept();
             },
             log
@@ -144,7 +144,7 @@ awaitable<void> main_loop(asio::io_context &ctx, const Config &config) {
                 co_await sender.send_json(
                     json, amqp_asio::messages::Properties{.to = send_prefix + "example.channel"}
                 );
-                asio::steady_timer timer(executor, 1s);
+                asio::steady_timer timer(executor, 10ms);
                 co_await timer.async_wait();
                 co_return;
             },
@@ -158,6 +158,10 @@ awaitable<void> main_loop(asio::io_context &ctx, const Config &config) {
         co_await session.end();
         co_await c.close();
         log.info("Connection closed");
+
+        // keep the process alive just to inspect memory usage
+        timer.expires_after(1h);
+        co_await timer.async_wait(asio::deferred);
 
     } catch (std::bad_variant_access &e) {
         throw std::system_error(make_error_code(std::errc::bad_message));
