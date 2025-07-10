@@ -174,28 +174,33 @@ namespace amqp_asio::fsm {
         }
 
         using any_event = filtered_variant_t<unique_filter, std::variant<typename Tx::event...>>;
+
         asio::awaitable<void> generate_event(any_event e) {
-            if (log.enabled(xtuml::logging::Logger::Level::DEBUG)) {
-                std::visit(
-                    [this]<event E>(const E &) {
-                        log.debug("Queueing event {}", E::name);
-                    },
-                    e
-                );
+            if (!terminated_) {
+                if (log.enabled(xtuml::logging::Logger::Level::DEBUG)) {
+                    std::visit(
+                        [this]<event E>(const E &) {
+                            log.debug("Queueing event {}", E::name);
+                        },
+                        e
+                    );
+                }
+                co_await event_queue.async_send(std::error_code{}, std::move(e));
             }
-            co_await event_queue.async_send(std::error_code{}, std::move(e));
         }
 
         asio::awaitable<void> generate_local_event(any_event e) {
-            if (log.enabled(xtuml::logging::Logger::Level::DEBUG)) {
-                std::visit(
-                    [this]<event E>(const E &) {
-                        log.debug("Queueing local event {}", E::name);
-                    },
-                    e
-                );
+            if (!terminated_) {
+                if (log.enabled(xtuml::logging::Logger::Level::DEBUG)) {
+                    std::visit(
+                        [this]<event E>(const E &) {
+                            log.debug("Queueing local event {}", E::name);
+                        },
+                        e
+                    );
+                }
+                co_await local_event_queue.async_send(std::error_code{}, std::move(e));
             }
-            co_await local_event_queue.async_send(std::error_code{}, std::move(e));
         }
 
         using any_state = filtered_variant_t<
