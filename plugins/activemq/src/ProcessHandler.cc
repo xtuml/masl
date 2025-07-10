@@ -118,12 +118,12 @@ namespace InterDomainMessaging {
             );
         }
 
-        std::unique_ptr<InterDomainMessaging::Consumer> ProcessHandler::createConsumer(std::string topic) {
-            return std::make_unique<Consumer>(topic, *this);
+        std::shared_ptr<InterDomainMessaging::Consumer> ProcessHandler::createConsumer(std::string topic) {
+            return std::make_shared<Consumer>(topic, *this);
         }
 
-        std::unique_ptr<InterDomainMessaging::Producer> ProcessHandler::createProducer(std::string topic) {
-            return std::make_unique<Producer>(topic, *this);
+        std::shared_ptr<InterDomainMessaging::Producer> ProcessHandler::createProducer(std::string topic) {
+            return std::make_shared<Producer>(topic, *this);
         }
 
         ProcessHandler &ProcessHandler::getInstance() {

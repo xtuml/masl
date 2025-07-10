@@ -24,6 +24,7 @@ namespace SWA {
 
         static Singleton &getSingleton();
         static bool registerSingleton(GetterFunction getter);
+        static bool singletonRegistered();
 
       private:
         static GetterFunction &getSingletonGetter();
@@ -34,6 +35,15 @@ namespace SWA {
     bool DynamicSingleton<Singleton>::registerSingleton(GetterFunction getter) {
         getSingletonGetter() = getter;
         return true;
+    }
+
+    template <class Singleton>
+    bool DynamicSingleton<Singleton>::singletonRegistered() {
+        if (getSingletonGetter()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     template <class Singleton>

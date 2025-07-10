@@ -9,22 +9,26 @@
 
 #include "logging/log.hh"
 
+#include <map>
+
 namespace InterDomainMessaging {
 
     namespace ActiveMQ {
 
+        class Consumer;
+
         class ProcessHandler : public InterDomainMessaging::ProcessHandler {
           public:
             ProcessHandler();
-            std::unique_ptr<InterDomainMessaging::Consumer> createConsumer(std::string topic) override;
-            std::unique_ptr<InterDomainMessaging::Producer> createProducer(std::string topic) override;
+            std::shared_ptr<InterDomainMessaging::Consumer> createConsumer(std::string topic) override;
+            std::shared_ptr<InterDomainMessaging::Producer> createProducer(std::string topic) override;
 
             amqp_asio::Session getSession() {
                 return session;
             }
 
             asio::awaitable<void> isInitialised() {
-                return initialisedCond.wait([this] {
+                co_await initialisedCond.wait([this] {
                     return initialised;
                 });
             }

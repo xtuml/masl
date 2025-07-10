@@ -545,25 +545,25 @@ namespace amqp_asio {
         }
 
         asio::awaitable<void> state_disposition(const messages::Disposition &disposition) {
+            log_.debug("Handling disposition: {}", nlohmann::json(disposition).dump(2));
             if (disposition.role == messages::Role::sender) {
                 auto start = unsettled_deliveries_.lower_bound(disposition.first);
                 auto end = unsettled_deliveries_.upper_bound(disposition.last.value_or(disposition.first));
 
-                std::for_each(start, end, [&disposition](auto entry) -> asio::awaitable<void> {
-                    co_await entry.second->disposition(
+                for ( auto it = start; it != end; ++it ) {
+                    co_await it->second->disposition(
                         disposition.settled.value_or(false), disposition.state, disposition.batchable.value_or(false)
                     );
-                });
+                }
 
             } else {
                 auto start = unsettled_trackers_.lower_bound(disposition.first);
                 auto end = unsettled_trackers_.upper_bound(disposition.last.value_or(disposition.first));
-
-                std::for_each(start, end, [&disposition](auto entry) -> asio::awaitable<void> {
-                    co_await entry.second->disposition(
+                for ( auto it = start; it != end; ++it ) {
+                    co_await it->second->disposition(
                         disposition.settled.value_or(false), disposition.state, disposition.batchable.value_or(false)
                     );
-                });
+                }
             }
             co_await done();
             co_return;

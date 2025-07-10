@@ -80,13 +80,15 @@ namespace SWA {
                     if (ec == asio::error::operation_aborted) {
                         return;
                     }
-                    EventTimers::getInstance().fireTimer(
-                        self->id,
-                        self->period > Duration::zero()
-                            ? (std::chrono::system_clock::now() - self->expiryTime.getChronoTimePoint()) /
-                                  self->period.getChronoDuration()
-                            : 0
-                    );
+                    if (self->scheduled) {
+                        EventTimers::getInstance().fireTimer(
+                            self->id,
+                            self->period > Duration::zero()
+                                ? (std::chrono::system_clock::now() - self->expiryTime.getChronoTimePoint()) /
+                                      self->period.getChronoDuration()
+                                : 0
+                        );
+                    }
                 }
             ));
         }

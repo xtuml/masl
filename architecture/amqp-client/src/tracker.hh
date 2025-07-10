@@ -126,6 +126,8 @@ state CheckingDisposition  #line.dotted
 
 Pending --> Sending : SendStarted(delivery_id)
 Sending --> SendComplete : Sent(settled,rcv_mode)
+Sending --> CheckingDisposition : Disposition(disposition)
+Unsettled --> SendComplete : Sent(settled,rcv_mode)
 SendComplete --> Settled : Settle
 SendComplete --> Unsettled : Done
 Unsettled --> CheckingDisposition : Disposition(disposition)
@@ -191,9 +193,11 @@ else:\n\
         using StateMachine = fsm::StateMachine<
             fsm::Transition<Pending, Sending, Start>,
             fsm::Transition<Sending, SendComplete, Sent>,
+            fsm::Transition<Sending, CheckingDisposition, Disposition>,
             fsm::Transition<SendComplete, Settled, Settle>,
             fsm::Transition<SendComplete, Unsettled, Done>,
             fsm::Transition<Unsettled, CheckingDisposition, Disposition>,
+            fsm::Transition<Unsettled, SendComplete, Sent>,
             fsm::Transition<CheckingDisposition, Settled, Settle>,
             fsm::Transition<CheckingDisposition, Unsettled, Done>>;
 

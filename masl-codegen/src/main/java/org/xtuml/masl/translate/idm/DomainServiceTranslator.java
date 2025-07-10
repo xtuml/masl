@@ -159,7 +159,7 @@ public class DomainServiceTranslator extends ServiceTranslator {
         final Expression handler = Std.shared_ptr(new TypeUsage(handlerClass))
                 .callConstructor(new NewExpression(new TypeUsage(handlerClass)));
         final Function registerServiceFunc = new Function("registerServiceHandler");
-        final Expression registerService = registerServiceFunc.asFunctionCall(processHandler, false, topicName, handler);
+        final Expression registerService = registerServiceFunc.asFunctionCall(processHandler, false, topicName, topicName, handler);
         consumerRegisteredVar = new Variable(new TypeUsage(FundamentalType.BOOL),
                 Mangler.mangleName(getService()) + "_registered", getDomainNamespace(), registerService);
     }
@@ -180,7 +180,7 @@ public class DomainServiceTranslator extends ServiceTranslator {
                 topicName = Literal.createStringLiteral(topicNameString);
             }
         }
-        producerVar = new Variable(new TypeUsage(Std.unique_ptr(new TypeUsage(InterDomainMessaging.producerClass))), Mangler.mangleName(getService())
+        producerVar = new Variable(new TypeUsage(Std.shared_ptr(new TypeUsage(InterDomainMessaging.producerClass))), Mangler.mangleName(getService())
             + "_producer", getDomainNamespace(), new Function("createProducer").asFunctionCall(processHandler, false, topicName));
 
 
