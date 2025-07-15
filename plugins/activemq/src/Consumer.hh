@@ -11,8 +11,6 @@
 #include "logging/log.hh"
 #include "swa/CommandLine.hh"
 
-#include <queue>
-
 namespace InterDomainMessaging {
 
     namespace ActiveMQ {
@@ -57,7 +55,6 @@ namespace InterDomainMessaging {
             amqp_asio::Receiver receiver;
             bool initialised;
             amqp_asio::ConditionVar initialisedCond;
-            std::queue<amqp_asio::Delivery> messageQueue;
             ProcessHandler &proc;
         };
 
