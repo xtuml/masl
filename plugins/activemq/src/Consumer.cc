@@ -1,5 +1,6 @@
 #include "Consumer.hh"
 
+#include "amqp_asio/delivery.hh"
 #include "amqp_asio/spawn.hh"
 #include "idm/ProcessHandler.hh"
 #include "swa/CommandLine.hh"
@@ -36,7 +37,6 @@ namespace InterDomainMessaging {
                     amqp_asio::spawn_cancellable_loop(
                         SWA::Process::getInstance().getIOContext().get_executor(),
                         [this, handler]() mutable -> asio::awaitable<void> {
-                            // Queue the message to be handled by the event loop
                             auto delivery = co_await receiver.receive();
                             log.debug("Received message {}", delivery.message().as_string());
                             SWA::Process::getInstance().getIOContext().post(

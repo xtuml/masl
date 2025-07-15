@@ -6,7 +6,6 @@
 #include "ProcessHandler.hh"
 #include "activemq/ActiveMQ.hh"
 #include "amqp_asio/condition_var.hh"
-#include "amqp_asio/delivery.hh"
 #include "amqp_asio/receiver.hh"
 #include "logging/log.hh"
 #include "swa/CommandLine.hh"
