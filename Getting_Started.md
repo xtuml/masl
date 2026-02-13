@@ -33,20 +33,26 @@ NOTE: The rest of this document will assume this alias has been set up.
 ## Building the calculator example project
 
 1. Open a shell (git-bash on Windows) and change directories to the
-   `examples/calculator/` directory. 
+   `examples/calculator/masl` directory. 
 2. Build project with:
    ```
-   masl-dev conan build . --options test=True --version=$(git describe --tags)
+   masl-dev conan build . --options test=True
    ```
 
 ## Running the calculator example project
 
 1. Open a shell (git-bash on Windows) and change directories to the
-   `examples/calculator/` directory.
-2. To launch the compiled executable within the docker container, execute the
-   following:
+   `examples/calculator/masl` directory.
+2. To launch the compiled executable, execute the following command to create a
+   new shell inside a `masl-dev` container:
    ```
-   masl-dev ./build/Release/bin/calculator_transient -postinit schedule/test.sch
+   masl-dev
+   ```
+
+3. Run the following commands inside the container:
+   ```
+   source build/<target_architecture_directory>/Release/generators/conanrun.sh
+   ./build/<target_architecture_directory>/Release/bin/calculator_transient -postinit schedule/test.sch
    ```
 
 The process will launch and execute a series of predefined test scenarios
@@ -57,16 +63,16 @@ before exiting.
 1. Open a shell (git-bash on Windows) and change directories to the
    `examples/calculator/` directory. 
 
-2. To launch the compiled executable with inspector enabled, execute the following command to create a new shell inside a `masl-dev` container:
+2. To launch the compiled executable with inspector enabled, execute the
+   following command to create a new shell inside a `masl-dev` container:
    ```
    masl-dev
    ```
 
 3. Run the following commands inside the container:
    ```
-   source build/Release/generators/conanrun.sh 
-   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/work/build/Release/lib/
-   ./build/Release/bin/calculator_transient -util Inspector -inspector-port 0
+   source build/<target_architecture_directory>/Release/generators/conanrun.sh 
+   ./build/<target_architecture_directory>/Release/bin/calculator_transient -util Inspector -inspector-port 0
    ```
 
 The `-util Inspector` flag tells the generated executable to dynamically load
@@ -131,11 +137,18 @@ following command:
 
 ### Building the compiler and software architecture
 
-To rebuild the code generator and software architecture, simply run the
-following command from the root of the repository:
+To rebuild the code generator and software architecture,
+launch a shell within a `masl-dev` container with the following command:
 
   ```
-  ./buildall.sh
+  masl-dev
+  ```
+
+Then simply run the following command from the root of the repository within
+the container:
+
+  ```
+  ./build-all.sh
   ```
 
 This will rebuild and publish all the projects in the repository. During the
